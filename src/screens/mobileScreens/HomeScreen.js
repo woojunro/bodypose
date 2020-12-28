@@ -11,7 +11,7 @@ const Home = () => {
       <HeaderM pageName="home" />
       <AdTap />
       <SemiTitle title="추천 스튜디오" />
-      <MainCardM studioName="바디로그" price="256,000" />
+      <MainCardM studioName="bodylog" price="256,000" />
     </div>
   );
 };
