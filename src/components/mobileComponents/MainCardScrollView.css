@@ -1,0 +1,31 @@
+.scrollView ul {
+  list-style-type: none;
+  padding: 0px;
+  padding-top: 15px;
+  margin: 0;
+  display: flex;
+  height: 210px;
+  overflow: auto;
+  width: 100%;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollView ul li {
+  padding: 0px;
+  margin: 0;
+  white-space: nowrap;
+  flex-basis: auto;
+  position: relative;
+}
+.scrollView li:last-child:after {
+  content: '';
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  left: 100%;
+  top: 0px;
+}
+
+.scrollView ul::-webkit-scrollbar {
+  display: none;
+}

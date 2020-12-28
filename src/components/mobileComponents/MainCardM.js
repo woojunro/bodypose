@@ -4,20 +4,20 @@ import bodylog from '../../materials/BodyLog.jpeg';
 import aavec from '../../materials/Aavec.jpg';
 import balancebutton from '../../materials/BalanceButton.jpg';
 import flyn from '../../materials/Flyn.jpg';
-import cocoviking from '../../materials/Cocoviking.jpg';
+import cocoviking from '../../materials/CocoViking.jpg';
 
 const MainCardM = ({ studioName, price }) => {
   const studio = () => {
     switch (studioName) {
-      case 'bodylog':
+      case '바디로그':
         return bodylog;
-      case 'aavec':
+      case '아베크':
         return aavec;
-      case 'flyn':
+      case '플린':
         return flyn;
-      case 'cocoviking':
+      case '코코바이킹':
         return cocoviking;
-      case 'balancebutton':
+      case '밸런스버튼':
         return balancebutton;
       default:
         return balancebutton;
