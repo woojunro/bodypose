@@ -1,0 +1,15 @@
+.header {
+  border-bottom: 1px solid var(--color-line);
+  height: 55px;
+  display: flex;
+  align-items: center;
+}
+
+.header__logo {
+  text-align: center;
+  margin-top: 8px;
+}
+
+.header__logo img {
+  width: 40%;
+}
