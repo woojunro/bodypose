@@ -3,7 +3,7 @@ import './SemiTitle.css';
 
 const SemiTitle = ({ title }) => {
   return (
-    <div className="container">
+    <div className="titleContainer">
       <span className="title">{title}</span>
       <span className="showMore"> 더보기</span>
     </div>

@@ -3,6 +3,7 @@ import './HomeScreen.css';
 import HeaderM from '../../components/mobileComponents/HeaderM';
 import AdTap from '../../components/mobileComponents/AdTap';
 import SemiTitle from '../../components/mobileComponents/SemiTitle';
+import MainCardM from '../../components/mobileComponents/MainCardM';
 
 const Home = () => {
   return (
@@ -10,6 +11,7 @@ const Home = () => {
       <HeaderM pageName="home" />
       <AdTap />
       <SemiTitle title="추천 스튜디오" />
+      <MainCardM studioName="바디로그" price="256,000" />
     </div>
   );
 };

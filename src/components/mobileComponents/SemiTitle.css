@@ -1,7 +1,7 @@
-.container {
+.titleContainer {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
   margin-top: 30px;
 }
 
