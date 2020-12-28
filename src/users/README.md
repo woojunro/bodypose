@@ -1,10 +1,10 @@
 # users
 
-### Entities
+## Entities
 
 - [user](#user-entity)
 
-### user Entity
+## user Entity
 
 - [x] id
 - [x] createdAt
@@ -18,3 +18,10 @@
 - [x] profileImageUrl
 
 #### user CRUD
+
+- [ ] createUserWithEmail (TODO: 자동 로그인 구현)
+- [ ] createUserWithOAuth
+- [x] getUserById
+- [ ] updateUserProfile
+- [ ] updatePassword
+- [ ] deleteUser

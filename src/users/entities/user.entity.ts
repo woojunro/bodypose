@@ -1,9 +1,11 @@
-import { Field, registerEnumType } from '@nestjs/graphql';
-import { IsEmail, IsEnum, IsString, Length } from 'class-validator';
+import { hash, compare } from 'bcrypt';
+import { InternalServerErrorException } from '@nestjs/common';
+import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { IsEmail, IsEnum, IsString } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { Column, Entity } from 'typeorm';
+import { BeforeInsert, Column, Entity } from 'typeorm';
 
-export enum LoginWith {
+export enum LoginMethod {
   KAKAO = 'KAKAO',
   NAVER = 'NAVER',
   GOOGLE = 'GOOGLE',
@@ -15,7 +17,7 @@ export enum Gender {
   FEMALE = 'FEMALE',
 }
 
-registerEnumType(LoginWith, {
+registerEnumType(LoginMethod, {
   name: 'LoginWith',
 });
 
@@ -24,24 +26,25 @@ registerEnumType(Gender, {
 });
 
 @Entity()
+@ObjectType()
 export class User extends CoreEntity {
   @Column({
     type: 'enum',
-    enum: LoginWith,
+    enum: LoginMethod,
   })
-  @Field(type => LoginWith)
-  @IsEnum(LoginWith)
-  createdWith: LoginWith;
+  @Field(type => LoginMethod)
+  @IsEnum(LoginMethod)
+  createdWith: LoginMethod;
 
   @Column({ nullable: true })
-  @Field(type => String)
+  @Field(type => String, { nullable: true })
   @IsString()
-  socialId: string;
+  socialId?: string;
 
   @Column({ nullable: true })
-  @Field(type => String)
+  @Field(type => String, { nullable: true })
   @IsEmail()
-  email: string;
+  email?: string;
 
   @Column({
     nullable: true,
@@ -64,12 +67,37 @@ export class User extends CoreEntity {
     enum: Gender,
     nullable: true,
   })
-  @Field(type => Gender)
+  @Field(type => Gender, { nullable: true })
   @IsEnum(Gender)
   gender: Gender;
 
   @Column({ nullable: true })
-  @Field(type => String)
+  @Field(type => String, { nullable: true })
   @IsString()
   profileImageUrl: string;
+
+  @BeforeInsert()
+  async hashPassword(): Promise<void> {
+    if (this.password) {
+      try {
+        this.password = await hash(this.password, 10);
+      } catch (e) {
+        console.log(e);
+        throw new InternalServerErrorException();
+      }
+    }
+  }
+
+  async checkPassword(password: string): Promise<boolean> {
+    if (this.password) {
+      try {
+        const isCorrect = await compare(password, this.password);
+        return isCorrect;
+      } catch (e) {
+        console.log(e);
+        throw new InternalServerErrorException();
+      }
+    }
+    return false;
+  }
 }

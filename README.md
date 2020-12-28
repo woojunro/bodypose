@@ -2,6 +2,6 @@
 
 BODYPOSE Backend with NestJS, GraphQL and TypeORM
 
-### Modules
+## Modules
 
 - [users](src/users/README.md)
