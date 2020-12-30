@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import {
   CreateUserWithEmailInput,
   CreateUserWithEmailOutput,
 } from './dtos/create-user.dto';
-import { UserInput, UserOutput } from './dtos/user.dto';
+import { GetMyProfileOutput } from './dtos/get-my-profile.dto';
+import {
+  UpdateUserProfileInput,
+  UpdateUserProfileOutput,
+} from './dtos/update-user.dto';
 import { LoginMethod, User } from './entities/user.entity';
 
 @Injectable()
@@ -57,6 +61,7 @@ export class UsersService {
       // Create and save the user
       const newUser = this.userRepository.create({ email, password, nickname });
       newUser.createdWith = LoginMethod.EMAIL;
+      newUser.isVerified = false;
       await this.userRepository.save(newUser);
       // Return a token after login
       return {
@@ -72,9 +77,29 @@ export class UsersService {
     }
   }
 
-  async getUserById({ userId }: UserInput): Promise<UserOutput> {
+  async getUserById(id: number, options?: FindOneOptions<User>): Promise<User> {
+    return this.userRepository.findOne({ id }, options);
+  }
+
+  async getUserByEmail(
+    email: string,
+    options?: FindOneOptions<User>,
+  ): Promise<User> {
+    return this.userRepository.findOne({ email }, options);
+  }
+
+  async getUserProfileById(id: number): Promise<GetMyProfileOutput> {
     try {
-      const user = await this.userRepository.findOne({ id: userId });
+      const user = await this.getUserById(id, {
+        select: [
+          'email',
+          'gender',
+          'isVerified',
+          'nickname',
+          'profileImageUrl',
+          'createdWith',
+        ],
+      });
       if (!user) {
         return {
           ok: false,
@@ -83,7 +108,7 @@ export class UsersService {
       }
       return {
         ok: true,
-        user,
+        profile: user,
       };
     } catch (e) {
       console.log(e);

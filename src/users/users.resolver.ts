@@ -1,18 +1,27 @@
+import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { CurrentUser } from 'src/auth/current-user.decorator';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import {
   CreateUserWithEmailInput,
   CreateUserWithEmailOutput,
 } from './dtos/create-user.dto';
-import { UserInput, UserOutput } from './dtos/user.dto';
+import { GetMyProfileOutput } from './dtos/get-my-profile.dto';
+import {
+  UpdateUserProfileInput,
+  UpdateUserProfileOutput,
+} from './dtos/update-user.dto';
+import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
-@Resolver()
+@Resolver(of => User)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
-  @Query(returns => UserOutput)
-  user(@Args('input') input: UserInput): Promise<UserOutput> {
-    return this.usersService.getUserById(input);
+  @Query(returns => GetMyProfileOutput)
+  @UseGuards(JwtAuthGuard)
+  getMyProfile(@CurrentUser() user: User): Promise<GetMyProfileOutput> {
+    return this.usersService.getUserProfileById(user.id);
   }
 
   @Mutation(returns => CreateUserWithEmailOutput)
