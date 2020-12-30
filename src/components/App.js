@@ -12,6 +12,8 @@ import ReviewListScreenM from '../screens/mobileScreens/ReviewListScreen';
 import UserScreenM from '../screens/mobileScreens/UserScreen';
 import HeartScreenM from '../screens/mobileScreens/HeartScreen';
 import ConceptsInfoScreenM from '../screens/mobileScreens/ConceptsInfoScreen';
+import NoticeListScreenM from '../screens/mobileScreens/NoticeListScreen';
+import NoticeScreenM from '../screens/mobileScreens/NoticeScreen';
 const App = () => {
   ///가로 900픽셀 미만이면 모바일로 처리.
   const isPc = useMediaQuery({
@@ -36,6 +38,8 @@ const App = () => {
           <Route exact path="/studios/:id" component={StudioInfoScreenM} />
           <Route exact path="/users" component={UserScreenM} />
           <Route path="/hearts" component={HeartScreenM} />
+          <Route exact path="/notices" component={NoticeListScreenM} />{' '}
+          <Route path="/notices/:noticeNumber" component={NoticeScreenM} />
         </div>
       </Router>
     );

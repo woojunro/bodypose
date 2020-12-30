@@ -73,9 +73,12 @@ const BottomNavigation = ({ pageName }) => {
     );
   });
   return (
-    <div className="bottomNavigation">
-      <div className="navigationBox">
-        <ul>{renderedTabs}</ul>
+    <div>
+      <div style={{ height: '52px' }} />
+      <div className="bottomNavigation">
+        <div className="navigationBox">
+          <ul>{renderedTabs}</ul>
+        </div>
       </div>
     </div>
   );

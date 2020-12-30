@@ -7,7 +7,7 @@ import MainConceptsCard from './MainConceptsCard';
 
 const MainConceptsView = ({ ConceptsList, semiTitle }) => {
   const isWide = useMediaQuery({
-    query: '(min-width:680px)',
+    query: '(min-width:720px)',
   });
 
   const renderedConceptsList = ConceptsList.map((concept) => {

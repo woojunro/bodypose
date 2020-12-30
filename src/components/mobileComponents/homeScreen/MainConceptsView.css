@@ -5,10 +5,10 @@
 .mainConcpetsView ul {
   list-style-type: none;
   padding: 0px;
-  padding-top: 15px;
   margin: 0;
   display: flex;
   width: 100%;
+  flex-wrap: wrap;
   -ms-overflow-style: none;
   scrollbar-width: none;
   justify-content: space-evenly;

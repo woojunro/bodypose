@@ -2,14 +2,14 @@ import React from 'react';
 import BottomNavigation from '../../components/mobileComponents/BottomNavigation';
 import Header from '../../components/mobileComponents/HeaderM';
 
-const HeartScreen = () => {
+const NoticeListScreen = () => {
   return (
     <div>
       <Header pageName="home" />
-      HeartList
-      <BottomNavigation pageName="hearts" />
+      NoticeList
+      <BottomNavigation pageName="users" />
     </div>
   );
 };
 
-export default HeartScreen;
+export default NoticeListScreen;

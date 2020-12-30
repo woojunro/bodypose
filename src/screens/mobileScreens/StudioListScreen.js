@@ -1,5 +1,4 @@
 import React from 'react';
-import { BottomBox } from '../../components/mobileComponents/BottomBox';
 import BottomNavigation from '../../components/mobileComponents/BottomNavigation';
 import Header from '../../components/mobileComponents/HeaderM';
 
@@ -8,7 +7,6 @@ const StudioListScreen = () => {
     <div>
       <Header pageName="home" />
       StudioList
-      <BottomBox />
       <BottomNavigation pageName="studios" />
     </div>
   );

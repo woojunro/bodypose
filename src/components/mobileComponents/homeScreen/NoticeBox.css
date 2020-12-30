@@ -1,0 +1,30 @@
+.item {
+  display: block;
+  width: 100%;
+  height: 13px;
+  background-color: white;
+  color: black;
+  font-size: 13px;
+}
+.greyBox {
+  width: 100%;
+  height: 14px;
+  background-color: var(--color-greyBox);
+  margin-bottom: 10px;
+}
+.title {
+  font-weight: bold;
+  font-size: 15px;
+  color: black;
+}
+.background {
+  background-color: white;
+}
+
+.noticeTitles {
+  transform: translateY(1px);
+  margin-left: 10px;
+}
+.noticeContainer {
+  margin-bottom: 10px;
+}
