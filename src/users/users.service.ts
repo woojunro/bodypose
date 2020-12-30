@@ -6,6 +6,8 @@ import { FindOneOptions, Repository } from 'typeorm';
 import {
   CreateUserWithEmailInput,
   CreateUserWithEmailOutput,
+  CreateOrLoginUserWithOAuthInput,
+  CreateOrLoginUserWithOAuthOutput,
 } from './dtos/create-user.dto';
 import { DeleteUserOutput } from './dtos/delete-user.dto';
 import { GetMyProfileOutput } from './dtos/get-my-profile.dto';
@@ -75,6 +77,67 @@ export class UsersService {
       return {
         ok,
         error,
+        token,
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  async createOrLoginUserWithOAuth({
+    accessToken,
+    createWith,
+  }: CreateOrLoginUserWithOAuthInput): Promise<CreateOrLoginUserWithOAuthOutput> {
+    try {
+      const {
+        ok,
+        error,
+        profile: { socialId, nickname, ...profiles },
+      } = await this.authService.getOAuthProfileWithAccessToken(
+        accessToken,
+        createWith,
+      );
+      if (!ok) {
+        return { ok, error };
+      }
+      // Check duplicate user
+      let user = await this.userRepository.findOne({
+        createdWith: createWith,
+        socialId,
+      });
+      if (!user) {
+        user = this.userRepository.create({
+          createdWith: createWith,
+          socialId,
+          ...profiles,
+        });
+        // Check duplicate nickname
+        const userWithNickname = await this.getUserByNickname(nickname);
+        if (userWithNickname) {
+          // TODO: 쿼리 줄일 수 있는 방법?
+          for (let count = 1; ; count++) {
+            const newNickname = nickname + count;
+            const userWithNewNickname = await this.getUserByNickname(
+              newNickname,
+            );
+            if (!userWithNewNickname) {
+              user.nickname = newNickname;
+              break;
+            }
+          }
+        } else {
+          user.nickname = nickname;
+        }
+        user = await this.userRepository.save(user);
+      }
+      // TODO: JWT token 받기
+      const token = 'SEX';
+      return {
+        ok: true,
         token,
       };
     } catch (e) {

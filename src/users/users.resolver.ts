@@ -5,6 +5,8 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import {
   CreateUserWithEmailInput,
   CreateUserWithEmailOutput,
+  CreateOrLoginUserWithOAuthInput,
+  CreateOrLoginUserWithOAuthOutput,
 } from './dtos/create-user.dto';
 import { DeleteUserOutput } from './dtos/delete-user.dto';
 import { GetMyProfileOutput } from './dtos/get-my-profile.dto';
@@ -30,6 +32,13 @@ export class UsersResolver {
     @Args('input') input: CreateUserWithEmailInput,
   ): Promise<CreateUserWithEmailOutput> {
     return this.usersService.createUserWithEmail(input);
+  }
+
+  @Mutation(returns => CreateOrLoginUserWithOAuthOutput)
+  createOrLoginUserWithOAuth(
+    @Args('input') input: CreateOrLoginUserWithOAuthInput,
+  ): Promise<CreateOrLoginUserWithOAuthOutput> {
+    return this.usersService.createOrLoginUserWithOAuth(input);
   }
 
   @Mutation(returns => UpdateUserProfileOutput)

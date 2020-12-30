@@ -1,8 +1,15 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
+import { SocialLoginMethod } from 'src/users/dtos/create-user.dto';
+import { LoginMethod } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { LoginWithEmailInput, LoginWithEmailOutput } from './dtos/login.dto';
+import {
+  GetOAuthProfileWithAccessTokenOutput,
+  OAuthProfile,
+} from './dtos/oauth.dto';
+import { getKakaoProfileWithAccessToken } from './utils/kakaoOAuth.util';
 
 @Injectable()
 export class AuthService {
@@ -42,6 +49,37 @@ export class AuthService {
         ok: true,
         token,
       };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  async getOAuthProfileWithAccessToken(
+    accessToken: string,
+    createWith: SocialLoginMethod,
+  ): Promise<GetOAuthProfileWithAccessTokenOutput> {
+    try {
+      let result: GetOAuthProfileWithAccessTokenOutput;
+      switch (createWith) {
+        case LoginMethod.KAKAO:
+          result = await getKakaoProfileWithAccessToken(accessToken);
+          break;
+        case LoginMethod.NAVER:
+          break;
+        case LoginMethod.GOOGLE:
+          break;
+        default:
+          result = {
+            ok: false,
+            error: 'Invalid request',
+          };
+          break;
+      }
+      return result;
     } catch (e) {
       console.log(e);
       return {

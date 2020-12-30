@@ -18,7 +18,7 @@ export enum Gender {
 }
 
 registerEnumType(LoginMethod, {
-  name: 'LoginWith',
+  name: 'LoginMethod',
 });
 
 registerEnumType(Gender, {
@@ -54,10 +54,7 @@ export class User extends CoreEntity {
   @IsString()
   password: string;
 
-  @Column({
-    nullable: true,
-    unique: true,
-  })
+  @Column({ unique: true })
   @Field(type => String)
   @IsString()
   nickname: string;
