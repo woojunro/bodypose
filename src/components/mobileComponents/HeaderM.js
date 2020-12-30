@@ -8,11 +8,13 @@ const Header = ({ pageName }) => {
   //홈페이지 헤더.
   if (pageName === 'home') {
     return (
-      <div className="header">
-        <div className="header__logo">
-          <Link to="/">
-            <img src={logo} alt="BodyPose" />
-          </Link>
+      <div style={{ height: '55px' }}>
+        <div className="header">
+          <div className="header__logo">
+            <Link to="/">
+              <img src={logo} alt="BodyPose" />
+            </Link>
+          </div>
         </div>
       </div>
     );

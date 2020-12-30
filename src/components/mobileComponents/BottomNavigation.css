@@ -1,0 +1,36 @@
+.bottomNavigation {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: white;
+  z-index: 1000;
+}
+
+.navigationBox {
+  height: 52px;
+  display: flex;
+  background-color: white;
+  border-top: 1px solid var(--color-line);
+  align-items: center;
+}
+
+.navigationBox ul {
+  list-style-type: none;
+  justify-content: space-around;
+  margin: 0;
+  display: flex;
+  width: 100%;
+  padding: 0px;
+}
+.tabContainer img {
+  width: 20px;
+}
+.tabContainer {
+  align-items: center;
+  text-align: center;
+}
+
+.tabName {
+  font-size: 10px;
+  color: black;
+}

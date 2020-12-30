@@ -1,7 +1,7 @@
 import React from 'react';
 import './AdTap.css';
 import { Link } from 'react-router-dom';
-import ad from '../../materials/Ad.png';
+import ad from '../../../materials/Ad.png';
 
 const AdTap = () => {
   return (

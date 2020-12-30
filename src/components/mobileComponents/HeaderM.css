@@ -3,6 +3,9 @@
   height: 55px;
   display: flex;
   align-items: center;
+  position: fixed;
+  background-color: white;
+  z-index: 1000;
 }
 
 .header__logo {

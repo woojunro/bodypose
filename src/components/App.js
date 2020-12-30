@@ -3,12 +3,19 @@ import './App.css';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 
-import HomeM from '../screens/mobileScreens/HomeScreen';
-import About from '../screens/mobileScreens/AboutScreen.js';
+import HomeScreenM from '../screens/mobileScreens/HomeScreen';
+import StudioInfoScreenM from '../screens/mobileScreens/StudioInfoScreen';
+import StudioListScreenM from '../screens/mobileScreens/StudioListScreen';
+import ConceptListScreenM from '../screens/mobileScreens/ConceptListScreen';
+import AboutM from '../screens/mobileScreens/AboutScreen.js';
+import ReviewListScreenM from '../screens/mobileScreens/ReviewListScreen';
+import UserScreenM from '../screens/mobileScreens/UserScreen';
+import HeartScreenM from '../screens/mobileScreens/HeartScreen';
+import ConceptsInfoScreenM from '../screens/mobileScreens/ConceptsInfoScreen';
 const App = () => {
-  ///가로 700픽셀 미만이면 모바일로 처리.
+  ///가로 900픽셀 미만이면 모바일로 처리.
   const isPc = useMediaQuery({
-    query: '(min-width:700px)',
+    query: '(min-width:900px)',
   });
   if (isPc) {
     return <div>Pc</div>;
@@ -16,8 +23,19 @@ const App = () => {
     return (
       <Router>
         <div className="app">
-          <Route exact path="/" component={HomeM} />
-          <Route path="/about" component={About} />
+          <Route exact path="/" component={HomeScreenM} />
+          <Route path="/about" component={AboutM} />
+          <Route exact path="/studios" component={StudioListScreenM} />
+          <Route exact path="/concepts" component={ConceptListScreenM} />
+          <Route
+            exact
+            path="/concepts/:conceptNum"
+            component={ConceptsInfoScreenM}
+          />
+          <Route exact path="/reviews" component={ReviewListScreenM} />
+          <Route exact path="/studios/:id" component={StudioInfoScreenM} />
+          <Route exact path="/users" component={UserScreenM} />
+          <Route path="/hearts" component={HeartScreenM} />
         </div>
       </Router>
     );
