@@ -1,11 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AuthService } from 'src/auth/auth.service';
 import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
 import { FindOneOptions, Repository } from 'typeorm';
 import {
   CreateUserWithEmailInput,
   CreateUserWithEmailOutput,
 } from './dtos/create-user.dto';
+import { DeleteUserOutput } from './dtos/delete-user.dto';
 import { GetMyProfileOutput } from './dtos/get-my-profile.dto';
 import {
   UpdateUserProfileInput,
@@ -18,6 +20,8 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
   ) {}
 
   checkPasswordSecurity(password: string): boolean {
@@ -64,9 +68,14 @@ export class UsersService {
       newUser.isVerified = false;
       await this.userRepository.save(newUser);
       // Return a token after login
+      const { ok, error, token } = await this.authService.loginWithEmail({
+        email,
+        password,
+      });
       return {
-        ok: true,
-        token: 'sex',
+        ok,
+        error,
+        token,
       };
     } catch (e) {
       console.log(e);
@@ -86,6 +95,13 @@ export class UsersService {
     options?: FindOneOptions<User>,
   ): Promise<User> {
     return this.userRepository.findOne({ email }, options);
+  }
+
+  async getUserByNickname(
+    nickname: string,
+    options?: FindOneOptions<User>,
+  ): Promise<User> {
+    return this.userRepository.findOne({ nickname }, options);
   }
 
   async getUserProfileById(id: number): Promise<GetMyProfileOutput> {
@@ -110,6 +126,84 @@ export class UsersService {
         ok: true,
         profile: user,
       };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  async updateUserProfileById(
+    id: number,
+    { email, nickname, ...others }: UpdateUserProfileInput,
+  ): Promise<UpdateUserProfileOutput> {
+    try {
+      const userToUpdate = await this.getUserById(id);
+      if (!userToUpdate) {
+        return {
+          ok: false,
+          error: 'User not found',
+        };
+      }
+
+      if (email) {
+        const userWithEmail = await this.getUserByEmail(email);
+        if (userWithEmail) {
+          return {
+            ok: false,
+            error: 'User with that email already exists',
+          };
+        }
+        userToUpdate.email = email;
+      }
+      if (nickname) {
+        const userWithNickname = await this.getUserByNickname(nickname);
+        if (userWithNickname) {
+          return {
+            ok: false,
+            error: 'User with that nickname already exists',
+          };
+        }
+        userToUpdate.nickname = nickname;
+      }
+      for (const key in others) {
+        userToUpdate[key] = others[key];
+      }
+      const updatedUser = await this.userRepository.save(userToUpdate);
+      return {
+        ok: true,
+        profile: {
+          email: updatedUser.email,
+          nickname: updatedUser.nickname,
+          createdWith: updatedUser.createdWith,
+          gender: updatedUser.gender,
+          profileImageUrl: updatedUser.profileImageUrl,
+          isVerified: updatedUser.isVerified,
+        },
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  async deleteUserById(id: number): Promise<DeleteUserOutput> {
+    try {
+      const user = await this.getUserById(id);
+      if (!user) {
+        return {
+          ok: false,
+          error: 'User not found',
+        };
+      }
+      // TODO: Handle social users
+      const result = await this.userRepository.delete({ id: user.id });
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return {

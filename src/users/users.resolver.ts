@@ -6,6 +6,7 @@ import {
   CreateUserWithEmailInput,
   CreateUserWithEmailOutput,
 } from './dtos/create-user.dto';
+import { DeleteUserOutput } from './dtos/delete-user.dto';
 import { GetMyProfileOutput } from './dtos/get-my-profile.dto';
 import {
   UpdateUserProfileInput,
@@ -29,5 +30,20 @@ export class UsersResolver {
     @Args('input') input: CreateUserWithEmailInput,
   ): Promise<CreateUserWithEmailOutput> {
     return this.usersService.createUserWithEmail(input);
+  }
+
+  @Mutation(returns => UpdateUserProfileOutput)
+  @UseGuards(JwtAuthGuard)
+  updateMyProfile(
+    @CurrentUser() user: User,
+    @Args('input') input: UpdateUserProfileInput,
+  ): Promise<UpdateUserProfileOutput> {
+    return this.usersService.updateUserProfileById(user.id, input);
+  }
+
+  @Mutation(returns => DeleteUserOutput)
+  @UseGuards(JwtAuthGuard)
+  deleteMyAccount(@CurrentUser() user: User): Promise<DeleteUserOutput> {
+    return this.usersService.deleteUserById(user.id);
   }
 }

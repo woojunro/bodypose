@@ -7,6 +7,7 @@ import {
 } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { User } from '../entities/user.entity';
+import { Profile } from './get-my-profile.dto';
 
 @InputType()
 export class UpdateUserProfileInput extends PartialType(
@@ -15,6 +16,6 @@ export class UpdateUserProfileInput extends PartialType(
 
 @ObjectType()
 export class UpdateUserProfileOutput extends CoreOutput {
-  @Field(type => User, { nullable: true })
-  updatedUser?: User;
+  @Field(type => Profile, { nullable: true })
+  profile?: Profile;
 }
