@@ -13,7 +13,12 @@ const MainConceptsView = ({ ConceptsList, semiTitle }) => {
   const renderedConceptsList = ConceptsList.map((concept) => {
     return (
       <li key={concept.number}>
-        <MainConceptsCard pic={concept.pic} number={concept.number} />
+        <MainConceptsCard
+          pic={concept.pic}
+          photoName={concept.photoName}
+          thumb={concept.thumb}
+          horizon={concept.horizon}
+        />
       </li>
     );
   });

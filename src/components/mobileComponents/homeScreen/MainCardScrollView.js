@@ -3,53 +3,78 @@ import MainCardM from './MainCardM';
 import './MainCardScrollView.css';
 import SemiTitle from './SemiTitle';
 
-import bodylog from '../../../materials/BodyLog.jpeg';
-import aavec from '../../../materials/Aavec.jpg';
-import balancebutton from '../../../materials/BalanceButton.jpg';
-import flyn from '../../../materials/Flyn.jpg';
-import cocoviking from '../../../materials/CocoViking.jpg';
+import Flyn24 from '../../../virtualDB/images/Flyn24.jpg';
+import aavec5 from '../../../virtualDB/images/AAVEC5.jpg';
+import balanceButton21 from '../../../virtualDB/images/Balance Button21.jpg';
+import coco18 from '../../../virtualDB/images/Coco18.jpg';
+import Flyn7 from '../../../virtualDB/images/Flyn7.jpg';
+import aavec17 from '../../../virtualDB/images/AAVEC17.jpg';
 
 const MainCardScrollView = () => {
   const studioList = [
     {
-      name: '바디로그',
-      pic: bodylog,
-      price: '256,000',
-      number: 1,
+      studioName: 'aavec',
+      title: '아베크',
+      price: '270,000원',
+      mainPic: aavec5,
+      mainThumb: aavec5,
+      location: '재승시 우준구 연세동',
+      rating: '9',
     },
     {
-      name: '아베크',
-      pic: aavec,
-      price: '300,000',
-      number: 2,
+      studioName: 'balanceButton',
+      title: '밸런스버튼',
+      price: '280,000원',
+      mainPic: balanceButton21,
+      mainThumb: balanceButton21,
+      location: '재승시 우준구 연세동',
+      rating: '8',
     },
     {
-      name: '밸런스버튼',
-      pic: balancebutton,
-      price: '280,000',
-      number: 3,
+      studioName: 'cocoViking',
+      title: '코코바이킹',
+      price: '290,000원',
+      mainPic: coco18,
+      mainThumb: coco18,
+      location: '재승시 우준구 연세동',
+      rating: '7',
     },
     {
-      name: '플린',
-      pic: flyn,
-      price: '310,000',
-      number: 4,
+      studioName: 'flyn',
+      title: '플린',
+      price: '256,000원',
+      mainPic: Flyn24,
+      mainThumb: Flyn24,
+      location: '재승시 우준구 연세동',
+      rating: '6',
     },
     {
-      name: '코코바이킹',
-      pic: cocoviking,
-      price: '320,000',
-      number: 5,
+      studioName: 'jason',
+      title: '제이슨',
+      price: '130,000원',
+      mainPic: Flyn7,
+      mainThumb: Flyn7,
+      location: '재승시 우준구 연세동',
+      rating: '5',
+    },
+    {
+      studioName: 'woojun',
+      title: '라이언',
+      price: '600,000원',
+      mainPic: aavec17,
+      mainThumb: aavec17,
+      location: '재승시 우준구 연세동',
+      rating: '4',
     },
   ];
   const renderedStudio = studioList.map((studio) => {
     return (
-      <li key={studio.number}>
+      <li key={studio.studioName}>
         <MainCardM
-          studioName={studio.name}
-          pic={studio.pic}
+          studioName={studio.studioName}
+          pic={studio.mainThumb}
           price={studio.price}
-          number={studio.number}
+          title={studio.title}
         />
       </li>
     );
