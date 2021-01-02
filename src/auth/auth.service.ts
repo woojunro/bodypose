@@ -4,7 +4,7 @@ import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
 import { SocialLoginMethod } from 'src/users/dtos/create-user.dto';
 import { LoginMethod } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
-import { LoginWithEmailInput, LoginWithEmailOutput } from './dtos/login.dto';
+import { LoginWithEmailInput, LoginOutput } from './dtos/login.dto';
 import {
   GetOAuthProfileWithAccessTokenOutput,
   OAuthProfile,
@@ -22,7 +22,7 @@ export class AuthService {
   async loginWithEmail({
     email,
     password,
-  }: LoginWithEmailInput): Promise<LoginWithEmailOutput> {
+  }: LoginWithEmailInput): Promise<LoginOutput> {
     try {
       // Get a user with the inputted email
       const user = await this.usersService.getUserByEmail(email, {
@@ -58,6 +58,36 @@ export class AuthService {
     }
   }
 
+  async loginWithOAuth(
+    createdWith: SocialLoginMethod,
+    socialId: string,
+  ): Promise<LoginOutput> {
+    try {
+      const user = await this.usersService.getUserBySocialId(
+        createdWith,
+        socialId,
+      );
+      if (!user) {
+        return {
+          ok: false,
+          error: 'User not found',
+        };
+      }
+      const payload = { id: user.id, createdWith: user.createdWith };
+      const token = this.jwtService.sign(payload);
+      return {
+        ok: true,
+        token,
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
   async getOAuthProfileWithAccessToken(
     accessToken: string,
     createWith: SocialLoginMethod,
@@ -69,8 +99,10 @@ export class AuthService {
           result = await getKakaoProfileWithAccessToken(accessToken);
           break;
         case LoginMethod.NAVER:
+          // TODO: Naver Auth 구현
           break;
         case LoginMethod.GOOGLE:
+          // TODO: Google Auth 구현
           break;
         default:
           result = {

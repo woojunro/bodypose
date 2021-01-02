@@ -11,7 +11,6 @@ export const getKakaoProfileWithAccessToken = async (
       },
     });
     const { id, kakao_account } = JSON.parse(response.body);
-    console.log(id, kakao_account);
     if (!id) {
       return {
         ok: false,

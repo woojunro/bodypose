@@ -8,6 +8,7 @@ import {
   CreateUserWithEmailOutput,
   CreateOrLoginUserWithOAuthInput,
   CreateOrLoginUserWithOAuthOutput,
+  SocialLoginMethod,
 } from './dtos/create-user.dto';
 import { DeleteUserOutput } from './dtos/delete-user.dto';
 import { GetMyProfileOutput } from './dtos/get-my-profile.dto';
@@ -113,12 +114,12 @@ export class UsersService {
         user = this.userRepository.create({
           createdWith: createWith,
           socialId,
+          isVerified: true,
           ...profiles,
         });
         // Check duplicate nickname
         const userWithNickname = await this.getUserByNickname(nickname);
         if (userWithNickname) {
-          // TODO: 쿼리 줄일 수 있는 방법?
           for (let count = 1; ; count++) {
             const newNickname = nickname + count;
             const userWithNewNickname = await this.getUserByNickname(
@@ -134,11 +135,15 @@ export class UsersService {
         }
         user = await this.userRepository.save(user);
       }
-      // TODO: JWT token 받기
-      const token = 'SEX';
+      // Get JWT token
+      const loginResult = await this.authService.loginWithOAuth(
+        user.createdWith as SocialLoginMethod,
+        user.socialId,
+      );
       return {
-        ok: true,
-        token,
+        ok: loginResult.ok,
+        error: loginResult.error,
+        token: loginResult.token,
       };
     } catch (e) {
       console.log(e);
@@ -165,6 +170,13 @@ export class UsersService {
     options?: FindOneOptions<User>,
   ): Promise<User> {
     return this.userRepository.findOne({ nickname }, options);
+  }
+
+  async getUserBySocialId(
+    createdWith: SocialLoginMethod,
+    socialId: string,
+  ): Promise<User> {
+    return this.userRepository.findOne({ createdWith, socialId });
   }
 
   async getUserProfileById(id: number): Promise<GetMyProfileOutput> {

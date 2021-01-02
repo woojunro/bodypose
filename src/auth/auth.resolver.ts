@@ -1,15 +1,15 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
-import { LoginWithEmailInput, LoginWithEmailOutput } from './dtos/login.dto';
+import { LoginWithEmailInput, LoginOutput } from './dtos/login.dto';
 
 @Resolver()
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
-  @Mutation(returns => LoginWithEmailOutput)
+  @Mutation(returns => LoginOutput)
   loginWithEmail(
     @Args('input') input: LoginWithEmailInput,
-  ): Promise<LoginWithEmailOutput> {
+  ): Promise<LoginOutput> {
     return this.authService.loginWithEmail(input);
   }
 }

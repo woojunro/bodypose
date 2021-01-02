@@ -10,7 +10,7 @@ export class LoginWithEmailInput extends PickType(
 ) {}
 
 @ObjectType()
-export class LoginWithEmailOutput extends CoreOutput {
+export class LoginOutput extends CoreOutput {
   @Field(type => String, { nullable: true })
   token?: string;
 }
