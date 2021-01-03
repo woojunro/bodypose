@@ -14,6 +14,7 @@ import {
   UpdateUserProfileInput,
   UpdateUserProfileOutput,
 } from './dtos/update-user.dto';
+import { VerifyUserInput, VerifyUserOutput } from './dtos/verify-user.dto';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
@@ -54,5 +55,10 @@ export class UsersResolver {
   @UseGuards(JwtAuthGuard)
   deleteMyAccount(@CurrentUser() user: User): Promise<DeleteUserOutput> {
     return this.usersService.deleteUserById(user.id);
+  }
+
+  @Mutation(returns => VerifyUserOutput)
+  verifyUser(@Args('input') input: VerifyUserInput): Promise<VerifyUserOutput> {
+    return this.usersService.verifyUser(input.code);
   }
 }

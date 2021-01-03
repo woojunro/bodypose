@@ -2,6 +2,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
+import { MailService } from 'src/mail/mail.service';
 import { FindOneOptions, Repository } from 'typeorm';
 import {
   CreateUserWithEmailInput,
@@ -16,15 +17,20 @@ import {
   UpdateUserProfileInput,
   UpdateUserProfileOutput,
 } from './dtos/update-user.dto';
+import { VerifyUserOutput } from './dtos/verify-user.dto';
 import { LoginMethod, User } from './entities/user.entity';
+import { Verification } from './entities/verification.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Verification)
+    private readonly verificationRepository: Repository<Verification>,
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
+    private readonly mailService: MailService,
   ) {}
 
   checkPasswordSecurity(password: string): boolean {
@@ -69,7 +75,21 @@ export class UsersService {
       const newUser = this.userRepository.create({ email, password, nickname });
       newUser.createdWith = LoginMethod.EMAIL;
       newUser.isVerified = false;
-      await this.userRepository.save(newUser);
+      const createdUser = await this.userRepository.save(newUser);
+      // Create verification code and send it to the user
+      const newVerification = this.verificationRepository.create();
+      newVerification.user = createdUser;
+      const { code } = await this.verificationRepository.save(newVerification);
+      const mailOk = await this.mailService.sendConfirmationEmail(
+        newUser,
+        code,
+      );
+      if (!mailOk) {
+        return {
+          ok: false,
+          error: 'Sending confirmation email failed',
+        };
+      }
       // Return a token after login
       const { ok, error, token } = await this.authService.loginWithEmail({
         email,
@@ -278,6 +298,31 @@ export class UsersService {
       }
       // TODO: Handle social users
       const result = await this.userRepository.delete({ id: user.id });
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  async verifyUser(code: string): Promise<VerifyUserOutput> {
+    try {
+      const verification = await this.verificationRepository.findOne(
+        { code },
+        { relations: ['user'] },
+      );
+      if (!verification) {
+        return {
+          ok: false,
+          error: 'Verification not found',
+        };
+      }
+      verification.user.isVerified = true;
+      await this.userRepository.save(verification.user);
+      await this.verificationRepository.delete({ id: verification.id });
       return { ok: true };
     } catch (e) {
       console.log(e);

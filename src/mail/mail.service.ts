@@ -3,6 +3,7 @@ import * as FormData from 'form-data';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EmailVar } from './mail.interfaces';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class MailService {
@@ -22,7 +23,7 @@ export class MailService {
   ): Promise<boolean> {
     try {
       const form = new FormData();
-      form.append('from', `BODYPOSE <bodypose@${this.domainName}`);
+      form.append('from', `BODYPOSE <bodypose@${this.domainName}>`);
       // TODO: Upgrade Mailgun account and change "to"
       form.append('to', 'blackstar0223@gmail.com');
       form.append('subject', subject);
@@ -45,6 +46,24 @@ export class MailService {
         throw new Error('Mailgun API error');
       }
       return true;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
+  }
+
+  async sendConfirmationEmail(user: User, code: string): Promise<boolean> {
+    try {
+      const ok = await this.sendEmail(
+        user.email,
+        '[바디포즈] 이메일을 확인해주세요.',
+        'bodypose-email-confirmation',
+        [
+          { key: 'nickname', value: user.nickname },
+          { key: 'code', value: code },
+        ],
+      );
+      return ok;
     } catch (e) {
       console.log(e);
       return false;
