@@ -244,6 +244,13 @@ export class UsersService {
       }
 
       if (email) {
+        // If email exists, do not allow to update it
+        if (userToUpdate.email) {
+          return {
+            ok: false,
+            error: 'You cannot change email once you register',
+          };
+        }
         const userWithEmail = await this.getUserByEmail(email);
         if (userWithEmail) {
           return {
