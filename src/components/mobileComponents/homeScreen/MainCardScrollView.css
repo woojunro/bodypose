@@ -1,4 +1,4 @@
-.scrollView ul {
+.mainScrollView ul {
   list-style-type: none;
   padding: 0px;
   margin: 0;
@@ -9,14 +9,14 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-.scrollView ul li {
+.mainScrollView ul li {
   padding: 0px;
   margin: 0;
   white-space: nowrap;
   flex-basis: auto;
   position: relative;
 }
-.scrollView li:last-child:after {
+.mainScrollView li:last-child:after {
   content: '';
   width: 1px;
   height: 1px;

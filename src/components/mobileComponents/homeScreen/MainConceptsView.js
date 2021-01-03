@@ -12,7 +12,7 @@ const MainConceptsView = ({ ConceptsList, semiTitle }) => {
 
   const renderedConceptsList = ConceptsList.map((concept) => {
     return (
-      <li key={concept.number}>
+      <li key={concept.photoName}>
         <MainConceptsCard
           pic={concept.pic}
           photoName={concept.photoName}

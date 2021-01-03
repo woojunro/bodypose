@@ -11,12 +11,11 @@ const NoticeBox = () => {
   const renderedNotices = Notices.map((notice) => {
     return (
       <Link
+        key={notice.title}
         to={'/notices/' + notice.noticeNumber}
         style={{ TextDecoder: 'none', color: 'white' }}
       >
-        <div key={notice.noticeNumber} className="item">
-          {notice.title}
-        </div>
+        <div className="item">{notice.title}</div>
       </Link>
     );
   });
@@ -25,7 +24,7 @@ const NoticeBox = () => {
     <div className="noticeContainer">
       <div className="greyBox" />
       <Link to="/notices" style={{ TextDecoder: 'none', color: 'white' }}>
-        <span className="title"> 공지사항 </span>
+        <span className="title">공지사항</span>
       </Link>
       <Carousel
         className="noticeTitles"
