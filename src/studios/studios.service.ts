@@ -154,18 +154,29 @@ export class StudiosService {
           error: 'User not found',
         };
       }
-      const exists = user.heartStudios.find(
-        heartStudio => heartStudio.slug === slug,
-      );
-      if (!exists) {
-        // If the studio does not exist in heartStudios, push it
-        user.heartStudios.push(studio);
-      } else {
-        // If exists, filter it
-        user.heartStudios.filter(heartStudio => heartStudio.slug === slug);
+      // If the studio exists in heartStudios, filter it
+      // Update heartCount
+      let exists = false;
+      for (let i = 0; i < user.heartStudios.length; i++) {
+        if (user.heartStudios[i].slug === slug) {
+          exists = true;
+          user.heartStudios.splice(i, 1);
+          studio.heartCount -= 1;
+          break;
+        }
       }
-      console.log(user.heartStudios);
-      throw new Error();
+      // If not, push it
+      if (!exists) {
+        user.heartStudios.push(studio);
+        studio.heartCount += 1;
+      }
+      // Save
+      await this.usersService.updateUser(user);
+      const updatedStudio = await this.studioRepository.save(studio);
+      return {
+        ok: true,
+        heartCount: updatedStudio.heartCount,
+      };
     } catch (e) {
       console.log(e);
       return {

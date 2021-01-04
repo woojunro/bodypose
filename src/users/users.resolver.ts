@@ -9,7 +9,10 @@ import {
   CreateOrLoginUserWithOAuthOutput,
 } from './dtos/create-user.dto';
 import { DeleteUserOutput } from './dtos/delete-user.dto';
-import { GetMyProfileOutput } from './dtos/get-my-profile.dto';
+import {
+  GetMyProfileOutput,
+  ReadMyHeartStudiosOutput,
+} from './dtos/get-my-profile.dto';
 import {
   UpdateUserProfileInput,
   UpdateUserProfileOutput,
@@ -26,6 +29,12 @@ export class UsersResolver {
   @UseGuards(JwtAuthGuard)
   getMyProfile(@CurrentUser() user: User): Promise<GetMyProfileOutput> {
     return this.usersService.getUserProfileById(user.id);
+  }
+
+  @Query(returns => ReadMyHeartStudiosOutput)
+  @UseGuards(JwtAuthGuard)
+  myHeartStudios(@CurrentUser() user: User): Promise<ReadMyHeartStudiosOutput> {
+    return this.usersService.readMyHeartStudios(user);
   }
 
   @Mutation(returns => CreateUserWithEmailOutput)

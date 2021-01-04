@@ -1,4 +1,4 @@
-import { InputType, ObjectType, PickType } from '@nestjs/graphql';
+import { Field, InputType, Int, ObjectType, PickType } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { Studio } from '../entities/studio.entity';
 
@@ -10,4 +10,7 @@ export class ToggleHeartStudioInput extends PickType(
 ) {}
 
 @ObjectType()
-export class ToggleHeartStudioOutput extends CoreOutput {}
+export class ToggleHeartStudioOutput extends CoreOutput {
+  @Field(type => Int, { nullable: true })
+  heartCount?: number;
+}

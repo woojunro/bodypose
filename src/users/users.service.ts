@@ -12,7 +12,10 @@ import {
   SocialLoginMethod,
 } from './dtos/create-user.dto';
 import { DeleteUserOutput } from './dtos/delete-user.dto';
-import { GetMyProfileOutput } from './dtos/get-my-profile.dto';
+import {
+  GetMyProfileOutput,
+  ReadMyHeartStudiosOutput,
+} from './dtos/get-my-profile.dto';
 import {
   UpdateUserProfileInput,
   UpdateUserProfileOutput,
@@ -228,6 +231,35 @@ export class UsersService {
         error: UNEXPECTED_ERROR,
       };
     }
+  }
+
+  async readMyHeartStudios(user: User): Promise<ReadMyHeartStudiosOutput> {
+    try {
+      const { heartStudios } = await this.userRepository.findOne(
+        { id: user.id },
+        { relations: ['heartStudios', 'heartStudios.catchphrases'] },
+      );
+      if (!heartStudios) {
+        return {
+          ok: false,
+          error: 'User not found',
+        };
+      }
+      return {
+        ok: true,
+        studios: heartStudios,
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  updateUser(user: User): Promise<User> {
+    return this.userRepository.save(user);
   }
 
   async updateUserProfileById(
