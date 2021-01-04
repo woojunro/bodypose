@@ -9,6 +9,10 @@ import { User } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
 import { Verification } from './users/entities/verification.entity';
+import { StudiosModule } from './studios/studios.module';
+import { Studio } from './studios/entities/studio.entity';
+import { Catchphrase } from './studios/entities/catchphrase.entity';
+import { UserClickStudio } from './studios/entities/user-click-studio.entity';
 
 @Module({
   imports: [
@@ -37,7 +41,7 @@ import { Verification } from './users/entities/verification.entity';
       database: process.env.DB_NAME,
       synchronize: true,
       logging: true,
-      entities: [User, Verification],
+      entities: [User, Verification, Studio, Catchphrase, UserClickStudio],
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
@@ -46,6 +50,7 @@ import { Verification } from './users/entities/verification.entity';
     MailModule,
     CommonModule,
     UsersModule,
+    StudiosModule,
   ],
   controllers: [],
   providers: [],

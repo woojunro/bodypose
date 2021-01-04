@@ -1,9 +1,10 @@
 import { hash, compare } from 'bcrypt';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { IsBoolean, IsEmail, IsEnum, IsString } from 'class-validator';
+import { IsBoolean, IsEmail, IsEnum, IsString, IsUrl } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { BeforeInsert, Column, Entity } from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import { Studio } from 'src/studios/entities/studio.entity';
 
 export enum LoginMethod {
   KAKAO = 'KAKAO',
@@ -88,13 +89,18 @@ export class User extends CoreEntity {
 
   @Column({ nullable: true })
   @Field(type => String, { nullable: true })
-  @IsString()
+  @IsUrl()
   profileImageUrl: string;
 
   @Column()
   @Field(type => Boolean)
   @IsBoolean()
   isVerified: boolean;
+
+  @ManyToMany(type => Studio)
+  @JoinTable()
+  @Field(type => [Studio])
+  heartStudios: Studio[];
 
   @BeforeInsert()
   async hashPassword(): Promise<void> {
