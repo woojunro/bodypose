@@ -1,0 +1,33 @@
+.searchField {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  z-index: 35;
+  right: 15px;
+  top: 13px;
+}
+.searchInput {
+  border-top-style: hidden;
+  border-right-style: hidden;
+  border-left-style: hidden;
+  border-bottom: grey 0.5px solid;
+  margin-right: 5px;
+  font-size: 14px;
+  width: 140px;
+  transform: translate(9px, -1px);
+}
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+}
+
+.searchIcon {
+  font-size: 23px;
+}
+
+.closeIcon {
+  font-size: 14px;
+  transform: translate(-8px);
+  color: grey;
+}

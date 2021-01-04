@@ -15,7 +15,7 @@ const NoticeBox = () => {
         to={'/notices/' + notice.noticeNumber}
         style={{ TextDecoder: 'none', color: 'white' }}
       >
-        <div className="item">{notice.title}</div>
+        <div className="noticeItem">{notice.title}</div>
       </Link>
     );
   });
@@ -24,7 +24,7 @@ const NoticeBox = () => {
     <div className="noticeContainer">
       <div className="greyBox" />
       <Link to="/notices" style={{ TextDecoder: 'none', color: 'white' }}>
-        <span className="title">공지사항</span>
+        <span className="noticeHeader"> 공지사항 </span>
       </Link>
       <Carousel
         className="noticeTitles"

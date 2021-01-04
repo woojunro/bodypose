@@ -18,9 +18,10 @@ export const DbStudios = [
     isEvent: true,
     percent: '10%',
     originalPrice: '300,000원',
+    premium: '1',
   },
   {
-    studioName: 'balanceButton',
+    studioName: 'balance-button',
     title: '밸런스버튼',
     price: '280,000원',
     mainPhoto: balanceButton21,
@@ -28,11 +29,12 @@ export const DbStudios = [
     rating: 4.3,
     hearts: 15,
     review: 4,
+    premium: '1',
 
     isEvent: false,
   },
   {
-    studioName: 'cocoViking',
+    studioName: 'coco-viking',
     title: '코코바이킹',
     price: '290,000원',
     mainPhoto: coco18,
@@ -42,6 +44,7 @@ export const DbStudios = [
     review: 4,
 
     isEvent: false,
+    premium: '1',
   },
   {
     studioName: 'flyn',
@@ -53,6 +56,7 @@ export const DbStudios = [
     hearts: 24,
     review: 5,
     isEvent: false,
+    premium: '1',
   },
   {
     studioName: 'jason',
@@ -64,16 +68,18 @@ export const DbStudios = [
     hearts: 2,
     review: 1,
     isEvent: false,
+    premium: '0',
   },
   {
     studioName: 'ryan',
     title: '라이언',
     price: '600,000원',
     mainPhoto: aavec17,
-    location: '인천 우준구 연세동',
+    location: '서울 우준구 연세동',
     rating: 3.1,
     hearts: 8,
     review: 2,
     isEvent: false,
+    premium: '0',
   },
 ];

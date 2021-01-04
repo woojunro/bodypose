@@ -5,7 +5,7 @@ import Header from '../../components/mobileComponents/HeaderM';
 const ConceptListScreen = () => {
   return (
     <div>
-      <Header pageName="home" />
+      <Header pageName="concepts" />
       ConceptList
       <BottomNavigation pageName="concepts" />
     </div>

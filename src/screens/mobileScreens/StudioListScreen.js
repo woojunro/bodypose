@@ -7,6 +7,7 @@ import SortByPrice from '../../components/functions/SortByPrice';
 import SortByRating from '../../components/functions/SortByRating';
 import BottomNavigation from '../../components/mobileComponents/BottomNavigation';
 import Header from '../../components/mobileComponents/HeaderM';
+import { SearchBar } from '../../components/mobileComponents/studioListScreen/SearchBar';
 import SortButton from '../../components/mobileComponents/studioListScreen/SortButton';
 import {
   SortByOptions,
@@ -19,32 +20,60 @@ import './StudioListScreen.css';
 const StudioListScreen = () => {
   let sortByOptions = SortByOptions;
   let locationOptions = LocationOptions;
-  const studioList = DbStudios;
   const [isSortByOpen, setIsSortByOpen] = useState(false);
   const [isLocationByOpen, setIsLocationByOpen] = useState(false);
   const [sortBy, setSortBy] = useState(sortByOptions[0]);
   const [locationBy, setLocationBy] = useState(locationOptions[0]);
-  const [studios, setStudios] = useState(MakingStudioList(studioList));
-
+  const [studios, setStudios] = useState(MakingStudioList(DbStudios));
+  const [searchTerm, setSearchTerm] = useState('');
   useEffect(() => {
-    if (sortBy.name === 'byName') {
-      setStudios(SortByName(studioList));
-    } else if (sortBy.name === 'default') {
-      setStudios(MakingStudioList(studioList));
-    } else if (sortBy.name === 'byPrice') {
-      setStudios(SortByPrice(studioList));
-    } else if (sortBy.name === 'byHearts') {
-      setStudios(SortByHearts(studioList));
-    } else if (sortBy.name === 'byRating') {
-      setStudios(SortByRating(studioList));
-    }
-    if (locationBy.name === 'default') {
+    var sortedStudio = [];
+    var returnStudio = [];
+    if (searchTerm === '') {
+      if (locationBy.name === 'default') {
+        sortedStudio = DbStudios;
+      } else {
+        sortedStudio = SortByLocation(DbStudios, locationBy.name);
+      }
+
+      if (sortBy.name === 'default') {
+        returnStudio = MakingStudioList(sortedStudio);
+      } else if (sortBy.name === 'byName') {
+        returnStudio = SortByName(sortedStudio);
+      } else if (sortBy.name === 'byPrice') {
+        returnStudio = SortByPrice(sortedStudio);
+      } else if (sortBy.name === 'byHearts') {
+        returnStudio = SortByHearts(sortedStudio);
+      } else if (sortBy.name === 'byRating') {
+        returnStudio = SortByRating(sortedStudio);
+      }
     } else {
-      setStudios(SortByLocation(studioList, locationBy.name));
+      for (var num in DbStudios) {
+        if (DbStudios[num].title.includes(searchTerm)) {
+          returnStudio.push(DbStudios[num]);
+        }
+      }
+      if (locationBy.name === 'default') {
+        sortedStudio = returnStudio;
+      } else {
+        sortedStudio = SortByLocation(returnStudio, locationBy.name);
+      }
+
+      if (sortBy.name === 'default') {
+        returnStudio = MakingStudioList(sortedStudio);
+      } else if (sortBy.name === 'byName') {
+        returnStudio = SortByName(sortedStudio);
+      } else if (sortBy.name === 'byPrice') {
+        returnStudio = SortByPrice(sortedStudio);
+      } else if (sortBy.name === 'byHearts') {
+        returnStudio = SortByHearts(sortedStudio);
+      } else if (sortBy.name === 'byRating') {
+        returnStudio = SortByRating(sortedStudio);
+      }
     }
 
-    return null;
-  }, [sortBy, locationBy, studioList]);
+    setStudios(returnStudio);
+  }, [sortBy, locationBy, searchTerm]);
 
   const handleStudioList = (list) => {
     setStudios(list);
@@ -69,6 +98,7 @@ const StudioListScreen = () => {
   };
   return (
     <div className="studioListScreen">
+      <SearchBar onSearchSubmit={setSearchTerm} />
       <Header pageName="studios" />
       <div className="contentsBox">
         <div className="buttonContainer">
@@ -94,7 +124,6 @@ const StudioListScreen = () => {
         </div>
       </div>
       <StudioListView studioList={studios} />
-
       <BottomNavigation pageName="studios" />
     </div>
   );
