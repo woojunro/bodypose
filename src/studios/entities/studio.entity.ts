@@ -2,7 +2,14 @@ import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { IsEnum, IsString, IsUrl } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { Catchphrase } from './catchphrase.entity';
 
 export enum PremiumTier {
