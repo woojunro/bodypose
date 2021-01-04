@@ -12,7 +12,7 @@ export class ReadStudioOutput extends CoreOutput {
 }
 
 // name, catchphrases, address, slug
-// TODO: reviewScore, reviewCount, lowestPrice, event
+// TODO: reviewScore, reviewCount, lowestPrice, event, isLiked
 @ObjectType()
 export class StudioProfile extends PickType(
   Studio,

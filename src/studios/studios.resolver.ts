@@ -1,4 +1,8 @@
+import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { CurrentUser } from 'src/auth/current-user.decorator';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { User } from 'src/users/entities/user.entity';
 import {
   CreateStudioInput,
   CreateStudioOutput,
@@ -8,6 +12,10 @@ import {
   ReadStudioInput,
   ReadStudioOutput,
 } from './dtos/read-studio.dto';
+import {
+  ToggleHeartStudioInput,
+  ToggleHeartStudioOutput,
+} from './dtos/toggle-heart-studio.dto';
 import { Studio } from './entities/studio.entity';
 import { StudiosService } from './studios.service';
 
@@ -30,5 +38,14 @@ export class StudiosResolver {
     @Args('input') input: CreateStudioInput,
   ): Promise<CreateStudioOutput> {
     return this.studiosService.createStudio(input);
+  }
+
+  @Mutation(returns => ToggleHeartStudioOutput)
+  @UseGuards(JwtAuthGuard)
+  toggleHeartStudio(
+    @CurrentUser() user: User,
+    @Args('input') input: ToggleHeartStudioInput,
+  ): Promise<ToggleHeartStudioOutput> {
+    return this.studiosService.toggleHeartStudio(user, input);
   }
 }

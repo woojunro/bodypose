@@ -1,6 +1,8 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
+import { User } from 'src/users/entities/user.entity';
+import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import {
   CreateStudioInput,
@@ -11,6 +13,10 @@ import {
   ReadStudioInput,
   ReadStudioOutput,
 } from './dtos/read-studio.dto';
+import {
+  ToggleHeartStudioInput,
+  ToggleHeartStudioOutput,
+} from './dtos/toggle-heart-studio.dto';
 import { Catchphrase } from './entities/catchphrase.entity';
 import { Studio } from './entities/studio.entity';
 
@@ -21,6 +27,7 @@ export class StudiosService {
     private readonly studioRepository: Repository<Studio>,
     @InjectRepository(Catchphrase)
     private readonly catchphraseRepository: Repository<Catchphrase>,
+    private readonly usersService: UsersService,
   ) {}
 
   getStudioById(id: number): Promise<Studio> {
@@ -117,6 +124,48 @@ export class StudiosService {
           address: studio.address,
         })),
       };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  async toggleHeartStudio(
+    { id }: User,
+    { slug }: ToggleHeartStudioInput,
+  ): Promise<ToggleHeartStudioOutput> {
+    try {
+      const studio = await this.getStudioBySlug(slug);
+      if (!studio) {
+        return {
+          ok: false,
+          error: 'Studio not found',
+        };
+      }
+      const user = await this.usersService.getUserById(id, {
+        relations: ['heartStudios'],
+      });
+      if (!user) {
+        return {
+          ok: false,
+          error: 'User not found',
+        };
+      }
+      const exists = user.heartStudios.find(
+        heartStudio => heartStudio.slug === slug,
+      );
+      if (!exists) {
+        // If the studio does not exist in heartStudios, push it
+        user.heartStudios.push(studio);
+      } else {
+        // If exists, filter it
+        user.heartStudios.filter(heartStudio => heartStudio.slug === slug);
+      }
+      console.log(user.heartStudios);
+      throw new Error();
     } catch (e) {
       console.log(e);
       return {
