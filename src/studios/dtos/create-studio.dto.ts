@@ -7,7 +7,10 @@ export class CreateStudioInput extends PickType(
   Studio,
   ['name', 'slug', 'description', 'contactUrl', 'reservationUrl', 'address'],
   InputType,
-) {}
+) {
+  @Field(type => [String], { nullable: true })
+  catchphrases?: string[];
+}
 
 @ObjectType()
 export class CreateStudioOutput extends CoreOutput {
