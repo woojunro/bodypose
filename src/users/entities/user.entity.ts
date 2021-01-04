@@ -17,6 +17,12 @@ export enum Gender {
   FEMALE = 'FEMALE',
 }
 
+export enum Role {
+  USER = 'USER',
+  STUDIO = 'STUDIO',
+  ADMIN = 'ADMIN',
+}
+
 registerEnumType(LoginMethod, {
   name: 'LoginMethod',
 });
@@ -25,9 +31,21 @@ registerEnumType(Gender, {
   name: 'Gender',
 });
 
+registerEnumType(Role, {
+  name: 'Role',
+});
+
 @Entity()
 @ObjectType()
 export class User extends CoreEntity {
+  @Column({
+    type: 'enum',
+    enum: Role,
+  })
+  @Field(type => Role)
+  @IsEnum(Role)
+  role: Role;
+
   @Column({
     type: 'enum',
     enum: LoginMethod,
