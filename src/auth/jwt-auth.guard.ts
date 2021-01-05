@@ -17,6 +17,15 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    let isTokenValid: boolean;
+    try {
+      isTokenValid = (await super.canActivate(context)) ? true : false;
+    } catch (e) {
+      // super.canActivate throws an error
+      // if authorization header does not exist
+      isTokenValid = false;
+    }
+    // Now req.user is set if the token is valid
     try {
       const requiredRoles = this.reflector.getAllAndOverride<Role[]>(
         ROLES_KEY,
@@ -27,7 +36,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         return true;
       }
       // Private
-      const isTokenValid = await super.canActivate(context);
       // Invalid token
       if (!isTokenValid) {
         return false;

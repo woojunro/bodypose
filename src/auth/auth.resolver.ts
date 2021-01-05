@@ -6,6 +6,7 @@ import { LoginWithEmailInput, LoginOutput } from './dtos/login.dto';
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
+  // Public
   @Mutation(returns => LoginOutput)
   loginWithEmail(
     @Args('input') input: LoginWithEmailInput,

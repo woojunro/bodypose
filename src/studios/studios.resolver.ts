@@ -8,10 +8,10 @@ import {
   CreateStudioOutput,
 } from './dtos/create-studio.dto';
 import {
-  ReadAllStudiosOutput,
-  ReadStudioInput,
-  ReadStudioOutput,
-} from './dtos/read-studio.dto';
+  GetAllStudiosOutput,
+  GetStudioInput,
+  GetStudioOutput,
+} from './dtos/get-studio.dto';
 import {
   ToggleHeartStudioInput,
   ToggleHeartStudioOutput,
@@ -23,14 +23,19 @@ import { StudiosService } from './studios.service';
 export class StudiosResolver {
   constructor(private readonly studiosService: StudiosService) {}
 
-  @Query(returns => ReadStudioOutput)
-  studio(@Args('input') input: ReadStudioInput): Promise<ReadStudioOutput> {
-    return this.studiosService.readStudio(input);
+  // Public
+  @Query(returns => GetStudioOutput)
+  studio(
+    @CurrentUser() user: User,
+    @Args('input') input: GetStudioInput,
+  ): Promise<GetStudioOutput> {
+    return this.studiosService.getStudio(user, input);
   }
 
-  @Query(returns => ReadAllStudiosOutput)
-  allStudios(): Promise<ReadAllStudiosOutput> {
-    return this.studiosService.readAllStudios();
+  // Public
+  @Query(returns => GetAllStudiosOutput)
+  allStudios(@CurrentUser() user: User): Promise<GetAllStudiosOutput> {
+    return this.studiosService.readAllStudios(user);
   }
 
   @Mutation(returns => CreateStudioOutput)

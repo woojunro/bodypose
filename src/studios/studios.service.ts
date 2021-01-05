@@ -9,10 +9,10 @@ import {
   CreateStudioOutput,
 } from './dtos/create-studio.dto';
 import {
-  ReadAllStudiosOutput,
-  ReadStudioInput,
-  ReadStudioOutput,
-} from './dtos/read-studio.dto';
+  GetAllStudiosOutput,
+  GetStudioInput,
+  GetStudioOutput,
+} from './dtos/get-studio.dto';
 import {
   ToggleHeartStudioInput,
   ToggleHeartStudioOutput,
@@ -85,8 +85,19 @@ export class StudiosService {
     }
   }
 
-  async readStudio({ slug }: ReadStudioInput): Promise<ReadStudioOutput> {
+  async getStudio(
+    user: User,
+    { slug }: GetStudioInput,
+  ): Promise<GetStudioOutput> {
     try {
+      let heartStudios: Studio[] = [];
+      // If logged in
+      if (user) {
+        const { studios } = await this.usersService.getMyHeartStudios(user);
+        if (studios) {
+          heartStudios = [...studios];
+        }
+      }
       const studio = await this.getStudioBySlug(slug);
       if (!studio) {
         return {
@@ -96,7 +107,12 @@ export class StudiosService {
       }
       return {
         ok: true,
-        studio,
+        studio: {
+          ...studio,
+          isHearted: heartStudios.some(
+            heartStudio => heartStudio.slug === slug,
+          ),
+        },
       };
     } catch (e) {
       console.log(e);
@@ -107,8 +123,16 @@ export class StudiosService {
     }
   }
 
-  async readAllStudios(): Promise<ReadAllStudiosOutput> {
+  async readAllStudios(user: User): Promise<GetAllStudiosOutput> {
     try {
+      let heartStudios: Studio[] = [];
+      // If logged in
+      if (user) {
+        const { studios } = await this.usersService.getMyHeartStudios(user);
+        if (studios) {
+          heartStudios = [...studios];
+        }
+      }
       const studios = await this.studioRepository.find({
         relations: ['catchphrases'],
       });
@@ -118,11 +142,10 @@ export class StudiosService {
       return {
         ok: true,
         studios: studios.map(studio => ({
-          name: studio.name,
-          slug: studio.slug,
-          catchphrases: studio.catchphrases,
-          address: studio.address,
-          isHearted: false,
+          ...studio,
+          isHearted: heartStudios.some(
+            heartStudio => heartStudio.slug === studio.slug,
+          ),
         })),
       };
     } catch (e) {
