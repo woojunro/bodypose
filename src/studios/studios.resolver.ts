@@ -1,8 +1,7 @@
-import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/current-user.decorator';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { User } from 'src/users/entities/user.entity';
+import { Roles } from 'src/auth/roles.decorator';
+import { Role, User } from 'src/users/entities/user.entity';
 import {
   CreateStudioInput,
   CreateStudioOutput,
@@ -39,6 +38,7 @@ export class StudiosResolver {
   }
 
   @Mutation(returns => CreateStudioOutput)
+  @Roles(Role.ADMIN)
   createStudio(
     @Args('input') input: CreateStudioInput,
   ): Promise<CreateStudioOutput> {
@@ -46,7 +46,7 @@ export class StudiosResolver {
   }
 
   @Mutation(returns => ToggleHeartStudioOutput)
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.USER)
   toggleHeartStudio(
     @CurrentUser() user: User,
     @Args('input') input: ToggleHeartStudioInput,
