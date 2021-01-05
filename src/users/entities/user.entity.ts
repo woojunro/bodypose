@@ -71,7 +71,7 @@ export class User extends CoreEntity {
   })
   @Field(type => String)
   @IsString()
-  password: string;
+  password?: string;
 
   @Column({ unique: true })
   @Field(type => String)
@@ -85,12 +85,12 @@ export class User extends CoreEntity {
   })
   @Field(type => Gender, { nullable: true })
   @IsEnum(Gender)
-  gender: Gender;
+  gender?: Gender;
 
   @Column({ nullable: true })
   @Field(type => String, { nullable: true })
   @IsUrl()
-  profileImageUrl: string;
+  profileImageUrl?: string;
 
   @Column()
   @Field(type => Boolean)

@@ -12,8 +12,8 @@ import {
 import { DeleteUserOutput } from './dtos/delete-user.dto';
 import {
   GetMyProfileOutput,
-  ReadMyHeartStudiosOutput,
-} from './dtos/get-my-profile.dto';
+  GetMyHeartStudiosOutput,
+} from './dtos/get-user.dto';
 import {
   UpdateUserProfileInput,
   UpdateUserProfileOutput,
@@ -27,17 +27,18 @@ export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
   @Query(returns => GetMyProfileOutput)
-  @Roles(Role.STUDIO)
-  getMyProfile(@CurrentUser() user: User): Promise<GetMyProfileOutput> {
+  @Roles(Role.USER)
+  myProfile(@CurrentUser() user: User): Promise<GetMyProfileOutput> {
     return this.usersService.getUserProfileById(user.id);
   }
 
-  @Query(returns => ReadMyHeartStudiosOutput)
-  @UseGuards(JwtAuthGuard)
-  myHeartStudios(@CurrentUser() user: User): Promise<ReadMyHeartStudiosOutput> {
-    return this.usersService.readMyHeartStudios(user);
+  @Query(returns => GetMyHeartStudiosOutput)
+  @Roles(Role.USER)
+  myHeartStudios(@CurrentUser() user: User): Promise<GetMyHeartStudiosOutput> {
+    return this.usersService.getMyHeartStudios(user);
   }
 
+  // Public
   @Mutation(returns => CreateUserWithEmailOutput)
   createUserWithEmail(
     @Args('input') input: CreateUserWithEmailInput,
@@ -45,6 +46,7 @@ export class UsersResolver {
     return this.usersService.createUserWithEmail(input);
   }
 
+  // Public
   @Mutation(returns => CreateOrLoginUserWithOAuthOutput)
   createOrLoginUserWithOAuth(
     @Args('input') input: CreateOrLoginUserWithOAuthInput,
@@ -53,7 +55,7 @@ export class UsersResolver {
   }
 
   @Mutation(returns => UpdateUserProfileOutput)
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.USER)
   updateMyProfile(
     @CurrentUser() user: User,
     @Args('input') input: UpdateUserProfileInput,
@@ -62,11 +64,12 @@ export class UsersResolver {
   }
 
   @Mutation(returns => DeleteUserOutput)
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.USER)
   deleteMyAccount(@CurrentUser() user: User): Promise<DeleteUserOutput> {
     return this.usersService.deleteUserById(user.id);
   }
 
+  // Public
   @Mutation(returns => VerifyUserOutput)
   verifyUser(@Args('input') input: VerifyUserInput): Promise<VerifyUserOutput> {
     return this.usersService.verifyUser(input.code);

@@ -14,8 +14,8 @@ import {
 import { DeleteUserOutput } from './dtos/delete-user.dto';
 import {
   GetMyProfileOutput,
-  ReadMyHeartStudiosOutput,
-} from './dtos/get-my-profile.dto';
+  GetMyHeartStudiosOutput,
+} from './dtos/get-user.dto';
 import {
   UpdateUserProfileInput,
   UpdateUserProfileOutput,
@@ -140,6 +140,7 @@ export class UsersService {
           isVerified: true,
           ...profiles,
         });
+        // TODO: nickname 자체를 받지 못했을 경우 임의의 닉네임 생성
         // Check duplicate nickname
         const userWithNickname = await this.getUserByNickname(nickname);
         if (userWithNickname) {
@@ -204,16 +205,7 @@ export class UsersService {
 
   async getUserProfileById(id: number): Promise<GetMyProfileOutput> {
     try {
-      const user = await this.getUserById(id, {
-        select: [
-          'email',
-          'gender',
-          'isVerified',
-          'nickname',
-          'profileImageUrl',
-          'createdWith',
-        ],
-      });
+      const user = await this.getUserById(id);
       if (!user) {
         return {
           ok: false,
@@ -233,7 +225,7 @@ export class UsersService {
     }
   }
 
-  async readMyHeartStudios(user: User): Promise<ReadMyHeartStudiosOutput> {
+  async getMyHeartStudios(user: User): Promise<GetMyHeartStudiosOutput> {
     try {
       const { heartStudios } = await this.userRepository.findOne(
         { id: user.id },
@@ -305,17 +297,10 @@ export class UsersService {
       for (const key in others) {
         userToUpdate[key] = others[key];
       }
-      const updatedUser = await this.userRepository.save(userToUpdate);
+      const updatedUser = await this.updateUser(userToUpdate);
       return {
         ok: true,
-        profile: {
-          email: updatedUser.email,
-          nickname: updatedUser.nickname,
-          createdWith: updatedUser.createdWith,
-          gender: updatedUser.gender,
-          profileImageUrl: updatedUser.profileImageUrl,
-          isVerified: updatedUser.isVerified,
-        },
+        profile: updatedUser,
       };
     } catch (e) {
       console.log(e);
