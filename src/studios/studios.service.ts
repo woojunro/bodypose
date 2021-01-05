@@ -122,6 +122,7 @@ export class StudiosService {
           slug: studio.slug,
           catchphrases: studio.catchphrases,
           address: studio.address,
+          isHearted: false,
         })),
       };
     } catch (e) {

@@ -2,6 +2,7 @@ import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Roles } from 'src/auth/roles.decorator';
 import {
   CreateUserWithEmailInput,
   CreateUserWithEmailOutput,
@@ -18,7 +19,7 @@ import {
   UpdateUserProfileOutput,
 } from './dtos/update-user.dto';
 import { VerifyUserInput, VerifyUserOutput } from './dtos/verify-user.dto';
-import { User } from './entities/user.entity';
+import { Role, User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
 @Resolver(of => User)
@@ -26,7 +27,7 @@ export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
   @Query(returns => GetMyProfileOutput)
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.STUDIO)
   getMyProfile(@CurrentUser() user: User): Promise<GetMyProfileOutput> {
     return this.usersService.getUserProfileById(user.id);
   }

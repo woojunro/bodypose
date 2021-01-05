@@ -9,16 +9,22 @@ export class ReadStudioInput extends PickType(Studio, ['slug'], InputType) {}
 export class ReadStudioOutput extends CoreOutput {
   @Field(type => Studio, { nullable: true })
   studio?: Studio;
+
+  @Field(type => Boolean)
+  isHearted?: boolean;
 }
 
-// name, catchphrases, address, slug
-// TODO: reviewScore, reviewCount, lowestPrice, event, isLiked
+// name, catchphrases, address, slug, isHearted
+// TODO: reviewScore, reviewCount, lowestPrice, event
 @ObjectType()
 export class StudioProfile extends PickType(
   Studio,
   ['name', 'slug', 'catchphrases', 'address'],
   ObjectType,
-) {}
+) {
+  @Field(type => Boolean)
+  isHearted: boolean;
+}
 
 @ObjectType()
 export class ReadAllStudiosOutput extends CoreOutput {

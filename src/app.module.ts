@@ -13,6 +13,8 @@ import { StudiosModule } from './studios/studios.module';
 import { Studio } from './studios/entities/studio.entity';
 import { Catchphrase } from './studios/entities/catchphrase.entity';
 import { UserClickStudio } from './studios/entities/user-click-studio.entity';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -53,6 +55,11 @@ import { UserClickStudio } from './studios/entities/user-click-studio.entity';
     StudiosModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
 export class AppModule {}
