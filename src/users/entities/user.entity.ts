@@ -69,7 +69,7 @@ export class User extends CoreEntity {
     nullable: true,
     select: false,
   })
-  @Field(type => String)
+  @Field(type => String, { nullable: true })
   @IsString()
   password?: string;
 
