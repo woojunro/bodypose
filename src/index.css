@@ -2,6 +2,7 @@ body {
   background-color: white;
   font-family: 'NanumBarunGothic';
   margin: 0 0;
+  overflow: auto;
 }
 
 @font-face {

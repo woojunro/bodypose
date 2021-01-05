@@ -124,6 +124,7 @@ const StudioListScreen = () => {
         </div>
       </div>
       <StudioListView studioList={studios} />
+
       <BottomNavigation pageName="studios" />
     </div>
   );

@@ -5,3 +5,6 @@
   --color-footer: #848484;
   --color-chocolate: #443731;
 }
+[role='navigation'] {
+  overflow: auto !important;
+}

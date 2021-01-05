@@ -14,7 +14,3 @@
   overflow: auto;
   z-index: 10;
 }
-
-::-webkit-scrollbar {
-  display: none;
-}

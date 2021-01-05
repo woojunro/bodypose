@@ -1,6 +1,5 @@
 body {
   height: 100%;
-  overflow: hidden;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }

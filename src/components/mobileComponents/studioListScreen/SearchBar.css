@@ -1,7 +1,7 @@
 .searchField {
   display: flex;
   align-items: center;
-  position: absolute;
+  position: fixed;
   z-index: 35;
   right: 15px;
   top: 13px;
