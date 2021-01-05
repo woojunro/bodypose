@@ -35,7 +35,7 @@ export class StudiosResolver {
   // Public
   @Query(returns => GetAllStudiosOutput)
   allStudios(@CurrentUser() user: User): Promise<GetAllStudiosOutput> {
-    return this.studiosService.readAllStudios(user);
+    return this.studiosService.getAllStudios(user);
   }
 
   @Mutation(returns => CreateStudioOutput)

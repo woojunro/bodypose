@@ -19,9 +19,12 @@ export class UserClickStudio {
   @Field(type => Date)
   clickedAt: Date;
 
-  @ManyToOne(type => User, { nullable: true })
-  @Field(type => User)
-  user: User;
+  @ManyToOne(type => User, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @Field(type => User, { nullable: true })
+  user?: User;
 
   @ManyToOne(type => Studio, { onDelete: 'CASCADE' })
   @Field(type => Studio)

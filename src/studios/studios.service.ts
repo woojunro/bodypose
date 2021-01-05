@@ -19,6 +19,7 @@ import {
 } from './dtos/toggle-heart-studio.dto';
 import { Catchphrase } from './entities/catchphrase.entity';
 import { Studio } from './entities/studio.entity';
+import { UserClickStudio } from './entities/user-click-studio.entity';
 
 @Injectable()
 export class StudiosService {
@@ -27,6 +28,8 @@ export class StudiosService {
     private readonly studioRepository: Repository<Studio>,
     @InjectRepository(Catchphrase)
     private readonly catchphraseRepository: Repository<Catchphrase>,
+    @InjectRepository(UserClickStudio)
+    private readonly userClickStudioRepository: Repository<UserClickStudio>,
     private readonly usersService: UsersService,
   ) {}
 
@@ -105,6 +108,15 @@ export class StudiosService {
           error: 'Studio not found',
         };
       }
+      // Click
+      const newClick = this.userClickStudioRepository.create({
+        studio,
+        user: user ? user : null,
+      });
+      await this.userClickStudioRepository.save(newClick);
+      studio.clickCount += 1;
+      await this.studioRepository.save(studio);
+      // Return
       return {
         ok: true,
         studio: {
@@ -123,7 +135,7 @@ export class StudiosService {
     }
   }
 
-  async readAllStudios(user: User): Promise<GetAllStudiosOutput> {
+  async getAllStudios(user: User): Promise<GetAllStudiosOutput> {
     try {
       let heartStudios: Studio[] = [];
       // If logged in
