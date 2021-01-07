@@ -17,13 +17,11 @@ var conceptNum = -24;
 
 const ConceptListScreen = () => {
   //선택된 컨셉 목록.
-  const [selectedBgConcepts, setSelectedBgConcepts] = useState(['total']);
-  const [selectedCostumeConcepts, setSelectedCostumeConcepts] = useState([
-    'total',
-  ]);
-  const [selectedObjectConcepts, setSelectedObjectConcepts] = useState([
-    'total',
-  ]);
+  const [selectedConcepts, setSelectedConcepts] = useState({
+    bgConcept: ['total'],
+    costumeConcept: ['total'],
+    objectConcept: ['total'],
+  });
   const [isSelectionOpen, setIsSelectionOpen] = useState(false);
   const [i, setI] = useState(0);
 
@@ -47,6 +45,9 @@ const ConceptListScreen = () => {
   };
   const cancleFinalPhoto = () => {
     setIsFinalPhoto(false);
+  };
+  const handleConcepts = (object) => {
+    setSelectedConcepts(object);
   };
   conceptNum = 0;
 
@@ -81,12 +82,7 @@ const ConceptListScreen = () => {
     setI(0);
     setIsMore(true);
     setConceptArray(shuffle(DbPhotos.slice(0, 24)));
-  }, [
-    gender,
-    selectedBgConcepts,
-    selectedObjectConcepts,
-    selectedCostumeConcepts,
-  ]);
+  }, [gender, selectedConcepts]);
 
   return (
     <div className="conceptListScreen">
@@ -100,12 +96,10 @@ const ConceptListScreen = () => {
         close={() => {
           setIsSelectionOpen(false);
         }}
-        selectedBgConcepts={selectedBgConcepts}
-        selectedCostumeConcepts={selectedCostumeConcepts}
-        selectedObjectConcepts={selectedObjectConcepts}
-        setBgSelection={setSelectedBgConcepts}
-        setCostumeSelection={setSelectedCostumeConcepts}
-        setObjectSelection={setSelectedObjectConcepts}
+        selectedBgConcepts={selectedConcepts.bgConcept}
+        selectedCostumeConcepts={selectedConcepts.costumeConcept}
+        selectedObjectConcepts={selectedConcepts.objectConcept}
+        setSelection={handleConcepts}
       />
       <TopNavigator
         options={genderOptions}

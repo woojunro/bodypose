@@ -271,6 +271,7 @@ export const DbPhotos = [
     horizontal: true,
     attribute: ['가구', '언더웨어', '도구없음'],
     pic: aavec1,
+    ishearted: false,
     thumb: aavec1Thumb,
   },
   {
@@ -281,6 +282,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['가구', '언더웨어', '도구없음'],
     pic: aavec2,
+    ishearted: true,
     thumb: aavec2Thumb,
   },
   {
@@ -291,6 +293,7 @@ export const DbPhotos = [
     horizontal: true,
     attribute: ['가구', '언더웨어', '도구없음'],
     pic: aavec3,
+    ishearted: false,
     thumb: aavec3Thumb,
   },
   {
@@ -301,6 +304,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['테마', '진한 그림자', '언더웨어', '도구없음'],
     pic: aavec4,
+    ishearted: false,
     thumb: aavec4Thumb,
   },
   {
@@ -311,6 +315,7 @@ export const DbPhotos = [
     horizontal: true,
     attribute: ['테마', '진한 그림자', '언더웨어', '도구없음'],
     pic: aavec5,
+    ishearted: false,
     thumb: aavec5Thumb,
   },
   {
@@ -321,6 +326,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['테마', '진한 그림자', '언더웨어', '도구없음'],
     pic: aavec6,
+    ishearted: false,
     thumb: aavec6Thumb,
   },
   {
@@ -331,6 +337,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['테마', '언더웨어', '도구없음'],
     pic: aavec7,
+    ishearted: false,
     thumb: aavec7Thumb,
   },
   {
@@ -341,6 +348,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['테마', '흑백사진', '언더웨어', '도구없음'],
     pic: aavec8,
+    ishearted: false,
     thumb: aavec8Thumb,
   },
   {
@@ -351,6 +359,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['테마', '언더웨어', '도구없음'],
     pic: aavec9,
+    ishearted: false,
     thumb: aavec9Thumb,
   },
   {
@@ -361,6 +370,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '하의', '도구없음'],
     pic: aavec10,
+    ishearted: false,
     thumb: aavec10Thumb,
   },
   {
@@ -371,6 +381,7 @@ export const DbPhotos = [
     horizontal: true,
     attribute: ['가구', '의상없음', '도구없음'],
     pic: aavec11,
+    ishearted: false,
     thumb: aavec11Thumb,
   },
   {
@@ -381,6 +392,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '하의', '도구없음'],
     pic: aavec12,
+    ishearted: false,
     thumb: aavec12Thumb,
   },
   {
@@ -391,6 +403,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '기타의상', '도구없음'],
     pic: aavec13,
+    ishearted: true,
     thumb: aavec13Thumb,
   },
   {
@@ -401,6 +414,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '기타의상', '도구없음'],
     pic: aavec14,
+    ishearted: true,
     thumb: aavec14Thumb,
   },
   {
@@ -411,6 +425,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '기타의상', '도구없음'],
     pic: aavec15,
+    ishearted: true,
     thumb: aavec15Thumb,
   },
   {
@@ -421,6 +436,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['흑백사진', '하의', '기타도구', '소가구'],
     pic: aavec16,
+    ishearted: false,
     thumb: aavec16Thumb,
   },
   {
@@ -431,6 +447,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['흑백사진', '하의', '기타도구'],
     pic: aavec17,
+    ishearted: false,
     thumb: aavec17Thumb,
   },
   {
@@ -441,6 +458,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['흑백사진', '하의', '기타도구', '소가구'],
     pic: aavec18,
+    ishearted: false,
     thumb: aavec18Thumb,
   },
   {
@@ -451,6 +469,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['가구', '의상없음', '도구없음'],
     pic: aavec19,
+    ishearted: false,
     thumb: aavec19Thumb,
   },
   {
@@ -461,6 +480,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['가구', '의상없음', '도구없음'],
     pic: aavec20,
+    ishearted: false,
     thumb: aavec20Thumb,
   },
   {
@@ -471,6 +491,7 @@ export const DbPhotos = [
     horizontal: true,
     attribute: ['가구', '의상없음', '도구없음'],
     pic: aavec21,
+    ishearted: true,
     thumb: aavec21Thumb,
   },
   {
@@ -481,6 +502,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['가구', '언더웨어', '도구없음'],
     pic: aavec22,
+    ishearted: true,
     thumb: aavec22Thumb,
   },
   {
@@ -491,6 +513,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['화이트/블랙', '언더웨어', '도구없음'],
     pic: aavec23,
+    ishearted: true,
     thumb: aavec23Thumb,
   },
   {
@@ -501,6 +524,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['가구', '언더웨어', '도구없음'],
     pic: aavec24,
+    ishearted: false,
     thumb: aavec24Thumb,
   },
   {
@@ -511,6 +535,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
     pic: aavec25,
+    ishearted: false,
     thumb: aavec25Thumb,
   },
   {
@@ -521,6 +546,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
     pic: aavec26,
+    ishearted: false,
     thumb: aavec26Thumb,
   },
 
@@ -532,6 +558,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
     pic: aavec27,
+    ishearted: true,
     thumb: aavec27Thumb,
   },
   {
@@ -542,6 +569,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
     pic: aavec28,
+    ishearted: false,
     thumb: aavec28Thumb,
   },
   {
@@ -552,6 +580,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['테마', '상의', '하의', '도구없음'],
     pic: aavec29,
+    ishearted: false,
     thumb: aavec29Thumb,
   },
 
@@ -563,6 +592,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
     pic: aavec30,
+    ishearted: false,
     thumb: aavec30Thumb,
   },
 
@@ -574,6 +604,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '하의', '도구없음'],
     pic: aavec31,
+    ishearted: false,
     thumb: aavec31Thumb,
   },
 
@@ -585,6 +616,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '하의', '도구없음'],
     pic: aavec32,
+    ishearted: false,
     thumb: aavec32Thumb,
   },
   {
@@ -595,6 +627,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['화이트/블랙', '상의', '도구없음'],
     pic: balanceButton1,
+    ishearted: false,
     thumb: balanceButton1Thumb,
   },
   {
@@ -605,6 +638,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '하의', '기타도구', '소도구'],
     pic: balanceButton2,
+    ishearted: false,
     thumb: balanceButton2Thumb,
   },
 
@@ -616,6 +650,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
     pic: balanceButton3,
+    ishearted: false,
     thumb: balanceButton3Thumb,
   },
   {
@@ -626,6 +661,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
     pic: balanceButton4,
+    ishearted: true,
     thumb: balanceButton4Thumb,
   },
   {
@@ -636,6 +672,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '기타도구', '소도구'],
     pic: balanceButton5,
+    ishearted: false,
     thumb: balanceButton5Thumb,
   },
   {
@@ -646,6 +683,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '소가구'],
     pic: balanceButton6,
+    ishearted: false,
     thumb: balanceButton6Thumb,
   },
 
@@ -657,6 +695,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '하의', '기타도구', '기타운동도구'],
     pic: balanceButton7,
+    ishearted: false,
     thumb: balanceButton7Thumb,
   },
   {
@@ -667,6 +706,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
     pic: balanceButton8,
+    ishearted: false,
     thumb: balanceButton8Thumb,
   },
 
@@ -678,6 +718,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '하의', '소가구', '기타도구'],
     pic: balanceButton9,
+    ishearted: false,
     thumb: balanceButton9Thumb,
   },
 
@@ -689,6 +730,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '하의', '기타도구'],
     pic: balanceButton10,
+    ishearted: false,
     thumb: balanceButton10Thumb,
   },
   {
@@ -699,6 +741,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '수영복', '도구없음'],
     pic: balanceButton11,
+    ishearted: false,
     thumb: balanceButton11Thumb,
   },
 
@@ -710,6 +753,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '상의', '소가구'],
     pic: balanceButton12,
+    ishearted: true,
     thumb: balanceButton12Thumb,
   },
   {
@@ -720,6 +764,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '하의', '소도구', '기타도구', '기타운동도구'],
     pic: balanceButton13,
+    ishearted: false,
     thumb: balanceButton13Thumb,
   },
   {
@@ -730,6 +775,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
     pic: balanceButton14,
+    ishearted: false,
     thumb: balanceButton14Thumb,
   },
   {
@@ -740,6 +786,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '소도구', '기타도구'],
     pic: balanceButton15,
+    ishearted: false,
     thumb: balanceButton15Thumb,
   },
   {
@@ -750,6 +797,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '소도구', '기타도구', '기타운동도구'],
     pic: balanceButton16,
+    ishearted: false,
     thumb: balanceButton16Thumb,
   },
   {
@@ -760,6 +808,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '소도구', '기타도구'],
     pic: balanceButton17,
+    ishearted: false,
     thumb: balanceButton17Thumb,
   },
   {
@@ -770,6 +819,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '소가구'],
     pic: balanceButton18,
+    ishearted: false,
     thumb: balanceButton18Thumb,
   },
 
@@ -781,6 +831,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
     pic: balanceButton19,
+    ishearted: false,
     thumb: balanceButton19Thumb,
   },
 
@@ -792,6 +843,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '언더웨어', '소가구'],
     pic: balanceButton20,
+    ishearted: false,
     thumb: balanceButton20Thumb,
   },
   {
@@ -802,6 +854,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '기타도구'],
     pic: balanceButton21,
+    ishearted: false,
     thumb: balanceButton21Thumb,
   },
   {
@@ -812,6 +865,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
     pic: balanceButton22,
+    ishearted: false,
     thumb: balanceButton22Thumb,
   },
 
@@ -823,6 +877,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '기타운동도구', '소도구', '기타도구'],
     pic: balanceButton23,
+    ishearted: true,
     thumb: balanceButton23Thumb,
   },
   {
@@ -833,6 +888,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '소가구'],
     pic: balanceButton24,
+    ishearted: false,
     thumb: balanceButton24Thumb,
   },
   {
@@ -843,6 +899,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '소도구'],
     pic: balanceButton25,
+    ishearted: false,
     thumb: balanceButton25Thumb,
   },
   {
@@ -853,6 +910,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
     pic: balanceButton26,
+    ishearted: false,
     thumb: balanceButton26Thumb,
   },
   {
@@ -863,6 +921,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '소도구'],
     pic: balanceButton27,
+    ishearted: false,
     thumb: balanceButton27Thumb,
   },
   {
@@ -873,6 +932,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음', '기타도구', '기타의상'],
     pic: balanceButton28,
+    ishearted: false,
     thumb: balanceButton28Thumb,
   },
   {
@@ -883,6 +943,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '기타도구', '소도구'],
     pic: balanceButton29,
+    ishearted: false,
     thumb: balanceButton29Thumb,
   },
   {
@@ -893,6 +954,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '기타의상', '소가구'],
     pic: balanceButton30,
+    ishearted: false,
     thumb: balanceButton30Thumb,
   },
   {
@@ -903,6 +965,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '하의', '소가구', '기타도구'],
     pic: balanceButton31,
+    ishearted: false,
     thumb: balanceButton31Thumb,
   },
   {
@@ -913,6 +976,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
     pic: balanceButton32,
+    ishearted: false,
     thumb: balanceButton32Thumb,
   },
   {
@@ -923,6 +987,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '하의', '소가구', '기타도구', '소도구', '단체'],
     pic: balanceButton34,
+    ishearted: false,
     thumb: balanceButton34Thumb,
   },
   {
@@ -933,6 +998,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '하의', '소도구', '기타도구'],
     pic: balanceButton38,
+    ishearted: true,
     thumb: balanceButton38Thumb,
   },
   {
@@ -943,6 +1009,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '수영복', '도구없음', '단체'],
     pic: balanceButton83,
+    ishearted: false,
     thumb: balanceButton83Thumb,
   },
   {
@@ -953,6 +1020,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '수영복', '도구없음'],
     pic: coco1,
+    ishearted: false,
     thumb: coco1Thumb,
   },
   {
@@ -963,6 +1031,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '수영복', '도구없음'],
     pic: coco2,
+    ishearted: false,
     thumb: coco2Thumb,
   },
   {
@@ -973,6 +1042,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '수영복', '도구없음'],
     pic: coco3,
+    ishearted: false,
     thumb: coco3Thumb,
   },
   {
@@ -983,6 +1053,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
     pic: coco4,
+    ishearted: false,
     thumb: coco4Thumb,
   },
   {
@@ -993,6 +1064,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '상의', '도구없음'],
     pic: coco5,
+    ishearted: false,
     thumb: coco5Thumb,
   },
   {
@@ -1003,6 +1075,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
     pic: coco6,
+    ishearted: false,
     thumb: coco6Thumb,
   },
   {
@@ -1013,6 +1086,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
     pic: coco7,
+    ishearted: false,
     thumb: coco7Thumb,
   },
   {
@@ -1023,6 +1097,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
     pic: coco8,
+    ishearted: false,
     thumb: coco8Thumb,
   },
   {
@@ -1033,6 +1108,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '하의', '기타의상', '도구없음'],
     pic: coco9,
+    ishearted: false,
     thumb: coco9Thumb,
   },
   {
@@ -1043,6 +1119,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['흑백사진', '상의', '도구없음'],
     pic: coco10,
+    ishearted: false,
     thumb: coco10Thumb,
   },
   {
@@ -1053,6 +1130,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['흑백사진', '수영복', '도구없음'],
     pic: coco11,
+    ishearted: true,
     thumb: coco11Thumb,
   },
   {
@@ -1063,6 +1141,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['흑백사진', '언더웨어', '도구없음'],
     pic: coco12,
+    ishearted: false,
     thumb: coco12Thumb,
   },
   {
@@ -1073,6 +1152,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '기타의상', '도구없음'],
     pic: coco13,
+    ishearted: false,
     thumb: coco13Thumb,
   },
   {
@@ -1083,6 +1163,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '하의', '도구없음'],
     pic: coco14,
+    ishearted: false,
     thumb: coco14Thumb,
   },
   {
@@ -1093,6 +1174,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
     pic: coco15,
+    ishearted: false,
     thumb: coco15Thumb,
   },
   {
@@ -1103,6 +1185,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
     pic: coco16,
+    ishearted: false,
     thumb: coco16Thumb,
   },
   {
@@ -1113,6 +1196,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '하의', '도구없음'],
     pic: coco17,
+    ishearted: false,
     thumb: coco17Thumb,
   },
   {
@@ -1123,6 +1207,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '하의', '도구없음'],
     pic: coco18,
+    ishearted: false,
     thumb: coco18Thumb,
   },
   {
@@ -1133,6 +1218,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['화이트/블랙', '언더웨어', '도구없음'],
     pic: coco19,
+    ishearted: false,
     thumb: coco19Thumb,
   },
   {
@@ -1143,6 +1229,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['화이트/블랙', '상의', '하의', '소가구'],
     pic: coco20,
+    ishearted: false,
     thumb: coco20Thumb,
   },
   {
@@ -1153,6 +1240,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['화이트/블랙', '하의', '도구없음'],
     pic: coco21,
+    ishearted: true,
     thumb: coco21Thumb,
   },
   {
@@ -1163,6 +1251,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '하의', '도구없음'],
     pic: coco22,
+    ishearted: false,
     thumb: coco22Thumb,
   },
   {
@@ -1173,6 +1262,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '하의', '도구없음'],
     pic: coco23,
+    ishearted: false,
     thumb: coco23Thumb,
   },
   {
@@ -1183,6 +1273,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '하의', '도구없음'],
     pic: coco24,
+    ishearted: false,
     thumb: coco24Thumb,
   },
   {
@@ -1193,6 +1284,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
     pic: coco25,
+    ishearted: false,
     thumb: coco25Thumb,
   },
   {
@@ -1203,6 +1295,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
     pic: coco26,
+    ishearted: false,
     thumb: coco26Thumb,
   },
   {
@@ -1213,6 +1306,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '하의', '기타도구'],
     pic: coco27,
+    ishearted: false,
     thumb: coco27Thumb,
   },
   {
@@ -1223,6 +1317,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['화이트/블랙', '하의', '소가구', '기타도구'],
     pic: coco28,
+    ishearted: false,
     thumb: coco28Thumb,
   },
   {
@@ -1233,6 +1328,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['화이트/블랙', '하의', '상의', '소가구'],
     pic: coco29,
+    ishearted: false,
     thumb: coco29Thumb,
   },
   {
@@ -1243,6 +1339,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['화이트/블랙', '상의', '도구없음'],
     pic: coco30,
+    ishearted: false,
     thumb: coco30Thumb,
   },
   {
@@ -1253,6 +1350,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
     pic: coco31,
+    ishearted: false,
     thumb: coco31Thumb,
   },
   {
@@ -1263,6 +1361,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
     pic: coco32,
+    ishearted: true,
     thumb: coco32Thumb,
   },
 
@@ -1274,6 +1373,7 @@ export const DbPhotos = [
     horizontal: true,
     attribute: ['화이트/블랙', '가구', '언더웨어', '도구없음'],
     pic: Flyn1,
+    ishearted: false,
     thumb: Flyn1Thumb,
   },
   {
@@ -1284,6 +1384,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['화이트/블랙', '테마', '언더웨어', '도구없음'],
     pic: Flyn2,
+    ishearted: false,
     thumb: Flyn2Thumb,
   },
   {
@@ -1294,6 +1395,7 @@ export const DbPhotos = [
     horizontal: true,
     attribute: ['화이트/블랙', '테마', '하의', '기타운동도구'],
     pic: Flyn3,
+    ishearted: false,
     thumb: Flyn3Thumb,
   },
   {
@@ -1304,6 +1406,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['화이트/블랙', '하의', '소가구'],
     pic: Flyn4,
+    ishearted: false,
     thumb: Flyn4Thumb,
   },
   {
@@ -1314,6 +1417,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '하의', '소가구', '단체'],
     pic: Flyn5,
+    ishearted: false,
     thumb: Flyn5Thumb,
   },
   {
@@ -1324,6 +1428,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '하의', '가구없음'],
     pic: Flyn6,
+    ishearted: false,
     thumb: Flyn6Thumb,
   },
   {
@@ -1334,6 +1439,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컨셉', '컬러', '하의', '상의', '소가구'],
     pic: Flyn7,
+    ishearted: false,
     thumb: Flyn7Thumb,
   },
   {
@@ -1344,6 +1450,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['흑백사진', '하의', '가구없음'],
     pic: Flyn8,
+    ishearted: false,
     thumb: Flyn8Thumb,
   },
   {
@@ -1354,6 +1461,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '가구없음'],
     pic: Flyn9,
+    ishearted: false,
     thumb: Flyn9Thumb,
   },
   {
@@ -1364,6 +1472,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['화이트/블랙', '컨셉', '상의', '가구없음'],
     pic: Flyn10,
+    ishearted: false,
     thumb: Flyn10Thumb,
   },
   {
@@ -1374,6 +1483,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '컨셉', '하의', '가구없음'],
     pic: Flyn11,
+    ishearted: false,
     thumb: Flyn11Thumb,
   },
   {
@@ -1384,6 +1494,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['화이트/블랙', '컨셉', '언더웨어', '가구없음'],
     pic: Flyn12,
+    ishearted: true,
     thumb: Flyn12Thumb,
   },
   {
@@ -1394,6 +1505,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '컨셉', '언더웨어', '소가구'],
     pic: Flyn13,
+    ishearted: false,
     thumb: Flyn13Thumb,
   },
   {
@@ -1404,6 +1516,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '하의', '소도구', '기타운동도구'],
     pic: Flyn14,
+    ishearted: false,
     thumb: Flyn14Thumb,
   },
   {
@@ -1414,6 +1527,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '수영복', '도구없음'],
     pic: Flyn15,
+    ishearted: false,
     thumb: Flyn15Thumb,
   },
 
@@ -1425,6 +1539,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['화이트/블랙', '컨셉', '하의', '도구없음'],
     pic: Flyn16,
+    ishearted: false,
     thumb: Flyn16Thumb,
   },
   {
@@ -1435,6 +1550,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['화이트/블랙', '컨셉', '언더웨어', '도구없음'],
     pic: Flyn17,
+    ishearted: false,
     thumb: Flyn17Thumb,
   },
   {
@@ -1445,6 +1561,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '컨셉', '상의', '하의', '도구없음'],
     pic: Flyn18,
+    ishearted: false,
     thumb: Flyn18Thumb,
   },
   {
@@ -1455,6 +1572,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['흑백사진', '상의', '하의', '소가구'],
     pic: Flyn19,
+    ishearted: false,
     thumb: Flyn19Thumb,
   },
   {
@@ -1465,6 +1583,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '수영복', '도구없음'],
     pic: Flyn20,
+    ishearted: false,
     thumb: Flyn20Thumb,
   },
 
@@ -1476,6 +1595,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['화이트/블랙', '수영복', '도구없음'],
     pic: Flyn21,
+    ishearted: false,
     thumb: Flyn21Thumb,
   },
   {
@@ -1486,6 +1606,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['화이트/블랙', '하의', '기타운동도구'],
     pic: Flyn22,
+    ishearted: false,
     thumb: Flyn22Thumb,
   },
   {
@@ -1496,6 +1617,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['흑백사진', '상의', '도구없음'],
     pic: Flyn23,
+    ishearted: false,
     thumb: Flyn23Thumb,
   },
   {
@@ -1506,6 +1628,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['화이트/블랙', '컨셉', '언더웨어', '기타도구'],
     pic: Flyn24,
+    ishearted: true,
     thumb: Flyn24Thumb,
   },
   {
@@ -1516,6 +1639,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['화이트/블랙', '컨셉', '하의', '기타운동도구'],
     pic: Flyn25,
+    ishearted: false,
     thumb: Flyn25Thumb,
   },
   {
@@ -1526,6 +1650,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '컨셉', '하의', '상의', '도구없음'],
     pic: Flyn26,
+    ishearted: false,
     thumb: Flyn26Thumb,
   },
   {
@@ -1536,6 +1661,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
     pic: Flyn27,
+    ishearted: false,
     thumb: Flyn27Thumb,
   },
   {
@@ -1546,6 +1672,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['화이트/블랙', '컨셉', '수영복', '소가구'],
     pic: Flyn28,
+    ishearted: false,
     thumb: Flyn28Thumb,
   },
   {
@@ -1556,6 +1683,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['흑백사진', '언더웨어', '도구없음'],
     pic: Flyn29,
+    ishearted: false,
     thumb: Flyn29Thumb,
   },
   {
@@ -1566,6 +1694,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '컨셉', '수영복', '소가구'],
     pic: Flyn30,
+    ishearted: false,
     thumb: Flyn30Thumb,
   },
   {
@@ -1576,6 +1705,7 @@ export const DbPhotos = [
     horizontal: true,
     attribute: ['화이트/블랙', '컨셉', '하의', '기타운동기구'],
     pic: Flyn31,
+    ishearted: false,
     thumb: Flyn31Thumb,
   },
   {
@@ -1586,6 +1716,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['컬러', '하의', '도구없음'],
     pic: Flyn32,
+    ishearted: false,
     thumb: Flyn32Thumb,
   },
 ];

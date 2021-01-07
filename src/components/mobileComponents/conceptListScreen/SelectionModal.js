@@ -1,114 +1,195 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './SelectionModal.css';
 import { bgOptions, costumeOptions, objectOptions } from './SelectionOptions';
-import OptionButton from './OptionButton';
 
 const Modal = ({
   isOpen,
   close,
-  setBgSelection,
-  setCostumeSelection,
-  setObjectSelection,
+  setSelection,
   selectedBgConcepts,
   selectedCostumeConcepts,
   selectedObjectConcepts,
 }) => {
-  const [BgConcepts, setBgConcepts] = useState(selectedBgConcepts);
-  const [CostumeConcepts, setCostumeConcepts] = useState(
-    selectedCostumeConcepts
-  );
-  const [ObjectConcepts, setObjectConcepts] = useState(selectedObjectConcepts);
+  const [totalSelected, setTotalSelected] = useState({
+    bgConcept: selectedBgConcepts,
+    costumeConcept: selectedCostumeConcepts,
+    objectConcept: selectedObjectConcepts,
+  });
   let BgOptions = bgOptions;
   let CostumeOptions = costumeOptions;
   let ObjectOptions = objectOptions;
+  const setBgConcepts = (whatTo) => {
+    setTotalSelected({
+      bgConcept: whatTo,
+      costumeConcept: totalSelected.costumeConcept,
+      objectConcept: totalSelected.objectConcept,
+    });
+  };
+  const setCostumeConcepts = (whatTo) => {
+    setTotalSelected({
+      costumeConcept: whatTo,
+      bgConcept: totalSelected.bgConcept,
+      objectConcept: totalSelected.objectConcept,
+    });
+  };
+  const setObjectConcepts = (whatTo) => {
+    setTotalSelected({
+      objectConcept: whatTo,
+      costumeConcept: totalSelected.costumeConcept,
+      bgConcept: totalSelected.bgConcept,
+    });
+  };
 
   const addBgConcept = (option) => {
-    var newArray = BgConcepts;
-    newArray.push(option);
-    setBgConcepts(newArray);
+    if (option === 'total') {
+      setBgConcepts(['total']);
+    } else {
+      if (totalSelected.bgConcept.includes('total')) {
+        const filteredItems = totalSelected.bgConcept.filter(
+          (BgConcepts) => BgConcepts !== 'total'
+        );
+        setBgConcepts([...filteredItems, option]);
+      } else {
+        setBgConcepts([...totalSelected.bgConcept, option]);
+      }
+    }
   };
   const deleteBgConcept = (option) => {
-    if (BgConcepts.includes(option)) {
+    if (totalSelected.bgConcept.includes(option)) {
       const valueToRemove = option;
-      const filteredItems = BgConcepts.filter(
+      const filteredItems = totalSelected.bgConcept.filter(
         (BgConcepts) => BgConcepts !== valueToRemove
       );
       setBgConcepts(filteredItems);
     }
   };
   const addCostumeConcept = (option) => {
-    var newArray = CostumeConcepts;
-    newArray.push(option);
-    setCostumeConcepts(newArray);
+    if (option === 'total') {
+      setCostumeConcepts(['total']);
+    } else {
+      if (totalSelected.costumeConcept.includes('total')) {
+        const filteredItems = totalSelected.costumeConcept.filter(
+          (CostumeConcepts) => CostumeConcepts !== 'total'
+        );
+        setCostumeConcepts([...filteredItems, option]);
+      } else {
+        setCostumeConcepts([...totalSelected.costumeConcept, option]);
+      }
+    }
   };
   const deleteCostumeConcept = (option) => {
-    if (CostumeConcepts.includes(option)) {
+    if (totalSelected.costumeConcept.includes(option)) {
       const valueToRemove = option;
-      const filteredItems = CostumeConcepts.filter(
+      const filteredItems = totalSelected.costumeConcept.filter(
         (CostumeConcepts) => CostumeConcepts !== valueToRemove
       );
       setCostumeConcepts(filteredItems);
     }
   };
   const addObjectConcept = (option) => {
-    var newArray = ObjectConcepts;
-    newArray.push(option);
-    setObjectConcepts(newArray);
+    if (option === 'total') {
+      setObjectConcepts(['total']);
+    } else {
+      if (totalSelected.objectConcept.includes('total')) {
+        const filteredItems = totalSelected.objectConcept.filter(
+          (ObjectConcepts) => ObjectConcepts !== 'total'
+        );
+        setObjectConcepts([...filteredItems, option]);
+      } else {
+        setObjectConcepts([...totalSelected.objectConcept, option]);
+      }
+    }
   };
   const deleteObjectConcept = (option) => {
-    if (ObjectConcepts.includes(option)) {
+    if (totalSelected.objectConcept.includes(option)) {
       const valueToRemove = option;
-      const filteredItems = ObjectConcepts.filter(
+      const filteredItems = totalSelected.objectConcept.filter(
         (ObjectConcepts) => ObjectConcepts !== valueToRemove
       );
       setObjectConcepts(filteredItems);
     }
   };
-  const checkBgTotal = (option) => {
-    //Bg의 total을 선택한다면, 다른 것들 다 없애고 total만 넣기.
-
-    if (option === 'total' && !BgConcepts.includes('total')) {
-      console.log('2');
-      setBgConcepts(['total']);
-    }
-  };
-
+  // 옵션 선택 버튼들 생성.
   const renderedBgConcepts = BgOptions.map((option) => {
-    return (
-      <OptionButton
-        key={option.title}
-        optionName={option.optionName}
-        title={option.title}
-        isSelected={BgConcepts.includes(option.optionName)}
-        addSelection={addBgConcept}
-        deleteSelection={deleteBgConcept}
-        checkTotal={checkBgTotal}
-      />
-    );
+    if (totalSelected.bgConcept.includes(option.optionName)) {
+      return (
+        <div
+          key={option.optionName}
+          className="selectedOptionContainer"
+          onClick={() => {
+            deleteBgConcept(option.optionName);
+          }}
+        >
+          {option.title}
+        </div>
+      );
+    } else {
+      return (
+        <div
+          key={option.optionName}
+          className="unselectedOptionContainer"
+          onClick={() => {
+            addBgConcept(option.optionName);
+          }}
+        >
+          {option.title}
+        </div>
+      );
+    }
   });
   const renderedCostumeConcepts = CostumeOptions.map((option) => {
-    return (
-      <OptionButton
-        key={option.optionName}
-        optionName={option.optionName}
-        title={option.title}
-        isSelected={CostumeConcepts.includes(option.optionName)}
-        addSelection={addCostumeConcept}
-        deleteSelection={deleteCostumeConcept}
-      />
-    );
+    if (totalSelected.costumeConcept.includes(option.optionName)) {
+      return (
+        <div
+          key={option.optionName}
+          className="selectedOptionContainer"
+          onClick={() => {
+            deleteCostumeConcept(option.optionName);
+          }}
+        >
+          {option.title}
+        </div>
+      );
+    } else {
+      return (
+        <div
+          key={option.optionName}
+          className="unselectedOptionContainer"
+          onClick={() => {
+            addCostumeConcept(option.optionName);
+          }}
+        >
+          {option.title}
+        </div>
+      );
+    }
   });
   const renderedObjectConcepts = ObjectOptions.map((option) => {
-    return (
-      <OptionButton
-        key={option.optionName}
-        optionName={option.optionName}
-        title={option.title}
-        isSelected={ObjectConcepts.includes(option.optionName)}
-        addSelection={addObjectConcept}
-        deleteSelection={deleteObjectConcept}
-      />
-    );
+    if (totalSelected.objectConcept.includes(option.optionName)) {
+      return (
+        <div
+          key={option.optionName}
+          className="selectedOptionContainer"
+          onClick={() => {
+            deleteObjectConcept(option.optionName);
+          }}
+        >
+          {option.title}
+        </div>
+      );
+    } else {
+      return (
+        <div
+          key={option.optionName}
+          className="unselectedOptionContainer"
+          onClick={() => {
+            addObjectConcept(option.optionName);
+          }}
+        >
+          {option.title}
+        </div>
+      );
+    }
   });
   return (
     <>
@@ -148,17 +229,15 @@ const Modal = ({
                 </div>
                 <div className="optionsContainer">{renderedObjectConcepts}</div>
                 <div
+                  className="selectCompleteButton"
                   onClick={() => {
-                    console.log(BgConcepts);
-                    setBgSelection(BgConcepts);
-                    setCostumeSelection(CostumeConcepts);
-                    setObjectSelection(ObjectConcepts);
+                    setSelection(totalSelected);
                     setTimeout(() => {
                       close();
                     }, 100);
                   }}
                 >
-                  선택완료
+                  선택 완료
                 </div>
               </div>
             </div>
