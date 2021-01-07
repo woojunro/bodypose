@@ -19,8 +19,8 @@ class Modal extends Component {
     return (
       <>
         {isOpen ? (
-          <div className="modal">
-            <div className="trueModal">
+          <div className="conceptmodal">
+            <div className="concepttrueModal">
               <div className="topBarContainer">
                 <div style={{ width: '45px' }}></div>
                 <div className="studioTitle">{concept.title}</div>

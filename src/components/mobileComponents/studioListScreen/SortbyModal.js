@@ -47,17 +47,17 @@ const Modal = ({
         ////<div className="modalContents" onClick={(e) => e.stopPropagation()}>
         /// 이 범위의 이벤트는 상위로 전이 막음.
 
-        <div className="modal">
+        <div className="sortBymodal">
           <div
-            className="greyBackground"
+            className="sortBygreyBackground"
             onClick={() => {
               close();
               closeSortBy();
             }}
           >
-            <div className="trueModal">
+            <div className="sortBytrueModal">
               <div
-                className="modalContents"
+                className="sortBymodalContents"
                 onClick={(e) => {
                   e.stopPropagation();
                 }}

@@ -1,15 +1,15 @@
-.sortBymodal {
+.selectionModal {
   z-index: 20;
   position: absolute;
-  top: 92px;
+  top: 51px;
   right: 0;
   bottom: 0;
   left: 0;
   background: rgba(0, 0, 0, 0.4);
 }
-.sortBytrueModal {
+.selectionTrueModal {
   width: 100%;
-  height: 220px;
+  height: 450px;
   margin: auto;
 
   background-color: white;
@@ -18,11 +18,11 @@
   padding: 0px;
   background: #fff;
 }
-.sortBygreyBackground {
+.selectionGreyBackground {
   height: 100%;
   width: 100%;
 }
-.sortBymodalContents {
+.selectionModalContents {
   margin: 0 auto;
   padding-left: 20px;
   padding-right: 15px;
@@ -33,24 +33,23 @@
   height: 100%;
   position: relative;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
 }
 
-.selectedBox {
-  font-size: 14px;
-  color: var(--color-chocolate);
-  height: 100%;
-  font-weight: bold;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.guideText {
+  font-size: 11px;
 }
-.unselectedBox {
-  height: 100%;
-  font-size: 14px;
-  color: black;
+
+.conceptCategory {
+  font-size: 15px;
+  font-weight: bold;
+}
+.multiSelectionGuide {
+  margin-left: 5px;
+  font-size: 11px;
+  color: grey;
+}
+
+.optionsContainer {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
 }

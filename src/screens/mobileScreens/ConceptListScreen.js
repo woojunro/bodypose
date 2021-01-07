@@ -7,15 +7,24 @@ import { DbPhotos } from '../../virtualDB/items/DbPhotos';
 import shuffle from '../../components/functions/Shuffle';
 import ConceptListCard from '../../components/mobileComponents/conceptListScreen/ConceptListCard';
 import ConceptModal from '../../components/mobileComponents/conceptListScreen/ConceptModal';
+import SelectionModal from '../../components/mobileComponents/conceptListScreen/SelectionModal';
 import './ConceptListScreen.css';
 import LoadingIcon from '../../components/mobileComponents/conceptListScreen/LoadingIcon';
+import { FaSlidersH } from 'react-icons/fa';
 
 const genderOptions = ['전체', '남성', '여성', '커플'];
 var conceptNum = -24;
 
 const ConceptListScreen = () => {
   //선택된 컨셉 목록.
-  const [selectedConcepts, setSelectedConcepts] = useState([]);
+  const [selectedBgConcepts, setSelectedBgConcepts] = useState(['total']);
+  const [selectedCostumeConcepts, setSelectedCostumeConcepts] = useState([
+    'total',
+  ]);
+  const [selectedObjectConcepts, setSelectedObjectConcepts] = useState([
+    'total',
+  ]);
+  const [isSelectionOpen, setIsSelectionOpen] = useState(false);
   const [i, setI] = useState(0);
 
   const [isMore, setIsMore] = useState(true);
@@ -67,23 +76,42 @@ const ConceptListScreen = () => {
     }
   };
   useEffect(() => {
-    //성별 바꾸면 Db에서 사진 다시 불러와야하는 부분.
-    //선택된 컨셉 바꾸면 Db에서 사진 다신 불러와야하는 부분.
+    //성별 및 컨셉 바꾸면 Db에서 사진 다시 불러와야하는 부분.
 
     setI(0);
     setIsMore(true);
     setConceptArray(shuffle(DbPhotos.slice(0, 24)));
-  }, [gender, selectedConcepts]);
+  }, [
+    gender,
+    selectedBgConcepts,
+    selectedObjectConcepts,
+    selectedCostumeConcepts,
+  ]);
 
   return (
     <div className="conceptListScreen">
+      <FaSlidersH
+        className="sortIcon"
+        onClick={() => setIsSelectionOpen(true)}
+      />
       <Header pageName="concepts" />
+      <SelectionModal
+        isOpen={isSelectionOpen}
+        close={() => {
+          setIsSelectionOpen(false);
+        }}
+        selectedBgConcepts={selectedBgConcepts}
+        selectedCostumeConcepts={selectedCostumeConcepts}
+        selectedObjectConcepts={selectedObjectConcepts}
+        setBgSelection={setSelectedBgConcepts}
+        setCostumeSelection={setSelectedCostumeConcepts}
+        setObjectSelection={setSelectedObjectConcepts}
+      />
       <TopNavigator
         options={genderOptions}
         selectedGender={gender}
         setGender={setGender}
       />
-
       <InfiniteScroll
         dataLength={conceptArray.length}
         next={fetchMoreData}
@@ -120,7 +148,6 @@ const ConceptListScreen = () => {
         isFinalPhoto={isFinalPhoto}
         handleIsFinalPhoto={cancleFinalPhoto}
       />
-
       <BottomNavigation pageName="concepts" />
     </div>
   );

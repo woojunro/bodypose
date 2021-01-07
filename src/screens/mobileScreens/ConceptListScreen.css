@@ -12,3 +12,11 @@
   margin-bottom: 10px;
   margin-top: 10px;
 }
+
+.sortIcon {
+  display: flex;
+  position: fixed;
+  z-index: 35;
+  right: 20px;
+  top: 17px;
+}
