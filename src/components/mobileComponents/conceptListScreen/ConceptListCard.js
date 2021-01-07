@@ -1,9 +1,26 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import './ConceptListCard.css';
 
-const MainCardM = ({ studio, photoName, pic, thumb, horizontal }) => {
-  return <img className="conceptListCard" alt="card" src={thumb} />;
+const ConceptListCard = ({
+  photo,
+  setThisPhoto,
+  conceptNum,
+  openModal,
+  needFetchMoreData,
+}) => {
+  return (
+    <div className="concepListCardContainer">
+      <div
+        onClick={() => {
+          setThisPhoto(conceptNum);
+          openModal();
+          needFetchMoreData(conceptNum);
+        }}
+      >
+        <img className="conceptListCard" alt="card" src={photo.thumb} />
+      </div>
+    </div>
+  );
 };
 
-export default MainCardM;
+export default ConceptListCard;

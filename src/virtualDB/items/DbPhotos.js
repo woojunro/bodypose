@@ -229,11 +229,44 @@ import Flyn29 from '../images/Flyn29.jpg';
 import Flyn30 from '../images/Flyn30.jpg';
 import Flyn31 from '../images/Flyn31.jpg';
 import Flyn32 from '../images/Flyn32.jpg';
+import Flyn1Thumb from '../images/Flyn1Thumb.jpg';
+import Flyn2Thumb from '../images/Flyn2Thumb.jpg';
+import Flyn3Thumb from '../images/Flyn3Thumb.jpg';
+import Flyn4Thumb from '../images/Flyn4Thumb.jpg';
+import Flyn5Thumb from '../images/Flyn5Thumb.jpg';
+import Flyn6Thumb from '../images/Flyn6Thumb.jpg';
+import Flyn7Thumb from '../images/Flyn7Thumb.jpg';
+import Flyn8Thumb from '../images/Flyn8Thumb.jpg';
+import Flyn9Thumb from '../images/Flyn9Thumb.jpg';
+import Flyn10Thumb from '../images/Flyn10Thumb.jpg';
+import Flyn11Thumb from '../images/Flyn11Thumb.jpg';
+import Flyn12Thumb from '../images/Flyn12Thumb.jpg';
+import Flyn13Thumb from '../images/Flyn13Thumb.jpg';
+import Flyn14Thumb from '../images/Flyn14Thumb.jpg';
+import Flyn15Thumb from '../images/Flyn15Thumb.jpg';
+import Flyn16Thumb from '../images/Flyn16Thumb.jpg';
+import Flyn17Thumb from '../images/Flyn17Thumb.jpg';
+import Flyn18Thumb from '../images/Flyn18Thumb.jpg';
+import Flyn19Thumb from '../images/Flyn19Thumb.jpg';
+import Flyn20Thumb from '../images/Flyn20Thumb.jpg';
+import Flyn21Thumb from '../images/Flyn21Thumb.jpg';
+import Flyn22Thumb from '../images/Flyn22Thumb.jpg';
+import Flyn23Thumb from '../images/Flyn23Thumb.jpg';
+import Flyn24Thumb from '../images/Flyn24Thumb.jpg';
+import Flyn25Thumb from '../images/Flyn25Thumb.jpg';
+import Flyn26Thumb from '../images/Flyn26Thumb.jpg';
+import Flyn27Thumb from '../images/Flyn27Thumb.jpg';
+import Flyn28Thumb from '../images/Flyn28Thumb.jpg';
+import Flyn29Thumb from '../images/Flyn29Thumb.jpg';
+import Flyn30Thumb from '../images/Flyn30Thumb.jpg';
+import Flyn31Thumb from '../images/Flyn31Thumb.jpg';
+import Flyn32Thumb from '../images/Flyn32Thumb.jpg';
 
 export const DbPhotos = [
   {
     photoName: 'aavec1',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: true,
     attribute: ['가구', '언더웨어', '도구없음'],
@@ -243,6 +276,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec2',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['가구', '언더웨어', '도구없음'],
@@ -252,6 +286,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec3',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: true,
     attribute: ['가구', '언더웨어', '도구없음'],
@@ -261,6 +296,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec4',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['테마', '진한 그림자', '언더웨어', '도구없음'],
@@ -270,6 +306,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec5',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: true,
     attribute: ['테마', '진한 그림자', '언더웨어', '도구없음'],
@@ -279,6 +316,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec6',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['테마', '진한 그림자', '언더웨어', '도구없음'],
@@ -288,6 +326,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec7',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['테마', '언더웨어', '도구없음'],
@@ -297,6 +336,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec8',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['테마', '흑백사진', '언더웨어', '도구없음'],
@@ -306,6 +346,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec9',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['테마', '언더웨어', '도구없음'],
@@ -315,6 +356,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec10',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '하의', '도구없음'],
@@ -324,6 +366,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec11',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: true,
     attribute: ['가구', '의상없음', '도구없음'],
@@ -333,6 +376,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec12',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '하의', '도구없음'],
@@ -342,6 +386,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec13',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '기타의상', '도구없음'],
@@ -351,6 +396,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec14',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '기타의상', '도구없음'],
@@ -360,6 +406,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec15',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '기타의상', '도구없음'],
@@ -369,6 +416,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec16',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['흑백사진', '하의', '기타도구', '소가구'],
@@ -378,6 +426,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec17',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['흑백사진', '하의', '기타도구'],
@@ -387,6 +436,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec18',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['흑백사진', '하의', '기타도구', '소가구'],
@@ -396,6 +446,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec19',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['가구', '의상없음', '도구없음'],
@@ -405,6 +456,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec20',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['가구', '의상없음', '도구없음'],
@@ -414,6 +466,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec21',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: true,
     attribute: ['가구', '의상없음', '도구없음'],
@@ -423,6 +476,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec22',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['가구', '언더웨어', '도구없음'],
@@ -432,6 +486,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec23',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['화이트/블랙', '언더웨어', '도구없음'],
@@ -441,6 +496,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec24',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['가구', '언더웨어', '도구없음'],
@@ -450,6 +506,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec25',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
@@ -459,6 +516,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec26',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
@@ -469,6 +527,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec27',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
@@ -478,6 +537,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec28',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
@@ -487,6 +547,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec29',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['테마', '상의', '하의', '도구없음'],
@@ -497,6 +558,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec30',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
@@ -507,6 +569,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec31',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '상의', '하의', '도구없음'],
@@ -517,6 +580,7 @@ export const DbPhotos = [
   {
     photoName: 'aavec32',
     studio: 'aavec',
+    title: '아베크',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '상의', '하의', '도구없음'],
@@ -526,6 +590,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton1',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['화이트/블랙', '상의', '도구없음'],
@@ -535,6 +600,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton2',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '상의', '하의', '기타도구', '소도구'],
@@ -545,6 +611,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton3',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
@@ -554,6 +621,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton4',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
@@ -563,6 +631,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton5',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '기타도구', '소도구'],
@@ -572,6 +641,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton6',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '소가구'],
@@ -582,6 +652,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton7',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '상의', '하의', '기타도구', '기타운동도구'],
@@ -591,6 +662,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton8',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
@@ -601,6 +673,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton9',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '하의', '소가구', '기타도구'],
@@ -611,6 +684,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton10',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '하의', '기타도구'],
@@ -620,6 +694,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton11',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '수영복', '도구없음'],
@@ -630,6 +705,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton12',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '상의', '소가구'],
@@ -639,6 +715,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton13',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '하의', '소도구', '기타도구', '기타운동도구'],
@@ -648,6 +725,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton14',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
@@ -657,6 +735,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton15',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '소도구', '기타도구'],
@@ -666,6 +745,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton16',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '소도구', '기타도구', '기타운동도구'],
@@ -675,6 +755,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton17',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '소도구', '기타도구'],
@@ -684,6 +765,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton18',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '소가구'],
@@ -694,6 +776,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton19',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
@@ -704,6 +787,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton20',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '상의', '언더웨어', '소가구'],
@@ -713,6 +797,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton21',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '기타도구'],
@@ -722,6 +807,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton22',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
@@ -732,6 +818,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton23',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '기타운동도구', '소도구', '기타도구'],
@@ -741,6 +828,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton24',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '소가구'],
@@ -750,6 +838,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton25',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '소도구'],
@@ -759,6 +848,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton26',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
@@ -768,6 +858,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton27',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '소도구'],
@@ -777,6 +868,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton28',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음', '기타도구', '기타의상'],
@@ -786,6 +878,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton29',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '상의', '기타도구', '소도구'],
@@ -795,6 +888,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton30',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '상의', '기타의상', '소가구'],
@@ -804,6 +898,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton31',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '상의', '하의', '소가구', '기타도구'],
@@ -813,6 +908,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton32',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
@@ -822,6 +918,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton34',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '하의', '소가구', '기타도구', '소도구', '단체'],
@@ -831,6 +928,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton38',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'couple',
     horizontal: false,
     attribute: ['컬러', '하의', '소도구', '기타도구'],
@@ -840,6 +938,7 @@ export const DbPhotos = [
   {
     photoName: 'balanceButton83',
     studio: 'balanceButton',
+    title: '밸런스버튼',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '수영복', '도구없음', '단체'],
@@ -849,6 +948,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking1',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '수영복', '도구없음'],
@@ -858,6 +958,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking2',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '수영복', '도구없음'],
@@ -867,6 +968,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking3',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '수영복', '도구없음'],
@@ -876,6 +978,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking4',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
@@ -885,6 +988,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking5',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '상의', '도구없음'],
@@ -894,6 +998,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking6',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
@@ -903,6 +1008,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking7',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
@@ -912,6 +1018,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking8',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
@@ -921,6 +1028,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking9',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '상의', '하의', '기타의상', '도구없음'],
@@ -930,6 +1038,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking10',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'female',
     horizontal: false,
     attribute: ['흑백사진', '상의', '도구없음'],
@@ -939,6 +1048,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking11',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'female',
     horizontal: false,
     attribute: ['흑백사진', '수영복', '도구없음'],
@@ -948,6 +1058,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking12',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'female',
     horizontal: false,
     attribute: ['흑백사진', '언더웨어', '도구없음'],
@@ -957,6 +1068,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking13',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '기타의상', '도구없음'],
@@ -966,6 +1078,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking14',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '하의', '도구없음'],
@@ -975,6 +1088,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking15',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
@@ -984,6 +1098,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking16',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
@@ -993,6 +1108,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking17',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '하의', '도구없음'],
@@ -1002,6 +1118,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking18',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '하의', '도구없음'],
@@ -1011,6 +1128,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking19',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'male',
     horizontal: false,
     attribute: ['화이트/블랙', '언더웨어', '도구없음'],
@@ -1020,6 +1138,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking20',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'male',
     horizontal: false,
     attribute: ['화이트/블랙', '상의', '하의', '소가구'],
@@ -1029,6 +1148,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking21',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'male',
     horizontal: false,
     attribute: ['화이트/블랙', '하의', '도구없음'],
@@ -1038,6 +1158,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking22',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '하의', '도구없음'],
@@ -1047,6 +1168,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking23',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '하의', '도구없음'],
@@ -1056,6 +1178,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking24',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '하의', '도구없음'],
@@ -1065,6 +1188,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking25',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
@@ -1074,6 +1198,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking26',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
@@ -1083,6 +1208,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking27',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '하의', '기타도구'],
@@ -1092,6 +1218,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking28',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'female',
     horizontal: false,
     attribute: ['화이트/블랙', '하의', '소가구', '기타도구'],
@@ -1101,6 +1228,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking29',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'male',
     horizontal: false,
     attribute: ['화이트/블랙', '하의', '상의', '소가구'],
@@ -1110,6 +1238,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking30',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'female',
     horizontal: false,
     attribute: ['화이트/블랙', '상의', '도구없음'],
@@ -1119,6 +1248,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking31',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
@@ -1128,6 +1258,7 @@ export const DbPhotos = [
   {
     photoName: 'cocoViking32',
     studio: 'cocoViking',
+    title: '코코바이킹',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '언더웨어', '도구없음'],
@@ -1138,291 +1269,323 @@ export const DbPhotos = [
   {
     photoName: 'flyn1',
     studio: 'flyn',
+    title: '플린',
     sex: 'couple',
     horizontal: true,
     attribute: ['화이트/블랙', '가구', '언더웨어', '도구없음'],
     pic: Flyn1,
-    thumb: Flyn1,
+    thumb: Flyn1Thumb,
   },
   {
     photoName: 'flyn2',
     studio: 'flyn',
+    title: '플린',
     sex: 'male',
     horizontal: false,
     attribute: ['화이트/블랙', '테마', '언더웨어', '도구없음'],
     pic: Flyn2,
-    thumb: Flyn2,
+    thumb: Flyn2Thumb,
   },
   {
     photoName: 'flyn3',
     studio: 'flyn',
+    title: '플린',
     sex: 'male',
     horizontal: true,
     attribute: ['화이트/블랙', '테마', '하의', '기타운동도구'],
     pic: Flyn3,
-    thumb: Flyn3,
+    thumb: Flyn3Thumb,
   },
   {
     photoName: 'flyn4',
     studio: 'flyn',
+    title: '플린',
     sex: 'male',
     horizontal: false,
     attribute: ['화이트/블랙', '하의', '소가구'],
     pic: Flyn4,
-    thumb: Flyn4,
+    thumb: Flyn4Thumb,
   },
   {
     photoName: 'flyn5',
     studio: 'flyn',
+    title: '플린',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '하의', '소가구', '단체'],
     pic: Flyn5,
-    thumb: Flyn5,
+    thumb: Flyn5Thumb,
   },
   {
     photoName: 'flyn6',
     studio: 'flyn',
+    title: '플린',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '하의', '가구없음'],
     pic: Flyn6,
-    thumb: Flyn6,
+    thumb: Flyn6Thumb,
   },
   {
     photoName: 'flyn7',
     studio: 'flyn',
+    title: '플린',
     sex: 'female',
     horizontal: false,
     attribute: ['컨셉', '컬러', '하의', '상의', '소가구'],
     pic: Flyn7,
-    thumb: Flyn7,
+    thumb: Flyn7Thumb,
   },
   {
     photoName: 'flyn8',
     studio: 'flyn',
+    title: '플린',
     sex: 'male',
     horizontal: false,
     attribute: ['흑백사진', '하의', '가구없음'],
     pic: Flyn8,
-    thumb: Flyn8,
+    thumb: Flyn8Thumb,
   },
   {
     photoName: 'flyn9',
     studio: 'flyn',
+    title: '플린',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '상의', '가구없음'],
     pic: Flyn9,
-    thumb: Flyn9,
+    thumb: Flyn9Thumb,
   },
   {
     photoName: 'flyn10',
     studio: 'flyn',
+    title: '플린',
     sex: 'female',
     horizontal: false,
     attribute: ['화이트/블랙', '컨셉', '상의', '가구없음'],
     pic: Flyn10,
-    thumb: Flyn10,
+    thumb: Flyn10Thumb,
   },
   {
     photoName: 'flyn11',
     studio: 'flyn',
+    title: '플린',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '컨셉', '하의', '가구없음'],
     pic: Flyn11,
-    thumb: Flyn11,
+    thumb: Flyn11Thumb,
   },
   {
     photoName: 'flyn12',
     studio: 'flyn',
+    title: '플린',
     sex: 'female',
     horizontal: false,
     attribute: ['화이트/블랙', '컨셉', '언더웨어', '가구없음'],
     pic: Flyn12,
-    thumb: Flyn12,
+    thumb: Flyn12Thumb,
   },
   {
     photoName: 'flyn13',
     studio: 'flyn',
+    title: '플린',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '컨셉', '언더웨어', '소가구'],
     pic: Flyn13,
-    thumb: Flyn13,
+    thumb: Flyn13Thumb,
   },
   {
     photoName: 'flyn14',
     studio: 'flyn',
+    title: '플린',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '하의', '소도구', '기타운동도구'],
     pic: Flyn14,
-    thumb: Flyn14,
+    thumb: Flyn14Thumb,
   },
   {
     photoName: 'flyn15',
     studio: 'flyn',
+    title: '플린',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '수영복', '도구없음'],
     pic: Flyn15,
-    thumb: Flyn15,
+    thumb: Flyn15Thumb,
   },
 
   {
     photoName: 'flyn16',
     studio: 'flyn',
+    title: '플린',
     sex: 'male',
     horizontal: false,
     attribute: ['화이트/블랙', '컨셉', '하의', '도구없음'],
     pic: Flyn16,
-    thumb: Flyn16,
+    thumb: Flyn16Thumb,
   },
   {
     photoName: 'flyn17',
     studio: 'flyn',
+    title: '플린',
     sex: 'female',
     horizontal: false,
     attribute: ['화이트/블랙', '컨셉', '언더웨어', '도구없음'],
     pic: Flyn17,
-    thumb: Flyn17,
+    thumb: Flyn17Thumb,
   },
   {
     photoName: 'flyn18',
     studio: 'flyn',
+    title: '플린',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '컨셉', '상의', '하의', '도구없음'],
     pic: Flyn18,
-    thumb: Flyn18,
+    thumb: Flyn18Thumb,
   },
   {
     photoName: 'flyn19',
     studio: 'flyn',
+    title: '플린',
     sex: 'male',
     horizontal: false,
     attribute: ['흑백사진', '상의', '하의', '소가구'],
     pic: Flyn19,
-    thumb: Flyn19,
+    thumb: Flyn19Thumb,
   },
   {
     photoName: 'flyn20',
     studio: 'flyn',
+    title: '플린',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '수영복', '도구없음'],
     pic: Flyn20,
-    thumb: Flyn20,
+    thumb: Flyn20Thumb,
   },
 
   {
     photoName: 'flyn21',
     studio: 'flyn',
+    title: '플린',
     sex: 'female',
     horizontal: false,
     attribute: ['화이트/블랙', '수영복', '도구없음'],
     pic: Flyn21,
-    thumb: Flyn21,
+    thumb: Flyn21Thumb,
   },
   {
     photoName: 'flyn22',
     studio: 'flyn',
+    title: '플린',
     sex: 'female',
     horizontal: false,
     attribute: ['화이트/블랙', '하의', '기타운동도구'],
     pic: Flyn22,
-    thumb: Flyn22,
+    thumb: Flyn22Thumb,
   },
   {
     photoName: 'flyn23',
     studio: 'flyn',
+    title: '플린',
     sex: 'male',
     horizontal: false,
     attribute: ['흑백사진', '상의', '도구없음'],
     pic: Flyn23,
-    thumb: Flyn23,
+    thumb: Flyn23Thumb,
   },
   {
     photoName: 'flyn24',
     studio: 'flyn',
+    title: '플린',
     sex: 'female',
     horizontal: false,
     attribute: ['화이트/블랙', '컨셉', '언더웨어', '기타도구'],
     pic: Flyn24,
-    thumb: Flyn24,
+    thumb: Flyn24Thumb,
   },
   {
     photoName: 'flyn25',
     studio: 'flyn',
+    title: '플린',
     sex: 'female',
     horizontal: false,
     attribute: ['화이트/블랙', '컨셉', '하의', '기타운동도구'],
     pic: Flyn25,
-    thumb: Flyn25,
+    thumb: Flyn25Thumb,
   },
   {
     photoName: 'flyn26',
     studio: 'flyn',
+    title: '플린',
     sex: 'male',
     horizontal: false,
     attribute: ['컬러', '컨셉', '하의', '상의', '도구없음'],
     pic: Flyn26,
-    thumb: Flyn26,
+    thumb: Flyn26Thumb,
   },
   {
     photoName: 'flyn27',
     studio: 'flyn',
+    title: '플린',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '상의', '도구없음'],
     pic: Flyn27,
-    thumb: Flyn27,
+    thumb: Flyn27Thumb,
   },
   {
     photoName: 'flyn28',
     studio: 'flyn',
+    title: '플린',
     sex: 'female',
     horizontal: false,
     attribute: ['화이트/블랙', '컨셉', '수영복', '소가구'],
     pic: Flyn28,
-    thumb: Flyn28,
+    thumb: Flyn28Thumb,
   },
   {
     photoName: 'flyn29',
     studio: 'flyn',
+    title: '플린',
     sex: 'male',
     horizontal: false,
     attribute: ['흑백사진', '언더웨어', '도구없음'],
     pic: Flyn29,
-    thumb: Flyn29,
+    thumb: Flyn29Thumb,
   },
   {
     photoName: 'flyn30',
     studio: 'flyn',
+    title: '플린',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '컨셉', '수영복', '소가구'],
     pic: Flyn30,
-    thumb: Flyn30,
+    thumb: Flyn30Thumb,
   },
   {
     photoName: 'flyn31',
     studio: 'flyn',
+    title: '플린',
     sex: 'female',
     horizontal: true,
     attribute: ['화이트/블랙', '컨셉', '하의', '기타운동기구'],
     pic: Flyn31,
-    thumb: Flyn31,
+    thumb: Flyn31Thumb,
   },
   {
     photoName: 'flyn32',
     studio: 'flyn',
+    title: '플린',
     sex: 'female',
     horizontal: false,
     attribute: ['컬러', '하의', '도구없음'],
     pic: Flyn32,
-    thumb: Flyn32,
+    thumb: Flyn32Thumb,
   },
 ];

@@ -1,5 +1,10 @@
 .conceptListCard {
-  width: 33%;
+  display: block;
+  width: 100%;
   height: auto;
   margin-bottom: 1px;
+}
+
+.concepListCardContainer {
+  width: 33%;
 }
