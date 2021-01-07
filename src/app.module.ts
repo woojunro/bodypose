@@ -15,6 +15,10 @@ import { Catchphrase } from './studios/entities/catchphrase.entity';
 import { UserClickStudio } from './studios/entities/user-click-studio.entity';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { PhotosModule } from './photos/photos.module';
+import { StudioPhoto } from './photos/entities/studio-photo.entity';
+import { PhotoConcept } from './photos/entities/photo-concept.entity';
+import { UserClickStudioPhoto } from './photos/entities/user-click-studio-photo.entity';
 
 @Module({
   imports: [
@@ -43,7 +47,16 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
       database: process.env.DB_NAME,
       synchronize: true,
       logging: true,
-      entities: [User, Verification, Studio, Catchphrase, UserClickStudio],
+      entities: [
+        User,
+        Verification,
+        Studio,
+        Catchphrase,
+        UserClickStudio,
+        StudioPhoto,
+        PhotoConcept,
+        UserClickStudioPhoto,
+      ],
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
@@ -53,6 +66,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
     CommonModule,
     UsersModule,
     StudiosModule,
+    PhotosModule,
   ],
   controllers: [],
   providers: [

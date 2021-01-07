@@ -5,6 +5,7 @@ import { IsBoolean, IsEmail, IsEnum, IsString, IsUrl } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { BeforeInsert, Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 import { Studio } from 'src/studios/entities/studio.entity';
+import { StudioPhoto } from 'src/photos/entities/studio-photo.entity';
 
 export enum LoginMethod {
   KAKAO = 'KAKAO',
@@ -101,6 +102,11 @@ export class User extends CoreEntity {
   @JoinTable()
   @Field(type => [Studio])
   heartStudios: Studio[];
+
+  @ManyToMany(type => StudioPhoto)
+  @JoinTable()
+  @Field(type => [StudioPhoto])
+  heartStudioPhotos: StudioPhoto[];
 
   @BeforeInsert()
   async hashPassword(): Promise<void> {

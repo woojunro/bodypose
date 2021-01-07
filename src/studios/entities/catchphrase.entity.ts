@@ -12,7 +12,9 @@ export class Catchphrase extends CoreEntity {
   @IsString()
   phrase: string;
 
-  @ManyToOne(type => Studio, studio => studio.catchphrases)
+  @ManyToOne(type => Studio, studio => studio.catchphrases, {
+    onDelete: 'CASCADE',
+  })
   @Field(type => Studio)
   studio: Studio;
 }
