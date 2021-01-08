@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './StudioCard.css';
 import { IoIosHeartEmpty } from 'react-icons/io';
 import { IoIosStar } from 'react-icons/io';
@@ -6,6 +6,7 @@ import { IoIosHeart } from 'react-icons/io';
 import { Link } from 'react-router-dom';
 
 const StudioCard = ({
+  Hearted,
   name,
   title,
   location,
@@ -17,6 +18,12 @@ const StudioCard = ({
   percent,
   originalPrice,
 }) => {
+  const [isHearted, setIsHearted] = useState(Hearted);
+
+  const ChangeIsHearted = () => {
+    //Db에 is hearted 바꾸는 코드 넣기.
+    setIsHearted(!isHearted);
+  };
   return (
     <div className="totalContainer">
       <Link
@@ -56,7 +63,19 @@ const StudioCard = ({
           </div>
         </div>
       </Link>
-      <IoIosHeartEmpty className="cardHeart" fontSize="20px" />
+      {isHearted ? (
+        <IoIosHeart
+          onClick={ChangeIsHearted}
+          className="cardSelectedHeart"
+          fontSize="20px"
+        />
+      ) : (
+        <IoIosHeartEmpty
+          onClick={ChangeIsHearted}
+          className="cardHeart"
+          fontSize="20px"
+        />
+      )}
     </div>
   );
 };

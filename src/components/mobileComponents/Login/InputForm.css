@@ -5,12 +5,13 @@
   justify-content: center;
 }
 .loginInput {
+  padding-left: 10px;
   border-top-style: hidden;
   border-right-style: hidden;
   border-left-style: hidden;
   border-bottom: 0.5px solid var(--color-loginGray);
   margin-right: 5px;
-  font-size: 19px;
+  font-size: 18px;
   width: 80%;
 }
 input:focus,

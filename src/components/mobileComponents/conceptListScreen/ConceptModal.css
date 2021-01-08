@@ -98,7 +98,7 @@
   margin-left: 10px;
   margin-top: 3px;
 
-  color: red;
+  color: var(--color-heartColor);
   font-size: 28px;
 }
 .conceptRegHeart {

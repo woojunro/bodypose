@@ -19,6 +19,7 @@ export const DbStudios = [
     percent: '10%',
     originalPrice: '300,000원',
     premium: '1',
+    isHearted: true,
   },
   {
     studioName: 'balance-button',
@@ -32,6 +33,7 @@ export const DbStudios = [
     premium: '1',
 
     isEvent: false,
+    isHearted: true,
   },
   {
     studioName: 'coco-viking',
@@ -45,6 +47,7 @@ export const DbStudios = [
 
     isEvent: false,
     premium: '1',
+    isHearted: false,
   },
   {
     studioName: 'flyn',
@@ -57,6 +60,7 @@ export const DbStudios = [
     review: 5,
     isEvent: false,
     premium: '1',
+    isHearted: true,
   },
   {
     studioName: 'jason',
@@ -69,6 +73,7 @@ export const DbStudios = [
     review: 1,
     isEvent: false,
     premium: '0',
+    isHearted: true,
   },
   {
     studioName: 'ryan',
@@ -81,5 +86,6 @@ export const DbStudios = [
     review: 2,
     isEvent: false,
     premium: '0',
+    isHearted: false,
   },
 ];

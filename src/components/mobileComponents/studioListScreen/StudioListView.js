@@ -8,6 +8,7 @@ const StudioListView = ({ studioList }) => {
     return (
       <div key={studio.title}>
         <StudioCard
+          Hearted={studio.isHearted}
           name={studio.studioName}
           title={studio.title}
           price={studio.price}

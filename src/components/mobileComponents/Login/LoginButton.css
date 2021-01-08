@@ -1,0 +1,17 @@
+.loginButton {
+  width: 80%;
+  height: 40px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-chocolate);
+  color: white;
+  border-radius: 5px;
+}
+
+.loginButtonContainer {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}

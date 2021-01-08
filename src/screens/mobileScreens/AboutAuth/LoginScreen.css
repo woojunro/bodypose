@@ -1,0 +1,74 @@
+.loginContainer {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.loginBackArrow {
+  font-size: 25px;
+  margin-left: 18px;
+  margin-top: 25px;
+}
+.loginTitle {
+  margin-top: 15px;
+  margin-left: 8%;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.loginEmailText {
+  font-size: 12px;
+  margin-top: 25px;
+  margin-left: 10%;
+  color: var(--color-loginGray);
+  margin-bottom: 10px;
+}
+.forgotPassword {
+  width: 100%;
+  font-size: 11px;
+  margin-top: 10px;
+  color: gray;
+}
+.forgotPasswordContainer {
+  width: 90%;
+  display: flex;
+  justify-content: flex-end;
+}
+.snsLoginContainerContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.snsLoginContainer {
+  margin-top: 20px;
+  width: 90%;
+  display: flex;
+  justify-content: space-evenly;
+}
+.snsLogin {
+  width: 55px;
+  height: 55px;
+}
+
+.noIdText {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.startWithEmailText {
+  width: 100%;
+  font-size: 14px;
+  color: gray;
+  display: flex;
+  justify-content: center;
+}
+.noIdContainer {
+  width: 100%;
+  padding-top: 10%;
+  margin-bottom: 15%;
+  bottom: 70px;
+}
