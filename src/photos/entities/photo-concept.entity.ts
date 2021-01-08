@@ -27,7 +27,7 @@ export class PhotoConcept extends CoreEntity {
   @Field(type => String)
   slug: string;
 
-  @ManyToMany(type => StudioPhoto)
+  @ManyToMany(type => StudioPhoto, photo => photo.concepts)
   @Field(type => [StudioPhoto])
   photos: StudioPhoto[];
 }

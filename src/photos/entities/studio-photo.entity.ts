@@ -1,5 +1,5 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { IsUrl } from 'class-validator';
+import { IsEnum, IsUrl } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Studio } from 'src/studios/entities/studio.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -26,10 +26,15 @@ registerEnumType(PhotoGender, {
 @Entity()
 @ObjectType()
 export class StudioPhoto extends CoreEntity {
-  @Column({ unique: true })
+  @Column()
   @Field(type => String)
   @IsUrl()
-  url: string;
+  thumbnailUrl: string;
+
+  @Column()
+  @Field(type => String)
+  @IsUrl()
+  originalUrl: string;
 
   @ManyToOne(type => Studio, studio => studio.photos, { onDelete: 'CASCADE' })
   @Field(type => Studio)
@@ -44,6 +49,7 @@ export class StudioPhoto extends CoreEntity {
     enum: PhotoGender,
   })
   @Field(type => PhotoGender)
+  @IsEnum(PhotoGender)
   gender: PhotoGender;
 
   @Column({ default: 0 })
@@ -58,7 +64,7 @@ export class StudioPhoto extends CoreEntity {
   @Field(type => [User])
   heartUsers: User[];
 
-  @ManyToMany(type => PhotoConcept)
+  @ManyToMany(type => PhotoConcept, concept => concept.photos)
   @JoinTable()
   @Field(type => [PhotoConcept])
   concepts: PhotoConcept[];

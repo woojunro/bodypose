@@ -72,6 +72,8 @@ export class StudiosService {
           catchphraseArray.push(newCatchphrase);
         }
         newStudio.catchphrases = catchphraseArray;
+      } else {
+        newStudio.catchphrases = [];
       }
       // Save
       const savedStudio = await this.studioRepository.save(newStudio);

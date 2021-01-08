@@ -15,5 +15,6 @@ import { AuthModule } from 'src/auth/auth.module';
     UsersModule,
   ],
   providers: [StudiosService, StudiosResolver],
+  exports: [StudiosService],
 })
 export class StudiosModule {}
