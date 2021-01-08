@@ -5,7 +5,7 @@ import Shuffle from '../../functions/Shuffle';
 import SemiTitle from './SemiTitle';
 
 import { DbStudios } from '../../../virtualDB/items/DbStudios';
-import SortPremium from '../../functions/SortPremium';
+import SortPremium from '../../functions/Studio/SortPremium';
 
 const MainCardScrollView = () => {
   //프리미엄 스튜디오 순서 섞고 5개만 추출.
@@ -19,7 +19,7 @@ const MainCardScrollView = () => {
     return (
       <li key={studio.studioName}>
         <MainCardM
-          studioName={studio.title}
+          studioName={studio.studioName}
           pic={studio.mainPhoto}
           price={studio.price}
           title={studio.title}

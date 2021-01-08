@@ -1,5 +1,3 @@
-import shuffle from './Shuffle';
-
 const SortByLocation = (studios, location) => {
   var newStudios = [];
 

@@ -1,4 +1,4 @@
-import Shuffle from './Shuffle';
+import Shuffle from '../Shuffle';
 const MakingConceptListArray = (conceptList) => {
   Shuffle(conceptList);
   var arrayList = [];

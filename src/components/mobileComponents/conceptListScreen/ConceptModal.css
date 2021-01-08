@@ -106,3 +106,8 @@
   margin-top: 3px;
   font-size: 28px;
 }
+.whileLoading {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}

@@ -195,12 +195,7 @@ const Modal = ({
     <>
       {isOpen ? (
         <div className="selectionModal">
-          <div
-            className="selectionGreyBackground"
-            onClick={() => {
-              close();
-            }}
-          >
+          <div className="selectionGreyBackground">
             <div className="selectionTrueModal">
               <div
                 className="selectionModalContents"

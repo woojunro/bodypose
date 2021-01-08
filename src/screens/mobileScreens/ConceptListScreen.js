@@ -16,12 +16,15 @@ const genderOptions = ['전체', '남성', '여성', '커플'];
 var conceptNum = -24;
 
 const ConceptListScreen = () => {
+  //fetching 중인가?
+  const [whileFetching, setWhileFetching] = useState(false);
   //선택된 컨셉 목록.
   const [selectedConcepts, setSelectedConcepts] = useState({
     bgConcept: ['total'],
     costumeConcept: ['total'],
     objectConcept: ['total'],
   });
+
   const [isSelectionOpen, setIsSelectionOpen] = useState(false);
   const [i, setI] = useState(0);
 
@@ -65,23 +68,30 @@ const ConceptListScreen = () => {
       currentData.length === moreData.length
         ? setIsMore(false)
         : setIsMore(true);
-    }, 1500);
+      //다 불러오고 fetching 상태 바꿔주기.
+      setWhileFetching(false);
+    }, 1000);
   };
 
+  //큰 화면으로 볼 때 10개 이후 새로운 것이 필요하면 미리 불러두기.
   const needFetchMoreData = (selectedPhotoNum) => {
     if (selectedPhotoNum > conceptArray.length - 10 && isMore) {
+      setWhileFetching(true);
       fetchMoreData();
     }
     if (!isMore && selectedPhotoNum === conceptArray.length - 1) {
       setIsFinalPhoto(true);
     }
   };
-  useEffect(() => {
-    //성별 및 컨셉 바꾸면 Db에서 사진 다시 불러와야하는 부분.
-
+  //성별 및 컨셉 바꾸면 Db에서 사진 다시 불러와야하는 부분.
+  const getDb = () => {
     setI(0);
     setIsMore(true);
     setConceptArray(shuffle(DbPhotos.slice(0, 24)));
+  };
+
+  useEffect(() => {
+    getDb();
   }, [gender, selectedConcepts]);
 
   return (
@@ -106,43 +116,52 @@ const ConceptListScreen = () => {
         selectedGender={gender}
         setGender={setGender}
       />
-      <InfiniteScroll
-        dataLength={conceptArray.length}
-        next={fetchMoreData}
-        hasMore={isMore}
-        loader={<LoadingIcon />}
-        endMessage={
-          <div className="endMessageContainer">
-            <div>모든 사진을 불러왔습니다</div>
-          </div>
-        }
-      >
-        <div className="totalConcept">
-          {conceptArray.map((concept) => (
-            <ConceptListCard
-              key={concept.photoName}
-              conceptNum={conceptNum++}
-              photo={concept}
-              isModalOpen={isModalOpen}
-              setThisPhoto={handlePhotoNum}
-              openModal={openModal}
-              needFetchMoreData={needFetchMoreData}
-            />
-          ))}
+      {whileFetching ? (
+        <div className="whileLoading">
+          <LoadingIcon />
         </div>
-      </InfiniteScroll>
-      <ConceptModal
-        isOpen={isModalOpen}
-        close={closeModal}
-        concept={conceptArray[selectedPhotoNum]}
-        openModal={openModal}
-        setThisPhoto={handlePhotoNum}
-        needFetchMoreData={needFetchMoreData}
-        photoNum={selectedPhotoNum}
-        isFinalPhoto={isFinalPhoto}
-        handleIsFinalPhoto={cancleFinalPhoto}
-      />
-      <BottomNavigation pageName="concepts" />
+      ) : (
+        <>
+          <InfiniteScroll
+            dataLength={conceptArray.length}
+            next={fetchMoreData}
+            hasMore={isMore}
+            loader={<LoadingIcon />}
+            endMessage={
+              <div className="endMessageContainer">
+                <div>모든 사진을 불러왔습니다</div>
+              </div>
+            }
+          >
+            <div className="totalConcept">
+              {conceptArray.map((concept) => (
+                <ConceptListCard
+                  key={concept.photoName}
+                  conceptNum={conceptNum++}
+                  photo={concept}
+                  isModalOpen={isModalOpen}
+                  setThisPhoto={handlePhotoNum}
+                  openModal={openModal}
+                  needFetchMoreData={needFetchMoreData}
+                />
+              ))}
+            </div>
+          </InfiniteScroll>
+          <ConceptModal
+            whileFetching={whileFetching}
+            isOpen={isModalOpen}
+            close={closeModal}
+            concept={conceptArray[selectedPhotoNum]}
+            openModal={openModal}
+            setThisPhoto={handlePhotoNum}
+            needFetchMoreData={needFetchMoreData}
+            photoNum={selectedPhotoNum}
+            isFinalPhoto={isFinalPhoto}
+            handleIsFinalPhoto={cancleFinalPhoto}
+          />
+          <BottomNavigation pageName="concepts" />
+        </>
+      )}
     </div>
   );
 };

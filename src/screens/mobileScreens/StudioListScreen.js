@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { MakingStudioList } from '../../components/functions/MakingStudioList';
-import SortByHearts from '../../components/functions/SortByHearts';
-import SortByLocation from '../../components/functions/sortByLocation';
-import SortByName from '../../components/functions/SortByName';
-import SortByPrice from '../../components/functions/SortByPrice';
-import SortByRating from '../../components/functions/SortByRating';
+import { MakingStudioList } from '../../components/functions/Studio/MakingStudioList';
+import SortByHearts from '../../components/functions/Studio/SortByHearts';
+import SortByLocation from '../../components/functions/Studio/SortByLocation';
+import SortByName from '../../components/functions/Studio/SortByName';
+import SortByPrice from '../../components/functions/Studio/SortByPrice';
+import SortByRating from '../../components/functions/Studio/SortByRating';
 import BottomNavigation from '../../components/mobileComponents/BottomNavigation';
 import Header from '../../components/mobileComponents/HeaderM';
 import { SearchBar } from '../../components/mobileComponents/studioListScreen/SearchBar';
