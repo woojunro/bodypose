@@ -19,7 +19,7 @@ import {
 } from './dtos/toggle-heart-studio.dto';
 import { Catchphrase } from './entities/catchphrase.entity';
 import { Studio } from './entities/studio.entity';
-import { UserClickStudio } from './entities/user-click-studio.entity';
+import { UsersClickStudios } from './entities/users-click-studios.entity';
 
 @Injectable()
 export class StudiosService {
@@ -28,8 +28,8 @@ export class StudiosService {
     private readonly studioRepository: Repository<Studio>,
     @InjectRepository(Catchphrase)
     private readonly catchphraseRepository: Repository<Catchphrase>,
-    @InjectRepository(UserClickStudio)
-    private readonly userClickStudioRepository: Repository<UserClickStudio>,
+    @InjectRepository(UsersClickStudios)
+    private readonly userClickStudioRepository: Repository<UsersClickStudios>,
     private readonly usersService: UsersService,
   ) {}
 

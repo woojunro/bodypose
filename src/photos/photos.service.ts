@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
 import { StudiosService } from 'src/studios/studios.service';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
-import { In, IsNull, Not, Repository } from 'typeorm';
+import { FindOneOptions, In, IsNull, Not, Repository } from 'typeorm';
 import {
   CreatePhotoConceptInput,
   CreatePhotoConceptOutput,
@@ -17,7 +17,12 @@ import {
   GetStudioPhotosInput,
   GetStudioPhotosOutput,
 } from './dtos/get-studio-photo.dto';
-import { ConceptType, PhotoConcept } from './entities/photo-concept.entity';
+import {
+  BackgroundConcept,
+  CostumeConcept,
+  ObjectConcept,
+  PhotoConceptType,
+} from './entities/photo-concept.entity';
 import { StudioPhoto } from './entities/studio-photo.entity';
 
 @Injectable()
@@ -25,11 +30,17 @@ export class PhotosService {
   constructor(
     @InjectRepository(StudioPhoto)
     private readonly studioPhotoRepository: Repository<StudioPhoto>,
-    @InjectRepository(PhotoConcept)
-    private readonly photoConceptRepository: Repository<PhotoConcept>,
+    @InjectRepository(BackgroundConcept)
+    private readonly backgroundConceptRepository: Repository<BackgroundConcept>,
+    @InjectRepository(CostumeConcept)
+    private readonly costumeConceptRepository: Repository<CostumeConcept>,
+    @InjectRepository(ObjectConcept)
+    private readonly objectConceptRepository: Repository<ObjectConcept>,
     private readonly usersService: UsersService,
     private readonly studiosService: StudiosService,
   ) {}
+
+  /*
 
   async getStudioPhotos(
     input: GetStudioPhotosInput,
@@ -90,22 +101,61 @@ export class PhotosService {
       error: 'TODO',
     };
   }
+  */
 
-  getPhotoConceptBySlug(slug: string): Promise<PhotoConcept> {
-    return this.photoConceptRepository.findOne({ slug });
-  }
+  getBackgroundConceptBySlug = (
+    slug: string,
+    options?: FindOneOptions<BackgroundConcept>,
+  ): Promise<BackgroundConcept> => {
+    return this.backgroundConceptRepository.findOne({ slug }, options);
+  };
+
+  getCostumeConceptBySlug = (
+    slug: string,
+    options?: FindOneOptions<BackgroundConcept>,
+  ): Promise<CostumeConcept> => {
+    return this.costumeConceptRepository.findOne({ slug }, options);
+  };
+
+  getObjectConceptBySlug = (
+    slug: string,
+    options?: FindOneOptions<BackgroundConcept>,
+  ): Promise<ObjectConcept> => {
+    return this.objectConceptRepository.findOne({ slug }, options);
+  };
 
   async attachPhotoConcept(
     photo: StudioPhoto,
     slug: string,
-    conceptType: ConceptType,
+    conceptType: PhotoConceptType,
   ): Promise<void> {
-    const concept = await this.photoConceptRepository.findOne({
-      slug,
-      conceptType,
-    });
-    if (!concept) return;
-    photo.concepts.push(concept);
+    try {
+      let concept;
+      switch (conceptType) {
+        case PhotoConceptType.BACKGROUND:
+          concept = await this.getBackgroundConceptBySlug(slug);
+          if (concept) {
+            photo.backgroundConcepts.push(concept);
+          }
+          break;
+        case PhotoConceptType.COSTUME:
+          concept = await this.getCostumeConceptBySlug(slug);
+          if (concept) {
+            photo.costumeConcepts.push(concept);
+          }
+          break;
+        case PhotoConceptType.OBJECT:
+          concept = await this.getCostumeConceptBySlug(slug);
+          if (concept) {
+            photo.objectConcepts.push(concept);
+          }
+          break;
+        default:
+          return;
+      }
+    } catch (e) {
+      return;
+    }
   }
 
   async createPhotoConcept({
@@ -113,24 +163,48 @@ export class PhotosService {
     conceptType,
   }: CreatePhotoConceptInput): Promise<CreatePhotoConceptOutput> {
     try {
-      const concept = await this.photoConceptRepository.findOne({
-        slug,
-        conceptType,
-      });
+      let concept;
+      switch (conceptType) {
+        case PhotoConceptType.BACKGROUND:
+          concept = await this.getBackgroundConceptBySlug(slug);
+          break;
+        case PhotoConceptType.COSTUME:
+          concept = await this.getCostumeConceptBySlug(slug);
+          break;
+        case PhotoConceptType.OBJECT:
+          concept = await this.getObjectConceptBySlug(slug);
+          break;
+        default:
+          throw new InternalServerErrorException();
+      }
       if (concept) {
         return {
           ok: false,
           error: `Concept with that slug(${slug}) already exists.`,
         };
       }
-      const newConcept = this.photoConceptRepository.create({
-        slug,
-        conceptType,
-      });
-      const createdConcept = await this.photoConceptRepository.save(newConcept);
+      switch (conceptType) {
+        case PhotoConceptType.BACKGROUND:
+          concept = await this.backgroundConceptRepository.save(
+            this.backgroundConceptRepository.create({ slug }),
+          );
+          break;
+        case PhotoConceptType.COSTUME:
+          concept = await this.costumeConceptRepository.save(
+            this.costumeConceptRepository.create({ slug }),
+          );
+          break;
+        case PhotoConceptType.OBJECT:
+          concept = await this.objectConceptRepository.save(
+            this.objectConceptRepository.create({ slug }),
+          );
+          break;
+        default:
+          throw new InternalServerErrorException();
+      }
       return {
         ok: true,
-        photoConcept: createdConcept,
+        photoConcept: concept,
       };
     } catch (e) {
       console.log(e);
@@ -159,27 +233,33 @@ export class PhotosService {
       if (!studioBySlug) {
         return {
           ok: false,
-          error: 'Studio not found',
+          error: `Studio with that slug(${studioSlug}) not found`,
         };
       }
       // Create a photo
       const newPhoto = this.studioPhotoRepository.create({
         studio: studioBySlug,
         gender,
-        concepts: [],
+        backgroundConcepts: [],
+        costumeConcepts: [],
+        objectConcepts: [],
       });
       // TODO: Upload the photo and get URL
       newPhoto.thumbnailUrl = `http://www.fmonth.com/${Date.now()}`;
       newPhoto.originalUrl = `http://www.fmonth.com/${Date.now()}`;
       // Attach Concepts
       for (const slug of backgroundConceptSlugs) {
-        await this.attachPhotoConcept(newPhoto, slug, ConceptType.BACKGROUND);
+        await this.attachPhotoConcept(
+          newPhoto,
+          slug,
+          PhotoConceptType.BACKGROUND,
+        );
       }
       for (const slug of costumeConceptSlugs) {
-        await this.attachPhotoConcept(newPhoto, slug, ConceptType.COSTUME);
+        await this.attachPhotoConcept(newPhoto, slug, PhotoConceptType.COSTUME);
       }
       for (const slug of objectConceptSlugs) {
-        await this.attachPhotoConcept(newPhoto, slug, ConceptType.OBJECT);
+        await this.attachPhotoConcept(newPhoto, slug, PhotoConceptType.OBJECT);
       }
       // Save
       const createdPhoto = await this.studioPhotoRepository.save(newPhoto);

@@ -1,17 +1,14 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { IsEnum, IsUrl } from 'class-validator';
+import { IsEnum, IsInt, IsUrl } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Studio } from 'src/studios/entities/studio.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
 import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  RelationId,
-} from 'typeorm';
-import { PhotoConcept } from './photo-concept.entity';
+  BackgroundConcept,
+  CostumeConcept,
+  ObjectConcept,
+} from './photo-concept.entity';
 
 export enum PhotoGender {
   MALE = 'MALE',
@@ -36,13 +33,11 @@ export class StudioPhoto extends CoreEntity {
   @IsUrl()
   originalUrl: string;
 
-  @ManyToOne(type => Studio, studio => studio.photos, { onDelete: 'CASCADE' })
+  @ManyToOne(relation => Studio, studio => studio.photos, {
+    onDelete: 'CASCADE',
+  })
   @Field(type => Studio)
   studio: Studio;
-
-  @RelationId((photo: StudioPhoto) => photo.studio)
-  @Field(type => Int)
-  studioId: number;
 
   @Column({
     type: 'enum',
@@ -54,18 +49,36 @@ export class StudioPhoto extends CoreEntity {
 
   @Column({ default: 0 })
   @Field(type => Int)
+  @IsInt()
   clickCount: number;
 
   @Column({ default: 0 })
   @Field(type => Int)
+  @IsInt()
   heartCount: number;
 
-  @ManyToMany(type => User)
+  @ManyToMany(relation => User)
   @Field(type => [User])
   heartUsers: User[];
 
-  @ManyToMany(type => PhotoConcept, concept => concept.photos)
-  @JoinTable()
-  @Field(type => [PhotoConcept])
-  concepts: PhotoConcept[];
+  @ManyToMany(relation => BackgroundConcept)
+  @JoinTable({
+    name: 'photos_background_concepts',
+  })
+  @Field(type => [BackgroundConcept])
+  backgroundConcepts: BackgroundConcept[];
+
+  @ManyToMany(relation => CostumeConcept)
+  @JoinTable({
+    name: 'photos_costume_concepts',
+  })
+  @Field(type => [CostumeConcept])
+  costumeConcepts: CostumeConcept[];
+
+  @ManyToMany(relation => ObjectConcept)
+  @JoinTable({
+    name: 'photos_object_concepts',
+  })
+  @Field(type => [ObjectConcept])
+  objectConcepts: ObjectConcept[];
 }

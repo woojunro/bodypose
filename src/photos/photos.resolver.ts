@@ -21,15 +21,6 @@ import { PhotosService } from './photos.service';
 export class PhotosResolver {
   constructor(private readonly photosService: PhotosService) {}
 
-  // Public
-  @Query(returns => GetStudioPhotosOutput)
-  studioPhotos(
-    @CurrentUser() user: User,
-    @Args('input') input: GetStudioPhotosInput,
-  ): Promise<GetStudioPhotosOutput> {
-    return this.photosService.getStudioPhotos(input, user);
-  }
-
   @Mutation(returns => CreateStudioPhotoOutput)
   @Roles(Role.ADMIN)
   createStudioPhoto(

@@ -1,5 +1,5 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { IsEnum, IsString, IsUrl } from 'class-validator';
+import { IsEnum, IsOptional, IsString, IsUrl } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { StudioPhoto } from 'src/photos/entities/studio-photo.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -36,8 +36,9 @@ export class Studio extends CoreEntity {
   @IsString()
   slug: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   @Field(type => String, { nullable: true })
+  @IsOptional()
   @IsString()
   description?: string;
 
@@ -65,11 +66,11 @@ export class Studio extends CoreEntity {
   @IsEnum(PremiumTier)
   premiumTier: PremiumTier;
 
-  @OneToMany(type => Catchphrase, catchphrase => catchphrase.studio)
+  @OneToMany(relation => Catchphrase, catchphrase => catchphrase.studio)
   @Field(type => [Catchphrase])
   catchphrases: Catchphrase[];
 
-  @ManyToMany(type => User)
+  @ManyToMany(relation => User)
   @Field(type => [User])
   heartUsers: User[];
 
@@ -81,7 +82,7 @@ export class Studio extends CoreEntity {
   @Field(type => Int)
   clickCount: number;
 
-  @OneToMany(type => StudioPhoto, photo => photo.studio)
+  @OneToMany(relation => StudioPhoto, photo => photo.studio)
   @Field(type => [StudioPhoto])
   photos: StudioPhoto[];
 }

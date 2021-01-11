@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
@@ -76,7 +81,7 @@ export class UsersService {
       }
       // Create and save the user
       const newUser = this.userRepository.create({ email, password, nickname });
-      newUser.createdWith = LoginMethod.EMAIL;
+      newUser.loginMethod = LoginMethod.EMAIL;
       newUser.isVerified = false;
       const createdUser = await this.userRepository.save(newUser);
       // Create verification code and send it to the user
@@ -112,6 +117,25 @@ export class UsersService {
     }
   }
 
+  getPossibleNickname = async (nickname?: string): Promise<string> => {
+    try {
+      let newNickname = nickname ? nickname : '바프새내기';
+      const userWithNickname = await this.getUserByNickname(newNickname);
+      if (userWithNickname) {
+        for (let i = 1; ; i++) {
+          newNickname = newNickname + i;
+          const userWithNewNickname = await this.getUserByNickname(newNickname);
+          if (!userWithNewNickname) {
+            return newNickname;
+          }
+        }
+      }
+      return newNickname;
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
+  };
+
   async createOrLoginUserWithOAuth({
     accessToken,
     createWith,
@@ -128,40 +152,26 @@ export class UsersService {
       if (!ok) {
         return { ok, error };
       }
-      // Check duplicate user
+      // If the user does not exist, create one
       let user = await this.userRepository.findOne({
-        createdWith: createWith,
+        loginMethod: createWith,
         socialId,
       });
       if (!user) {
         user = this.userRepository.create({
-          createdWith: createWith,
+          loginMethod: createWith,
           socialId,
           isVerified: true,
           ...profiles,
         });
-        // TODO: nickname 자체를 받지 못했을 경우 임의의 닉네임 생성
-        // Check duplicate nickname
-        const userWithNickname = await this.getUserByNickname(nickname);
-        if (userWithNickname) {
-          for (let count = 1; ; count++) {
-            const newNickname = nickname + count;
-            const userWithNewNickname = await this.getUserByNickname(
-              newNickname,
-            );
-            if (!userWithNewNickname) {
-              user.nickname = newNickname;
-              break;
-            }
-          }
-        } else {
-          user.nickname = nickname;
-        }
+        // Get a possible nickname
+        const newNickname = await this.getPossibleNickname(nickname);
+        user.nickname = newNickname;
         user = await this.userRepository.save(user);
       }
       // Get JWT token
       const loginResult = await this.authService.loginWithOAuth(
-        user.createdWith as SocialLoginMethod,
+        user.loginMethod as SocialLoginMethod,
         user.socialId,
       );
       return {
@@ -197,10 +207,10 @@ export class UsersService {
   }
 
   async getUserBySocialId(
-    createdWith: SocialLoginMethod,
+    loginMethod: SocialLoginMethod,
     socialId: string,
   ): Promise<User> {
-    return this.userRepository.findOne({ createdWith, socialId });
+    return this.userRepository.findOne({ loginMethod, socialId });
   }
 
   async getUserProfileById(id: number): Promise<GetMyProfileOutput> {

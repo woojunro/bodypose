@@ -26,7 +26,7 @@ export class AuthService {
     try {
       // Get a user with the inputted email
       const user = await this.usersService.getUserByEmail(email, {
-        select: ['id', 'createdWith', 'password'],
+        select: ['id', 'loginMethod', 'password'],
       });
       if (!user) {
         return {
@@ -43,7 +43,7 @@ export class AuthService {
         };
       }
       // Issue an auth token
-      const payload = { id: user.id, createdWith: user.createdWith };
+      const payload = { id: user.id, loginMethod: user.loginMethod };
       const token = this.jwtService.sign(payload);
       return {
         ok: true,
@@ -73,7 +73,7 @@ export class AuthService {
           error: 'User not found',
         };
       }
-      const payload = { id: user.id, createdWith: user.createdWith };
+      const payload = { id: user.id, loginMethod: user.loginMethod };
       const token = this.jwtService.sign(payload);
       return {
         ok: true,

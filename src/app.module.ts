@@ -12,13 +12,18 @@ import { Verification } from './users/entities/verification.entity';
 import { StudiosModule } from './studios/studios.module';
 import { Studio } from './studios/entities/studio.entity';
 import { Catchphrase } from './studios/entities/catchphrase.entity';
-import { UserClickStudio } from './studios/entities/user-click-studio.entity';
+import { UsersClickStudios } from './studios/entities/users-click-studios.entity';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { PhotosModule } from './photos/photos.module';
 import { StudioPhoto } from './photos/entities/studio-photo.entity';
-import { PhotoConcept } from './photos/entities/photo-concept.entity';
-import { UserClickStudioPhoto } from './photos/entities/user-click-studio-photo.entity';
+import {
+  BackgroundConcept,
+  CostumeConcept,
+  ObjectConcept,
+  PhotoConcept,
+} from './photos/entities/photo-concept.entity';
+import { UsersClickStudioPhotos } from './photos/entities/users-click-studio-photos.entity';
 
 @Module({
   imports: [
@@ -52,10 +57,12 @@ import { UserClickStudioPhoto } from './photos/entities/user-click-studio-photo.
         Verification,
         Studio,
         Catchphrase,
-        UserClickStudio,
+        UsersClickStudios,
         StudioPhoto,
-        PhotoConcept,
-        UserClickStudioPhoto,
+        BackgroundConcept,
+        CostumeConcept,
+        ObjectConcept,
+        UsersClickStudioPhotos,
       ],
     }),
     GraphQLModule.forRoot({

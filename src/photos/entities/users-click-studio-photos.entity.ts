@@ -6,11 +6,11 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Studio } from './studio.entity';
+import { StudioPhoto } from './studio-photo.entity';
 
 @Entity()
 @ObjectType()
-export class UserClickStudio {
+export class UsersClickStudioPhotos {
   @PrimaryGeneratedColumn()
   @Field(type => Int)
   id: number;
@@ -26,7 +26,7 @@ export class UserClickStudio {
   @Field(type => User, { nullable: true })
   user?: User;
 
-  @ManyToOne(type => Studio, { onDelete: 'CASCADE' })
-  @Field(type => Studio)
-  studio: Studio;
+  @ManyToOne(type => StudioPhoto, { onDelete: 'CASCADE' })
+  @Field(type => StudioPhoto)
+  studioPhoto: StudioPhoto;
 }

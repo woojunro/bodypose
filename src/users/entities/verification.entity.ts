@@ -13,7 +13,7 @@ export class Verification extends CoreEntity {
   @IsUUID()
   code: string;
 
-  @OneToOne(type => User, { onDelete: 'CASCADE' })
+  @OneToOne(relation => User, { onDelete: 'CASCADE' })
   @JoinColumn()
   @Field(type => User)
   user: User;

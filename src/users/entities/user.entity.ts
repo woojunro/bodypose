@@ -1,7 +1,14 @@
 import { hash, compare } from 'bcrypt';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { IsBoolean, IsEmail, IsEnum, IsString, IsUrl } from 'class-validator';
+import {
+  IsBoolean,
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsUrl,
+} from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { BeforeInsert, Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 import { Studio } from 'src/studios/entities/studio.entity';
@@ -43,6 +50,7 @@ export class User extends CoreEntity {
   @Column({
     type: 'enum',
     enum: Role,
+    default: Role.USER,
   })
   @Field(type => Role)
   @IsEnum(Role)
@@ -54,15 +62,17 @@ export class User extends CoreEntity {
   })
   @Field(type => LoginMethod)
   @IsEnum(LoginMethod)
-  createdWith: LoginMethod;
+  loginMethod: LoginMethod;
 
   @Column({ nullable: true })
   @Field(type => String, { nullable: true })
+  @IsOptional()
   @IsString()
   socialId?: string;
 
   @Column({ nullable: true })
   @Field(type => String, { nullable: true })
+  @IsOptional()
   @IsEmail()
   email?: string;
 
@@ -71,6 +81,7 @@ export class User extends CoreEntity {
     select: false,
   })
   @Field(type => String, { nullable: true })
+  @IsOptional()
   @IsString()
   password?: string;
 
@@ -85,11 +96,13 @@ export class User extends CoreEntity {
     nullable: true,
   })
   @Field(type => Gender, { nullable: true })
+  @IsOptional()
   @IsEnum(Gender)
   gender?: Gender;
 
   @Column({ nullable: true })
   @Field(type => String, { nullable: true })
+  @IsOptional()
   @IsUrl()
   profileImageUrl?: string;
 
@@ -98,13 +111,17 @@ export class User extends CoreEntity {
   @IsBoolean()
   isVerified: boolean;
 
-  @ManyToMany(type => Studio)
-  @JoinTable()
+  @ManyToMany(relation => Studio)
+  @JoinTable({
+    name: 'users_heart_studios',
+  })
   @Field(type => [Studio])
   heartStudios: Studio[];
 
-  @ManyToMany(type => StudioPhoto)
-  @JoinTable()
+  @ManyToMany(relation => StudioPhoto)
+  @JoinTable({
+    name: 'users_heart_studio_photos',
+  })
   @Field(type => [StudioPhoto])
   heartStudioPhotos: StudioPhoto[];
 
