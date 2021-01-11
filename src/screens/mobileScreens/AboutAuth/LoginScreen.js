@@ -19,10 +19,16 @@ const LoginScreen = () => {
   const SnsLoginFunction = () => {
     SnsLogin();
   };
+  console.log(history.location.state.previousPath);
 
   if (LogedIn.logedIn) {
-    history.push('/');
-    return <div></div>;
+    if (history.location.state.previousPath === '/concepts') {
+      history.goBack();
+      return <div></div>;
+    } else {
+      history.push('/');
+      return <div></div>;
+    }
   } else {
     return (
       <div className="loginContainer">
