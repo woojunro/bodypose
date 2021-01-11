@@ -52,12 +52,12 @@ export class StudiosService {
     ...input
   }: CreateStudioInput): Promise<CreateStudioOutput> {
     try {
-      // Check duplicate slug
+      // Check duplicate studioSlug
       const studioBySlug = await this.getStudioBySlug(input.slug);
       if (studioBySlug) {
         return {
           ok: false,
-          error: 'Studio with that slug already exists',
+          error: `Studio with that slug(${input.slug}) already exists`,
         };
       }
       // Create studio
@@ -65,7 +65,7 @@ export class StudiosService {
       // Add catchphrases
       if (catchphrases) {
         const catchphraseArray: Catchphrase[] = [];
-        for (let i = 0; i < catchphrases.length || i < 2; i++) {
+        for (let i = 0; i < catchphrases.length && i < 2; i++) {
           const newCatchphrase = this.catchphraseRepository.create();
           newCatchphrase.phrase = catchphrases[i];
           await this.catchphraseRepository.save(newCatchphrase);

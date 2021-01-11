@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
+import { CoreOutput } from 'src/common/dtos/output.dto';
 import { StudiosService } from 'src/studios/studios.service';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
@@ -16,6 +17,7 @@ import {
 import {
   GetStudioPhotosInput,
   GetStudioPhotosOutput,
+  StudioPhotoWithIsHearted,
 } from './dtos/get-studio-photo.dto';
 import {
   BackgroundConcept,
@@ -40,68 +42,92 @@ export class PhotosService {
     private readonly studiosService: StudiosService,
   ) {}
 
-  /*
-
   async getStudioPhotos(
     input: GetStudioPhotosInput,
     user: User,
   ): Promise<GetStudioPhotosOutput> {
-    const {
-      page,
-      gender,
-      backgroundConceptSlugs,
-      costumeConceptSlugs,
-      objectConceptSlugs,
-    } = input;
-    const photosPerPage = 24;
+    try {
+      const {
+        page,
+        gender,
+        backgroundConceptSlugs,
+        costumeConceptSlugs,
+        objectConceptSlugs,
+      } = input;
+      const photosPerPage = 24;
 
-    const [result, count] = await this.studioPhotoRepository.findAndCount({
-      relations: ['concepts'],
-      join: {
-        alias: 'studio_photo',
-        innerJoin: { concepts: 'studio_photo.concepts' },
-      },
-      where: qb => {
-        qb.where({
-          gender: gender ? gender : Not(IsNull()),
-        })
-          .andWhere(
-            backgroundConceptSlugs.length !== 0
-              ? 'concepts.slug IN (:bgSlugs)'
-              : '1=1',
-            { bgSlugs: backgroundConceptSlugs },
-          )
-          .andWhere(
-            costumeConceptSlugs.length !== 0
-              ? 'concepts.slug IN (:costumeSlugs)'
-              : '1=1',
-            { costumeSlugs: costumeConceptSlugs },
-          )
-          .andWhere(
-            objectConceptSlugs.length !== 0
-              ? 'concepts.slug In (:objectSlugs)'
-              : '1=1',
-            { objectSlugs: objectConceptSlugs },
-          );
-      },
-      order: { id: 'DESC' },
-      skip: (page - 1) * photosPerPage,
-      take: photosPerPage,
-    });
-
-    result.forEach(a => {
-      console.log(a.id);
-      console.log(a.gender);
-      console.log(a.concepts);
-    });
-    console.log(count);
-
-    return {
-      ok: false,
-      error: 'TODO',
-    };
+      const [photos, count] = await this.studioPhotoRepository.findAndCount({
+        relations: [
+          'studio',
+          'backgroundConcepts',
+          'costumeConcepts',
+          'objectConcepts',
+        ],
+        join: {
+          alias: 'photo',
+          innerJoin: {
+            backgroundConcepts: 'photo.backgroundConcepts',
+            costumeConcepts: 'photo.costumeConcepts',
+            objectConcepts: 'photo.objectConcepts',
+          },
+        },
+        where: qb => {
+          qb.where({
+            gender: gender ? gender : Not(IsNull()),
+          })
+            .andWhere(
+              backgroundConceptSlugs.length !== 0
+                ? 'backgroundConcepts.slug IN (:bgSlugs)'
+                : '1=1',
+              { bgSlugs: backgroundConceptSlugs },
+            )
+            .andWhere(
+              costumeConceptSlugs.length !== 0
+                ? 'costumeConcepts.slug IN (:costumeSlugs)'
+                : '1=1',
+              { costumeSlugs: costumeConceptSlugs },
+            )
+            .andWhere(
+              objectConceptSlugs.length !== 0
+                ? 'objectConcepts.slug IN (:objectSlugs)'
+                : '1=1',
+              { objectSlugs: objectConceptSlugs },
+            );
+        },
+        order: { id: 'DESC' },
+        skip: (page - 1) * photosPerPage,
+        take: photosPerPage,
+      });
+      // Attach isHearted
+      let heartStudioPhotos: StudioPhoto[] = [];
+      if (user) {
+        const userById = await this.usersService.getUserById(user.id, {
+          relations: ['heartStudioPhotos'],
+        });
+        if (userById) {
+          heartStudioPhotos = userById.heartStudioPhotos;
+        }
+      }
+      const photosWithIsHearted: StudioPhotoWithIsHearted[] = photos.map(
+        photo => ({
+          ...photo,
+          isHearted: heartStudioPhotos.some(p => p.id === photo.id),
+        }),
+      );
+      // return
+      return {
+        ok: true,
+        photos: photosWithIsHearted,
+        totalPages: Math.ceil(count / photosPerPage),
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
   }
-  */
 
   getBackgroundConceptBySlug = (
     slug: string,
@@ -128,31 +154,40 @@ export class PhotosService {
     photo: StudioPhoto,
     slug: string,
     conceptType: PhotoConceptType,
-  ): Promise<void> {
+  ): Promise<CoreOutput> {
     try {
       let concept;
+      const conceptNotFoundReturn: CoreOutput = {
+        ok: false,
+        error: `Concept with slug(${slug}) not found`,
+      };
+
       switch (conceptType) {
         case PhotoConceptType.BACKGROUND:
           concept = await this.getBackgroundConceptBySlug(slug);
-          if (concept) {
-            photo.backgroundConcepts.push(concept);
+          if (!concept) {
+            return conceptNotFoundReturn;
           }
+          photo.backgroundConcepts.push(concept);
           break;
         case PhotoConceptType.COSTUME:
           concept = await this.getCostumeConceptBySlug(slug);
-          if (concept) {
-            photo.costumeConcepts.push(concept);
+          if (!concept) {
+            return conceptNotFoundReturn;
           }
+          photo.costumeConcepts.push(concept);
           break;
         case PhotoConceptType.OBJECT:
-          concept = await this.getCostumeConceptBySlug(slug);
-          if (concept) {
-            photo.objectConcepts.push(concept);
+          concept = await this.getObjectConceptBySlug(slug);
+          if (!concept) {
+            return conceptNotFoundReturn;
           }
+          photo.objectConcepts.push(concept);
           break;
         default:
           return;
       }
+      return { ok: true };
     } catch (e) {
       return;
     }
@@ -249,17 +284,34 @@ export class PhotosService {
       newPhoto.originalUrl = `http://www.fmonth.com/${Date.now()}`;
       // Attach Concepts
       for (const slug of backgroundConceptSlugs) {
-        await this.attachPhotoConcept(
+        const { ok, error } = await this.attachPhotoConcept(
           newPhoto,
           slug,
           PhotoConceptType.BACKGROUND,
         );
+        if (!ok) {
+          return { ok, error };
+        }
       }
       for (const slug of costumeConceptSlugs) {
-        await this.attachPhotoConcept(newPhoto, slug, PhotoConceptType.COSTUME);
+        const { ok, error } = await this.attachPhotoConcept(
+          newPhoto,
+          slug,
+          PhotoConceptType.COSTUME,
+        );
+        if (!ok) {
+          return { ok, error };
+        }
       }
       for (const slug of objectConceptSlugs) {
-        await this.attachPhotoConcept(newPhoto, slug, PhotoConceptType.OBJECT);
+        const { ok, error } = await this.attachPhotoConcept(
+          newPhoto,
+          slug,
+          PhotoConceptType.OBJECT,
+        );
+        if (!ok) {
+          return { ok, error };
+        }
       }
       // Save
       const createdPhoto = await this.studioPhotoRepository.save(newPhoto);
