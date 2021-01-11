@@ -1,22 +1,22 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import ConceptModal from './ConceptModal';
 import './MainConceptsCard.css';
 
-const MainConceptsCard = ({ thumb, pic, photoName, horizon }) => {
-  if (!horizon) {
-    return (
-      <div className="conceptsCardContainer-Vertical">
-        <Link to={`/concepts/${photoName}`}>
-          <img alt="conceptsCard" src={thumb} />
-        </Link>
-      </div>
-    );
-  }
+const MainConceptsCard = ({ concept }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
-    <div className="conceptsCardContainer-Horizon">
-      <Link to={`/concepts/${photoName}`}>
-        <img alt="conceptsCard" src={thumb} />
-      </Link>
+    <div>
+      <ConceptModal
+        isOpen={isModalOpen}
+        close={() => setIsModalOpen(false)}
+        concept={concept}
+      />
+      <div
+        onClick={() => setIsModalOpen(true)}
+        className="conceptsCardContainer-Vertical"
+      >
+        <img alt="conceptsCard" src={concept.pic} />
+      </div>
     </div>
   );
 };

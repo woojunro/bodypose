@@ -1,0 +1,38 @@
+.joinContainer {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.joinEmailText {
+  font-size: 12px;
+  margin-top: 25px;
+  margin-left: 11%;
+  color: black;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.passwordWarning {
+  margin-left: 10vw;
+  color: red;
+  font-size: 12px;
+}
+.agreeContainer {
+  display: flex;
+  margin-left: 10vw;
+  align-items: center;
+  font-size: 11px;
+}
+.mustText {
+  color: red;
+}
+
+.linkText {
+  margin-left: 5px;
+}
+
+.startButtonPart {
+  width: 100%;
+  padding-top: 10%;
+  margin-bottom: 10%;
+}

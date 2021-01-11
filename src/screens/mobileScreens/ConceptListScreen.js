@@ -116,52 +116,44 @@ const ConceptListScreen = () => {
         selectedGender={gender}
         setGender={setGender}
       />
-      {whileFetching ? (
-        <div className="whileLoading">
-          <LoadingIcon />
+      <InfiniteScroll
+        dataLength={conceptArray.length}
+        next={fetchMoreData}
+        hasMore={isMore}
+        loader={<LoadingIcon />}
+        endMessage={
+          <div className="endMessageContainer">
+            <div>모든 사진을 불러왔습니다</div>
+          </div>
+        }
+      >
+        <div className="totalConcept">
+          {conceptArray.map((concept) => (
+            <ConceptListCard
+              key={concept.photoName}
+              conceptNum={conceptNum++}
+              photo={concept}
+              isModalOpen={isModalOpen}
+              setThisPhoto={handlePhotoNum}
+              openModal={openModal}
+              needFetchMoreData={needFetchMoreData}
+            />
+          ))}
         </div>
-      ) : (
-        <>
-          <InfiniteScroll
-            dataLength={conceptArray.length}
-            next={fetchMoreData}
-            hasMore={isMore}
-            loader={<LoadingIcon />}
-            endMessage={
-              <div className="endMessageContainer">
-                <div>모든 사진을 불러왔습니다</div>
-              </div>
-            }
-          >
-            <div className="totalConcept">
-              {conceptArray.map((concept) => (
-                <ConceptListCard
-                  key={concept.photoName}
-                  conceptNum={conceptNum++}
-                  photo={concept}
-                  isModalOpen={isModalOpen}
-                  setThisPhoto={handlePhotoNum}
-                  openModal={openModal}
-                  needFetchMoreData={needFetchMoreData}
-                />
-              ))}
-            </div>
-          </InfiniteScroll>
-          <ConceptModal
-            whileFetching={whileFetching}
-            isOpen={isModalOpen}
-            close={closeModal}
-            concept={conceptArray[selectedPhotoNum]}
-            openModal={openModal}
-            setThisPhoto={handlePhotoNum}
-            needFetchMoreData={needFetchMoreData}
-            photoNum={selectedPhotoNum}
-            isFinalPhoto={isFinalPhoto}
-            handleIsFinalPhoto={cancleFinalPhoto}
-          />
-          <BottomNavigation pageName="concepts" />
-        </>
-      )}
+      </InfiniteScroll>
+      <ConceptModal
+        whileFetching={whileFetching}
+        isOpen={isModalOpen}
+        close={closeModal}
+        concept={conceptArray[selectedPhotoNum]}
+        openModal={openModal}
+        setThisPhoto={handlePhotoNum}
+        needFetchMoreData={needFetchMoreData}
+        photoNum={selectedPhotoNum}
+        isFinalPhoto={isFinalPhoto}
+        handleIsFinalPhoto={cancleFinalPhoto}
+      />
+      <BottomNavigation pageName="concepts" />
     </div>
   );
 };

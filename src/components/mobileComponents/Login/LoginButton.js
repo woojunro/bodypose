@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import LoginContext from '../../LoginContext';
+import { Login } from '../../functions/WithDb/Auth';
 import './LoginButton.css';
 
 const LoginButton = ({ email, password }) => {
@@ -8,6 +9,7 @@ const LoginButton = ({ email, password }) => {
   //Db랑 이메일, 비밀번호 비교하는 함수.
   const LoginFunction = () => {
     LogedIn.setLogedIn(true);
+    Login();
   };
   return (
     <div className="loginButtonContainer">

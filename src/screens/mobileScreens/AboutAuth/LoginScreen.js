@@ -8,6 +8,7 @@ import InputForm from '../../../components/mobileComponents/Login/InputForm';
 import LoginButton from '../../../components/mobileComponents/Login/LoginButton';
 import { FiArrowLeft } from 'react-icons/fi';
 import LoginContext from '../../../components/LoginContext';
+import { SnsLogin } from '../../../components/functions/WithDb/Auth';
 import { Link, useHistory } from 'react-router-dom';
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -16,8 +17,7 @@ const LoginScreen = () => {
   const history = useHistory();
 
   const SnsLoginFunction = () => {
-    //Db랑 연동 sns로그인 할 함수 만들기.
-    console.log('sns로그인');
+    SnsLogin();
   };
 
   if (LogedIn.logedIn) {
@@ -35,9 +35,17 @@ const LoginScreen = () => {
           />
           <div className="loginTitle">로그인</div>
           <div className="loginEmailText">이메일</div>
-          <InputForm onInputSubmit={setEmail} title="이메일" />
+          <InputForm
+            onInputSubmit={setEmail}
+            placeholder="이메일"
+            type="text"
+          />
           <div className="loginEmailText">비밀번호</div>
-          <InputForm onInputSubmit={setPassword} title="비밀번호" />
+          <InputForm
+            onInputSubmit={setPassword}
+            placeholder="비밀번호"
+            type="password"
+          />
           <LoginButton email={email} password={password} />
           <div className="forgotPasswordContainer">
             <Link

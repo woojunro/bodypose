@@ -17,6 +17,7 @@ export const costumeOptions = [
   { optionName: 'underwear', title: '언더웨어' },
   { optionName: 'upper', title: '상의' },
   { optionName: 'under', title: '하의' },
+  { optionName: 'topbottom', title: '상의,하의' },
   { optionName: 'swiming', title: '수영복' },
   { optionName: 'etc', title: '기타의상' },
   { optionName: 'noWear', title: '의상없음' },

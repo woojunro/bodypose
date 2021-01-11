@@ -1,8 +1,10 @@
-import SortByHearts from './SortByHearts';
-import SortByLocation from './sortByLocation';
-import SortByName from '.SortByName';
-import SortByPrice from '.SortByPrice';
-import SortByRating from '.SortByRating';
+import {
+  SortByHearts,
+  SortByLocation,
+  SortByName,
+  SortByPrice,
+  SortByRating,
+} from './SortingFunctions';
 import { MakingStudioList } from './MakingStudioList';
 
 const SortingStudioFunction = ({

@@ -16,7 +16,8 @@ import NoticeListScreenM from '../screens/mobileScreens/NoticeListScreen';
 import NoticeScreenM from '../screens/mobileScreens/NoticeScreen';
 import LoginScreenM from '../screens/mobileScreens/AboutAuth/LoginScreen';
 import ChangePasswordScreenM from '../screens/mobileScreens/AboutAuth/ChangePasswordScreen';
-import EmailJoinScreenM from '../screens/mobileScreens/AboutAuth/EmailJoinScreen';
+import StartWithEmailScreenM from '../screens/mobileScreens/AboutAuth/StartWithEmailScreen';
+import SnsInfoScreenM from '../screens/mobileScreens/AboutAuth/SnsInfoScreen';
 
 import LoginContext from './LoginContext';
 
@@ -57,7 +58,12 @@ const App = () => {
               path="/changePassword"
               component={ChangePasswordScreenM}
             />
-            <Route exact path="/emailJoin" component={EmailJoinScreenM} />
+            <Route
+              exact
+              path="/startWithEmail"
+              component={StartWithEmailScreenM}
+            />
+            <Route exact path="/snsInfo" component={SnsInfoScreenM} />
           </div>
         </Router>
       </LoginContext.Provider>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import './InputForm.css';
 
-const InputForm = ({ onInputSubmit, title }) => {
+const InputForm = ({ onInputSubmit, placeholder, type }) => {
   const [term, setTerm] = useState('');
 
   useEffect(() => {
@@ -17,11 +17,11 @@ const InputForm = ({ onInputSubmit, title }) => {
   return (
     <div className="loginInputField">
       <input
-        placeholder={title}
+        placeholder={placeholder}
         className="loginInput"
         autoFocus={false}
         value={term}
-        type={title === '비밀번호' ? 'password' : 'text'}
+        type={type}
         onChange={(e) => setTerm(e.target.value)}
       />
     </div>

@@ -1,0 +1,36 @@
+.startButton {
+  width: 80%;
+  height: 40px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-chocolate);
+  color: white;
+  border-radius: 5px;
+}
+
+.startButtonContainer {
+  width: 100%;
+  margin-top: 5px;
+  display: flex;
+  justify-content: center;
+}
+.unactiveStartButton {
+  width: 80%;
+  height: 40px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: gray;
+  color: white;
+  border-radius: 5px;
+}
+
+.unactiveStartButtonContainer {
+  width: 100%;
+  margin-top: 5px;
+  display: flex;
+  justify-content: center;
+}

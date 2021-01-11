@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { MakingStudioList } from '../../components/functions/Studio/MakingStudioList';
-import SortByHearts from '../../components/functions/Studio/SortByHearts';
-import SortByLocation from '../../components/functions/Studio/SortByLocation';
-import SortByName from '../../components/functions/Studio/SortByName';
-import SortByPrice from '../../components/functions/Studio/SortByPrice';
-import SortByRating from '../../components/functions/Studio/SortByRating';
+import {
+  SortByHearts,
+  SortByLocation,
+  SortByName,
+  SortByPrice,
+  SortByRating,
+} from '../../components/functions/Studio/SortingFunctions';
 import BottomNavigation from '../../components/mobileComponents/BottomNavigation';
 import Header from '../../components/mobileComponents/HeaderM';
 import { SearchBar } from '../../components/mobileComponents/studioListScreen/SearchBar';
@@ -75,27 +77,6 @@ const StudioListScreen = () => {
     setStudios(returnStudio);
   }, [sortBy, locationBy, searchTerm]);
 
-  const handleStudioList = (list) => {
-    setStudios(list);
-  };
-  const handleSortBy = (by) => {
-    setSortBy(by);
-  };
-  const handleLocationBy = (location) => {
-    setLocationBy(location);
-  };
-  const openSortBy = () => {
-    setIsSortByOpen(true);
-  };
-  const closeSortBy = () => {
-    setIsSortByOpen(false);
-  };
-  const openLocationBy = () => {
-    setIsLocationByOpen(true);
-  };
-  const closeLocationBy = () => {
-    setIsLocationByOpen(false);
-  };
   return (
     <div className="studioListScreen">
       <SearchBar onSearchSubmit={setSearchTerm} />
@@ -103,22 +84,22 @@ const StudioListScreen = () => {
       <div className="contentsBox">
         <div className="buttonContainer">
           <SortButton
-            change={handleStudioList}
+            change={setStudios}
             isOpen={isSortByOpen}
-            open={openSortBy}
-            close={closeSortBy}
-            closeAnother={closeLocationBy}
+            open={() => setIsSortByOpen(true)}
+            close={() => setIsSortByOpen(false)}
+            closeAnother={() => setIsLocationByOpen(false)}
             options={sortByOptions}
-            setOption={handleSortBy}
+            setOption={setSortBy}
             selectedOption={sortBy}
           />
           <SortButton
             isOpen={isLocationByOpen}
-            open={openLocationBy}
-            close={closeLocationBy}
-            closeAnother={closeSortBy}
+            open={() => setIsLocationByOpen(true)}
+            close={() => setIsLocationByOpen(false)}
+            closeAnother={() => setIsSortByOpen(false)}
             options={locationOptions}
-            setOption={handleLocationBy}
+            setOption={setLocationBy}
             selectedOption={locationBy}
           />
         </div>

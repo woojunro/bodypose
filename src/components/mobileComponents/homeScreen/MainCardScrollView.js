@@ -4,12 +4,14 @@ import './MainCardScrollView.css';
 import Shuffle from '../../functions/Shuffle';
 import SemiTitle from './SemiTitle';
 
-import { DbStudios } from '../../../virtualDB/items/DbStudios';
-import SortPremium from '../../functions/Studio/SortPremium';
+import { GetStudios } from '../../functions/WithDb/GetStudios';
+import { SortPremium } from '../../functions/Studio/SortingFunctions';
 
 const MainCardScrollView = () => {
+  //Db에서 스튜디오 불러오는 부분.
+  let studios = GetStudios();
   //프리미엄 스튜디오 순서 섞고 5개만 추출.
-  let studios = DbStudios;
+
   var premiumStudioList = SortPremium(studios);
   Shuffle(premiumStudioList);
 
