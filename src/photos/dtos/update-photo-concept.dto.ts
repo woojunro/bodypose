@@ -7,7 +7,7 @@ import {
 } from '../entities/photo-concept.entity';
 
 @InputType()
-export class UpdatePhotoConceptPayload extends PickType(
+class UpdatePhotoConceptPayload extends PickType(
   PhotoConcept,
   ['slug'],
   InputType,

@@ -19,6 +19,10 @@ import {
   DeletePhotoConceptOutput,
 } from './dtos/delete-photo-concept.dto';
 import {
+  DeleteStudioPhotoInput,
+  DeleteStudioPhotoOutput,
+} from './dtos/delete-studio-photo.dto';
+import {
   GetStudioPhotosInput,
   GetStudioPhotosOutput,
   StudioPhotoWithIsHearted,
@@ -27,6 +31,10 @@ import {
   UpdatePhotoConceptInput,
   UpdatePhotoConceptOutput,
 } from './dtos/update-photo-concept.dto';
+import {
+  UpdateStudioPhotoInput,
+  UpdateStudioPhotoOutput,
+} from './dtos/update-studio-photo.dto';
 import {
   BackgroundConcept,
   CostumeConcept,
@@ -413,6 +421,117 @@ export class PhotosService {
         ok: true,
         studioPhoto: createdPhoto,
       };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  async updateStudioPhoto({
+    id,
+    payload: {
+      gender,
+      backgroundConceptSlugs,
+      costumeConceptSlugs,
+      objectConceptSlugs,
+    },
+  }: UpdateStudioPhotoInput): Promise<UpdateStudioPhotoOutput> {
+    try {
+      const photo = await this.studioPhotoRepository.findOne(
+        { id },
+        {
+          relations: [
+            'backgroundConcepts',
+            'costumeConcepts',
+            'objectConcepts',
+          ],
+        },
+      );
+      if (!photo) {
+        return {
+          ok: false,
+          error: `Studio Photo with id(${id}) not found`,
+        };
+      }
+      if (gender) {
+        photo.gender = gender;
+      }
+      if (backgroundConceptSlugs) {
+        photo.backgroundConcepts = [];
+        for (const slug of backgroundConceptSlugs) {
+          const { ok, error } = await this.attachPhotoConcept(
+            photo,
+            slug,
+            PhotoConceptType.BACKGROUND,
+          );
+          if (!ok) {
+            return { ok, error };
+          }
+        }
+      }
+      if (costumeConceptSlugs) {
+        photo.costumeConcepts = [];
+        for (const slug of costumeConceptSlugs) {
+          const { ok, error } = await this.attachPhotoConcept(
+            photo,
+            slug,
+            PhotoConceptType.COSTUME,
+          );
+          if (!ok) {
+            return { ok, error };
+          }
+        }
+      }
+      if (objectConceptSlugs) {
+        photo.objectConcepts = [];
+        for (const slug of objectConceptSlugs) {
+          const { ok, error } = await this.attachPhotoConcept(
+            photo,
+            slug,
+            PhotoConceptType.OBJECT,
+          );
+          if (!ok) {
+            return { ok, error };
+          }
+        }
+      }
+      const studioPhoto = await this.studioPhotoRepository.save(photo);
+      return {
+        ok: true,
+        studioPhoto,
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  async deleteStudioPhoto({
+    id,
+    studioId,
+  }: DeleteStudioPhotoInput): Promise<DeleteStudioPhotoOutput> {
+    try {
+      const photo = await this.studioPhotoRepository.findOne({ id });
+      if (!photo) {
+        return {
+          ok: false,
+          error: `Photo with id(${id}) not found`,
+        };
+      }
+      if (photo.studioId !== studioId) {
+        return {
+          ok: false,
+          error: `Studio with id(${studioId}) does not have this photo`,
+        };
+      }
+      await this.studioPhotoRepository.delete({ id });
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return {
