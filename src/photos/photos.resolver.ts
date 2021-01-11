@@ -11,9 +11,17 @@ import {
   CreateStudioPhotoOutput,
 } from './dtos/create-studio-photo.dto';
 import {
+  DeletePhotoConceptInput,
+  DeletePhotoConceptOutput,
+} from './dtos/delete-photo-concept.dto';
+import {
   GetStudioPhotosInput,
   GetStudioPhotosOutput,
 } from './dtos/get-studio-photo.dto';
+import {
+  UpdatePhotoConceptInput,
+  UpdatePhotoConceptOutput,
+} from './dtos/update-photo-concept.dto';
 import { StudioPhoto } from './entities/studio-photo.entity';
 import { PhotosService } from './photos.service';
 
@@ -44,5 +52,21 @@ export class PhotosResolver {
     @Args('input') input: CreatePhotoConceptInput,
   ): Promise<CreatePhotoConceptOutput> {
     return this.photosService.createPhotoConcept(input);
+  }
+
+  @Mutation(returns => UpdatePhotoConceptOutput)
+  @Roles(Role.ADMIN)
+  updatePhotoConcept(
+    @Args('input') input: UpdatePhotoConceptInput,
+  ): Promise<UpdatePhotoConceptOutput> {
+    return this.photosService.updatePhotoConcept(input);
+  }
+
+  @Mutation(returns => DeletePhotoConceptOutput)
+  @Roles(Role.ADMIN)
+  deletePhotoConcept(
+    @Args('input') input: DeletePhotoConceptInput,
+  ): Promise<DeletePhotoConceptOutput> {
+    return this.photosService.deletePhotoConcept(input);
   }
 }

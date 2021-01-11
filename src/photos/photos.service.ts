@@ -5,7 +5,7 @@ import { CoreOutput } from 'src/common/dtos/output.dto';
 import { StudiosService } from 'src/studios/studios.service';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
-import { FindOneOptions, In, IsNull, Not, Repository } from 'typeorm';
+import { FindOneOptions, IsNull, Not, Repository } from 'typeorm';
 import {
   CreatePhotoConceptInput,
   CreatePhotoConceptOutput,
@@ -15,10 +15,18 @@ import {
   CreateStudioPhotoOutput,
 } from './dtos/create-studio-photo.dto';
 import {
+  DeletePhotoConceptInput,
+  DeletePhotoConceptOutput,
+} from './dtos/delete-photo-concept.dto';
+import {
   GetStudioPhotosInput,
   GetStudioPhotosOutput,
   StudioPhotoWithIsHearted,
 } from './dtos/get-studio-photo.dto';
+import {
+  UpdatePhotoConceptInput,
+  UpdatePhotoConceptOutput,
+} from './dtos/update-photo-concept.dto';
 import {
   BackgroundConcept,
   CostumeConcept,
@@ -129,6 +137,44 @@ export class PhotosService {
     }
   }
 
+  getPhotoConceptBySlug(
+    slug: string,
+    conceptType: PhotoConceptType,
+    findOptions?: FindOneOptions<
+      BackgroundConcept | CostumeConcept | ObjectConcept
+    >,
+  ): Promise<BackgroundConcept | CostumeConcept | ObjectConcept> {
+    switch (conceptType) {
+      case PhotoConceptType.BACKGROUND:
+        return this.getBackgroundConceptBySlug(slug, findOptions);
+      case PhotoConceptType.COSTUME:
+        return this.getCostumeConceptBySlug(slug, findOptions);
+      case PhotoConceptType.OBJECT:
+        return this.getObjectConceptBySlug(slug, findOptions);
+      default:
+        return null;
+    }
+  }
+
+  createAndSavePhotoConcept(slug: string, conceptType: PhotoConceptType) {
+    switch (conceptType) {
+      case PhotoConceptType.BACKGROUND:
+        return this.backgroundConceptRepository.save(
+          this.backgroundConceptRepository.create({ slug }),
+        );
+      case PhotoConceptType.COSTUME:
+        return this.costumeConceptRepository.save(
+          this.costumeConceptRepository.create({ slug }),
+        );
+      case PhotoConceptType.OBJECT:
+        return this.objectConceptRepository.save(
+          this.objectConceptRepository.create({ slug }),
+        );
+      default:
+        throw new InternalServerErrorException();
+    }
+  }
+
   getBackgroundConceptBySlug = (
     slug: string,
     options?: FindOneOptions<BackgroundConcept>,
@@ -198,49 +244,97 @@ export class PhotosService {
     conceptType,
   }: CreatePhotoConceptInput): Promise<CreatePhotoConceptOutput> {
     try {
-      let concept;
-      switch (conceptType) {
-        case PhotoConceptType.BACKGROUND:
-          concept = await this.getBackgroundConceptBySlug(slug);
-          break;
-        case PhotoConceptType.COSTUME:
-          concept = await this.getCostumeConceptBySlug(slug);
-          break;
-        case PhotoConceptType.OBJECT:
-          concept = await this.getObjectConceptBySlug(slug);
-          break;
-        default:
-          throw new InternalServerErrorException();
-      }
+      const concept = await this.getPhotoConceptBySlug(slug, conceptType);
       if (concept) {
         return {
           ok: false,
           error: `Concept with that slug(${slug}) already exists.`,
         };
       }
+      const photoConcept = await this.createAndSavePhotoConcept(
+        slug,
+        conceptType,
+      );
+      return {
+        ok: true,
+        photoConcept,
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  async updatePhotoConcept({
+    slug,
+    conceptType,
+    payload: { slug: updatedSlug },
+  }: UpdatePhotoConceptInput): Promise<UpdatePhotoConceptOutput> {
+    try {
+      const concept = await this.getPhotoConceptBySlug(slug, conceptType);
+      if (!concept) {
+        return {
+          ok: false,
+          error: `Concept with slug(${slug}) not found`,
+        };
+      }
+      concept.slug = updatedSlug;
+      let updatedConcept;
       switch (conceptType) {
         case PhotoConceptType.BACKGROUND:
-          concept = await this.backgroundConceptRepository.save(
-            this.backgroundConceptRepository.create({ slug }),
-          );
+          updatedConcept = await this.backgroundConceptRepository.save(concept);
           break;
         case PhotoConceptType.COSTUME:
-          concept = await this.costumeConceptRepository.save(
-            this.costumeConceptRepository.create({ slug }),
-          );
+          updatedConcept = await this.costumeConceptRepository.save(concept);
           break;
         case PhotoConceptType.OBJECT:
-          concept = await this.objectConceptRepository.save(
-            this.objectConceptRepository.create({ slug }),
-          );
+          updatedConcept = await this.objectConceptRepository.save(concept);
           break;
         default:
           throw new InternalServerErrorException();
       }
       return {
         ok: true,
-        photoConcept: concept,
+        photoConcept: updatedConcept,
       };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  async deletePhotoConcept({
+    slug,
+    conceptType,
+  }: DeletePhotoConceptInput): Promise<DeletePhotoConceptOutput> {
+    try {
+      const concept = await this.getPhotoConceptBySlug(slug, conceptType);
+      if (!concept) {
+        return {
+          ok: false,
+          error: `Concept with slug(${slug}) not found`,
+        };
+      }
+      switch (conceptType) {
+        case PhotoConceptType.BACKGROUND:
+          await this.backgroundConceptRepository.delete({ id: concept.id });
+          break;
+        case PhotoConceptType.COSTUME:
+          await this.costumeConceptRepository.delete({ id: concept.id });
+          break;
+        case PhotoConceptType.OBJECT:
+          await this.objectConceptRepository.delete({ id: concept.id });
+          break;
+        default:
+          throw new InternalServerErrorException();
+      }
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return {
