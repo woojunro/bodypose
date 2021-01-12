@@ -3,6 +3,10 @@ import { CurrentUser } from 'src/auth/current-user.decorator';
 import { Roles } from 'src/auth/roles.decorator';
 import { Role, User } from 'src/users/entities/user.entity';
 import {
+  ClickStudioPhotoInput,
+  ClickStudioPhotoOutput,
+} from './dtos/click-studio-photo.dto';
+import {
   CreatePhotoConceptInput,
   CreatePhotoConceptOutput,
 } from './dtos/create-photo-concept.dto';
@@ -19,6 +23,8 @@ import {
   DeleteStudioPhotoOutput,
 } from './dtos/delete-studio-photo.dto';
 import {
+  GetAllStudioPhotosInput,
+  GetAllStudioPhotosOutput,
   GetStudioPhotosInput,
   GetStudioPhotosOutput,
 } from './dtos/get-studio-photo.dto';
@@ -42,12 +48,19 @@ export class PhotosResolver {
   constructor(private readonly photosService: PhotosService) {}
 
   // Public
+  @Query(returns => GetAllStudioPhotosOutput)
+  allStudioPhotos(
+    @Args('input') input: GetAllStudioPhotosInput,
+  ): Promise<GetAllStudioPhotosOutput> {
+    return this.photosService.getAllStudioPhotos(input);
+  }
+
+  // Public
   @Query(returns => GetStudioPhotosOutput)
   studioPhotos(
-    @CurrentUser() user: User,
     @Args('input') input: GetStudioPhotosInput,
   ): Promise<GetStudioPhotosOutput> {
-    return this.photosService.getStudioPhotos(input, user);
+    return this.photosService.getStudioPhotos(input);
   }
 
   @Mutation(returns => CreateStudioPhotoOutput)
@@ -105,5 +118,14 @@ export class PhotosResolver {
     @Args('input') input: ToggleHeartStudioPhotoInput,
   ): Promise<ToggleHeartStudioPhotoOutput> {
     return this.photosService.toggleHeartStudioPhoto(user, input);
+  }
+
+  // Public
+  @Mutation(returns => ClickStudioPhotoOutput)
+  clickStudioPhoto(
+    @CurrentUser() user: User,
+    @Args('input') input: ClickStudioPhotoInput,
+  ): Promise<ClickStudioPhotoOutput> {
+    return this.photosService.clickStudioPhoto(input, user);
   }
 }

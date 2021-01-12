@@ -13,6 +13,10 @@ import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { FindOneOptions, IsNull, Not, Repository } from 'typeorm';
 import {
+  ClickStudioPhotoInput,
+  ClickStudioPhotoOutput,
+} from './dtos/click-studio-photo.dto';
+import {
   CreatePhotoConceptInput,
   CreatePhotoConceptOutput,
 } from './dtos/create-photo-concept.dto';
@@ -29,9 +33,10 @@ import {
   DeleteStudioPhotoOutput,
 } from './dtos/delete-studio-photo.dto';
 import {
+  GetAllStudioPhotosInput,
+  GetAllStudioPhotosOutput,
   GetStudioPhotosInput,
   GetStudioPhotosOutput,
-  StudioPhotoWithIsHearted,
 } from './dtos/get-studio-photo.dto';
 import {
   ToggleHeartStudioPhotoInput,
@@ -52,6 +57,7 @@ import {
   PhotoConceptType,
 } from './entities/photo-concept.entity';
 import { StudioPhoto } from './entities/studio-photo.entity';
+import { UsersClickStudioPhotos } from './entities/users-click-studio-photos.entity';
 
 @Injectable()
 export class PhotosService {
@@ -64,15 +70,16 @@ export class PhotosService {
     private readonly costumeConceptRepository: Repository<CostumeConcept>,
     @InjectRepository(ObjectConcept)
     private readonly objectConceptRepository: Repository<ObjectConcept>,
+    @InjectRepository(UsersClickStudioPhotos)
+    private readonly usersClickStudioPhotosRepository: Repository<UsersClickStudioPhotos>,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly studiosService: StudiosService,
   ) {}
 
-  async getStudioPhotos(
-    input: GetStudioPhotosInput,
-    user: User,
-  ): Promise<GetStudioPhotosOutput> {
+  async getAllStudioPhotos(
+    input: GetAllStudioPhotosInput,
+  ): Promise<GetAllStudioPhotosOutput> {
     try {
       const {
         page,
@@ -120,27 +127,43 @@ export class PhotosService {
         skip: (page - 1) * photosPerPage,
         take: photosPerPage,
       });
-      // Attach isHearted
-      // TODO: DB 터질 수도 있음
-      let heartStudioPhotos: StudioPhoto[] = [];
-      if (user) {
-        const userById = await this.usersService.getUserById(user.id, {
-          relations: ['heartStudioPhotos'],
-        });
-        if (userById) {
-          heartStudioPhotos = userById.heartStudioPhotos;
-        }
-      }
-      const photosWithIsHearted: StudioPhotoWithIsHearted[] = photos.map(
-        photo => ({
-          ...photo,
-          isHearted: heartStudioPhotos.some(p => p.id === photo.id),
-        }),
-      );
       // return
       return {
         ok: true,
-        photos: photosWithIsHearted,
+        photos,
+        totalPages: Math.ceil(count / photosPerPage),
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  async getStudioPhotos({
+    studioSlug,
+    gender,
+    page,
+  }: GetStudioPhotosInput): Promise<GetStudioPhotosOutput> {
+    try {
+      const photosPerPage = 24;
+      const [photos, count] = await this.studioPhotoRepository
+        .createQueryBuilder('photo')
+        .leftJoinAndSelect('photo.studio', 'studio')
+        .leftJoinAndSelect('photo.backgroundConcepts', 'backgroundConcept')
+        .leftJoinAndSelect('photo.costumeConcepts', 'costumeConcept')
+        .leftJoinAndSelect('photo.objectConcepts', 'objectConcept')
+        .where({ gender: gender ? gender : Not(IsNull()) })
+        .andWhere('studio.slug = :slug', { slug: studioSlug })
+        .orderBy('photo.id', 'DESC')
+        .take(photosPerPage)
+        .skip((page - 1) * photosPerPage)
+        .getManyAndCount();
+      return {
+        ok: true,
+        photos,
         totalPages: Math.ceil(count / photosPerPage),
       };
     } catch (e) {
@@ -169,8 +192,9 @@ export class PhotosService {
         .leftJoinAndSelect('studio_photo.objectConcepts', 'objectConcept')
         .leftJoinAndSelect('studio_photo.studio', 'studio')
         .where('heartUser.id = :id', { id })
+        .orderBy('photo.id', 'DESC')
         .skip((page - 1) * photosPerPage)
-        .limit(photosPerPage)
+        .take(photosPerPage)
         .getManyAndCount();
       return {
         ok: true,
@@ -616,6 +640,54 @@ export class PhotosService {
       return {
         ok: true,
         heartCount,
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  async clickStudioPhoto(
+    { id }: ClickStudioPhotoInput,
+    user: User,
+  ): Promise<ClickStudioPhotoOutput> {
+    try {
+      const photo = await this.studioPhotoRepository.findOne({ id });
+      if (!photo) {
+        return {
+          ok: false,
+          error: `Photo with id(${id}) not found`,
+        };
+      }
+      // Create and Save UsersClickStudioPhotos
+      const newClick = this.usersClickStudioPhotosRepository.create();
+      newClick.studioPhoto = photo;
+      newClick.user = user ? user : null;
+      photo.clickCount++;
+      await this.usersClickStudioPhotosRepository.save(newClick);
+      await this.studioPhotoRepository.save(photo);
+      // Check if the user hearts the photo
+      if (!user) {
+        return {
+          ok: true,
+          isHearted: false,
+        };
+      }
+      const isPhotoHearted = await this.studioPhotoRepository
+        .createQueryBuilder('photo')
+        .leftJoin('photo.heartUsers', 'heartUser')
+        .where({ id })
+        .andWhere('heartUser.id = :id', {
+          id: user.id,
+        })
+        .getOne();
+      console.log(isPhotoHearted);
+      return {
+        ok: true,
+        isHearted: isPhotoHearted ? true : false,
       };
     } catch (e) {
       console.log(e);

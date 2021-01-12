@@ -1,4 +1,5 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 import {
   PaginationInput,
   PaginationOutput,
@@ -6,7 +7,7 @@ import {
 import { PhotoGender, StudioPhoto } from '../entities/studio-photo.entity';
 
 @InputType()
-export class GetStudioPhotosInput extends PaginationInput {
+export class GetAllStudioPhotosInput extends PaginationInput {
   @Field(type => PhotoGender, { nullable: true })
   gender?: PhotoGender;
 
@@ -20,14 +21,23 @@ export class GetStudioPhotosInput extends PaginationInput {
   objectConceptSlugs: string[];
 }
 
-@ObjectType()
-export class StudioPhotoWithIsHearted extends StudioPhoto {
-  @Field(type => Boolean)
-  isHearted: boolean;
+@InputType()
+export class GetStudioPhotosInput extends PaginationInput {
+  @Field(type => String)
+  @IsString()
+  studioSlug: string;
+
+  @Field(type => PhotoGender, { nullable: true })
+  @IsOptional()
+  @IsEnum(PhotoGender)
+  gender?: PhotoGender;
 }
 
 @ObjectType()
-export class GetStudioPhotosOutput extends PaginationOutput {
-  @Field(type => [StudioPhotoWithIsHearted], { nullable: true })
-  photos?: StudioPhotoWithIsHearted[];
+export class GetAllStudioPhotosOutput extends PaginationOutput {
+  @Field(type => [StudioPhoto], { nullable: true })
+  photos?: StudioPhoto[];
 }
+
+@ObjectType()
+export class GetStudioPhotosOutput extends GetAllStudioPhotosOutput {}
