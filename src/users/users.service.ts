@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
 import { MailService } from 'src/mail/mail.service';
+import { PhotosService } from 'src/photos/photos.service';
 import { FindOneOptions, Repository } from 'typeorm';
 import {
   CreateUserWithEmailInput,
@@ -20,6 +21,8 @@ import { DeleteUserOutput } from './dtos/delete-user.dto';
 import {
   GetMyProfileOutput,
   GetMyHeartStudiosOutput,
+  GetMyHeartStudioPhotosOutput,
+  GetMyHeartStudioPhotosInput,
 } from './dtos/get-user.dto';
 import {
   UpdateUserProfileInput,
@@ -39,6 +42,8 @@ export class UsersService {
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
     private readonly mailService: MailService,
+    @Inject(forwardRef(() => PhotosService))
+    private readonly photosService: PhotosService,
   ) {}
 
   checkPasswordSecurity(password: string): boolean {
@@ -251,6 +256,28 @@ export class UsersService {
         ok: true,
         studios: heartStudios,
       };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  async getMyHeartStudioPhotos(
+    user: User,
+    { page }: GetMyHeartStudioPhotosInput,
+  ): Promise<GetMyHeartStudioPhotosOutput> {
+    try {
+      const isUserFound = await this.userRepository.findOne({ id: user.id });
+      if (!isUserFound) {
+        return {
+          ok: false,
+          error: 'User not found',
+        };
+      }
+      return this.photosService.getHeartStudioPhotosByUserId(user.id, page);
     } catch (e) {
       console.log(e);
       return {

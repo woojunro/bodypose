@@ -1,8 +1,14 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { StudiosService } from 'src/studios/studios.service';
+import { GetMyHeartStudioPhotosOutput } from 'src/users/dtos/get-user.dto';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { FindOneOptions, IsNull, Not, Repository } from 'typeorm';
@@ -27,6 +33,10 @@ import {
   GetStudioPhotosOutput,
   StudioPhotoWithIsHearted,
 } from './dtos/get-studio-photo.dto';
+import {
+  ToggleHeartStudioPhotoInput,
+  ToggleHeartStudioPhotoOutput,
+} from './dtos/toggle-heart-studio-photo.dto';
 import {
   UpdatePhotoConceptInput,
   UpdatePhotoConceptOutput,
@@ -54,6 +64,7 @@ export class PhotosService {
     private readonly costumeConceptRepository: Repository<CostumeConcept>,
     @InjectRepository(ObjectConcept)
     private readonly objectConceptRepository: Repository<ObjectConcept>,
+    @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly studiosService: StudiosService,
   ) {}
@@ -73,18 +84,13 @@ export class PhotosService {
       const photosPerPage = 24;
 
       const [photos, count] = await this.studioPhotoRepository.findAndCount({
-        relations: [
-          'studio',
-          'backgroundConcepts',
-          'costumeConcepts',
-          'objectConcepts',
-        ],
         join: {
           alias: 'photo',
-          innerJoin: {
+          innerJoinAndSelect: {
             backgroundConcepts: 'photo.backgroundConcepts',
             costumeConcepts: 'photo.costumeConcepts',
             objectConcepts: 'photo.objectConcepts',
+            studio: 'photo.studio',
           },
         },
         where: qb => {
@@ -115,6 +121,7 @@ export class PhotosService {
         take: photosPerPage,
       });
       // Attach isHearted
+      // TODO: DB 터질 수도 있음
       let heartStudioPhotos: StudioPhoto[] = [];
       if (user) {
         const userById = await this.usersService.getUserById(user.id, {
@@ -135,6 +142,40 @@ export class PhotosService {
         ok: true,
         photos: photosWithIsHearted,
         totalPages: Math.ceil(count / photosPerPage),
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  async getHeartStudioPhotosByUserId(
+    id: number,
+    page: number,
+  ): Promise<GetMyHeartStudioPhotosOutput> {
+    try {
+      const photosPerPage = 24;
+      const [studioPhotos, count] = await this.studioPhotoRepository
+        .createQueryBuilder('studio_photo')
+        .leftJoin('studio_photo.heartUsers', 'heartUser')
+        .leftJoinAndSelect(
+          'studio_photo.backgroundConcepts',
+          'backgroundConcept',
+        )
+        .leftJoinAndSelect('studio_photo.costumeConcepts', 'costumeConcept')
+        .leftJoinAndSelect('studio_photo.objectConcepts', 'objectConcept')
+        .leftJoinAndSelect('studio_photo.studio', 'studio')
+        .where('heartUser.id = :id', { id })
+        .skip((page - 1) * photosPerPage)
+        .limit(photosPerPage)
+        .getManyAndCount();
+      return {
+        ok: true,
+        totalPages: Math.ceil(count / photosPerPage),
+        studioPhotos,
       };
     } catch (e) {
       console.log(e);
@@ -532,6 +573,50 @@ export class PhotosService {
       }
       await this.studioPhotoRepository.delete({ id });
       return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  async toggleHeartStudioPhoto(
+    user: User,
+    { id }: ToggleHeartStudioPhotoInput,
+  ): Promise<ToggleHeartStudioPhotoOutput> {
+    try {
+      const photo = await this.studioPhotoRepository.findOne({ id });
+      if (!photo) {
+        return {
+          ok: false,
+          error: `Studio Photo with id(${id}) not found`,
+        };
+      }
+      // Get user's heartStudioPhotos
+      const userToUpdate = await this.usersService.getUserById(user.id, {
+        relations: ['heartStudioPhotos'],
+      });
+      // If the photo is already hearted, delete
+      // Otherwise, push
+      const photoIndex = userToUpdate.heartStudioPhotos.findIndex(
+        photo => photo.id === id,
+      );
+      if (photoIndex === -1) {
+        userToUpdate.heartStudioPhotos.push(photo);
+        photo.heartCount++;
+      } else {
+        userToUpdate.heartStudioPhotos.splice(photoIndex, 1);
+        photo.heartCount--;
+      }
+      // Save photo and user
+      const { heartCount } = await this.studioPhotoRepository.save(photo);
+      await this.usersService.updateUser(userToUpdate);
+      return {
+        ok: true,
+        heartCount,
+      };
     } catch (e) {
       console.log(e);
       return {

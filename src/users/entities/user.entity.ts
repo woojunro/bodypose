@@ -118,7 +118,7 @@ export class User extends CoreEntity {
   @Field(type => [Studio])
   heartStudios: Studio[];
 
-  @ManyToMany(relation => StudioPhoto)
+  @ManyToMany(relation => StudioPhoto, photo => photo.heartUsers)
   @JoinTable({
     name: 'users_heart_studio_photos',
   })

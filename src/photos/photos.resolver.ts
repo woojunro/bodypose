@@ -23,6 +23,10 @@ import {
   GetStudioPhotosOutput,
 } from './dtos/get-studio-photo.dto';
 import {
+  ToggleHeartStudioPhotoInput,
+  ToggleHeartStudioPhotoOutput,
+} from './dtos/toggle-heart-studio-photo.dto';
+import {
   UpdatePhotoConceptInput,
   UpdatePhotoConceptOutput,
 } from './dtos/update-photo-concept.dto';
@@ -92,5 +96,14 @@ export class PhotosResolver {
     @Args('input') input: DeletePhotoConceptInput,
   ): Promise<DeletePhotoConceptOutput> {
     return this.photosService.deletePhotoConcept(input);
+  }
+
+  @Mutation(returns => ToggleHeartStudioPhotoOutput)
+  @Roles(Role.USER)
+  toggleHeartStudioPhoto(
+    @CurrentUser() user: User,
+    @Args('input') input: ToggleHeartStudioPhotoInput,
+  ): Promise<ToggleHeartStudioPhotoOutput> {
+    return this.photosService.toggleHeartStudioPhoto(user, input);
   }
 }

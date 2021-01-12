@@ -1,5 +1,10 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
+import {
+  PaginationInput,
+  PaginationOutput,
+} from 'src/common/dtos/pagination.dto';
+import { StudioPhoto } from 'src/photos/entities/studio-photo.entity';
 import { Studio } from 'src/studios/entities/studio.entity';
 import { User } from '../entities/user.entity';
 
@@ -13,4 +18,13 @@ export class GetMyProfileOutput extends CoreOutput {
 export class GetMyHeartStudiosOutput extends CoreOutput {
   @Field(type => [Studio], { nullable: true })
   studios?: Studio[];
+}
+
+@InputType()
+export class GetMyHeartStudioPhotosInput extends PaginationInput {}
+
+@ObjectType()
+export class GetMyHeartStudioPhotosOutput extends PaginationOutput {
+  @Field(type => [StudioPhoto], { nullable: true })
+  studioPhotos?: StudioPhoto[];
 }

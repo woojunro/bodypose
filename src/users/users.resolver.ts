@@ -11,6 +11,8 @@ import { DeleteUserOutput } from './dtos/delete-user.dto';
 import {
   GetMyProfileOutput,
   GetMyHeartStudiosOutput,
+  GetMyHeartStudioPhotosOutput,
+  GetMyHeartStudioPhotosInput,
 } from './dtos/get-user.dto';
 import {
   UpdateUserProfileInput,
@@ -34,6 +36,15 @@ export class UsersResolver {
   @Roles(Role.USER)
   myHeartStudios(@CurrentUser() user: User): Promise<GetMyHeartStudiosOutput> {
     return this.usersService.getMyHeartStudios(user);
+  }
+
+  @Query(returns => GetMyHeartStudioPhotosOutput)
+  @Roles(Role.USER)
+  myHeartStudioPhotos(
+    @CurrentUser() user: User,
+    @Args('input') input: GetMyHeartStudioPhotosInput,
+  ): Promise<GetMyHeartStudioPhotosOutput> {
+    return this.usersService.getMyHeartStudioPhotos(user, input);
   }
 
   // Public

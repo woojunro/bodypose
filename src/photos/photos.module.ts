@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   BackgroundConcept,
@@ -21,9 +21,10 @@ import { StudiosModule } from 'src/studios/studios.module';
       ObjectConcept,
       UsersClickStudioPhotos,
     ]),
-    UsersModule,
+    forwardRef(() => UsersModule),
     StudiosModule,
   ],
   providers: [PhotosService, PhotosResolver],
+  exports: [PhotosService],
 })
 export class PhotosModule {}

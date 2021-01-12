@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
 import { User } from 'src/users/entities/user.entity';
@@ -30,6 +35,7 @@ export class StudiosService {
     private readonly catchphraseRepository: Repository<Catchphrase>,
     @InjectRepository(UsersClickStudios)
     private readonly userClickStudioRepository: Repository<UsersClickStudios>,
+    @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
   ) {}
 

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Catchphrase } from './entities/catchphrase.entity';
 import { Studio } from './entities/studio.entity';
@@ -12,7 +12,7 @@ import { AuthModule } from 'src/auth/auth.module';
   imports: [
     TypeOrmModule.forFeature([Studio, Catchphrase, UsersClickStudios]),
     AuthModule,
-    UsersModule,
+    forwardRef(() => UsersModule),
   ],
   providers: [StudiosService, StudiosResolver],
   exports: [StudiosService],
