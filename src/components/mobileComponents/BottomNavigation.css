@@ -26,6 +26,7 @@
   width: 20px;
 }
 .tabContainer {
+  width: 20vw;
   align-items: center;
   text-align: center;
 }

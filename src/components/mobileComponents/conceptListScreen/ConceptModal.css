@@ -110,3 +110,10 @@
   display: flex;
   align-items: center;
 }
+
+.gettingHeart {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

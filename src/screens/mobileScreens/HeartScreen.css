@@ -1,0 +1,26 @@
+.pickContainer {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.pickedHeart {
+  display: flex;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+
+  width: 50vw;
+}
+.pickBar {
+  font-size: 18px;
+  transform: translateY(-1px);
+}
+.unpickedHeart {
+  display: flex;
+  justify-content: center;
+  font-size: 16px;
+
+  width: 50vw;
+}

@@ -1,9 +1,9 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { IoIosClose } from 'react-icons/io';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import './ConceptModal.css';
 import { ChangeIsHearted } from '../../../components/functions/WithDb/ChangeIsHearted';
-
+import { GetPhotoInfo } from '../../../components/functions/WithDb/ConceptList';
 import { IoIosArrowBack } from 'react-icons/io';
 import { IoIosArrowForward } from 'react-icons/io';
 import { FaHeart } from 'react-icons/fa';
@@ -24,7 +24,13 @@ const Modal = ({
   handleIsFinalPhoto,
 }) => {
   const LogedIn = useContext(LoginContext);
-  const [isHearted, setIsHearted] = useState(concept.isHearted);
+  const [gettingPhotoInfo, setGettingPhotoInfo] = useState(true);
+  const [isHearted, setIsHearted] = useState(false);
+  const [photo, setPhoto] = useState(null);
+
+  useEffect(() => {
+    GetPhotoInfo(concept, setGettingPhotoInfo, setIsHearted, setPhoto);
+  }, [concept]);
 
   const history = useHistory();
   const ChangeHeart = () => {
@@ -76,67 +82,78 @@ const Modal = ({
         <>
           <div className="conceptmodal">
             <div className="concepttrueModal">
-              {whileFetching ? null : (
+              {gettingPhotoInfo ? (
+                <div className="gettingHeart">
+                  <LoadingIcon />
+                </div>
+              ) : (
                 <>
-                  {!isFinalPhoto ? (
-                    <div className="nextArrowContainer">
-                      <IoIosArrowForward
-                        className="nextButton"
-                        onClick={() => {
-                          setThisPhoto(photoNum + 1);
-                          needFetchMoreData(photoNum + 1);
-                          close();
-                          openModal();
-                        }}
-                      />
+                  {whileFetching ? null : (
+                    <>
+                      {!isFinalPhoto ? (
+                        <div className="nextArrowContainer">
+                          <IoIosArrowForward
+                            className="nextButton"
+                            onClick={() => {
+                              setThisPhoto(photoNum + 1);
+                              needFetchMoreData(photoNum + 1);
+
+                              close();
+                              openModal();
+                              setGettingPhotoInfo(true);
+                            }}
+                          />
+                        </div>
+                      ) : null}
+                      {photoNum - 1 >= 0 ? (
+                        <div className="prevArrowContainer">
+                          <IoIosArrowBack
+                            className="prevButton"
+                            onClick={() => {
+                              handleIsFinalPhoto();
+                              setThisPhoto(photoNum - 1);
+                              close();
+                              openModal();
+                              setGettingPhotoInfo(true);
+                            }}
+                          />
+                        </div>
+                      ) : null}
+                    </>
+                  )}
+
+                  <div className="topBarContainer">
+                    <div style={{ width: '45px' }}></div>
+                    <div className="studioTitle">{concept.title}</div>
+                    <IoIosClose
+                      onClick={() => {
+                        close();
+                        handleIsFinalPhoto();
+                      }}
+                    />
+                  </div>
+                  <div className="conceptModalContents">
+                    <div className="mainPhotoArea">
+                      {whileFetching ? (
+                        <div className="whileLoading">
+                          <LoadingIcon />
+                        </div>
+                      ) : (
+                        <img alt="studioPicture" src={photo} />
+                      )}
                     </div>
-                  ) : null}
-                  {photoNum - 1 >= 0 ? (
-                    <div className="prevArrowContainer">
-                      <IoIosArrowBack
-                        className="prevButton"
-                        onClick={() => {
-                          handleIsFinalPhoto();
-                          setThisPhoto(photoNum - 1);
-                          close();
-                          openModal();
-                        }}
-                      />
-                    </div>
-                  ) : null}
+                  </div>
+                  <div className="toStudioInfoContainer">
+                    <Link
+                      to={`/studios/${concept.studio}`}
+                      className="toStudioInfo"
+                    >
+                      <div>스튜디오 정보 보기</div>
+                    </Link>
+                    {RenderedHeart}
+                  </div>
                 </>
               )}
-
-              <div className="topBarContainer">
-                <div style={{ width: '45px' }}></div>
-                <div className="studioTitle">{concept.title}</div>
-                <IoIosClose
-                  onClick={() => {
-                    close();
-                    handleIsFinalPhoto();
-                  }}
-                />
-              </div>
-              <div className="conceptModalContents">
-                <div className="mainPhotoArea">
-                  {whileFetching ? (
-                    <div className="whileLoading">
-                      <LoadingIcon />
-                    </div>
-                  ) : (
-                    <img alt="studioPicture" src={concept.pic} />
-                  )}
-                </div>
-              </div>
-              <div className="toStudioInfoContainer">
-                <Link
-                  to={`/studios/${concept.studio}`}
-                  className="toStudioInfo"
-                >
-                  <div>스튜디오 정보 보기</div>
-                </Link>
-                {RenderedHeart}
-              </div>
             </div>
           </div>
         </>

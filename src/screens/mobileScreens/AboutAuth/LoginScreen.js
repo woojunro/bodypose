@@ -9,7 +9,8 @@ import LoginButton from '../../../components/mobileComponents/Login/LoginButton'
 import { FiArrowLeft } from 'react-icons/fi';
 import LoginContext from '../../../components/LoginContext';
 import { SnsLogin } from '../../../components/functions/WithDb/Auth';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, Redirect, useHistory } from 'react-router-dom';
+import { GobackArrow } from '../../../components/functions/Login/GobackArrow';
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,15 +20,20 @@ const LoginScreen = () => {
   const SnsLoginFunction = () => {
     SnsLogin();
   };
-  console.log(history.location.state.previousPath);
 
   if (LogedIn.logedIn) {
     if (history.location.state.previousPath === '/concepts') {
       history.goBack();
-      return <div></div>;
+      return null;
     } else {
-      history.push('/');
-      return <div></div>;
+      return (
+        <Redirect
+          to={{
+            pathname: '/',
+            state: { previousPath: history.location.pathname },
+          }}
+        />
+      );
     }
   } else {
     return (
@@ -35,7 +41,7 @@ const LoginScreen = () => {
         <div className="loginPart">
           <FiArrowLeft
             onClick={() => {
-              history.goBack();
+              GobackArrow(history);
             }}
             className="loginBackArrow"
           />

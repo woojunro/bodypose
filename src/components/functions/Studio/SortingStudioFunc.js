@@ -7,27 +7,52 @@ import {
 } from './SortingFunctions';
 import { MakingStudioList } from './MakingStudioList';
 
-const SortingStudioFunction = ({
-  sortBy,
-  locationBy,
-  setStudios,
-  studioList,
-}) => {
-  if (sortBy.name === 'byName') {
-    setStudios(SortByName(studioList));
-  } else if (sortBy.name === 'default') {
-    setStudios(MakingStudioList(studioList));
-  } else if (sortBy.name === 'byPrice') {
-    setStudios(SortByPrice(studioList));
-  } else if (sortBy.name === 'byHearts') {
-    setStudios(SortByHearts(studioList));
-  } else if (sortBy.name === 'byRating') {
-    setStudios(SortByRating(studioList));
-  }
-  if (locationBy.name === 'default') {
+const SortingStudioFunction = (sortBy, locationBy, searchTerm, allStudios) => {
+  var sortedStudio = [];
+  var returnStudio = [];
+  if (searchTerm === '') {
+    if (locationBy.name === 'default') {
+      sortedStudio = allStudios;
+    } else {
+      sortedStudio = SortByLocation(allStudios, locationBy.name);
+    }
+
+    if (sortBy.name === 'default') {
+      returnStudio = MakingStudioList(sortedStudio);
+    } else if (sortBy.name === 'byName') {
+      returnStudio = SortByName(sortedStudio);
+    } else if (sortBy.name === 'byPrice') {
+      returnStudio = SortByPrice(sortedStudio);
+    } else if (sortBy.name === 'byHearts') {
+      returnStudio = SortByHearts(sortedStudio);
+    } else if (sortBy.name === 'byRating') {
+      returnStudio = SortByRating(sortedStudio);
+    }
   } else {
-    setStudios(SortByLocation(studioList, locationBy.name));
+    for (var num in allStudios) {
+      if (allStudios[num].title.includes(searchTerm)) {
+        returnStudio.push(allStudios[num]);
+      }
+    }
+    if (locationBy.name === 'default') {
+      sortedStudio = returnStudio;
+    } else {
+      sortedStudio = SortByLocation(returnStudio, locationBy.name);
+    }
+
+    if (sortBy.name === 'default') {
+      returnStudio = MakingStudioList(sortedStudio);
+    } else if (sortBy.name === 'byName') {
+      returnStudio = SortByName(sortedStudio);
+    } else if (sortBy.name === 'byPrice') {
+      returnStudio = SortByPrice(sortedStudio);
+    } else if (sortBy.name === 'byHearts') {
+      returnStudio = SortByHearts(sortedStudio);
+    } else if (sortBy.name === 'byRating') {
+      returnStudio = SortByRating(sortedStudio);
+    }
   }
+  return returnStudio;
 };
 
 export default SortingStudioFunction;

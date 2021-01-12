@@ -40,6 +40,26 @@ const Header = ({ pageName }) => {
       </div>
     );
   }
+  if (pageName === 'hearts') {
+    return (
+      <div>
+        <div className="header">
+          <span className="headerTitle">찜목록</span>
+        </div>
+        <div style={{ height: '50px' }} />
+      </div>
+    );
+  }
+  if (pageName === 'users') {
+    return (
+      <div>
+        <div className="header">
+          <span className="headerTitle">내정보</span>
+        </div>
+        <div style={{ height: '50px' }} />
+      </div>
+    );
+  }
   return <div>ho</div>;
 };
 

@@ -1,6 +1,8 @@
 .totalContainer {
   position: relative;
   flex: 0 0 auto;
+  min-width: 340px;
+  display: block;
 }
 .studioCardContainer {
   margin-top: 15px;

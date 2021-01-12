@@ -271,7 +271,7 @@ export const DbPhotos = [
     horizontal: true,
     attribute: ['가구', '언더웨어', '도구없음'],
     pic: aavec1,
-    ishearted: false,
+    ishearted: true,
     thumb: aavec1Thumb,
   },
   {
@@ -293,7 +293,7 @@ export const DbPhotos = [
     horizontal: true,
     attribute: ['가구', '언더웨어', '도구없음'],
     pic: aavec3,
-    ishearted: false,
+    ishearted: true,
     thumb: aavec3Thumb,
   },
   {
@@ -304,7 +304,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['테마', '진한 그림자', '언더웨어', '도구없음'],
     pic: aavec4,
-    ishearted: false,
+    ishearted: true,
     thumb: aavec4Thumb,
   },
   {
@@ -315,7 +315,7 @@ export const DbPhotos = [
     horizontal: true,
     attribute: ['테마', '진한 그림자', '언더웨어', '도구없음'],
     pic: aavec5,
-    ishearted: false,
+    ishearted: true,
     thumb: aavec5Thumb,
   },
   {
@@ -326,7 +326,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['테마', '진한 그림자', '언더웨어', '도구없음'],
     pic: aavec6,
-    ishearted: false,
+    ishearted: true,
     thumb: aavec6Thumb,
   },
   {
@@ -337,7 +337,7 @@ export const DbPhotos = [
     horizontal: false,
     attribute: ['테마', '언더웨어', '도구없음'],
     pic: aavec7,
-    ishearted: false,
+    ishearted: true,
     thumb: aavec7Thumb,
   },
   {

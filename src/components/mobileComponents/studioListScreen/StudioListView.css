@@ -4,3 +4,13 @@
   font-size: 15px;
   margin-left: 15px;
 }
+.listScrollView {
+  display: flex;
+  justify-content: center;
+
+  flex-wrap: wrap;
+}
+
+.insideBox {
+  width: 450px;
+}

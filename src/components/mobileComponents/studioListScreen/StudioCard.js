@@ -4,6 +4,7 @@ import { IoIosHeartEmpty } from 'react-icons/io';
 import { IoIosStar } from 'react-icons/io';
 import { IoIosHeart } from 'react-icons/io';
 import { Link } from 'react-router-dom';
+import { SetHeartDb } from '../../../components/functions/WithDb/GetStudios';
 
 const StudioCard = ({
   Hearted,
@@ -21,6 +22,7 @@ const StudioCard = ({
   const [isHearted, setIsHearted] = useState(Hearted);
 
   const ChangeIsHearted = () => {
+    SetHeartDb();
     //Db에 is hearted 바꾸는 코드 넣기.
     setIsHearted(!isHearted);
   };

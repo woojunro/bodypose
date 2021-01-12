@@ -1,41 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import BottomNavigation from '../../components/mobileComponents/BottomNavigation';
-import TopNavigator from '../../components/mobileComponents/conceptListScreen/TopNavigator';
-import Header from '../../components/mobileComponents/HeaderM';
+import TopNavigator from '../../../components/mobileComponents/conceptListScreen/TopNavigator';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import shuffle from '../../components/functions/Shuffle';
-import ConceptListCard from '../../components/mobileComponents/conceptListScreen/ConceptListCard';
-import ConceptModal from '../../components/mobileComponents/conceptListScreen/ConceptModal';
-import SelectionModal from '../../components/mobileComponents/conceptListScreen/SelectionModal';
-import './ConceptListScreen.css';
-import LoadingIcon from '../../components/mobileComponents/conceptListScreen/LoadingIcon';
-import { FaSlidersH } from 'react-icons/fa';
-import GetMoreData, {
-  GetConceptPhotos,
-} from '../../components/functions/WithDb/ConceptList';
+import shuffle from '../../../components/functions/Shuffle';
+import ConceptListCard from '../../../components/mobileComponents/conceptListScreen/ConceptListCard';
+import ConceptModal from '../../../components/mobileComponents/conceptListScreen/ConceptModal';
+import './HeartConcepts.css';
+import LoadingIcon from '../../../components/mobileComponents/conceptListScreen/LoadingIcon';
+import {
+  GetMoreHeartedData,
+  GetHeartedConceptPhotos,
+} from '../../../components/functions/WithDb/Heart';
 
 const genderOptions = ['전체', '남성', '여성', '커플'];
 var conceptNum = -24;
 
-const ConceptListScreen = () => {
+const HeartConcepts = () => {
   //fetching 중인가?
   const [whileFetching, setWhileFetching] = useState(false);
-  //선택된 컨셉 목록.
-  const [selectedConcepts, setSelectedConcepts] = useState({
-    bgConcept: ['total'],
-    costumeConcept: ['total'],
-    objectConcept: ['total'],
-  });
 
-  const [isSelectionOpen, setIsSelectionOpen] = useState(false);
   const [i, setI] = useState(0);
 
   const [isMore, setIsMore] = useState(true);
   const [gender, setGender] = useState(genderOptions[0]);
   //초기에 Db에서 사진 불러와야하는 부분.
-  const [conceptArray, setConceptArray] = useState(
-    shuffle(GetConceptPhotos(i))
-  );
+  const [conceptArray, setConceptArray] = useState(GetHeartedConceptPhotos(i));
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPhotoNum, setSelectedPhotoNum] = useState(0);
   const [isFinalPhoto, setIsFinalPhoto] = useState(false);
@@ -51,12 +39,6 @@ const ConceptListScreen = () => {
   const cancleFinalPhoto = () => {
     setIsFinalPhoto(false);
   };
-  const handleConcepts = (object) => {
-    setSelectedConcepts(object);
-  };
-  useEffect(() => {
-    document.body.style.overflow = isSelectionOpen ? 'hidden' : 'auto';
-  }, [isSelectionOpen]);
   conceptNum = 0;
 
   const fetchMoreData = () => {
@@ -65,7 +47,7 @@ const ConceptListScreen = () => {
     setTimeout(() => {
       const currentData = conceptArray;
       //Db에서 사진 더 불러와야 하는 부분.
-      const moreData = GetMoreData(i, currentData);
+      const moreData = GetMoreHeartedData(i, currentData);
 
       setConceptArray(moreData);
 
@@ -91,30 +73,15 @@ const ConceptListScreen = () => {
   const getDb = () => {
     setI(0);
     setIsMore(true);
-    setConceptArray(shuffle(GetConceptPhotos(0)));
+    setConceptArray(GetHeartedConceptPhotos(0));
   };
 
   useEffect(() => {
     getDb();
-  }, [gender, selectedConcepts]);
+  }, [gender]);
 
   return (
     <div className="conceptListScreen">
-      <FaSlidersH
-        className="sortIcon"
-        onClick={() => setIsSelectionOpen(true)}
-      />
-      <Header pageName="concepts" />
-      <SelectionModal
-        isOpen={isSelectionOpen}
-        close={() => {
-          setIsSelectionOpen(false);
-        }}
-        selectedBgConcepts={selectedConcepts.bgConcept}
-        selectedCostumeConcepts={selectedConcepts.costumeConcept}
-        selectedObjectConcepts={selectedConcepts.objectConcept}
-        setSelection={handleConcepts}
-      />
       <TopNavigator
         options={genderOptions}
         selectedGender={gender}
@@ -159,10 +126,8 @@ const ConceptListScreen = () => {
           handleIsFinalPhoto={cancleFinalPhoto}
         />
       ) : null}
-
-      <BottomNavigation pageName="concepts" />
     </div>
   );
 };
 
-export default ConceptListScreen;
+export default HeartConcepts;

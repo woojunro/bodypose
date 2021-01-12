@@ -11,7 +11,6 @@ const Modal = ({ isOpen, close, concept }) => {
     ChangeIsHearted();
     setIsHearted(!isHearted);
   };
-  console.log(concept.title, concept.pic);
   return (
     <>
       {isOpen ? (

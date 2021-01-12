@@ -1,12 +1,11 @@
 import React from 'react';
 import StudioCard from './StudioCard';
 import './StudioListView.css';
-import '../../../virtualDB/items/DbStudios';
 
-const StudioListView = ({ studioList }) => {
+const StudioListView = ({ studioList, isHeartView = false }) => {
   const renderedStudioList = studioList.map((studio) => {
     return (
-      <div key={studio.title}>
+      <div key={studio.title} className="insideBox">
         <StudioCard
           Hearted={studio.isHearted}
           name={studio.studioName}
@@ -26,7 +25,7 @@ const StudioListView = ({ studioList }) => {
   });
   return (
     <div>
-      <div className="semiTitle">프리미엄 스튜디오</div>
+      {isHeartView ? null : <div className="semiTitle">프리미엄 스튜디오</div>}
       <div className="listScrollView">{renderedStudioList}</div>
     </div>
   );
