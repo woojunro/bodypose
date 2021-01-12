@@ -21,9 +21,9 @@ import {
   BackgroundConcept,
   CostumeConcept,
   ObjectConcept,
-  PhotoConcept,
 } from './photos/entities/photo-concept.entity';
 import { UsersClickStudioPhotos } from './photos/entities/users-click-studio-photos.entity';
+import { Product } from './studios/entities/product.entity';
 
 @Module({
   imports: [
@@ -63,6 +63,7 @@ import { UsersClickStudioPhotos } from './photos/entities/users-click-studio-pho
         CostumeConcept,
         ObjectConcept,
         UsersClickStudioPhotos,
+        Product,
       ],
     }),
     GraphQLModule.forRoot({
