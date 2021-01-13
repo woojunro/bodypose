@@ -1,8 +1,9 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { IsInt, IsString, Max, Min, MinLength } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
+import { ReviewPhoto } from 'src/photos/entities/review-photo.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { Studio } from './studio.entity';
 
 @Entity()
@@ -36,4 +37,8 @@ export class UsersReviewStudios extends CoreEntity {
   })
   @Field(type => Studio)
   studio: Studio;
+
+  @OneToMany(relation => ReviewPhoto, photo => photo.review)
+  @Field(type => [ReviewPhoto])
+  photos: ReviewPhoto[];
 }

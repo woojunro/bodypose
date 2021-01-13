@@ -11,6 +11,7 @@ import { PhotosService } from './photos.service';
 import { PhotosResolver } from './photos.resolver';
 import { UsersModule } from 'src/users/users.module';
 import { StudiosModule } from 'src/studios/studios.module';
+import { ReviewPhoto } from './entities/review-photo.entity';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { StudiosModule } from 'src/studios/studios.module';
       CostumeConcept,
       ObjectConcept,
       UsersClickStudioPhotos,
+      ReviewPhoto,
     ]),
     forwardRef(() => UsersModule),
     StudiosModule,

@@ -25,6 +25,7 @@ import {
 import { UsersClickStudioPhotos } from './photos/entities/users-click-studio-photos.entity';
 import { Product } from './studios/entities/product.entity';
 import { UsersReviewStudios } from './studios/entities/users-review-studios.entity';
+import { ReviewPhoto } from './photos/entities/review-photo.entity';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { UsersReviewStudios } from './studios/entities/users-review-studios.enti
         UsersClickStudioPhotos,
         Product,
         UsersReviewStudios,
+        ReviewPhoto,
       ],
     }),
     GraphQLModule.forRoot({
