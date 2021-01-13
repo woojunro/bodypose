@@ -8,10 +8,17 @@ import { ProductResolver, StudiosResolver } from './studios.resolver';
 import { UsersModule } from 'src/users/users.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { Product } from './entities/product.entity';
+import { UsersReviewStudios } from './entities/users-review-studios.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Studio, Catchphrase, UsersClickStudios, Product]),
+    TypeOrmModule.forFeature([
+      Studio,
+      Catchphrase,
+      UsersClickStudios,
+      Product,
+      UsersReviewStudios,
+    ]),
     AuthModule,
     forwardRef(() => UsersModule),
   ],

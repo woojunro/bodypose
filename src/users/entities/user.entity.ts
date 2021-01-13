@@ -10,9 +10,17 @@ import {
   IsUrl,
 } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { BeforeInsert, Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+} from 'typeorm';
 import { Studio } from 'src/studios/entities/studio.entity';
 import { StudioPhoto } from 'src/photos/entities/studio-photo.entity';
+import { UsersReviewStudios } from 'src/studios/entities/users-review-studios.entity';
 
 export enum LoginMethod {
   KAKAO = 'KAKAO',
@@ -124,6 +132,10 @@ export class User extends CoreEntity {
   })
   @Field(type => [StudioPhoto])
   heartStudioPhotos: StudioPhoto[];
+
+  @OneToMany(relation => UsersReviewStudios, review => review.user)
+  @Field(type => [UsersReviewStudios])
+  reviews: UsersReviewStudios[];
 
   @BeforeInsert()
   async hashPassword(): Promise<void> {

@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { Catchphrase } from './catchphrase.entity';
 import { Product } from './product.entity';
+import { UsersReviewStudios } from './users-review-studios.entity';
 
 export enum PremiumTier {
   NORMAL = 'NORMAL',
@@ -90,4 +91,8 @@ export class Studio extends CoreEntity {
   @OneToMany(relation => Product, product => product.studio)
   @Field(type => [Product])
   products: Product[];
+
+  @OneToMany(relation => UsersReviewStudios, review => review.studio)
+  @Field(type => [UsersReviewStudios])
+  reviews: UsersReviewStudios[];
 }
