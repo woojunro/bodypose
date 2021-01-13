@@ -4,7 +4,7 @@ import { Catchphrase } from './entities/catchphrase.entity';
 import { Studio } from './entities/studio.entity';
 import { UsersClickStudios } from './entities/users-click-studios.entity';
 import { StudiosService } from './studios.service';
-import { StudiosResolver } from './studios.resolver';
+import { ProductResolver, StudiosResolver } from './studios.resolver';
 import { UsersModule } from 'src/users/users.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { Product } from './entities/product.entity';
@@ -15,7 +15,7 @@ import { Product } from './entities/product.entity';
     AuthModule,
     forwardRef(() => UsersModule),
   ],
-  providers: [StudiosService, StudiosResolver],
+  providers: [StudiosService, StudiosResolver, ProductResolver],
   exports: [StudiosService],
 })
 export class StudiosModule {}

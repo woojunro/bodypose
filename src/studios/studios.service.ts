@@ -10,9 +10,21 @@ import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import {
+  CreateProductInput,
+  CreateProductOutput,
+} from './dtos/create-product.dto';
+import {
   CreateStudioInput,
   CreateStudioOutput,
 } from './dtos/create-studio.dto';
+import {
+  DeleteProductInput,
+  DeleteProductOutput,
+} from './dtos/delete-product.dto';
+import {
+  GetStudioProductsInput,
+  GetStudioProductsOutput,
+} from './dtos/get-product.dto';
 import {
   GetAllStudiosOutput,
   GetStudioInput,
@@ -22,7 +34,12 @@ import {
   ToggleHeartStudioInput,
   ToggleHeartStudioOutput,
 } from './dtos/toggle-heart-studio.dto';
+import {
+  UpdateProductInput,
+  UpdateProductOutput,
+} from './dtos/update-product.dto';
 import { Catchphrase } from './entities/catchphrase.entity';
+import { Product } from './entities/product.entity';
 import { Studio } from './entities/studio.entity';
 import { UsersClickStudios } from './entities/users-click-studios.entity';
 
@@ -35,6 +52,8 @@ export class StudiosService {
     private readonly catchphraseRepository: Repository<Catchphrase>,
     @InjectRepository(UsersClickStudios)
     private readonly userClickStudioRepository: Repository<UsersClickStudios>,
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
   ) {}
@@ -221,6 +240,144 @@ export class StudiosService {
         ok: true,
         heartCount: updatedStudio.heartCount,
       };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  async createProduct({
+    studioSlug,
+    ...input
+  }: CreateProductInput): Promise<CreateProductOutput> {
+    try {
+      // Find studio
+      const studio = await this.getStudioBySlug(studioSlug);
+      if (!studio) {
+        return {
+          ok: false,
+          error: `Studio with slug(${studioSlug}) not found`,
+        };
+      }
+      // Create and save product
+      const newProduct = this.productRepository.create({ ...input });
+      newProduct.studio = studio;
+      const { id: productId } = await this.productRepository.save(newProduct);
+      // return id
+      return {
+        ok: true,
+        productId,
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  async getStudioProducts({
+    slug,
+  }: GetStudioProductsInput): Promise<GetStudioProductsOutput> {
+    try {
+      // Find products with slug
+      const products = await this.productRepository
+        .createQueryBuilder('product')
+        .leftJoin('product.studio', 'studio')
+        .where('studio.slug = :slug', { slug })
+        .getMany();
+      // If the array is empty, return error
+      if (products.length === 0) {
+        return {
+          ok: false,
+          error: `Studio with slug(${slug}) not found`,
+        };
+      }
+      // Return products
+      return {
+        ok: true,
+        products,
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  async updateProduct({
+    slug,
+    productId,
+    payload,
+  }: UpdateProductInput): Promise<UpdateProductOutput> {
+    try {
+      // Find product
+      const product = await this.productRepository.findOne(
+        { id: productId },
+        {
+          relations: ['studio'],
+        },
+      );
+      if (!product) {
+        return {
+          ok: false,
+          error: `Product with id(${productId}) not found`,
+        };
+      }
+      // Check studio
+      if (product.studio.slug !== slug) {
+        return {
+          ok: false,
+          error: `Studio with slug(${slug}) does not have this product`,
+        };
+      }
+      // Update and save
+      const updatedProduct = { ...product, ...payload };
+      await this.productRepository.save(updatedProduct);
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return {
+        ok: false,
+        error: UNEXPECTED_ERROR,
+      };
+    }
+  }
+
+  async deleteProduct({
+    slug,
+    productId,
+  }: DeleteProductInput): Promise<DeleteProductOutput> {
+    try {
+      // Find product
+      const product = await this.productRepository.findOne(
+        { id: productId },
+        {
+          relations: ['studio'],
+        },
+      );
+      if (!product) {
+        return {
+          ok: false,
+          error: `Product with id(${productId}) not found`,
+        };
+      }
+      // Check studio
+      if (product.studio.slug !== slug) {
+        return {
+          ok: false,
+          error: `Studio with slug(${slug}) does not have this product`,
+        };
+      }
+      // Delete
+      await this.productRepository.delete({ id: productId });
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return {

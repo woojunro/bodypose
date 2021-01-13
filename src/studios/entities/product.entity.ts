@@ -1,5 +1,5 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { IsInt, IsString, Min } from 'class-validator';
+import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { Studio } from './studio.entity';
@@ -31,8 +31,19 @@ export class Product extends CoreEntity {
 
   @Column({ nullable: true })
   @Field(type => String, { nullable: true })
+  @IsOptional()
   @IsString()
   description?: string;
+
+  @Column()
+  @Field(type => Int)
+  @IsInt()
+  weekdayPrice: number;
+
+  @Column()
+  @Field(type => Int)
+  @IsInt()
+  weekendPrice: number;
 
   @ManyToOne(relation => Studio, studio => studio.products, {
     onDelete: 'CASCADE',
