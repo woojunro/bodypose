@@ -1,0 +1,51 @@
+.myInfoSave {
+  margin-right: 18px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.userInfoContainer {
+  margin-left: 10vw;
+  margin-right: 10vw;
+}
+
+.userInfoSemiTitle {
+  margin-top: 35px;
+  margin-left: 5px;
+  font-weight: bold;
+  font-size: 13px;
+}
+.userInfoText {
+  margin-top: 15px;
+  font-size: 14px;
+  width: 100%;
+  padding-bottom: 4px;
+  border-bottom: 1px lightgray solid;
+}
+.userInfoPassword {
+  margin-top: 15px;
+  font-size: 14px;
+  width: 100%;
+  padding-bottom: 4px;
+  border-bottom: 1px lightgray solid;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.userInfoChange {
+  color: var(--color-footer);
+  font-size: 12px;
+}
+
+.userInfoInput {
+  margin-top: 15px;
+  margin-bottom: 3px;
+
+  border-top-style: hidden;
+  border-right-style: hidden;
+  border-left-style: hidden;
+  border-bottom: 1px lightgray solid;
+  font-size: 14px;
+  width: 99%;
+  padding-bottom: 4px;
+}

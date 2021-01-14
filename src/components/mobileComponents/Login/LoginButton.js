@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import LoginContext from '../../LoginContext';
+import LoginContext from '../../../contexts/LoginContext';
 import { Login } from '../../functions/WithDb/Auth';
 import './LoginButton.css';
 

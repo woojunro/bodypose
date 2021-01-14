@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import './StudioCard.css';
-import { IoIosHeartEmpty } from 'react-icons/io';
-import { IoIosStar } from 'react-icons/io';
-import { IoIosHeart } from 'react-icons/io';
-import { Link } from 'react-router-dom';
+import { IoIosHeartEmpty, IoIosStar, IoIosHeart } from 'react-icons/io';
+import { Link, useHistory } from 'react-router-dom';
 import { SetHeartDb } from '../../../components/functions/WithDb/GetStudios';
+import LoginContext from '../../../contexts/LoginContext';
 
 const StudioCard = ({
-  Hearted,
+  Hearted = false,
   name,
   title,
   location,
@@ -19,9 +18,18 @@ const StudioCard = ({
   percent,
   originalPrice,
 }) => {
+  const LogedIn = useContext(LoginContext);
+  const history = useHistory();
+
   const [isHearted, setIsHearted] = useState(Hearted);
 
   const ChangeIsHearted = () => {
+    if (!LogedIn.logedIn) {
+      history.push({
+        pathname: '/login',
+        state: { previousPath: '/studios' },
+      });
+    }
     SetHeartDb();
     //Db에 is hearted 바꾸는 코드 넣기.
     setIsHearted(!isHearted);

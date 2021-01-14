@@ -32,10 +32,12 @@
 }
 .userTapName {
   font-size: 15px;
+  color: black;
 }
 .userArrow {
   margin-right: 25px;
   font-size: 20px;
+  color: black;
 }
 .userLineContainer {
   display: flex;

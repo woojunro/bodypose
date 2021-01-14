@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import BottomNavigation from '../../components/mobileComponents/BottomNavigation';
 import Header from '../../components/mobileComponents/HeaderM';
-import LoginContext from '../../components/LoginContext';
+import LoginContext from '../../contexts/LoginContext';
 import { Redirect, useHistory } from 'react-router-dom';
 import HeartStudios from '../../components/mobileComponents/HeartsScreen/HeartStudios';
 import HeartConcepts from '../../components/mobileComponents/HeartsScreen/HeartConcepts';

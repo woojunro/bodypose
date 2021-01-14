@@ -1,18 +1,35 @@
-import React from 'react';
-import Header from '../../components/mobileComponents/StudioInfoScreen/InfoHeader';
-import { DbStudios } from '../../virtualDB/items/DbStudios';
+import React, { useState } from 'react';
+import { GetStudioInfo } from '../../components/functions/WithDb/StudioInfo';
 import './StudioInfoScreen.css';
+import HeaderBar from '../../components/mobileComponents/StudioInfoScreen/HeaderBar';
+import TitlePart from '../../components/mobileComponents/StudioInfoScreen/TitlePart';
+import StudioLinks from '../../components/mobileComponents/StudioInfoScreen/StudioLinks';
+import TopNavigator from '../../components/mobileComponents/StudioInfoScreen/TopNavigator';
+import Portfolio from '../../components/mobileComponents/StudioInfoScreen/Portfolio';
 
 const StudioInfoScreen = ({ match }) => {
-  const currentStudio = DbStudios.find(
-    (studio) => studio.studioName === match.params.id
-  );
+  const currentStudio = GetStudioInfo(match.params.id);
+  const [navigator, setNavigator] = useState('portfolio');
 
+  const renderedItem = () => {
+    if (navigator === 'portfolio') {
+      return <Portfolio studioName={currentStudio.studioName} />;
+    } else {
+      return <div>다른거</div>;
+    }
+  };
   return (
-    <div>
-      <Header />
-      {match.params.id}번 스튜디오 정보이다.
-    </div>
+    <>
+      <HeaderBar currentStudio={currentStudio} />
+      <TitlePart currentStudio={currentStudio} />
+      <StudioLinks currentStudio={currentStudio} />
+      <TopNavigator
+        navigator={navigator}
+        setNavigator={setNavigator}
+        reviews={currentStudio.reviews}
+      />
+      {renderedItem()}
+    </>
   );
 };
 

@@ -1,0 +1,17 @@
+.leaveButton {
+  width: 40%;
+  height: 40px;
+  font-size: 15px;
+  font-weight: lighter;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-chocolate);
+  color: white;
+}
+
+.leaveButtonContainer {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}

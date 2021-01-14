@@ -1,6 +1,5 @@
 import Shuffle from '../Shuffle';
 import { DbPhotos } from '../../../virtualDB/items/DbPhotos';
-import DbUser from '../../../virtualDB/items/DbUser';
 
 const GetMoreData = (i, currentData) => {
   return currentData.concat(Shuffle(DbPhotos.slice(i + 24, i + 48)));

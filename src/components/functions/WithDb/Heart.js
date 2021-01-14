@@ -1,5 +1,4 @@
 import DbUser from '../../../virtualDB/items/DbUser';
-import Shuffle from '../Shuffle';
 
 export const GetHeartedStudio = () => {
   let userInfo = DbUser;

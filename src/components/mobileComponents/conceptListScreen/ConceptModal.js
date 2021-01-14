@@ -9,7 +9,7 @@ import { IoIosArrowForward } from 'react-icons/io';
 import { FaHeart } from 'react-icons/fa';
 import { FaRegHeart } from 'react-icons/fa';
 import LoadingIcon from './LoadingIcon';
-import LoginContext from '../../../components/LoginContext';
+import LoginContext from '../../../contexts/LoginContext';
 
 const Modal = ({
   whileFetching,

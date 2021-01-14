@@ -1,0 +1,24 @@
+.studioInfoHeader {
+  display: flex;
+  margin-top: 25px;
+  padding-left: 18px;
+  padding-right: 18px;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.studioInfoColorHeart {
+  color: var(--color-heartColor);
+  font-size: 26px;
+}
+.studioInfoHeart {
+  font-size: 26px;
+}
+.studioInfoShare {
+  font-weight: bold;
+  font-size: 25px;
+  margin-left: 10px;
+}
+.studioInfoGoBack {
+  font-size: 25px;
+}

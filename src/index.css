@@ -3,6 +3,7 @@ body {
   font-family: 'NanumBarunGothic';
   margin: 0 0;
   overflow: auto;
+  letter-spacing: 0.5px;
 }
 @font-face {
   font-family: 'NanumBarunGothic';

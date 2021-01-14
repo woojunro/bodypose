@@ -1,28 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import TopNavigator from '../../../components/mobileComponents/conceptListScreen/TopNavigator';
+import React, { useState } from 'react';
+import './Portfolio.css';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import ConceptListCard from '../../../components/mobileComponents/conceptListScreen/ConceptListCard';
-import ConceptModal from '../../../components/mobileComponents/conceptListScreen/ConceptModal';
-import './HeartConcepts.css';
-import LoadingIcon from '../../../components/mobileComponents/conceptListScreen/LoadingIcon';
-import {
-  GetMoreHeartedData,
-  GetHeartedConceptPhotos,
-} from '../../../components/functions/WithDb/Heart';
 
-const genderOptions = ['전체', '남성', '여성', '커플'];
+import ConceptListCard from '../conceptListScreen/ConceptListCard';
+
+import ConceptModal from '../conceptListScreen/ConceptModal';
+import {
+  GetStudioPhoto,
+  GetMorePhoto,
+} from '../../functions/WithDb/StudioInfo';
+import LoadingIcon from '../conceptListScreen/LoadingIcon';
 var conceptNum = -24;
 
-const HeartConcepts = () => {
+const Portfolio = ({ studioName }) => {
   //fetching 중인가?
   const [whileFetching, setWhileFetching] = useState(false);
 
   const [i, setI] = useState(0);
+  //초기에 Db에서 사진 불러와야하는 부분.
+  const [conceptArray, setConceptArray] = useState(GetStudioPhoto(studioName));
 
   const [isMore, setIsMore] = useState(true);
-  const [gender, setGender] = useState(genderOptions[0]);
-  //초기에 Db에서 사진 불러와야하는 부분.
-  const [conceptArray, setConceptArray] = useState(GetHeartedConceptPhotos(i));
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPhotoNum, setSelectedPhotoNum] = useState(0);
   const [isFinalPhoto, setIsFinalPhoto] = useState(false);
@@ -38,6 +36,7 @@ const HeartConcepts = () => {
   const cancleFinalPhoto = () => {
     setIsFinalPhoto(false);
   };
+
   conceptNum = 0;
 
   const fetchMoreData = () => {
@@ -46,7 +45,7 @@ const HeartConcepts = () => {
     setTimeout(() => {
       const currentData = conceptArray;
       //Db에서 사진 더 불러와야 하는 부분.
-      const moreData = GetMoreHeartedData(i, currentData);
+      const moreData = GetMorePhoto(studioName, i, currentData);
 
       setConceptArray(moreData);
 
@@ -68,24 +67,8 @@ const HeartConcepts = () => {
       setIsFinalPhoto(true);
     }
   };
-  //성별 및 컨셉 바꾸면 Db에서 사진 다시 불러와야하는 부분.
-  const getDb = () => {
-    setI(0);
-    setIsMore(true);
-    setConceptArray(GetHeartedConceptPhotos(0));
-  };
-
-  useEffect(() => {
-    getDb();
-  }, [gender]);
-
   return (
-    <div className="conceptListScreen">
-      <TopNavigator
-        options={genderOptions}
-        selectedGender={gender}
-        setGender={setGender}
-      />
+    <div className="portfolio">
       <InfiniteScroll
         dataLength={conceptArray.length}
         next={fetchMoreData}
@@ -128,5 +111,4 @@ const HeartConcepts = () => {
     </div>
   );
 };
-
-export default HeartConcepts;
+export default Portfolio;

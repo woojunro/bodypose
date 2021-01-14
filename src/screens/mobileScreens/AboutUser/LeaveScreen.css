@@ -1,0 +1,70 @@
+.usersTopContainer {
+  margin-top: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.usersGoBackArrow {
+  margin-left: 18px;
+  font-size: 25px;
+}
+
+.usersTopEmptyBox {
+  width: 23px;
+  margin-right: 18px;
+}
+
+.leaveTitle {
+  font-size: 14;
+}
+.leaveContrast {
+  margin-top: 30px;
+  margin-left: 10vw;
+  margin-right: 10vw;
+}
+.leaveNotice {
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.leaveSemiTitle {
+  margin-top: 20px;
+  font-size: 15px;
+}
+.leaveText {
+  margin-top: 15px;
+  font-size: 12px;
+  line-height: 17px;
+}
+.leaveRedText {
+  margin-left: 5px;
+  color: orangered;
+}
+.leaveAgreeContainer {
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+}
+.leaveAgreeText {
+  font-size: 12px;
+  margin-left: 5px;
+}
+
+.unleaveButton {
+  width: 40%;
+  height: 40px;
+  font-size: 15px;
+  font-weight: lighter;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: gray;
+  color: white;
+}
+
+.unleaveButtonContainer {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}

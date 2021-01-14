@@ -7,7 +7,7 @@ import FacebookLogo from '../../../materials/facebook logo.png';
 import InputForm from '../../../components/mobileComponents/Login/InputForm';
 import LoginButton from '../../../components/mobileComponents/Login/LoginButton';
 import { FiArrowLeft } from 'react-icons/fi';
-import LoginContext from '../../../components/LoginContext';
+import LoginContext from '../../../contexts/LoginContext';
 import { SnsLogin } from '../../../components/functions/WithDb/Auth';
 import { Link, Redirect, useHistory } from 'react-router-dom';
 import { GobackArrow } from '../../../components/functions/Login/GobackArrow';
@@ -22,18 +22,25 @@ const LoginScreen = () => {
   };
 
   if (LogedIn.logedIn) {
-    if (history.location.state.previousPath === '/concepts') {
-      history.goBack();
-      return null;
-    } else {
+    if (history.location.state.previousPath === '/hearts') {
       return (
         <Redirect
           to={{
             pathname: '/',
-            state: { previousPath: history.location.pathname },
           }}
         />
       );
+    } else if (history.location.state.previousPath === '/users') {
+      return (
+        <Redirect
+          to={{
+            pathname: '/',
+          }}
+        />
+      );
+    } else {
+      history.goBack();
+      return null;
     }
   } else {
     return (

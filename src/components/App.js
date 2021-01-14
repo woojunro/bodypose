@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
-import { BrowserRouter as Router, Route, useHistory } from 'react-router-dom';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 
 import HomeScreenM from '../screens/mobileScreens/HomeScreen';
@@ -9,17 +9,22 @@ import StudioListScreenM from '../screens/mobileScreens/StudioListScreen';
 import ConceptListScreenM from '../screens/mobileScreens/ConceptListScreen';
 import AboutM from '../screens/mobileScreens/AboutScreen.js';
 import ReviewListScreenM from '../screens/mobileScreens/ReviewListScreen';
-import UserScreenM from '../screens/mobileScreens/UserScreen';
+import UserScreenM from '../screens/mobileScreens/AboutUser/UserScreen';
 import HeartScreenM from '../screens/mobileScreens/HeartScreen';
 import ConceptsInfoScreenM from '../screens/mobileScreens/ConceptsInfoScreen';
 import NoticeListScreenM from '../screens/mobileScreens/NoticeListScreen';
 import NoticeScreenM from '../screens/mobileScreens/NoticeScreen';
+import ErrorScreenM from '../screens/mobileScreens/ErrorScreen';
+
 import LoginScreenM from '../screens/mobileScreens/AboutAuth/LoginScreen';
 import ChangePasswordScreenM from '../screens/mobileScreens/AboutAuth/ChangePasswordScreen';
 import StartWithEmailScreenM from '../screens/mobileScreens/AboutAuth/StartWithEmailScreen';
 import SnsInfoScreenM from '../screens/mobileScreens/AboutAuth/SnsInfoScreen';
+import MyInfoScreenM from '../screens/mobileScreens/AboutUser/MyInfoScreen';
+import MyReviewScreenM from '../screens/mobileScreens/AboutUser/MyReviewScreen';
+import LeaveScreenM from '../screens/mobileScreens/AboutUser/LeaveScreen';
 
-import LoginContext from './LoginContext';
+import LoginContext from '../contexts/LoginContext';
 
 const App = () => {
   //가로 900픽셀 미만이면 모바일로 처리.
@@ -64,6 +69,11 @@ const App = () => {
               component={StartWithEmailScreenM}
             />
             <Route exact path="/snsInfo" component={SnsInfoScreenM} />
+            <Route exact path="/users/myInfo" component={MyInfoScreenM} />
+            <Route exact path="/users/myReview" component={MyReviewScreenM} />
+
+            <Route exact path="/users/leave" component={LeaveScreenM} />
+            <Route exact path="/error" component={ErrorScreenM} />
           </div>
         </Router>
       </LoginContext.Provider>
