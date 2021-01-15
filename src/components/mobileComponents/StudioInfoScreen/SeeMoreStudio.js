@@ -1,18 +1,17 @@
 import React from 'react';
-import MainCardM from './MainCardM';
-import './MainCardScrollView.css';
+import StudioCard from './StudioCard';
+import './SeeMoreStudio.css';
 import Shuffle from '../../functions/Shuffle';
-import SemiTitle from './SemiTitle';
 
 import { GetStudios } from '../../functions/WithDb/GetStudios';
-import { SortPremium } from '../../functions/Studio/SortingFunctions';
+import { SortSeeMore } from '../../functions/Studio/SortingFunctions';
 
-const MainCardScrollView = () => {
+const SeeMoreStudio = (currentStudioName) => {
   //Db에서 스튜디오 불러오는 부분.
   let studios = GetStudios();
   //프리미엄 스튜디오 순서 섞고 6개만 추출.
 
-  var premiumStudioList = SortPremium(studios);
+  var premiumStudioList = SortSeeMore(studios, currentStudioName);
   Shuffle(premiumStudioList);
 
   premiumStudioList = premiumStudioList.slice(0, 6);
@@ -20,7 +19,7 @@ const MainCardScrollView = () => {
   const renderedStudio = premiumStudioList.map((studio) => {
     return (
       <li key={studio.studioName}>
-        <MainCardM
+        <StudioCard
           studioName={studio.studioName}
           pic={studio.mainPhoto}
           price={studio.price}
@@ -32,7 +31,7 @@ const MainCardScrollView = () => {
 
   return (
     <div>
-      <SemiTitle title="추천 스튜디오" pageTo="/studios" />
+      <div className="seeMoreStudio">스튜디오 더 둘러보기</div>
       <span className="mainScrollView">
         <ul>{renderedStudio}</ul>
       </span>
@@ -40,4 +39,4 @@ const MainCardScrollView = () => {
   );
 };
 
-export default MainCardScrollView;
+export default SeeMoreStudio;

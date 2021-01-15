@@ -1,0 +1,33 @@
+.seeMoreCardContainer {
+  position: relative;
+  overflow: hidden;
+  width: 160px;
+  height: 200px;
+  border-radius: 10px;
+  box-shadow: 3px 4px 6px grey;
+  margin-left: 9px;
+  margin-right: 1px;
+  flex: 0 0 auto;
+}
+
+.seeMoreCardContainer img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+}
+.seeMoreStudioInfoBox {
+  position: absolute;
+  left: 0;
+  height: 20px;
+  bottom: 1px;
+  width: 100%;
+  text-align: end;
+}
+.seeMoreStudioName {
+  color: white;
+  margin-right: 9px;
+  font-size: 12px;
+  text-shadow: 1px 1px 1px black;
+}

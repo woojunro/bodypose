@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GetStudioInfo } from '../../components/functions/WithDb/StudioInfo';
 import './StudioInfoScreen.css';
 import HeaderBar from '../../components/mobileComponents/StudioInfoScreen/HeaderBar';
@@ -6,6 +6,8 @@ import TitlePart from '../../components/mobileComponents/StudioInfoScreen/TitleP
 import StudioLinks from '../../components/mobileComponents/StudioInfoScreen/StudioLinks';
 import TopNavigator from '../../components/mobileComponents/StudioInfoScreen/TopNavigator';
 import Portfolio from '../../components/mobileComponents/StudioInfoScreen/Portfolio';
+import ItemTab from '../../components/mobileComponents/StudioInfoScreen/ItemTab';
+import SeeMoreStudio from '../../components/mobileComponents/StudioInfoScreen/SeeMoreStudio';
 
 const StudioInfoScreen = ({ match }) => {
   const currentStudio = GetStudioInfo(match.params.id);
@@ -14,6 +16,8 @@ const StudioInfoScreen = ({ match }) => {
   const renderedItem = () => {
     if (navigator === 'portfolio') {
       return <Portfolio studioName={currentStudio.studioName} />;
+    } else if (navigator === 'item') {
+      return <ItemTab currentStudio={currentStudio} />;
     } else {
       return <div>다른거</div>;
     }
@@ -29,6 +33,7 @@ const StudioInfoScreen = ({ match }) => {
         reviews={currentStudio.reviews}
       />
       {renderedItem()}
+      <SeeMoreStudio currentStudioName={currentStudio.studioName} />
     </>
   );
 };

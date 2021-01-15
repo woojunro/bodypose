@@ -13,18 +13,23 @@ const TopNavigator = ({ navigator, setNavigator, reviews = 0 }) => {
     if (navigator === item.name) {
       if (item.name === 'review') {
         return (
-          <div className="selectedItem">
+          <div key={item.title} className="selectedItem">
             <span>{item.title}</span>
             <span className="reviewCount">{reviews}</span>
           </div>
         );
       } else {
-        return <div className="selectedItem">{item.title}</div>;
+        return (
+          <div key={item.title} className="selectedItem">
+            {item.title}
+          </div>
+        );
       }
     } else {
       if (item.name === 'review') {
         return (
           <div
+            key={item.title}
             onClick={() => setNavigator(item.name)}
             className="unselectedItem"
           >
@@ -35,6 +40,7 @@ const TopNavigator = ({ navigator, setNavigator, reviews = 0 }) => {
       } else {
         return (
           <div
+            key={item.title}
             onClick={() => setNavigator(item.name)}
             className="unselectedItem"
           >

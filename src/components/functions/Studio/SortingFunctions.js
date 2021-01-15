@@ -60,3 +60,17 @@ export const SortPremium = (studios) => {
   });
   return premiumStudioList;
 };
+
+//프리미엄 스튜디오중 현재 스튜디오 빼고 소팅하는 함수.
+export const SortSeeMore = (studios, currentStudioName) => {
+  var premiumStudioList = [];
+  studios.map((studio) => {
+    if (
+      studio.premium === '1' &&
+      studio.studioName !== currentStudioName.currentStudioName
+    )
+      premiumStudioList.push(studio);
+    return null;
+  });
+  return premiumStudioList;
+};

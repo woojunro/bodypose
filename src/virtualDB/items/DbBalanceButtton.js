@@ -73,6 +73,8 @@ import balanceButton83Thumb from '../images/Balance Button83Thumb.jpg';
 
 export const DbBalanceButton = {
   studioName: 'balance-button',
+  weekDays: '월-목',
+  weekEnds: '금-일',
   title: '밸런스버튼',
   reviews: 10,
   rating: 4.3,
@@ -81,7 +83,84 @@ export const DbBalanceButton = {
   logo: BalanceLogo,
   contactLink: 'https://pf.kakao.com/_xgalxgT',
   reservationLink: 'http://balancebutton.com/reservation',
+  indoorNotice:
+    '의상과 배경지는 컨셉 수만큼 선택 가능 | 스튜디오 보유 소품 사용 가능',
 };
+export const BalanceButtonIndoorPrice = [
+  {
+    title: '스타터',
+    peopleCount: 1,
+    conceptCount: 1,
+    cutCount: 2,
+    hour: 1,
+    weekDayPrice: '30,000',
+    weekEndPrice: '85,000',
+    adding: null,
+  },
+  {
+    title: '베이직',
+    peopleCount: 1,
+    conceptCount: 2,
+    cutCount: 4,
+    hour: 1.5,
+    weekDayPrice: '440,000',
+    weekEndPrice: '495,000',
+    adding: null,
+  },
+  {
+    title: '프리미엄',
+    peopleCount: 1,
+    conceptCount: 3,
+    cutCount: 6,
+    hour: 2,
+    weekDayPrice: '550,000',
+    weekEndPrice: '605,000',
+    adding: '밸런스버튼 GiftSet 제공',
+  },
+  {
+    title: '트윈 스타터',
+    peopleCount: 2,
+    conceptCount: 1,
+    cutCount: 2,
+    hour: 1,
+    weekDayPrice: '440,000',
+    weekEndPrice: '495,000',
+    adding: null,
+  },
+  {
+    title: '트윈 베이직',
+    peopleCount: 2,
+    conceptCount: 2,
+    cutCount: 4,
+    hour: 2,
+    weekDayPrice: '550,000',
+    weekEndPrice: '605,000',
+    adding: null,
+  },
+  {
+    title: '트윈 믹스',
+    peopleCount: 2,
+    conceptCount: 2,
+    cutCount: 4,
+    hour: 2,
+    weekDayPrice: '550,000',
+    weekEndPrice: '605,000',
+    adding:
+      '트윈컨셉(최종본 2장) + 개인 1컨셉(최종본 각 1장) 개인 촬영은 동일 배경지, 조명으로 진행',
+  },
+  {
+    title: '단체',
+    peopleCount: '3~4',
+    conceptCount: 1,
+    cutCount: 1,
+    hour: 2,
+    weekDayPrice: '330,000',
+    weekEndPrice: '385,000',
+    adding: '인원추가 1인당 99,000(최대 10인까지)',
+  },
+];
+
+export const BalanceButtonOutdoorPrice = [];
 
 export const BalanceButtonPhoto = [
   {

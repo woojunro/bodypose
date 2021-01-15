@@ -1,12 +1,14 @@
 .topNavigator {
-  margin-top: 22px;
+  margin-top: 25px;
   display: flex;
   justify-content: space-around;
 }
 .selectedItem {
   font-weight: bold;
   font-size: 15px;
-  color: var(--color-chocolate);
+  color: black;
+  border-bottom: 1px solid black;
+  padding-bottom: 1px;
 }
 .unselectedItem {
   font-size: 15px;

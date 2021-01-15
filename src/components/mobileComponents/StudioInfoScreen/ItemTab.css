@@ -1,0 +1,13 @@
+.categoryContainer {
+}
+
+.totalItemContainer {
+  margin-top: 25px;
+  padding-left: 4vw;
+  padding-right: 4vw;
+}
+
+.categoryTitle {
+  font-size: 15px;
+  font-weight: bold;
+}
