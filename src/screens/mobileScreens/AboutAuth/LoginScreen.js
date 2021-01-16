@@ -68,6 +68,7 @@ const LoginScreen = () => {
           <LoginButton email={email} password={password} />
           <div className="forgotPasswordContainer">
             <Link
+              onClick={() => window.scrollTo(0, 0)}
               to="/changePassword"
               style={{ TextDecoder: 'none', color: 'white' }}
             >
@@ -106,7 +107,11 @@ const LoginScreen = () => {
         </div>
         <div className="noIdContainer">
           <div className="noIdText">계정이 없으신가요?</div>
-          <Link to="/startWithEmail" style={{ color: 'gray' }}>
+          <Link
+            to="/startWithEmail"
+            style={{ color: 'gray' }}
+            onClick={() => window.scrollTo(0, 0)}
+          >
             <div className="startWithEmailText">이메일로 시작하기</div>
           </Link>
         </div>

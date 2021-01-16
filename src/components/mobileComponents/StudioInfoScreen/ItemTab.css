@@ -1,13 +1,12 @@
-.categoryContainer {
-}
-
 .totalItemContainer {
-  margin-top: 25px;
   padding-left: 4vw;
   padding-right: 4vw;
 }
 
 .categoryTitle {
+  margin-top: 25px;
   font-size: 15px;
   font-weight: bold;
+  display: flex;
+  align-items: center;
 }

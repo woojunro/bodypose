@@ -6,7 +6,11 @@ const SemiTitle = ({ title, pageTo }) => {
   return (
     <div className="titleContainer">
       <span className="title">{title}</span>
-      <Link to={pageTo} style={{ TextDecoder: 'none', color: 'white' }}>
+      <Link
+        to={pageTo}
+        style={{ TextDecoder: 'none', color: 'white' }}
+        onClick={() => window.scrollTo(0, 0)}
+      >
         <span className="showMore"> 더보기</span>
       </Link>
     </div>

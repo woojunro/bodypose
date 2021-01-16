@@ -37,6 +37,7 @@ const StudioCard = ({
   return (
     <div className="totalContainer">
       <Link
+        onClick={() => window.scrollTo(0, 0)}
         to={`studios/${name}`}
         style={{ TextDecoder: 'none', color: 'white' }}
       >

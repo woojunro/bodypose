@@ -6,7 +6,7 @@ import ad from '../../../materials/Ad.png';
 const AdTap = () => {
   return (
     <div className="adTap">
-      <Link to="/about">
+      <Link to="/about" onClick={() => window.scrollTo(0, 0)}>
         <img alt="바디프로필의 모든 정보 바디포즈" src={ad} />
       </Link>
     </div>

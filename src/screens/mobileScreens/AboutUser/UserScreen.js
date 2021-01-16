@@ -40,6 +40,7 @@ const UserScreen = () => {
       <div className="userSemiTitle">계정</div>
 
       <Link
+        onClick={() => window.scrollTo(0, 0)}
         to={'/users/myInfo'}
         style={{ textDecoration: 'none', color: 'white' }}
       >
@@ -50,6 +51,7 @@ const UserScreen = () => {
       </Link>
 
       <Link
+        onClick={() => window.scrollTo(0, 0)}
         to={'/users/myReview'}
         style={{ textDecoration: 'none', color: 'white' }}
       >
@@ -77,7 +79,11 @@ const UserScreen = () => {
         </div>
       </a>
 
-      <Link to={'/notices'} style={{ textDecoration: 'none', color: 'white' }}>
+      <Link
+        onClick={() => window.scrollTo(0, 0)}
+        to={'/notices'}
+        style={{ textDecoration: 'none', color: 'white' }}
+      >
         <div className="userTap">
           <div className="userTapName">공지사항</div>
 
@@ -91,6 +97,7 @@ const UserScreen = () => {
       </div>
 
       <Link
+        onClick={() => window.scrollTo(0, 0)}
         to={'/users/leave'}
         style={{ textDecoration: 'none', color: 'white' }}
       >

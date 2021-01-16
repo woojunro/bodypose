@@ -11,7 +11,7 @@ const Header = ({ pageName }) => {
       <div>
         <div className="header">
           <div className="headerLogo">
-            <Link to="/">
+            <Link to="/" onClick={() => window.scrollTo(0, 0)}>
               <img src={logo} alt="BodyPose" />
             </Link>
           </div>

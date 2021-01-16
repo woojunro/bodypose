@@ -31,7 +31,11 @@ const Modal = ({ isOpen, close, concept }) => {
               </div>
             </div>
             <div className="toStudioInfoContainer">
-              <Link to={`/studios/${concept.studio}`} className="toStudioInfo">
+              <Link
+                to={`/studios/${concept.studio}`}
+                className="toStudioInfo"
+                onClick={() => window.scrollTo(0, 0)}
+              >
                 <div>스튜디오 정보 보기</div>
               </Link>
               {isHearted ? (

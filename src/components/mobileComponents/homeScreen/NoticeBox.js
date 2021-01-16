@@ -11,6 +11,7 @@ const NoticeBox = () => {
   const renderedNotices = Notices.map((notice) => {
     return (
       <Link
+        onClick={() => window.scrollTo(0, 0)}
         key={notice.title}
         to={'/notices/' + notice.noticeNumber}
         style={{ TextDecoder: 'none', color: 'white' }}
@@ -23,7 +24,11 @@ const NoticeBox = () => {
   return (
     <div className="noticeContainer">
       <div className="greyBox" />
-      <Link to="/notices" style={{ TextDecoder: 'none', color: 'white' }}>
+      <Link
+        to="/notices"
+        style={{ TextDecoder: 'none', color: 'white' }}
+        onClick={() => window.scrollTo(0, 0)}
+      >
         <span className="noticeHeader"> 공지사항 </span>
       </Link>
       <Carousel

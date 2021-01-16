@@ -16,6 +16,7 @@ const Footer = () => {
   return (
     <div className="footer">
       <Link
+        onClick={() => window.scrollTo(0, 0)}
         to={`/notices/${termsOfServices.noticeNumber}`}
         style={{ TextDecoder: 'none', color: 'white' }}
       >
@@ -23,6 +24,7 @@ const Footer = () => {
       </Link>
       <span className="footerText">|</span>
       <Link
+        onClick={() => window.scrollTo(0, 0)}
         to={`/notices/${privacy.noticeNumber}`}
         style={{ TextDecoder: 'none', color: 'white' }}
       >

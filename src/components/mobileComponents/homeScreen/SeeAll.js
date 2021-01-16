@@ -16,7 +16,11 @@ const SeeAll = () => {
   const renderedItems = items.map((item) => {
     return (
       <li key={item.name}>
-        <Link to={item.pageTo} style={{ TextDecoder: 'none', color: 'white' }}>
+        <Link
+          to={item.pageTo}
+          style={{ TextDecoder: 'none', color: 'white' }}
+          onClick={() => window.scrollTo(0, 0)}
+        >
           <div className="itemBox">
             <img alt={item.name} src={item.icon} />
           </div>

@@ -60,7 +60,11 @@ const BottomNavigation = ({ pageName }) => {
   const renderedTabs = tabs.map((tab) => {
     return (
       <li key={tab.name}>
-        <Link to={tab.pageTo} style={{ TextDecoder: 'none', color: 'white' }}>
+        <Link
+          to={tab.pageTo}
+          style={{ TextDecoder: 'none', color: 'white' }}
+          onClick={() => window.scrollTo(0, 0)}
+        >
           <div className="tabContainer">
             <img
               alt={tab.name}

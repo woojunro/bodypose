@@ -4,7 +4,7 @@ import './MainCardM.css';
 
 const MainCardM = ({ title, studioName, pic, price }) => {
   return (
-    <Link to={`/studios/${studioName}`}>
+    <Link to={`/studios/${studioName}`} onClick={() => window.scrollTo(0, 0)}>
       <div className="cardContainer">
         <div>
           <img alt="card" src={pic} />

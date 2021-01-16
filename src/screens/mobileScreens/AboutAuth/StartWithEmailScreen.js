@@ -119,10 +119,18 @@ const EmailJoin = () => {
             }}
           />
           <span className="mustText">[필수] </span>
-          <Link to="/notices/1" style={{ color: 'black' }}>
+          <Link
+            to="/notices/1"
+            style={{ color: 'black' }}
+            onClick={() => window.scrollTo(0, 0)}
+          >
             <span className="linkText"> 서비스 이용약관,</span>
           </Link>
-          <Link to="/notices/2" style={{ color: 'black' }}>
+          <Link
+            to="/notices/2"
+            style={{ color: 'black' }}
+            onClick={() => window.scrollTo(0, 0)}
+          >
             <span className="linkText">개인정보 처리방침</span>
           </Link>
           <span>에 동의합니다.</span>

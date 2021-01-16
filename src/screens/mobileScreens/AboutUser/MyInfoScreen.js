@@ -37,6 +37,7 @@ const MyInfoScreen = () => {
           <div className="userInfoPassword">
             <div>*********</div>
             <Link
+              onClick={() => window.scrollTo(0, 0)}
               to="/changePassword"
               style={{ Decoder: 'none', color: 'white' }}
             >

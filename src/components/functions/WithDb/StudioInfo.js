@@ -2,6 +2,9 @@ import {
   DbBalanceButton,
   BalanceButtonPhoto,
   BalanceButtonIndoorPrice,
+  BalanceButtonOutdoorPrice,
+  BalanceButtonHairMakeup,
+  BalanceButtonOptionProduct,
 } from '../../../virtualDB/items/DbBalanceButtton';
 
 //개별 studio 정보 불러오는 함수
@@ -28,5 +31,22 @@ export const GetMorePhoto = (currentStudio, i, currentData) => {
 export const GetIndoorItem = (currentStudio) => {
   if (currentStudio === 'balance-button') {
     return BalanceButtonIndoorPrice;
+  }
+};
+export const GetOutdoorItem = (currentStudio) => {
+  if (currentStudio === 'balance-button') {
+    return BalanceButtonOutdoorPrice;
+  }
+};
+
+export const GetHairMakeup = (currentStudio) => {
+  if (currentStudio === 'balance-button') {
+    return BalanceButtonHairMakeup;
+  }
+};
+
+export const GetOptionProduct = (currentStudio) => {
+  if (currentStudio === 'balance-button') {
+    return BalanceButtonOptionProduct;
   }
 };
