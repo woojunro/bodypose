@@ -8,9 +8,9 @@ const HairMakeup = ({ currentStudio, isHairOpen, setIsHairOpen }) => {
   const hairMakeup = GetHairMakeup(currentStudio.studioName);
   const renderedArrow = () => {
     return isHairOpen ? (
-      <IoMdArrowDropup fontSize="15px" />
+      <IoMdArrowDropup fontSize="17px" />
     ) : (
-      <IoMdArrowDropdown fontSize="15px" />
+      <IoMdArrowDropdown fontSize="17px" />
     );
   };
   const renderedHairshopTitle = () => {

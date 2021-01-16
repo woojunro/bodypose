@@ -26,7 +26,7 @@ export const DbStudios = [
     title: '밸런스버튼',
     price: '280,000원',
     mainPhoto: balanceButton21,
-    location: '서울 서초구 연세동',
+    location: '서울시 강남구 논현동 183-14 지하1층',
     rating: 4.3,
     hearts: 15,
     review: 4,

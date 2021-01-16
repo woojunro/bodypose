@@ -16,9 +16,9 @@ const PhotoItem = ({ currentStudio, isPhotoItemOpen, setIsPhotoItemOpen }) => {
 
   const renderedArrow = () => {
     return isPhotoItemOpen ? (
-      <IoMdArrowDropup fontSize="15px" />
+      <IoMdArrowDropup fontSize="17px" />
     ) : (
-      <IoMdArrowDropdown fontSize="15px" />
+      <IoMdArrowDropdown fontSize="17px" />
     );
   };
 

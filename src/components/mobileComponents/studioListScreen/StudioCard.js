@@ -4,6 +4,7 @@ import { IoIosHeartEmpty, IoIosStar, IoIosHeart } from 'react-icons/io';
 import { Link, useHistory } from 'react-router-dom';
 import { SetHeartDb } from '../../../components/functions/WithDb/GetStudios';
 import LoginContext from '../../../contexts/LoginContext';
+import GetShortAdress from '../../functions/Studio/GetShortAdress';
 
 const StudioCard = ({
   Hearted = false,
@@ -20,6 +21,7 @@ const StudioCard = ({
 }) => {
   const LogedIn = useContext(LoginContext);
   const history = useHistory();
+  const adress = GetShortAdress(location);
 
   const [isHearted, setIsHearted] = useState(Hearted);
 
@@ -50,7 +52,7 @@ const StudioCard = ({
               <div className="firstLine">
                 <span style={{ fontSize: '15px' }}>{title}</span>
               </div>
-              <div className="location">{location}</div>
+              <div className="location">{adress}</div>
               <div className="thirdLine">
                 <IoIosStar color="#FFD800" fontSize="18px" />
                 <span className="rating">{rating}</span>
