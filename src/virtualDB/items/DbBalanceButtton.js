@@ -74,8 +74,6 @@ import balanceButton83Thumb from '../images/Balance Button83Thumb.jpg';
 export const DbBalanceButton = {
   studioName: 'balance-button',
   location: '서울시 강남구 논현동 183-14 지하1층',
-  lat: 37.5068687110336,
-  long: 127.02611815627253,
   isEvent: false,
   weekDays: '월-목',
   weekEnds: '금-일',
