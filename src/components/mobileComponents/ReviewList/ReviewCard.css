@@ -1,0 +1,66 @@
+.reviewCardContainer {
+  color: black;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+.reviewInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.reviewUserName {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.ratingAndStudio {
+  display: flex;
+  align-items: center;
+}
+.reviewStudio {
+  margin-left: 5px;
+  font-size: 12px;
+}
+.reviewDate {
+  font-size: 11px;
+}
+.reviewBottomPart {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+}
+.reviewThumb {
+  font-size: xx-small;
+
+  width: 140px;
+  position: relative;
+}
+.reviewThumb img {
+  width: 140px;
+}
+
+.reviewPhotoNum {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  align-items: center;
+  bottom: 3%;
+  left: 80%;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-bottom-left-radius: 10px;
+  border-top-left-radius: 10px;
+  color: white;
+  width: 28px;
+  height: 14px;
+}
+.reviewText {
+  margin-left: 10px;
+  height: 100px;
+  width: 95%;
+  font-size: 13px;
+  overflow: hidden;
+  position: relative;
+  line-height: 1.2em;
+  max-height: 5.7em;
+  text-align: justify;
+}

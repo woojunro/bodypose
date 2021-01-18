@@ -14,6 +14,14 @@ const StudioMap = ({ currentStudio }) => {
       <IoMdArrowDropdown fontSize="17px" />
     );
   };
+  const renderedTitle = adress.map((adr) => {
+    return (
+      <div key={adr.title} className="studioAdress">
+        <span className="adressTitle">{adr.title}</span>
+        <span className="adressInfo"> {adr.adress}</span>
+      </div>
+    );
+  });
 
   return (
     <div className="categoryContainer">
@@ -21,12 +29,12 @@ const StudioMap = ({ currentStudio }) => {
         위치{renderedArrow()}
       </div>
       {isMapOpen ? (
-        <div className="MapTotalContainer">
-          <div className="studioAdress">{adress}</div>
-          <div>
-            <KakaoMap currentStudio={currentStudio} />
+        <>
+          <div className="MapTotalContainer">
+            {renderedTitle}
+            <KakaoMap currentLocation={adress} />
           </div>
-        </div>
+        </>
       ) : null}
     </div>
   );

@@ -5,15 +5,24 @@ import { GetOptionProduct } from '../../functions/WithDb/StudioInfo';
 
 const OptionProduct = ({ currentStudio, isOptionOpen, setIsOptionOpen }) => {
   const options = GetOptionProduct(currentStudio.studioName);
+  const optionPrice = options.prices;
+  const optionNotice = options.optionNotice;
 
-  const renderedOptions = options.map((option) => {
+  const renderedOptions = optionPrice.map((option) => {
     return (
-      <div className="optionContainer">
+      <div key={option.title} className="optionContainer">
         <div className="optionCardTop">
           <div className="optionTitle">{option.title}</div>
           <div className="optionPrice">{option.price}</div>
         </div>
         <div className="optionAdding">{option.adding}</div>
+      </div>
+    );
+  });
+  const renderedOptionNotice = optionNotice.map((notice) => {
+    return (
+      <div key={notice} className="itemNotice">
+        *{notice}
       </div>
     );
   });
@@ -35,7 +44,11 @@ const OptionProduct = ({ currentStudio, isOptionOpen, setIsOptionOpen }) => {
         추가상품{renderedArrow()}
       </div>
       {isOptionOpen ? (
-        <div className="optionTotalContainer">{renderedOptions}</div>
+        <>
+          <div className="optionTotalContainer">{renderedOptions}</div>
+          <div className="optionLine" />
+          {renderedOptionNotice}
+        </>
       ) : null}
     </div>
   );

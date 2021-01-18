@@ -6,3 +6,10 @@
   margin-left: 3px;
   margin-right: 3px;
 }
+
+.adressTitle {
+  font-weight: bold;
+}
+.adressInfo {
+  font-size: 14px;
+}

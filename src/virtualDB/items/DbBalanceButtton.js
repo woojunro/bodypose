@@ -73,7 +73,10 @@ import balanceButton83Thumb from '../images/Balance Button83Thumb.jpg';
 
 export const DbBalanceButton = {
   studioName: 'balance-button',
-  location: '서울시 강남구 논현동 183-14 지하1층',
+  location: [
+    { title: '신논현점', adress: '서울시 강남구 논현동 183-14 지하1층' },
+    { title: '선정릉점', adress: '서울시 강남구 논현동 270-1 지하1층' },
+  ],
   isEvent: false,
   weekDays: '월-목',
   weekEnds: '금-일',
@@ -87,65 +90,73 @@ export const DbBalanceButton = {
   reservationLink: 'http://balancebutton.com/reservation',
 };
 
-export const BalanceButtonOptionProduct = [
-  {
-    title: '보정본 1장 추가',
-    price: '99,000원/1인',
-    adding: '인원추가시 33,000원/1인',
-  },
-  {
-    title: '고해상 원본 1장 추가',
-    price: '11,000원',
-  },
-  {
-    title: '고해상 원본 전체 추가',
-    price: '33,000원',
-  },
-  {
-    title: '포스터 A4',
-    price: '10,000원',
-  },
-  {
-    title: '포스터 A3',
-    price: '15,000원',
-  },
-  {
-    title: '중형액자 A4',
-    price: '44,000원',
-  },
-  {
-    title: '중형액자 A3',
-    price: '66,000원',
-  },
-  {
-    title: '중형액자 A2',
-    price: '88,000원',
-  },
-  {
-    title: 'A4액자 2개 + A4포스터 2장',
-    price: '90,000원',
-  },
-  {
-    title: 'A3액자 1개 + A4포스터 3장',
-    price: '88,000원',
-  },
-  {
-    title: 'A2 액자 1개 + A3 포스터 1장 + A4 포스터 2장',
-    price: '100,000원',
-  },
-  {
-    title: 'A2 액자 2개 + A4 포스터 2장',
-    price: '165,000원',
-  },
-  {
-    title: '대형액자 A1',
-    price: '100,000원',
-  },
-  {
-    title: '대형액자 A0',
-    price: '275,000원',
-  },
-];
+export const BalanceButtonOptionProduct = {
+  optionNotice: [
+    '결합 상품의 구성은 변경이 불가합니다.',
+    '결합 상품은 구매 후 3시간 뒤부터 수령이 가능합니다.',
+    '액자 유리 파손의 위험으로 인해 택배 수령은 불가합니다.',
+    '원하시는 날짜에 방문 수령이 가능합니다.',
+  ],
+  prices: [
+    {
+      title: '보정본 1장 추가',
+      price: '99,000원/1인',
+      adding: '인원추가시 33,000원/1인',
+    },
+    {
+      title: '고해상 원본 1장 추가',
+      price: '11,000원',
+    },
+    {
+      title: '고해상 원본 전체 추가',
+      price: '33,000원',
+    },
+    {
+      title: '포스터 A4',
+      price: '10,000원',
+    },
+    {
+      title: '포스터 A3',
+      price: '15,000원',
+    },
+    {
+      title: '중형액자 A4',
+      price: '44,000원',
+    },
+    {
+      title: '중형액자 A3',
+      price: '66,000원',
+    },
+    {
+      title: '중형액자 A2',
+      price: '88,000원',
+    },
+    {
+      title: 'A4액자 2개 + A4포스터 2장',
+      price: '90,000원',
+    },
+    {
+      title: 'A3액자 1개 + A4포스터 3장',
+      price: '88,000원',
+    },
+    {
+      title: 'A2 액자 1개 + A3 포스터 1장 + A4 포스터 2장',
+      price: '100,000원',
+    },
+    {
+      title: 'A2 액자 2개 + A4 포스터 2장',
+      price: '165,000원',
+    },
+    {
+      title: '대형액자 A1',
+      price: '100,000원',
+    },
+    {
+      title: '대형액자 A0',
+      price: '275,000원',
+    },
+  ],
+};
 
 export const BalanceButtonHairMakeup = {
   shopName: '주타메이크업',

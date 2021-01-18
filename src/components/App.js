@@ -15,6 +15,7 @@ import ConceptsInfoScreenM from '../screens/mobileScreens/ConceptsInfoScreen';
 import NoticeListScreenM from '../screens/mobileScreens/NoticeListScreen';
 import NoticeScreenM from '../screens/mobileScreens/NoticeScreen';
 import ErrorScreenM from '../screens/mobileScreens/ErrorScreen';
+import FullReviewScreenM from '../screens/mobileScreens/FullReviewScreen';
 
 import LoginScreenM from '../screens/mobileScreens/AboutAuth/LoginScreen';
 import ChangePasswordScreenM from '../screens/mobileScreens/AboutAuth/ChangePasswordScreen';
@@ -57,6 +58,10 @@ const App = () => {
             <Route exact path="/hearts" component={HeartScreenM} />
             <Route exact path="/notices" component={NoticeListScreenM} />
             <Route path="/notices/:noticeNumber" component={NoticeScreenM} />
+            <Route
+              path="/reviews/:reviewNumber"
+              component={FullReviewScreenM}
+            />
             <Route exact path="/login" component={LoginScreenM} />
             <Route
               exact
