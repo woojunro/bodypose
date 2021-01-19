@@ -1,0 +1,13 @@
+.toStudioButton {
+  width: 95%;
+  display: flex;
+  height: 40px;
+  background-color: var(--color-chocolate);
+  color: white;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  font-size: 16px;
+}

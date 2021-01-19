@@ -1,0 +1,14 @@
+.reviewBody {
+  margin-top: 20px;
+}
+.reviewBodyPhoto {
+  width: 100%;
+}
+.reviewBodyPhoto img {
+  width: 100%;
+}
+
+.reviewBodyText {
+  margin-top: 40px;
+  font-size: 14px;
+}
