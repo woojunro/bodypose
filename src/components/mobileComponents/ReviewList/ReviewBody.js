@@ -5,14 +5,6 @@ import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 const ReviewBody = ({ currentReview }) => {
   const [currentPic, setCurrentPic] = useState(0);
 
-  const renderedText = currentReview.text.split('\n').map((line) => {
-    return (
-      <span key={line}>
-        {line}
-        <br />
-      </span>
-    );
-  });
   const GetNextPic = () => {
     setCurrentPic(currentPic + 1);
   };
@@ -49,7 +41,7 @@ const ReviewBody = ({ currentReview }) => {
           <img alt="reviewPhoto" src={currentReview.pic[currentPic]} />
         ) : null}
       </div>
-      <div className="reviewBodyText">{renderedText}</div>
+      <div className="reviewBodyText">{currentReview.text}</div>
     </div>
   );
 };

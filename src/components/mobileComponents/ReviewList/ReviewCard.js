@@ -6,14 +6,7 @@ import { Link } from 'react-router-dom';
 const ReviewCard = ({ reviewContent }) => {
   const reviewText = reviewContent.text;
   const linkTo = '/reviews/' + reviewContent.number;
-  const renderedText = reviewText.split('\n').map((line) => {
-    return (
-      <span key={line}>
-        {line}
-        <br />
-      </span>
-    );
-  });
+
   const renderedbottomPart = () => {
     if (reviewContent.pic) {
       return (
@@ -25,7 +18,7 @@ const ReviewCard = ({ reviewContent }) => {
             ) : null}
           </div>
           <div>
-            <div className="reviewText">{renderedText}</div>
+            <div className="reviewText">{reviewText}</div>
           </div>
         </div>
       );
@@ -33,7 +26,8 @@ const ReviewCard = ({ reviewContent }) => {
       return (
         <div className="reviewBottomPart">
           <div>
-            <div className="reviewText">{renderedText}</div>
+            <div className="reviewText">{reviewText}</div>
+            <div></div>
           </div>
         </div>
       );

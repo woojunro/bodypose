@@ -1,0 +1,14 @@
+.reviewTab {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.reviewTabTopContainer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.writeReview {
+  margin-top: 20px;
+  font-size: 15px;
+}

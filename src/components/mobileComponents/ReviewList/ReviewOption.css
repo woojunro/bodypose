@@ -1,0 +1,49 @@
+.reveiwOptionBox {
+  z-index: 40;
+  position: absolute;
+  top: 105px;
+  right: 32px;
+  bottom: 0;
+  width: 100px;
+  height: 45px;
+
+  box-shadow: 0px 0px 5px gray;
+  background-color: white;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.reviewOption {
+  padding-left: 10px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+.reviewOptionClose {
+  padding-right: 5px;
+  padding-top: 1px;
+  font-size: 22px;
+}
+.sameUserReveiwOptionBox {
+  z-index: 40;
+  position: absolute;
+  top: 105px;
+  right: 32px;
+  bottom: 0;
+  width: 100px;
+  height: 80px;
+  background-color: white;
+
+  box-shadow: 0px 0px 5px gray;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+}
+.sameUserReviwOption {
+  height: 40%;
+  align-items: center;
+  padding-top: 10px;
+}

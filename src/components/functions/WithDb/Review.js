@@ -6,7 +6,7 @@ export const GetReviews = (sortByOption) => {
     console.log('byDate');
   } else if (sortByOption === 'byRating') {
     console.log('byRating');
-  } else console.log('byReverseRating');
+  } else console.log('byReverseRating haang');
 
   return DbReviews.slice(0, 5);
 };
@@ -23,4 +23,13 @@ export const GetFullReview = (reviewNumber) => {
       return DbReviews[i];
     }
   }
+};
+//리뷰 신고하기.
+export const ReportReview = (reviewNumber = 0, reason = '') => {
+  return console.log(reviewNumber, reason);
+};
+
+//리뷰 삭제하기.
+export const RemoveReview = (reviewNumber) => {
+  return console.log(reviewNumber + '삭제했다잇');
 };

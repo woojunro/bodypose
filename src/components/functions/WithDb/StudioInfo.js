@@ -5,6 +5,7 @@ import {
   BalanceButtonOutdoorPrice,
   BalanceButtonHairMakeup,
   BalanceButtonOptionProduct,
+  BalanceButtonReviews,
 } from '../../../virtualDB/items/DbBalanceButtton';
 
 //개별 studio 정보 불러오는 함수
@@ -50,5 +51,18 @@ export const GetHairMakeup = (currentStudio) => {
 export const GetOptionProduct = (currentStudio) => {
   if (currentStudio === 'balance-button') {
     return BalanceButtonOptionProduct;
+  }
+};
+//초기 리뷰 불러오는 함수.
+export const GetReview = (currentStudio, option) => {
+  if (currentStudio === 'balance-button') {
+    console.log('여기');
+    return BalanceButtonReviews.slice(0, 5);
+  }
+};
+//리뷰 추가적으로 불러오는 함수.
+export const GetMoreReview = (currentStudio, option) => {
+  if (currentStudio === 'balance-button') {
+    return BalanceButtonReviews.slice(10, 15);
   }
 };

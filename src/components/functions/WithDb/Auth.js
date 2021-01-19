@@ -1,6 +1,6 @@
 //이메일과 비밀번호 확인하는 함수.
 export const CheckEmailPassword = () => {
-  return false;
+  return true;
 };
 
 //이메일로 로그인 하는 함수.

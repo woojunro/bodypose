@@ -3,9 +3,13 @@ import ReviewCard from './ReviewCard';
 
 const ReviewScrollView = ({ reviewList }) => {
   const renderedReviewScroll = reviewList.map((review) => {
-    return <ReviewCard key={review.text} reviewContent={review} />;
+    return (
+      <div key={review.userName + review.studioTitle}>
+        <ReviewCard reviewContent={review} />
+      </div>
+    );
   });
 
-  return <div>{renderedReviewScroll}</div>;
+  return <>{renderedReviewScroll}</>;
 };
 export default ReviewScrollView;

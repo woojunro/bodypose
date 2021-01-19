@@ -1,6 +1,7 @@
 .sortBymodal {
   z-index: 20;
-  position: fixed;
+  position: absolute;
+  height: 800px;
   top: 92px;
   right: 0;
   bottom: 0;

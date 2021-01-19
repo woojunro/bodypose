@@ -8,6 +8,8 @@ import TopNavigator from '../../components/mobileComponents/StudioInfoScreen/Top
 import Portfolio from '../../components/mobileComponents/StudioInfoScreen/Portfolio';
 import ItemTab from '../../components/mobileComponents/StudioInfoScreen/ItemTab';
 import InfoTab from '../../components/mobileComponents/StudioInfoScreen/InfoTab';
+import ReviewTab from '../../components/mobileComponents/StudioInfoScreen/ReviewTab';
+
 import SeeMoreStudio from '../../components/mobileComponents/StudioInfoScreen/SeeMoreStudio';
 
 const StudioInfoScreen = ({ match }) => {
@@ -22,7 +24,7 @@ const StudioInfoScreen = ({ match }) => {
     } else if (navigator === 'info') {
       return <InfoTab currentStudio={currentStudio} />;
     } else {
-      return <div>다른거</div>;
+      return <ReviewTab currentStudio={currentStudio} />;
     }
   };
   return (

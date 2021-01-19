@@ -15,7 +15,7 @@ const ReviewListScreen = () => {
 
   const [sortBy, setSortBy] = useState(sortByOptions[0]);
   const [isThereMoreReviews, setIsThereMoreReviews] = useState(true);
-  const [Reviews, setReviews] = useState(GetReviews(sortBy));
+  const [Reviews, setReviews] = useState([]);
   const [isSortByOpen, setIsSortByOpen] = useState(false);
   const GetMore = () => {
     const more = Reviews.concat(GetMoreReview());
@@ -30,13 +30,13 @@ const ReviewListScreen = () => {
   }, [isSortByOpen]);
 
   useEffect(() => {
-    setReviews(GetReviews(sortBy));
+    setReviews(GetReviews(sortBy.optionName));
   }, [sortBy]);
 
   const history = useHistory();
   return (
     <div>
-      <div className="usersTopContainer">
+      <div className="reviewListTopContainer">
         <FiArrowLeft
           className="usersGoBackArrow"
           onClick={() => {
@@ -46,6 +46,7 @@ const ReviewListScreen = () => {
         <div className="leaveTitle">리뷰모아보기</div>
         <div className="usersTopEmptyBox" />
       </div>
+      <div style={{ width: '100%', height: '50px' }} />
       <div className="reviewSortButtonContainer">
         <SortButton
           isOpen={isSortByOpen}

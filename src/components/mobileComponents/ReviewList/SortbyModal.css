@@ -1,10 +1,9 @@
-.sortBymodal {
-  z-index: 20;
-  position: fixed;
-  top: 92px;
-  right: 0;
-  bottom: 0;
-  left: 0;
+.reviewSortBymodal {
+  z-index: 50;
+  position: absolute;
+  margin-left: -20px;
+  width: 100vw;
+  height: 800px;
   background: rgba(0, 0, 0, 0.4);
 }
 .reviewSortBytrueModal {
@@ -18,11 +17,11 @@
   padding: 0px;
   background: #fff;
 }
-.sortBygreyBackground {
+.reviewSortBygreyBackground {
   height: 100%;
   width: 100%;
 }
-.sortBymodalContents {
+.reviewSortBymodalContents {
   margin: 0 auto;
   padding-left: 20px;
   padding-right: 15px;

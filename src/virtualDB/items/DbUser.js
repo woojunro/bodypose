@@ -70,7 +70,7 @@ import Flyn26Thumb from '../images/Flyn26Thumb.jpg';
 import Flyn27Thumb from '../images/Flyn27Thumb.jpg';
 const DbUser = [
   {
-    userName: '통통새우',
+    userName: '아데토쿤보',
     email: 'jason@gamil.com',
     password: 'fiefoso',
     likeStudio: [

@@ -23,25 +23,29 @@ const LoginScreen = () => {
   };
 
   if (LogedIn.logedIn) {
-    if (history.location.state.previousPath === '/hearts') {
-      return (
-        <Redirect
-          to={{
-            pathname: '/',
-          }}
-        />
-      );
-    } else if (history.location.state.previousPath === '/users') {
-      return (
-        <Redirect
-          to={{
-            pathname: '/',
-          }}
-        />
-      );
+    if (!history.location.state) {
+      return <Redirect to={{ pathname: '/error' }} />;
     } else {
-      history.goBack();
-      return null;
+      if (history.location.state.previousPath === '/hearts') {
+        return (
+          <Redirect
+            to={{
+              pathname: '/',
+            }}
+          />
+        );
+      } else if (history.location.state.previousPath === '/users') {
+        return (
+          <Redirect
+            to={{
+              pathname: '/',
+            }}
+          />
+        );
+      } else {
+        history.goBack();
+        return null;
+      }
     }
   } else {
     return (

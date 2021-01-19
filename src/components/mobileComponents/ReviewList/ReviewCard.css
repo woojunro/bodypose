@@ -1,7 +1,7 @@
 .reviewCardContainer {
   color: black;
-  margin-top: 15px;
-  margin-bottom: 15px;
+  margin-top: 20px;
+  margin-bottom: 5px;
 }
 .reviewInfo {
   display: flex;
@@ -63,4 +63,5 @@
   line-height: 1.3em;
   max-height: 6.2em;
   text-align: justify;
+  white-space: pre-wrap;
 }

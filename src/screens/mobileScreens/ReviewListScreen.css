@@ -1,7 +1,18 @@
+.reviewListTopContainer {
+  width: 100%;
+  border-bottom: 1px solid var(--color-line);
+  height: 50px;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  background-color: white;
+  z-index: 30;
+  justify-content: space-between;
+}
+
 .reviewSortButtonContainer {
   width: 100%;
-  display: flex;
-  justify-content: flex-end;
+  margin-left: 20px;
 }
 
 .reviewPart {
