@@ -1,5 +1,10 @@
+//이메일과 비밀번호 확인하는 함수.
+export const CheckEmailPassword = () => {
+  return false;
+};
+
 //이메일로 로그인 하는 함수.
-export const Login = () => {
+export const Login = (email, password) => {
   return console.log('로그인 됐다잇');
 };
 //Sns로 로그인 하는 함수.

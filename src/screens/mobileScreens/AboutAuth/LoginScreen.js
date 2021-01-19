@@ -14,6 +14,7 @@ import { GobackArrow } from '../../../components/functions/Login/GobackArrow';
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [validInfo, setValidInfo] = useState(true);
   const LogedIn = useContext(LoginContext);
   const history = useHistory();
 
@@ -64,8 +65,17 @@ const LoginScreen = () => {
             onInputSubmit={setPassword}
             placeholder="비밀번호"
             type="password"
+          />{' '}
+          {!validInfo ? (
+            <div className="unvalidInfoText">
+              이메일 혹은 비밀번호 오류입니다.
+            </div>
+          ) : null}
+          <LoginButton
+            email={email}
+            password={password}
+            setValidInfo={setValidInfo}
           />
-          <LoginButton email={email} password={password} />
           <div className="forgotPasswordContainer">
             <Link
               onClick={() => window.scrollTo(0, 0)}

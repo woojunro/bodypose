@@ -71,3 +71,10 @@
   padding-top: 10%;
   margin-bottom: 15%;
 }
+
+.unvalidInfoText {
+  font-size: 12px;
+  padding-left: 11%;
+  color: red;
+  margin-bottom: -14px;
+}

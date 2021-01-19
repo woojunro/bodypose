@@ -13,6 +13,7 @@ import Flyn5 from '../../../virtualDB/images/Flyn5.jpg';
 import balanceButton38 from '../../../virtualDB/images/Balance Button38.jpg';
 import balanceButton83 from '../../../virtualDB/images/Balance Button83.jpg';
 
+//메인 홈페이지 남성 컨셉 4개 불러오기.
 export const GetMaleConcepts = () => {
   return [
     {
