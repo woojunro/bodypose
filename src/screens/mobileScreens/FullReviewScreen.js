@@ -17,7 +17,7 @@ const FullReviewScreen = ({ match }) => {
   const history = useHistory();
   const number = match.params.reviewNumber;
   const fullReview = GetFullReview(Number(number));
-  const linkTo = fullReview.studioName;
+  const linkTo = '/studios/' + fullReview.studioName;
 
   if (LogedIn.logedIn) {
     const currentUser = GetUserName();
@@ -53,7 +53,7 @@ const FullReviewScreen = ({ match }) => {
       </div>
       <div className="fullReviewBottomPart">
         <ReviewBody currentReview={fullReview} />
-        <ToStudioButton studioName={fullReview.studioName} />
+        <ToStudioButton linkTo={linkTo} />
       </div>
     </div>
   );

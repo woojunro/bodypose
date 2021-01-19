@@ -5,6 +5,7 @@ import balanceButton34 from '../images/Balance Button34.jpg';
 import balanceButton31Thumb from '../images/Balance Button31Thumb.jpg';
 
 import aavec27 from '../images/AAVEC27.jpg';
+import aavec3 from '../images/AAVEC3.jpg';
 
 import aavec27Thumb from '../images/AAVEC27Thumb.jpg';
 
@@ -38,7 +39,7 @@ export const DbReviews = [
 
     timestamp: '2021-01.05',
     thumb: [aavec27Thumb],
-    pic: [aavec27],
+    pic: [aavec27, aavec3],
     text:
       '여러 스튜디오들을 둘러보다가 아베크에서 바디프로필을 찍었어요.\n\n태어나서 바디프로필을 처음 찍어보는 거라서 잘 찍을 수 있을지 걱정이 많이 됐었는데, 작가님께서 친절하셔서 촬영 내내웃으면서 촬영 할 수 있었어요!\n\n 촬영 컨셉을 정하는게 어려워서 하고 싶은 컨셉들을 여러개들고 찾아 갔었는데, 촬영 전에 작가님이 저랑 가장 잘 어울리는컨셉으로 추천해주셔서 완전 즐겁게 촬영했어요.보정본 뿐만 아니라 원본 사진도 모두 다 마음에 쏙 들었구요. 인터넷에서 보면 보정본 받기까지 엄청 오래 걸리는 경우도있다던데, 1달 안에 보정본을 보내주셔서 너무 만족했어요!\n\n바디 프로필 찍으실 분들 아베크 완전 추천드려요!',
   },

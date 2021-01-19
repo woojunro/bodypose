@@ -25,7 +25,7 @@
   font-size: 11px;
 }
 .reviewBottomPart {
-  margin-top: 5px;
+  margin-top: 10px;
   display: flex;
   align-items: center;
 }
@@ -60,7 +60,7 @@
   font-size: 13px;
   overflow: hidden;
   position: relative;
-  line-height: 1.2em;
-  max-height: 5.7em;
+  line-height: 1.3em;
+  max-height: 6.2em;
   text-align: justify;
 }

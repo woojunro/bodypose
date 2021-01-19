@@ -44,6 +44,9 @@ const ReviewCard = ({ reviewContent }) => {
       to={linkTo}
       style={{ decoder: 'none', color: 'white' }}
       className="reviewLink"
+      onClick={() => {
+        window.scrollTo(0, 0);
+      }}
     >
       <div className="reviewCardContainer">
         <div className="reviewTopPart">

@@ -27,24 +27,26 @@ export const GetMorePhoto = (currentStudio, i, currentData) => {
     return currentData.concat(BalanceButtonPhoto.slice(i + 24, i + 48));
   }
 };
-
+//내부 상품 불러오는 함수.
 export const GetIndoorItem = (currentStudio) => {
   if (currentStudio === 'balance-button') {
     return BalanceButtonIndoorPrice;
   }
 };
+//외부 상품 불러오는 함수.
 export const GetOutdoorItem = (currentStudio) => {
   if (currentStudio === 'balance-button') {
     return BalanceButtonOutdoorPrice;
   }
 };
-
+//헤어 메이크업 상품 불러오는 함수.
 export const GetHairMakeup = (currentStudio) => {
   if (currentStudio === 'balance-button') {
     return BalanceButtonHairMakeup;
   }
 };
 
+//추가상품 불러오는 함수.
 export const GetOptionProduct = (currentStudio) => {
   if (currentStudio === 'balance-button') {
     return BalanceButtonOptionProduct;

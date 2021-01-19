@@ -13,11 +13,41 @@ const ReviewBody = ({ currentReview }) => {
       </span>
     );
   });
+  const GetNextPic = () => {
+    setCurrentPic(currentPic + 1);
+  };
+  const GetPrevPic = () => {
+    setCurrentPic(currentPic - 1);
+  };
+
+  const renderedArrows = () => {
+    return (
+      <>
+        {currentReview.pic && currentPic > 0 ? (
+          <div className="prevPicContainer">
+            <IoIosArrowBack onClick={() => GetPrevPic()} className="prevPic" />
+          </div>
+        ) : null}
+
+        {currentReview.pic && currentPic < currentReview.pic.length - 1 ? (
+          <div className="nextPicContainer">
+            <IoIosArrowForward
+              onClick={() => GetNextPic()}
+              className="nextPic"
+            />
+          </div>
+        ) : null}
+      </>
+    );
+  };
 
   return (
     <div className="reviewBody">
       <div className="reviewBodyPhoto">
-        <img alt="reviewPhoto" src={currentReview.pic[0]} />
+        {renderedArrows()}
+        {currentReview.pic ? (
+          <img alt="reviewPhoto" src={currentReview.pic[currentPic]} />
+        ) : null}
       </div>
       <div className="reviewBodyText">{renderedText}</div>
     </div>

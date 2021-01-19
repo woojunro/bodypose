@@ -2,7 +2,10 @@
   margin-top: 20px;
 }
 .reviewBodyPhoto {
-  width: 100%;
+  min-height: 450px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
 }
 .reviewBodyPhoto img {
   width: 100%;
@@ -11,4 +14,30 @@
 .reviewBodyText {
   margin-top: 40px;
   font-size: 14px;
+  line-height: 1.5em;
+}
+
+.nextPicContainer {
+  position: absolute;
+  top: 45%;
+  right: 10%;
+  transform: translateY(-43%);
+  z-index: 100;
+}
+.nextPic {
+  transform: scale(1.5, 5);
+  color: rgba(0, 0, 0, 0.2);
+}
+.prevPicContainer {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 45%;
+  left: 10%;
+  transform: translateY(-57%);
+  z-index: 100;
+}
+.prevPic {
+  transform: scale(1.5, 5);
+  color: rgba(0, 0, 0, 0.2);
 }
