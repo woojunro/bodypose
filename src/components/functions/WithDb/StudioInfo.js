@@ -56,7 +56,6 @@ export const GetOptionProduct = (currentStudio) => {
 //초기 리뷰 불러오는 함수.
 export const GetReview = (currentStudio, option) => {
   if (currentStudio === 'balance-button') {
-    console.log('여기');
     return BalanceButtonReviews.slice(0, 5);
   }
 };

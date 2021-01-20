@@ -35,7 +35,7 @@ const UserScreen = () => {
     <div>
       <Header pageName="users" />
       <div className="welcome">
-        <div className="nickNamePart">{user[0].userName}</div>
+        <div className="nickNamePart">{user.userName}</div>
         <div className="welcomePart">님 환영합니다.</div>
       </div>
       <div className="userSemiTitle">계정</div>

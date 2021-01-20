@@ -12,6 +12,7 @@ const LoadingSpinner = ({ loading }) => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        zIndex: '200',
       }}
     >
       <Loader type="ThreeDots" color="#00BFFF" height={80} width={80} />

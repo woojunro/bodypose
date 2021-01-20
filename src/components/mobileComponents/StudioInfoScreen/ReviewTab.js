@@ -5,7 +5,7 @@ import SortButton from '../../mobileComponents/ReviewList/SortButton';
 import { SortOptions } from '../../mobileComponents/ReviewList/SortOptions';
 import ReviewScrollView from '../../mobileComponents/ReviewList/ReviewScrollView';
 
-const ReviewTab = ({ currentStudio }) => {
+const ReviewTab = ({ currentStudio, setIsWriteReviewOpen }) => {
   let sortByOptions = SortOptions;
 
   const [sortBy, setSortBy] = useState(sortByOptions[0]);
@@ -41,7 +41,12 @@ const ReviewTab = ({ currentStudio }) => {
             selectedOption={sortBy}
           />
         </div>
-        <div className="writeReview">+ 리뷰 쓰기</div>
+        <div
+          className="writeReviewButton"
+          onClick={() => setIsWriteReviewOpen(true)}
+        >
+          + 리뷰 쓰기
+        </div>
       </div>
       <ReviewScrollView reviewList={Reviews} />
 

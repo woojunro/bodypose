@@ -29,9 +29,9 @@ const MyInfoScreen = () => {
         </div>
         <div className="userInfoContainer">
           <div className="userInfoSemiTitle">이메일</div>
-          <div className="userInfoText">{user[0].email}</div>
+          <div className="userInfoText">{user.email}</div>
           <div className="userInfoSemiTitle">이름</div>
-          <div className="userInfoText">{user[0].userName}</div>
+          <div className="userInfoText">{user.userName}</div>
 
           <div className="userInfoSemiTitle">비밀번호</div>
           <div className="userInfoPassword">

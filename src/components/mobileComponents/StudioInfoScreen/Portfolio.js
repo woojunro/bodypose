@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Portfolio.css';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
@@ -38,6 +38,10 @@ const Portfolio = ({ studioName }) => {
   };
 
   conceptNum = 0;
+
+  useEffect(() => {
+    document.body.style.overflow = isModalOpen ? 'hidden' : 'auto';
+  }, [isModalOpen]);
 
   const fetchMoreData = () => {
     setI(i + 24);

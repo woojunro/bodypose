@@ -15,7 +15,6 @@ import GetMoreData, {
 } from '../../components/functions/WithDb/ConceptList';
 
 const genderOptions = ['전체', '남성', '여성', '커플'];
-var conceptNum = -24;
 
 const ConceptListScreen = () => {
   //fetching 중인가?
@@ -55,9 +54,10 @@ const ConceptListScreen = () => {
     setSelectedConcepts(object);
   };
   useEffect(() => {
-    document.body.style.overflow = isSelectionOpen ? 'hidden' : 'auto';
-  }, [isSelectionOpen]);
-  conceptNum = 0;
+    document.body.style.overflow =
+      isSelectionOpen || isModalOpen ? 'hidden' : 'auto';
+  }, [isSelectionOpen, isModalOpen]);
+  let conceptNum = 0;
 
   const fetchMoreData = () => {
     setI(i + 24);

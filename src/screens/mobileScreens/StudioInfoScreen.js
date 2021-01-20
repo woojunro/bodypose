@@ -9,12 +9,18 @@ import Portfolio from '../../components/mobileComponents/StudioInfoScreen/Portfo
 import ItemTab from '../../components/mobileComponents/StudioInfoScreen/ItemTab';
 import InfoTab from '../../components/mobileComponents/StudioInfoScreen/InfoTab';
 import ReviewTab from '../../components/mobileComponents/StudioInfoScreen/ReviewTab';
+import WriteReview from '../../components/mobileComponents/ReviewList/WriteReview';
 
 import SeeMoreStudio from '../../components/mobileComponents/StudioInfoScreen/SeeMoreStudio';
 
 const StudioInfoScreen = ({ match }) => {
   const currentStudio = GetStudioInfo(match.params.id);
   const [navigator, setNavigator] = useState('portfolio');
+  const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = isWriteReviewOpen ? 'hidden' : 'auto';
+  }, [isWriteReviewOpen]);
 
   const renderedItem = () => {
     if (navigator === 'portfolio') {
@@ -24,11 +30,22 @@ const StudioInfoScreen = ({ match }) => {
     } else if (navigator === 'info') {
       return <InfoTab currentStudio={currentStudio} />;
     } else {
-      return <ReviewTab currentStudio={currentStudio} />;
+      return (
+        <ReviewTab
+          currentStudio={currentStudio}
+          setIsWriteReviewOpen={setIsWriteReviewOpen}
+        />
+      );
     }
   };
   return (
     <>
+      <WriteReview
+        studioName={currentStudio.studioName}
+        studioTitle={currentStudio.title}
+        isWriteReviewOpen={isWriteReviewOpen}
+        setIsWriteReviewOpen={setIsWriteReviewOpen}
+      />
       <HeaderBar currentStudio={currentStudio} />
       <TitlePart currentStudio={currentStudio} />
       <StudioLinks currentStudio={currentStudio} />

@@ -7,3 +7,7 @@ export const GetUser = () => {
 export const GetUserName = () => {
   return '아데토쿤보';
 };
+
+export const GetUserReview = () => {
+  return DbUser.reviews;
+};

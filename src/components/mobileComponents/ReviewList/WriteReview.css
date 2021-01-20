@@ -1,0 +1,112 @@
+.writeReview {
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: white;
+}
+.reviewCompelteButton {
+  padding-right: 20px;
+  font-size: 15px;
+}
+.reviewTopContainer {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.titleAndStars {
+  text-align: center;
+  margin-top: 15px;
+  font-weight: bold;
+  font-size: 16px;
+}
+.pleaseStar {
+  font-size: 12px;
+  font-weight: lighter;
+  margin-top: 2px;
+  color: red;
+}
+.reviewMainPart {
+  margin-top: 10px;
+  padding-left: 25px;
+  padding-right: 25px;
+}
+.addReviewPicButton {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  border: 1px solid gray;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+}
+.addReviewPicButton img {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 4px;
+}
+.mozaikPart {
+  display: flex;
+  align-items: center;
+  color: gray;
+  margin-top: 10px;
+}
+.mozaikNotice {
+  margin-top: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 11px;
+}
+.reviewTextPart {
+  margin-top: 15px;
+}
+.reviewTextArea {
+  width: 95%;
+  height: 200px;
+  border: none;
+  background-color: var(--color-greyBox);
+  resize: none;
+  border-radius: 8px;
+  padding-top: 10px;
+  padding-left: 7px;
+  padding-right: 7px;
+  padding-bottom: 10px;
+  word-spacing: 0.1px;
+}
+
+.reviewTextNotice {
+  margin-right: 5px;
+  margin-left: 5px;
+  font-size: 11px;
+  line-height: 13px;
+  margin-top: 5px;
+}
+.reviewBottomNotice {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  font-size: 10px;
+  width: 100%;
+  background-color: var(--color-greyBox);
+  color: gray;
+}
+
+.reviewBottomNotice {
+  padding-left: 5%;
+  padding-right: 5%;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  width: 90%;
+}
+.picNumberError {
+  margin-top: 3px;
+  color: red;
+  font-size: 13px;
+}
