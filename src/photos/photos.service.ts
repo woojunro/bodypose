@@ -220,19 +220,23 @@ export class PhotosService {
     }
   }
 
-  createAndSavePhotoConcept(slug: string, conceptType: PhotoConceptType) {
+  createAndSavePhotoConcept(
+    name: string,
+    slug: string,
+    conceptType: PhotoConceptType,
+  ) {
     switch (conceptType) {
       case PhotoConceptType.BACKGROUND:
         return this.backgroundConceptRepository.save(
-          this.backgroundConceptRepository.create({ slug }),
+          this.backgroundConceptRepository.create({ name, slug }),
         );
       case PhotoConceptType.COSTUME:
         return this.costumeConceptRepository.save(
-          this.costumeConceptRepository.create({ slug }),
+          this.costumeConceptRepository.create({ name, slug }),
         );
       case PhotoConceptType.OBJECT:
         return this.objectConceptRepository.save(
-          this.objectConceptRepository.create({ slug }),
+          this.objectConceptRepository.create({ name, slug }),
         );
       default:
         throw new InternalServerErrorException();
@@ -304,6 +308,7 @@ export class PhotosService {
   }
 
   async createPhotoConcept({
+    name,
     slug,
     conceptType,
   }: CreatePhotoConceptInput): Promise<CreatePhotoConceptOutput> {
@@ -312,16 +317,17 @@ export class PhotosService {
       if (concept) {
         return {
           ok: false,
-          error: `Concept with that slug(${slug}) already exists.`,
+          error: `DUPLICATE_${conceptType.toString()}_CONCEPT`,
         };
       }
-      const photoConcept = await this.createAndSavePhotoConcept(
+      const { id } = await this.createAndSavePhotoConcept(
+        name,
         slug,
         conceptType,
       );
       return {
         ok: true,
-        photoConcept,
+        id,
       };
     } catch (e) {
       console.log(e);

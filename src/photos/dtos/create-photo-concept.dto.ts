@@ -1,4 +1,4 @@
-import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
+import { Field, InputType, Int, ObjectType, PickType } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import {
   PhotoConcept,
@@ -8,7 +8,7 @@ import {
 @InputType()
 export class CreatePhotoConceptInput extends PickType(
   PhotoConcept,
-  ['slug'],
+  ['name', 'slug'],
   InputType,
 ) {
   @Field(type => PhotoConceptType)
@@ -17,6 +17,6 @@ export class CreatePhotoConceptInput extends PickType(
 
 @ObjectType()
 export class CreatePhotoConceptOutput extends CoreOutput {
-  @Field(type => PhotoConcept, { nullable: true })
-  photoConcept?: PhotoConcept;
+  @Field(type => Int, { nullable: true })
+  id?: number;
 }
