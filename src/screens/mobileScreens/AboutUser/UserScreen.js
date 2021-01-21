@@ -9,6 +9,7 @@ import Gmail from '../../../materials/gmail.png';
 import { Logout } from '../../../components/functions/WithDb/Auth';
 
 import './UserScreen.css';
+import Footer from '../../../components/mobileComponents/Footer';
 const UserScreen = () => {
   const LogedIn = useContext(LoginContext);
   const history = useHistory();
@@ -111,7 +112,6 @@ const UserScreen = () => {
       <div className="userLineContainer">
         <div className="userLine"></div>{' '}
       </div>
-
       <BottomNavigation pageName="users" />
     </div>
   );

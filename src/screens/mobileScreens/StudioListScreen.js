@@ -4,6 +4,7 @@ import { MakingStudioList } from '../../components/functions/Studio/MakingStudio
 import SortingStudioFunction from '../../components/functions/Studio/SortingStudioFunc';
 import { GetStudios } from '../../components/functions/WithDb/GetStudios';
 import BottomNavigation from '../../components/mobileComponents/BottomNavigation';
+import Footer from '../../components/mobileComponents/Footer';
 import Header from '../../components/mobileComponents/HeaderM';
 import { SearchBar } from '../../components/mobileComponents/studioListScreen/SearchBar';
 import SortButton from '../../components/mobileComponents/studioListScreen/SortButton';
@@ -67,7 +68,6 @@ const StudioListScreen = () => {
         </div>
       </div>
       <StudioListView studioList={studios} />
-
       <BottomNavigation pageName="studios" />
     </div>
   );

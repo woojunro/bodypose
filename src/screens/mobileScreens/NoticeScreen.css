@@ -1,0 +1,19 @@
+.noticeBodyPart {
+  margin-left: 30px;
+  margin-right: 30px;
+}
+.fullNoticeTitle {
+  text-align: center;
+  font-size: 17px;
+}
+.fullNoticeDate {
+  margin-top: 5px;
+  font-size: 13px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.fullNoticeText {
+  margin-top: 10px;
+  font-size: 15px;
+}

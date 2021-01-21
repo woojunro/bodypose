@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { Carousel } from 'react-responsive-carousel';
-import DbNotices from '../../../virtualDB/items/DbNotices';
+import { GetHomePageNotices } from '../../functions/WithDb/Notice';
 
 const NoticeBox = () => {
-  const Notices = DbNotices;
+  const Notices = GetHomePageNotices();
   const renderedNotices = Notices.map((notice) => {
     return (
       <Link

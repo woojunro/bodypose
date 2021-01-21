@@ -1,11 +1,28 @@
 import React from 'react';
-import Header from '../../components/mobileComponents/HeaderM';
+import { FiArrowLeft } from 'react-icons/fi';
+import { useHistory } from 'react-router-dom';
+import { GetFullNotice } from '../../components/functions/WithDb/Notice';
+import './NoticeScreen.css';
 
 const NoticeScreen = ({ match }) => {
+  const history = useHistory();
+  const noticeNum = match.params.noticeNumber;
+  const notice = GetFullNotice(noticeNum);
   return (
     <div>
-      <Header pageName="home" />
-      {match.params.noticeNumber} 번째 공지사항
+      <div className="usersTopContainer">
+        <FiArrowLeft
+          className="usersGoBackArrow"
+          onClick={() => {
+            history.goBack();
+          }}
+        />
+      </div>
+      <div className="noticeBodyPart">
+        <div className="fullNoticeTitle">{notice.title}</div>
+        <div className="fullNoticeDate">{notice.timestamp}</div>
+        <div className="fullNoticeText">{notice.text}</div>
+      </div>
     </div>
   );
 };

@@ -13,6 +13,7 @@ import { FaSlidersH } from 'react-icons/fa';
 import GetMoreData, {
   GetConceptPhotos,
 } from '../../components/functions/WithDb/ConceptList';
+import Footer from '../../components/mobileComponents/Footer';
 
 const genderOptions = ['전체', '남성', '여성', '커플'];
 
@@ -159,7 +160,6 @@ const ConceptListScreen = () => {
           handleIsFinalPhoto={cancleFinalPhoto}
         />
       ) : null}
-
       <BottomNavigation pageName="concepts" />
     </div>
   );
