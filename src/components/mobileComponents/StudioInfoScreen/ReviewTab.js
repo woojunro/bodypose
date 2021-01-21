@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './ReviewTab.css';
 import { GetReview, GetMoreReview } from '../../functions/WithDb/StudioInfo';
 import SortButton from '../../mobileComponents/ReviewList/SortButton';
 import { SortOptions } from '../../mobileComponents/ReviewList/SortOptions';
 import ReviewScrollView from '../../mobileComponents/ReviewList/ReviewScrollView';
+import LoginContext from '../../../contexts/LoginContext';
+import { useHistory } from 'react-router-dom';
 
 const ReviewTab = ({ currentStudio, setIsWriteReviewOpen }) => {
   let sortByOptions = SortOptions;
+  const LogedIn = useContext(LoginContext);
+  const history = useHistory();
 
   const [sortBy, setSortBy] = useState(sortByOptions[0]);
   const [isThereMoreReviews, setIsThereMoreReviews] = useState(true);
@@ -41,9 +45,19 @@ const ReviewTab = ({ currentStudio, setIsWriteReviewOpen }) => {
             selectedOption={sortBy}
           />
         </div>
+
         <div
           className="writeReviewButton"
-          onClick={() => setIsWriteReviewOpen(true)}
+          onClick={() => {
+            if (LogedIn.logedIn) {
+              setIsWriteReviewOpen(true);
+            } else {
+              history.push({
+                pathname: '/login',
+                state: { previousPath: `/studios/${currentStudio.studioName}` },
+              });
+            }
+          }}
         >
           + 리뷰 쓰기
         </div>
