@@ -37,8 +37,8 @@
   padding-right: 25px;
 }
 .addReviewPicButton {
-  width: 80px;
-  height: 80px;
+  width: 21vw;
+  height: 21vw;
   border-radius: 8px;
   border: 1px solid gray;
   display: flex;
@@ -63,6 +63,22 @@
   padding-left: 10px;
   padding-right: 10px;
   font-size: 11px;
+}
+.picturesPart {
+  display: flex;
+}
+.previewPic {
+  width: 21vw;
+  height: 21vw;
+  border-radius: 8px;
+  border: 1px solid gray;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.previewPic img {
+  width: 100%;
 }
 .reviewTextPart {
   margin-top: 15px;

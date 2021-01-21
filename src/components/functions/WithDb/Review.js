@@ -33,3 +33,7 @@ export const ReportReview = (reviewNumber = 0, reason = '') => {
 export const RemoveReview = (reviewNumber) => {
   return console.log(reviewNumber + '삭제했다잇');
 };
+
+export const SaveReviewToDb = (studioName, text, pics) => {
+  return console.log('저장됐다잇');
+};

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 import ReviewStars from './ReviewStars';
 import './WriteReview.css';
 import Camera from '../../../materials/icons/camera.png';
+import { SaveReviewToDb } from '../../functions/WithDb/Review';
 const WriteReview = ({
   studioName,
   studioTitle,
@@ -11,7 +12,7 @@ const WriteReview = ({
 }) => {
   const [needMozaik, setNeedMozaik] = useState(false);
   const [pics, setPics] = useState([]);
-  const [previewUrls, setPreviewUrls] = useState([]);
+  const [imgBase64, setimgBase64] = useState([]);
   const [stars, setStars] = useState(0);
   const [reviewText, setReviewText] = useState('');
   const [picNumberError, setPicNumberError] = useState(false);
@@ -23,19 +24,77 @@ const WriteReview = ({
   };
 
   const handleChange = (event) => {
-    event.preventDefault();
-    let reader = new FileReader();
-    const fileUploaded = event.target.files;
-    reader.onloadend = () => {
-      console.log('hey');
-      console.log(reader.result);
-    };
+    const files = Array.from(event.target.files);
+    Promise.all(
+      files.map((file) => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.addEventListener('load', (ev) => {
+            resolve(ev.target.result);
+          });
+          reader.addEventListener('error', reject);
+          reader.readAsDataURL(file);
+        });
+      })
+    ).then(
+      (images) => {
+        setimgBase64(images);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
 
-    if (fileUploaded.length > 3) {
+    if (files.length > 3) {
       setPicNumberError(true);
     } else setPicNumberError(false);
 
-    setPics(fileUploaded);
+    setPics(files);
+  };
+
+  const handleSubmit = () => {
+    if (reviewText.length < 12 || picNumberError) {
+      console.log('부족함');
+    } else {
+      SaveReviewToDb(studioName, reviewText, pics);
+      setIsWriteReviewOpen(false);
+      window.location.reload();
+    }
+  };
+
+  const renderedPics = () => {
+    if (pics.length === 1) {
+      return (
+        <div className="previewPic">
+          <img src={imgBase64[0]} alt="" />
+        </div>
+      );
+    } else if (pics.length === 2) {
+      return (
+        <>
+          <div className="previewPic">
+            <img src={imgBase64[0]} alt="" />
+          </div>
+          <div className="previewPic">
+            <img src={imgBase64[1]} alt="" />
+          </div>
+        </>
+      );
+    } else if (pics.length === 3) {
+      return (
+        <>
+          <div className="previewPic">
+            <img src={imgBase64[0]} alt="" />
+          </div>
+          <div className="previewPic">
+            <img src={imgBase64[1]} alt="" />
+          </div>
+          <div className="previewPic">
+            <img src={imgBase64[2]} alt="" />
+          </div>
+        </>
+      );
+    } else return null;
   };
 
   return isWriteReviewOpen ? (
@@ -48,7 +107,9 @@ const WriteReview = ({
           }}
         />
 
-        <div className="reviewCompelteButton">완료</div>
+        <div className="reviewCompelteButton" onClick={handleSubmit}>
+          완료
+        </div>
       </div>
 
       <div className="titleAndStars">
@@ -58,9 +119,12 @@ const WriteReview = ({
       </div>
 
       <div className="reviewMainPart">
-        <div onClick={handleClick} className="addReviewPicButton">
-          <img alt="addPic" src={Camera} />
-          <div>사진 {pics.length}/3</div>
+        <div className="picturesPart">
+          <div onClick={handleClick} className="addReviewPicButton">
+            <img alt="addPic" src={Camera} />
+            <div>사진 {pics.length}/3</div>
+          </div>
+          {renderedPics()}
         </div>
         {picNumberError ? (
           <div className="picNumberError">사진은 3장을 초과할 수 없습니다.</div>
@@ -68,7 +132,7 @@ const WriteReview = ({
         <input
           style={{ marginTop: '10px' }}
           type="file"
-          accept="image/jpg,impge/png,image/jpeg,image/gif"
+          accept="image/jpg,image/png,image/jpeg"
           multiple
           ref={hiddenFileInput}
           onChange={handleChange}
@@ -97,7 +161,7 @@ const WriteReview = ({
             <textarea
               className="reviewTextArea"
               value={reviewText}
-              placeholder="솔직한 리뷰는 많은 분들꼐 도움이 됩니다."
+              placeholder="솔직한 리뷰는 많은 분들꼐 도움이 됩니다. (12자 이상)"
               onChange={(e) => {
                 setReviewText(e.target.value);
               }}
