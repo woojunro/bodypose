@@ -1,4 +1,4 @@
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import {
   PaginationInput,
@@ -9,9 +9,12 @@ import { Studio } from 'src/studios/entities/studio.entity';
 import { User } from '../entities/user.entity';
 
 @ObjectType()
+class UserProfile extends PickType(User, ['id', 'email', 'nickname']) {}
+
+@ObjectType()
 export class GetMyProfileOutput extends CoreOutput {
-  @Field(type => User, { nullable: true })
-  profile?: User;
+  @Field(type => UserProfile, { nullable: true })
+  profile?: UserProfile;
 }
 
 @ObjectType()

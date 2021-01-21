@@ -10,6 +10,10 @@ import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import {
+  CreateBranchInput,
+  CreateBranchOutput,
+} from './dtos/create-branch.dto';
+import {
   CreateProductInput,
   CreateProductOutput,
 } from './dtos/create-product.dto';
@@ -35,25 +39,30 @@ import {
   ToggleHeartStudioOutput,
 } from './dtos/toggle-heart-studio.dto';
 import {
+  UpdateBranchInput,
+  UpdateBranchOutput,
+} from './dtos/update-branch.dto';
+import {
   UpdateProductInput,
   UpdateProductOutput,
 } from './dtos/update-product.dto';
-import { Catchphrase } from './entities/catchphrase.entity';
-import { Product } from './entities/product.entity';
+import {
+  UpdateStudioInput,
+  UpdateStudioOutput,
+} from './dtos/update-studio.dto';
+import { Branch } from './entities/branch.entity';
+import { StudioProduct } from './entities/studio-product.entity';
 import { Studio } from './entities/studio.entity';
-import { UsersClickStudios } from './entities/users-click-studios.entity';
 
 @Injectable()
 export class StudiosService {
   constructor(
     @InjectRepository(Studio)
     private readonly studioRepository: Repository<Studio>,
-    @InjectRepository(Catchphrase)
-    private readonly catchphraseRepository: Repository<Catchphrase>,
-    @InjectRepository(UsersClickStudios)
-    private readonly userClickStudioRepository: Repository<UsersClickStudios>,
-    @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>,
+    @InjectRepository(StudioProduct)
+    private readonly productRepository: Repository<StudioProduct>,
+    @InjectRepository(Branch)
+    private readonly branchRepository: Repository<Branch>,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
   ) {}
@@ -72,46 +81,28 @@ export class StudiosService {
     );
   }
 
-  async createStudio({
-    catchphrases,
-    ...input
-  }: CreateStudioInput): Promise<CreateStudioOutput> {
+  async createStudio(input: CreateStudioInput): Promise<CreateStudioOutput> {
     try {
       // Check duplicate studioSlug
       const studioBySlug = await this.getStudioBySlug(input.slug);
       if (studioBySlug) {
         return {
           ok: false,
-          error: `Studio with that slug(${input.slug}) already exists`,
+          error: 'DUPLICATE_STUDIO_SLUG',
         };
       }
       // Create studio
       const newStudio = this.studioRepository.create({ ...input });
-      // Add catchphrases
-      if (catchphrases) {
-        const catchphraseArray: Catchphrase[] = [];
-        for (let i = 0; i < catchphrases.length && i < 2; i++) {
-          const newCatchphrase = this.catchphraseRepository.create();
-          newCatchphrase.phrase = catchphrases[i];
-          await this.catchphraseRepository.save(newCatchphrase);
-          catchphraseArray.push(newCatchphrase);
-        }
-        newStudio.catchphrases = catchphraseArray;
-      } else {
-        newStudio.catchphrases = [];
-      }
       // Save
       const savedStudio = await this.studioRepository.save(newStudio);
       return {
         ok: true,
-        studio: savedStudio,
+        id: savedStudio.id,
+        slug: savedStudio.slug,
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -120,45 +111,45 @@ export class StudiosService {
     { slug }: GetStudioInput,
   ): Promise<GetStudioOutput> {
     try {
-      let heartStudios: Studio[] = [];
-      // If logged in
-      if (user) {
-        const { studios } = await this.usersService.getMyHeartStudios(user);
-        if (studios) {
-          heartStudios = [...studios];
-        }
-      }
-      const studio = await this.getStudioBySlug(slug);
+      const studio = await this.studioRepository.findOne(
+        { slug },
+        { relations: ['branches'] },
+      );
       if (!studio) {
         return {
           ok: false,
-          error: 'Studio not found',
+          error: 'STUDIO_NOT_FOUND',
         };
       }
+      // If logged in, check isHearted
+      let heartedStudio: Studio;
+      if (user) {
+        heartedStudio = await this.studioRepository
+          .createQueryBuilder('studio')
+          .leftJoinAndSelect('studio.heartUsers', 'user')
+          .where({ slug })
+          .andWhere('user.id = :userId', { userId: user.id })
+          .getOne();
+      }
       // Click
+      /*
       const newClick = this.userClickStudioRepository.create({
         studio,
         user: user ? user : null,
       });
       await this.userClickStudioRepository.save(newClick);
-      studio.clickCount += 1;
-      await this.studioRepository.save(studio);
+      */
       // Return
       return {
         ok: true,
         studio: {
           ...studio,
-          isHearted: heartStudios.some(
-            heartStudio => heartStudio.slug === slug,
-          ),
+          isHearted: Boolean(user) && Boolean(heartedStudio),
         },
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -189,10 +180,28 @@ export class StudiosService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async updateStudio({
+    slug,
+    payload,
+  }: UpdateStudioInput): Promise<UpdateStudioOutput> {
+    try {
+      const studio = await this.studioRepository.findOne({ slug });
+      if (!studio) {
+        return {
+          ok: false,
+          error: 'STUDIO_NOT_FOUND',
+        };
+      }
+      const updatedStudio = { ...studio, ...payload };
+      await this.studioRepository.save(updatedStudio);
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -201,51 +210,127 @@ export class StudiosService {
     { slug }: ToggleHeartStudioInput,
   ): Promise<ToggleHeartStudioOutput> {
     try {
-      const studio = await this.getStudioBySlug(slug);
+      const studio = await this.studioRepository.findOne({ slug });
       if (!studio) {
         return {
           ok: false,
-          error: 'Studio not found',
+          error: 'STUDIO_NOT_FOUND',
         };
       }
-      const user = await this.usersService.getUserById(id, {
-        relations: ['heartStudios'],
-      });
-      if (!user) {
-        return {
-          ok: false,
-          error: 'User not found',
-        };
-      }
-      // If the studio exists in heartStudios, filter it
-      // Update heartCount
-      let exists = false;
-      for (let i = 0; i < user.heartStudios.length; i++) {
-        if (user.heartStudios[i].slug === slug) {
-          exists = true;
-          user.heartStudios.splice(i, 1);
-          studio.heartCount -= 1;
-          break;
-        }
-      }
-      // If not, push it
-      if (!exists) {
-        user.heartStudios.push(studio);
-        studio.heartCount += 1;
+
+      const isStudioAlreadyHearted = await this.studioRepository
+        .createQueryBuilder('studio')
+        .leftJoinAndSelect('studio.heartUsers', 'user')
+        .where({ slug })
+        .andWhere('user.id = :userId', { userId: id })
+        .getOne();
+      const relationQuery = this.studioRepository
+        .createQueryBuilder('studio')
+        .relation('heartUsers')
+        .of(studio);
+      if (isStudioAlreadyHearted) {
+        await relationQuery.remove({ id });
+        studio.heartCount--;
+      } else {
+        await relationQuery.add({ id });
+        studio.heartCount++;
       }
       // Save
-      await this.usersService.updateUser(user);
-      const updatedStudio = await this.studioRepository.save(studio);
+      await this.studioRepository.save(studio);
       return {
         ok: true,
-        heartCount: updatedStudio.heartCount,
       };
     } catch (e) {
       console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async createBranches({
+    studioSlug,
+    payload: payloadList,
+  }: CreateBranchInput): Promise<CreateBranchOutput> {
+    try {
+      if (payloadList.length === 0) {
+        return {
+          ok: false,
+          error: 'INVALID_PAYLOAD_LENGTH',
+        };
+      }
+      const studio = await this.studioRepository.findOne({ slug: studioSlug });
+      if (!studio) {
+        return {
+          ok: false,
+          error: 'STUDIO_NOT_FOUND',
+        };
+      }
+      const idList: number[] = [];
+      for (const payload of payloadList) {
+        const newBranch = this.branchRepository.create({ ...payload });
+        newBranch.studio = studio;
+        const { id } = await this.branchRepository.save(newBranch);
+        idList.push(id);
+      }
       return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
+        ok: true,
+        idList,
       };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async updateBranches({
+    studioSlug,
+    payload,
+  }: UpdateBranchInput): Promise<UpdateBranchOutput> {
+    try {
+      if (payload.length === 0) {
+        return {
+          ok: false,
+          error: 'INVALID_PAYLOAD_LENGTH',
+        };
+      }
+      const studio = await this.studioRepository.findOne(
+        { slug: studioSlug },
+        { relations: ['branches'] },
+      );
+      if (!studio) {
+        return {
+          ok: false,
+          error: 'STUDIO_NOT_FOUND',
+        };
+      }
+      const { branches } = studio;
+      const idList: number[] = [];
+      // Overwrite
+      for (let i = 0; i < branches.length && i < payload.length; i++) {
+        const { name, address } = payload[i];
+        branches[i].name = name;
+        branches[i].address = address;
+        const { id } = await this.branchRepository.save(branches[i]);
+        idList.push(id);
+      }
+      if (branches.length > payload.length) {
+        for (let i = payload.length; i < branches.length; i++) {
+          await this.branchRepository.delete({ id: branches[i].id });
+        }
+      } else if (branches.length < payload.length) {
+        for (let i = branches.length; i < payload.length; i++) {
+          const newBranch = this.branchRepository.create({ ...payload[i] });
+          newBranch.studio = studio;
+          const { id } = await this.branchRepository.save(newBranch);
+          idList.push(id);
+        }
+      }
+      return {
+        ok: true,
+        idList,
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -273,10 +358,7 @@ export class StudiosService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -304,10 +386,7 @@ export class StudiosService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -343,10 +422,7 @@ export class StudiosService {
       return { ok: true };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -380,10 +456,7 @@ export class StudiosService {
       return { ok: true };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 }

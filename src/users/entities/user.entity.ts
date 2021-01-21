@@ -58,7 +58,6 @@ export class User extends CoreEntity {
   @Column({
     type: 'enum',
     enum: Role,
-    default: Role.USER,
   })
   @Field(type => Role)
   @IsEnum(Role)
@@ -119,7 +118,7 @@ export class User extends CoreEntity {
   @IsBoolean()
   isVerified: boolean;
 
-  @ManyToMany(relation => Studio)
+  @ManyToMany(relation => Studio, studio => studio.heartUsers)
   @JoinTable({
     name: 'users_heart_studios',
   })

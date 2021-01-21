@@ -14,10 +14,6 @@ import {
   GetMyHeartStudioPhotosOutput,
   GetMyHeartStudioPhotosInput,
 } from './dtos/get-user.dto';
-import {
-  UpdateUserProfileInput,
-  UpdateUserProfileOutput,
-} from './dtos/update-user.dto';
 import { VerifyUserInput, VerifyUserOutput } from './dtos/verify-user.dto';
 import { Role, User } from './entities/user.entity';
 import { UsersService } from './users.service';
@@ -29,7 +25,7 @@ export class UsersResolver {
   @Query(returns => GetMyProfileOutput)
   @Roles(Role.USER)
   myProfile(@CurrentUser() user: User): Promise<GetMyProfileOutput> {
-    return this.usersService.getUserProfileById(user.id);
+    return this.usersService.getMyProfile(user);
   }
 
   @Query(returns => GetMyHeartStudiosOutput)
@@ -63,6 +59,7 @@ export class UsersResolver {
     return this.usersService.createOrLoginUserWithOAuth(input);
   }
 
+  /* TBU
   @Mutation(returns => UpdateUserProfileOutput)
   @Roles(Role.USER)
   updateMyProfile(
@@ -71,6 +68,9 @@ export class UsersResolver {
   ): Promise<UpdateUserProfileOutput> {
     return this.usersService.updateUserProfileById(user.id, input);
   }
+  */
+
+  // TODO: 비밀번호 재설정, 변경 구현
 
   @Mutation(returns => DeleteUserOutput)
   @Roles(Role.USER)

@@ -17,6 +17,11 @@ registerEnumType(PhotoConceptType, {
 @Entity()
 @ObjectType()
 export class PhotoConcept extends CoreEntity {
+  @Column()
+  @Field(type => String)
+  @IsString()
+  name: string;
+
   @Column({ unique: true })
   @Field(type => String)
   @IsString()

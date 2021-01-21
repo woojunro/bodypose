@@ -3,6 +3,10 @@ import { CurrentUser } from 'src/auth/current-user.decorator';
 import { Roles } from 'src/auth/roles.decorator';
 import { Role, User } from 'src/users/entities/user.entity';
 import {
+  CreateBranchInput,
+  CreateBranchOutput,
+} from './dtos/create-branch.dto';
+import {
   CreateProductInput,
   CreateProductOutput,
 } from './dtos/create-product.dto';
@@ -28,10 +32,18 @@ import {
   ToggleHeartStudioOutput,
 } from './dtos/toggle-heart-studio.dto';
 import {
+  UpdateBranchInput,
+  UpdateBranchOutput,
+} from './dtos/update-branch.dto';
+import {
   UpdateProductInput,
   UpdateProductOutput,
 } from './dtos/update-product.dto';
-import { Product } from './entities/product.entity';
+import {
+  UpdateStudioInput,
+  UpdateStudioOutput,
+} from './dtos/update-studio.dto';
+import { StudioProduct } from './entities/studio-product.entity';
 import { Studio } from './entities/studio.entity';
 import { StudiosService } from './studios.service';
 
@@ -62,6 +74,14 @@ export class StudiosResolver {
     return this.studiosService.createStudio(input);
   }
 
+  @Mutation(returns => UpdateStudioOutput)
+  @Roles(Role.ADMIN)
+  updateStudio(
+    @Args('input') input: UpdateStudioInput,
+  ): Promise<UpdateStudioOutput> {
+    return this.studiosService.updateStudio(input);
+  }
+
   @Mutation(returns => ToggleHeartStudioOutput)
   @Roles(Role.USER)
   toggleHeartStudio(
@@ -70,9 +90,25 @@ export class StudiosResolver {
   ): Promise<ToggleHeartStudioOutput> {
     return this.studiosService.toggleHeartStudio(user, input);
   }
+
+  @Mutation(returns => CreateBranchOutput)
+  @Roles(Role.ADMIN)
+  createBranches(
+    @Args('input') input: CreateBranchInput,
+  ): Promise<CreateBranchOutput> {
+    return this.studiosService.createBranches(input);
+  }
+
+  @Mutation(returns => UpdateBranchOutput)
+  @Roles(Role.ADMIN)
+  updateBranches(
+    @Args('input') input: UpdateBranchInput,
+  ): Promise<UpdateBranchOutput> {
+    return this.studiosService.updateBranches(input);
+  }
 }
 
-@Resolver(of => Product)
+@Resolver(of => StudioProduct)
 export class ProductResolver {
   constructor(private readonly studiosService: StudiosService) {}
 

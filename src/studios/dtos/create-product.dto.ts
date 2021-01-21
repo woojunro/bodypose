@@ -1,11 +1,11 @@
 import { Field, InputType, Int, ObjectType, OmitType } from '@nestjs/graphql';
 import { IsString } from 'class-validator';
 import { CoreOutput } from 'src/common/dtos/output.dto';
-import { Product } from '../entities/product.entity';
+import { StudioProduct } from '../entities/studio-product.entity';
 
 @InputType()
 export class CreateProductInput extends OmitType(
-  Product,
+  StudioProduct,
   ['id', 'createdAt', 'updatedAt', 'studio'],
   InputType,
 ) {

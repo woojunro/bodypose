@@ -60,11 +60,6 @@ export class StudioPhoto extends CoreEntity {
   @Column({ default: 0 })
   @Field(type => Int)
   @IsInt()
-  clickCount: number;
-
-  @Column({ default: 0 })
-  @Field(type => Int)
-  @IsInt()
   heartCount: number;
 
   @ManyToMany(relation => User, user => user.heartStudioPhotos)

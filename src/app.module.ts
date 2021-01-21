@@ -23,9 +23,12 @@ import {
   ObjectConcept,
 } from './photos/entities/photo-concept.entity';
 import { UsersClickStudioPhotos } from './photos/entities/users-click-studio-photos.entity';
-import { Product } from './studios/entities/product.entity';
+import { StudioProduct } from './studios/entities/studio-product.entity';
 import { UsersReviewStudios } from './studios/entities/users-review-studios.entity';
 import { ReviewPhoto } from './photos/entities/review-photo.entity';
+import { Branch } from './studios/entities/branch.entity';
+import { SponsoredProduct } from './studios/entities/sponsored-product.entity';
+import { AdditionalProduct } from './studios/entities/additional-product.entity';
 
 @Module({
   imports: [
@@ -58,6 +61,7 @@ import { ReviewPhoto } from './photos/entities/review-photo.entity';
         User,
         Verification,
         Studio,
+        Branch,
         Catchphrase,
         UsersClickStudios,
         StudioPhoto,
@@ -65,7 +69,9 @@ import { ReviewPhoto } from './photos/entities/review-photo.entity';
         CostumeConcept,
         ObjectConcept,
         UsersClickStudioPhotos,
-        Product,
+        StudioProduct,
+        SponsoredProduct,
+        AdditionalProduct,
         UsersReviewStudios,
         ReviewPhoto,
       ],

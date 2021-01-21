@@ -24,12 +24,8 @@ import {
   GetMyHeartStudioPhotosOutput,
   GetMyHeartStudioPhotosInput,
 } from './dtos/get-user.dto';
-import {
-  UpdateUserProfileInput,
-  UpdateUserProfileOutput,
-} from './dtos/update-user.dto';
 import { VerifyUserOutput } from './dtos/verify-user.dto';
-import { LoginMethod, User } from './entities/user.entity';
+import { LoginMethod, Role, User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
 
 @Injectable()
@@ -65,7 +61,7 @@ export class UsersService {
       if (userByEmail) {
         return {
           ok: false,
-          error: 'User with that email already exists',
+          error: 'DUPLICATE_EMAIL',
         };
       }
       // Check password security
@@ -73,7 +69,7 @@ export class UsersService {
       if (!isPasswordSecure) {
         return {
           ok: false,
-          error: 'Password is not secure enough',
+          error: 'INSECURE_PASSWORD',
         };
       }
       // Check if there exists a user with the inputted nickname
@@ -81,28 +77,20 @@ export class UsersService {
       if (userByNickname) {
         return {
           ok: false,
-          error: 'User with that nickname already exists',
+          error: 'DUPLICATE_NICKNAME',
         };
       }
       // Create and save the user
       const newUser = this.userRepository.create({ email, password, nickname });
       newUser.loginMethod = LoginMethod.EMAIL;
+      newUser.role = Role.USER;
       newUser.isVerified = false;
       const createdUser = await this.userRepository.save(newUser);
       // Create verification code and send it to the user
       const newVerification = this.verificationRepository.create();
       newVerification.user = createdUser;
       const { code } = await this.verificationRepository.save(newVerification);
-      const mailOk = await this.mailService.sendConfirmationEmail(
-        newUser,
-        code,
-      );
-      if (!mailOk) {
-        return {
-          ok: false,
-          error: 'Sending confirmation email failed',
-        };
-      }
+      await this.mailService.sendConfirmationEmail(newUser, code);
       // Return a token after login
       const { ok, error, token } = await this.authService.loginWithEmail({
         email,
@@ -115,23 +103,21 @@ export class UsersService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
-  getPossibleNickname = async (nickname?: string): Promise<string> => {
+  async getPossibleNickname(nickname?: string): Promise<string> {
     try {
-      let newNickname = nickname ? nickname : '바프새내기';
+      const newNickname = nickname ? nickname : '바프새내기';
       const userWithNickname = await this.getUserByNickname(newNickname);
       if (userWithNickname) {
         for (let i = 1; ; i++) {
-          newNickname = newNickname + i;
-          const userWithNewNickname = await this.getUserByNickname(newNickname);
+          const userWithNewNickname = await this.getUserByNickname(
+            newNickname + i,
+          );
           if (!userWithNewNickname) {
-            return newNickname;
+            return newNickname + i;
           }
         }
       }
@@ -139,7 +125,7 @@ export class UsersService {
     } catch (e) {
       throw new InternalServerErrorException();
     }
-  };
+  }
 
   async createOrLoginUserWithOAuth({
     accessToken,
@@ -186,10 +172,7 @@ export class UsersService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -218,26 +201,19 @@ export class UsersService {
     return this.userRepository.findOne({ loginMethod, socialId });
   }
 
-  async getUserProfileById(id: number): Promise<GetMyProfileOutput> {
-    try {
-      const user = await this.getUserById(id);
-      if (!user) {
-        return {
-          ok: false,
-          error: 'User not found',
-        };
-      }
-      return {
-        ok: true,
-        profile: user,
-      };
-    } catch (e) {
-      console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+  async getMyProfile(user: User): Promise<GetMyProfileOutput> {
+    if (!user) {
+      return UNEXPECTED_ERROR;
     }
+
+    return {
+      ok: true,
+      profile: {
+        id: user.id,
+        email: user.email,
+        nickname: user.nickname,
+      },
+    };
   }
 
   async getMyHeartStudios(user: User): Promise<GetMyHeartStudiosOutput> {
@@ -249,7 +225,7 @@ export class UsersService {
       if (!heartStudios) {
         return {
           ok: false,
-          error: 'User not found',
+          error: 'USER_NOT_FOUND',
         };
       }
       return {
@@ -258,10 +234,7 @@ export class UsersService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -274,16 +247,13 @@ export class UsersService {
       if (!isUserFound) {
         return {
           ok: false,
-          error: 'User not found',
+          error: 'USER_NOT_FOUND',
         };
       }
       return this.photosService.getHeartStudioPhotosByUserId(user.id, page);
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -291,6 +261,7 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
+  /* TBU
   async updateUserProfileById(
     id: number,
     { email, nickname, ...others }: UpdateUserProfileInput,
@@ -341,12 +312,12 @@ export class UsersService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
+  */
+
+  // TODO: 비밀번호 수정 구현 (재설정, 변경 both)
 
   async deleteUserById(id: number): Promise<DeleteUserOutput> {
     try {
@@ -354,7 +325,7 @@ export class UsersService {
       if (!user) {
         return {
           ok: false,
-          error: 'User not found',
+          error: 'USER_NOT_FOUND',
         };
       }
       // TODO: Handle social users
@@ -362,10 +333,7 @@ export class UsersService {
       return { ok: true };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -378,7 +346,7 @@ export class UsersService {
       if (!verification) {
         return {
           ok: false,
-          error: 'Verification not found',
+          error: 'VERIFICATION_NOT_FOUND',
         };
       }
       verification.user.isVerified = true;
@@ -387,10 +355,7 @@ export class UsersService {
       return { ok: true };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 }

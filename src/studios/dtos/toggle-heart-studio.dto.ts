@@ -10,7 +10,4 @@ export class ToggleHeartStudioInput extends PickType(
 ) {}
 
 @ObjectType()
-export class ToggleHeartStudioOutput extends CoreOutput {
-  @Field(type => Int, { nullable: true })
-  heartCount?: number;
-}
+export class ToggleHeartStudioOutput extends CoreOutput {}

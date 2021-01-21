@@ -135,10 +135,7 @@ export class PhotosService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -168,10 +165,7 @@ export class PhotosService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -203,10 +197,7 @@ export class PhotosService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -304,11 +295,11 @@ export class PhotosService {
           photo.objectConcepts.push(concept);
           break;
         default:
-          return;
+          return UNEXPECTED_ERROR;
       }
       return { ok: true };
     } catch (e) {
-      return;
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -334,10 +325,7 @@ export class PhotosService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -375,10 +363,7 @@ export class PhotosService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -410,10 +395,7 @@ export class PhotosService {
       return { ok: true };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -488,10 +470,7 @@ export class PhotosService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -570,10 +549,7 @@ export class PhotosService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -599,10 +575,7 @@ export class PhotosService {
       return { ok: true };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -635,18 +608,14 @@ export class PhotosService {
         photo.heartCount--;
       }
       // Save photo and user
-      const { heartCount } = await this.studioPhotoRepository.save(photo);
+      const savedPhoto = await this.studioPhotoRepository.save(photo);
       await this.usersService.updateUser(userToUpdate);
       return {
         ok: true,
-        heartCount,
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -666,7 +635,6 @@ export class PhotosService {
       const newClick = this.usersClickStudioPhotosRepository.create();
       newClick.studioPhoto = photo;
       newClick.user = user ? user : null;
-      photo.clickCount++;
       await this.usersClickStudioPhotosRepository.save(newClick);
       await this.studioPhotoRepository.save(photo);
       // Check if the user hearts the photo
@@ -691,10 +659,7 @@ export class PhotosService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 }

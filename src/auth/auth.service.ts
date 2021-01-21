@@ -5,10 +5,7 @@ import { SocialLoginMethod } from 'src/users/dtos/create-user.dto';
 import { LoginMethod } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { LoginWithEmailInput, LoginOutput } from './dtos/login.dto';
-import {
-  GetOAuthProfileWithAccessTokenOutput,
-  OAuthProfile,
-} from './dtos/oauth.dto';
+import { GetOAuthProfileWithAccessTokenOutput } from './dtos/oauth.dto';
 import { getKakaoProfileWithAccessToken } from './utils/kakaoOAuth.util';
 
 @Injectable()
@@ -51,10 +48,7 @@ export class AuthService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -81,10 +75,7 @@ export class AuthService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -114,10 +105,7 @@ export class AuthService {
       return result;
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 }

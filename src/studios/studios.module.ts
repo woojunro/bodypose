@@ -7,16 +7,22 @@ import { StudiosService } from './studios.service';
 import { ProductResolver, StudiosResolver } from './studios.resolver';
 import { UsersModule } from 'src/users/users.module';
 import { AuthModule } from 'src/auth/auth.module';
-import { Product } from './entities/product.entity';
+import { StudioProduct } from './entities/studio-product.entity';
 import { UsersReviewStudios } from './entities/users-review-studios.entity';
+import { Branch } from './entities/branch.entity';
+import { SponsoredProduct } from './entities/sponsored-product.entity';
+import { AdditionalProduct } from './entities/additional-product.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Studio,
       Catchphrase,
+      Branch,
       UsersClickStudios,
-      Product,
+      StudioProduct,
+      SponsoredProduct,
+      AdditionalProduct,
       UsersReviewStudios,
     ]),
     AuthModule,

@@ -19,12 +19,8 @@ export class UsersReviewStudios extends CoreEntity {
   @Column({ type: 'text' })
   @Field(type => String)
   @IsString()
-  @MinLength(10)
+  @MinLength(12)
   text: string;
-
-  @Column({ default: 0 })
-  @Field(type => Int)
-  likeCount: number;
 
   @ManyToOne(relation => User, user => user.reviews, {
     onDelete: 'SET NULL',

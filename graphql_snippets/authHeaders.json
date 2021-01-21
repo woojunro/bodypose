@@ -1,0 +1,11 @@
+{
+  "Admin": {
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywibG9naW5NZXRob2QiOiJFTUFJTCIsImlhdCI6MTYxMTIwODI0Nn0.A75TjxOdmHgyP3ahl7DOnfyBXsnqSU90rHWLWzyjoHo"
+  },
+  "블랙팬더": {
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW5NZXRob2QiOiJFTUFJTCIsImlhdCI6MTYxMTIwNzk2NH0.eDeL9EiGiA6z_1L66djS37IXQ2uBR9tx-PCoo6V5M2o"
+  },
+  "니꼬": {
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwibG9naW5NZXRob2QiOiJFTUFJTCIsImlhdCI6MTYxMTIwODM1OX0.m2rMSm9qNpSBtaPMGlmrJomZ3HwFM0vQqJizk4_dwYE"
+  }
+}
