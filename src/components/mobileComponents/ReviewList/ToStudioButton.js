@@ -4,7 +4,12 @@ import './ToStudioButton.css';
 
 const ToStudioButton = ({ linkTo }) => {
   return (
-    <Link to={linkTo}>
+    <Link
+      to={linkTo}
+      onClick={() => {
+        window.scrollTo({ top: 0, left: 0 });
+      }}
+    >
       <div className="toStudioButton">스튜디오 정보 보기</div>
     </Link>
   );
