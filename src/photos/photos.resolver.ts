@@ -22,6 +22,7 @@ import {
   DeleteStudioPhotoInput,
   DeleteStudioPhotoOutput,
 } from './dtos/delete-studio-photo.dto';
+import { GetAllPhotoConceptsOutput } from './dtos/get-photo-concept.dto';
 import {
   GetAllStudioPhotosInput,
   GetAllStudioPhotosOutput,
@@ -61,6 +62,12 @@ export class PhotosResolver {
     @Args('input') input: GetStudioPhotosInput,
   ): Promise<GetStudioPhotosOutput> {
     return this.photosService.getStudioPhotos(input);
+  }
+
+  // Public
+  @Query(returns => GetAllPhotoConceptsOutput)
+  allPhotoConcepts(): Promise<GetAllPhotoConceptsOutput> {
+    return this.photosService.getAllPhotoConcepts();
   }
 
   @Mutation(returns => CreateStudioPhotoOutput)

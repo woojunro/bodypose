@@ -32,6 +32,7 @@ import {
   DeleteStudioPhotoInput,
   DeleteStudioPhotoOutput,
 } from './dtos/delete-studio-photo.dto';
+import { GetAllPhotoConceptsOutput } from './dtos/get-photo-concept.dto';
 import {
   GetAllStudioPhotosInput,
   GetAllStudioPhotosOutput,
@@ -307,6 +308,23 @@ export class PhotosService {
     }
   }
 
+  async getAllPhotoConcepts(): Promise<GetAllPhotoConceptsOutput> {
+    try {
+      const backgroundConcepts = await this.backgroundConceptRepository.find();
+      const costumeConcepts = await this.costumeConceptRepository.find();
+      const objectConcepts = await this.objectConceptRepository.find();
+      return {
+        ok: true,
+        backgroundConcepts,
+        costumeConcepts,
+        objectConcepts,
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
   async createPhotoConcept({
     name,
     slug,
@@ -345,7 +363,7 @@ export class PhotosService {
       if (!concept) {
         return {
           ok: false,
-          error: `Concept with slug(${slug}) not found`,
+          error: 'CONCEPT_NOT_FOUND',
         };
       }
       concept.slug = updatedSlug;
@@ -382,7 +400,7 @@ export class PhotosService {
       if (!concept) {
         return {
           ok: false,
-          error: `Concept with slug(${slug}) not found`,
+          error: 'CONCEPT_NOT_FOUND',
         };
       }
       switch (conceptType) {
