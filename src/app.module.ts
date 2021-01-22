@@ -29,6 +29,7 @@ import { ReviewPhoto } from './photos/entities/review-photo.entity';
 import { Branch } from './studios/entities/branch.entity';
 import { SponsoredProduct } from './studios/entities/sponsored-product.entity';
 import { AdditionalProduct } from './studios/entities/additional-product.entity';
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
@@ -85,6 +86,7 @@ import { AdditionalProduct } from './studios/entities/additional-product.entity'
     UsersModule,
     StudiosModule,
     PhotosModule,
+    UploadsModule,
   ],
   controllers: [],
   providers: [
