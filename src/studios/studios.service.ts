@@ -17,6 +17,7 @@ import {
   CreateStudioProductsInput,
   CreateProductsOutput,
   CreateSponsoredProductsInput,
+  CreateAdditionalProductsInput,
 } from './dtos/create-product.dto';
 import {
   CreateStudioInput,
@@ -45,6 +46,7 @@ import {
   UpdateStudioInput,
   UpdateStudioOutput,
 } from './dtos/update-studio.dto';
+import { AdditionalProduct } from './entities/additional-product.entity';
 import { Branch } from './entities/branch.entity';
 import { SponsoredProduct } from './entities/sponsored-product.entity';
 import { StudioProduct } from './entities/studio-product.entity';
@@ -61,6 +63,8 @@ export class StudiosService {
     private readonly branchRepository: Repository<Branch>,
     @InjectRepository(SponsoredProduct)
     private readonly sponsoredProductRepository: Repository<SponsoredProduct>,
+    @InjectRepository(AdditionalProduct)
+    private readonly additionalProductRepository: Repository<AdditionalProduct>,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
   ) {}
@@ -338,7 +342,7 @@ export class StudiosService {
       // Find studio
       const studio = await this.studioRepository.findOne(
         { slug },
-        { relations: ['products', 'sponsoredProducts'] },
+        { relations: ['products', 'sponsoredProducts', 'additionalProducts'] },
       );
       if (!studio) {
         return {
@@ -347,11 +351,16 @@ export class StudiosService {
         };
       }
       // return
-      const { products: studioProducts, sponsoredProducts } = studio;
+      const {
+        products: studioProducts,
+        sponsoredProducts,
+        additionalProducts,
+      } = studio;
       return {
         ok: true,
         studioProducts,
         sponsoredProducts,
+        additionalProducts,
       };
     } catch (e) {
       console.log(e);
@@ -547,6 +556,46 @@ export class StudiosService {
           idList.push(id);
         }
       }
+      return {
+        ok: true,
+        idList,
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async createAdditionalProducts({
+    studioSlug,
+    products,
+  }: CreateAdditionalProductsInput): Promise<CreateProductsOutput> {
+    try {
+      if (products.length === 0) {
+        return {
+          ok: false,
+          error: 'INVALID_PAYLOAD_LENGTH',
+        };
+      }
+      // Find studio
+      const studio = await this.studioRepository.findOne({ slug: studioSlug });
+      if (!studio) {
+        return {
+          ok: false,
+          error: 'STUDIO_NOT_FOUND',
+        };
+      }
+      // Create and save products
+      const idList: number[] = [];
+      for (const product of products) {
+        const newProduct = this.additionalProductRepository.create({
+          ...product,
+        });
+        newProduct.studio = studio;
+        const { id } = await this.additionalProductRepository.save(newProduct);
+        idList.push(id);
+      }
+      // Return idList
       return {
         ok: true,
         idList,

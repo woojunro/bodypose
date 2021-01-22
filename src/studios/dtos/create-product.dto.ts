@@ -8,6 +8,7 @@ import {
 } from '@nestjs/graphql';
 import { IsString } from 'class-validator';
 import { CoreOutput } from 'src/common/dtos/output.dto';
+import { AdditionalProduct } from '../entities/additional-product.entity';
 import { SponsoredProduct } from '../entities/sponsored-product.entity';
 import { StudioProduct } from '../entities/studio-product.entity';
 
@@ -36,6 +37,13 @@ class CreateSponsoredProductsPayload extends PickType(
 ) {}
 
 @InputType()
+class CreateAdditionalProductsPayload extends PickType(
+  AdditionalProduct,
+  ['title', 'description', 'price'],
+  InputType,
+) {}
+
+@InputType()
 export class CreateSponsoredProductsInput {
   @Field(type => String)
   @IsString()
@@ -43,6 +51,16 @@ export class CreateSponsoredProductsInput {
 
   @Field(type => [CreateSponsoredProductsPayload])
   products: CreateSponsoredProductsPayload[];
+}
+
+@InputType()
+export class CreateAdditionalProductsInput {
+  @Field(type => String)
+  @IsString()
+  studioSlug: string;
+
+  @Field(type => [CreateAdditionalProductsPayload])
+  products: CreateAdditionalProductsPayload[];
 }
 
 @ObjectType()

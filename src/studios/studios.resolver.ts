@@ -10,6 +10,7 @@ import {
   CreateStudioProductsInput,
   CreateProductsOutput,
   CreateSponsoredProductsInput,
+  CreateAdditionalProductsInput,
 } from './dtos/create-product.dto';
 import {
   CreateStudioInput,
@@ -143,5 +144,13 @@ export class ProductResolver {
     @Args('input') input: UpdateSponsoredProductsInput,
   ): Promise<UpdateProductsOutput> {
     return this.studiosService.updateSponsoredProducts(input);
+  }
+
+  @Mutation(returns => CreateProductsOutput)
+  @Roles(Role.ADMIN)
+  createAdditionalProducts(
+    @Args('input') input: CreateAdditionalProductsInput,
+  ): Promise<CreateProductsOutput> {
+    return this.studiosService.createAdditionalProducts(input);
   }
 }

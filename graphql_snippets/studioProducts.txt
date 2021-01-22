@@ -20,5 +20,10 @@ query {
       normalPrice
       sponsoredPrice
     }
+    additionalProducts {
+      title
+      description
+      price
+    }
   }
 }
