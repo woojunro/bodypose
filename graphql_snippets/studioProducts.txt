@@ -1,0 +1,19 @@
+query {
+  studioProducts(input: {
+    slug: "balance-button"
+  }) {
+    ok
+    error
+    products {
+      type
+      title
+      peopleCount
+      conceptCount
+      cutCount
+      minuteCount
+      description
+      weekdayPrice
+      weekendPrice
+    }
+  }
+}

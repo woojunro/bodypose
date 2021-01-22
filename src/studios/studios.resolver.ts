@@ -7,17 +7,13 @@ import {
   CreateBranchOutput,
 } from './dtos/create-branch.dto';
 import {
-  CreateProductInput,
-  CreateProductOutput,
+  CreateStudioProductsInput,
+  CreateProductsOutput,
 } from './dtos/create-product.dto';
 import {
   CreateStudioInput,
   CreateStudioOutput,
 } from './dtos/create-studio.dto';
-import {
-  DeleteProductInput,
-  DeleteProductOutput,
-} from './dtos/delete-product.dto';
 import {
   GetStudioProductsInput,
   GetStudioProductsOutput,
@@ -36,8 +32,8 @@ import {
   UpdateBranchOutput,
 } from './dtos/update-branch.dto';
 import {
-  UpdateProductInput,
-  UpdateProductOutput,
+  UpdateStudioProductsInput,
+  UpdateProductsOutput,
 } from './dtos/update-product.dto';
 import {
   UpdateStudioInput,
@@ -120,27 +116,19 @@ export class ProductResolver {
     return this.studiosService.getStudioProducts(input);
   }
 
-  @Mutation(returns => CreateProductOutput)
+  @Mutation(returns => CreateProductsOutput)
   @Roles(Role.ADMIN)
-  createProduct(
-    @Args('input') input: CreateProductInput,
-  ): Promise<CreateProductOutput> {
-    return this.studiosService.createProduct(input);
+  createStudioProducts(
+    @Args('input') input: CreateStudioProductsInput,
+  ): Promise<CreateProductsOutput> {
+    return this.studiosService.createStudioProducts(input);
   }
 
-  @Mutation(returns => UpdateProductOutput)
+  @Mutation(returns => UpdateProductsOutput)
   @Roles(Role.ADMIN)
-  updateProduct(
-    @Args('input') input: UpdateProductInput,
-  ): Promise<UpdateProductOutput> {
-    return this.studiosService.updateProduct(input);
-  }
-
-  @Mutation(returns => DeleteProductOutput)
-  @Roles(Role.ADMIN)
-  deleteProduct(
-    @Args('input') input: DeleteProductInput,
-  ): Promise<DeleteProductOutput> {
-    return this.studiosService.deleteProduct(input);
+  updateStudioProducts(
+    @Args('input') input: UpdateStudioProductsInput,
+  ): Promise<UpdateProductsOutput> {
+    return this.studiosService.updateStudioProducts(input);
   }
 }

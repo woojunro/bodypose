@@ -49,6 +49,7 @@ export class StudioProduct extends CoreEntity {
 
   @Column({ nullable: true })
   @Field(type => Int, { nullable: true })
+  @IsOptional()
   @IsInt()
   @Min(1)
   minuteCount?: number;

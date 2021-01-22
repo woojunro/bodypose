@@ -14,17 +14,13 @@ import {
   CreateBranchOutput,
 } from './dtos/create-branch.dto';
 import {
-  CreateProductInput,
-  CreateProductOutput,
+  CreateStudioProductsInput,
+  CreateProductsOutput,
 } from './dtos/create-product.dto';
 import {
   CreateStudioInput,
   CreateStudioOutput,
 } from './dtos/create-studio.dto';
-import {
-  DeleteProductInput,
-  DeleteProductOutput,
-} from './dtos/delete-product.dto';
 import {
   GetStudioProductsInput,
   GetStudioProductsOutput,
@@ -43,8 +39,8 @@ import {
   UpdateBranchOutput,
 } from './dtos/update-branch.dto';
 import {
-  UpdateProductInput,
-  UpdateProductOutput,
+  UpdateStudioProductsInput,
+  UpdateProductsOutput,
 } from './dtos/update-product.dto';
 import {
   UpdateStudioInput,
@@ -60,7 +56,7 @@ export class StudiosService {
     @InjectRepository(Studio)
     private readonly studioRepository: Repository<Studio>,
     @InjectRepository(StudioProduct)
-    private readonly productRepository: Repository<StudioProduct>,
+    private readonly studioProductRepository: Repository<StudioProduct>,
     @InjectRepository(Branch)
     private readonly branchRepository: Repository<Branch>,
     @Inject(forwardRef(() => UsersService))
@@ -334,27 +330,37 @@ export class StudiosService {
     }
   }
 
-  async createProduct({
+  async createStudioProducts({
     studioSlug,
-    ...input
-  }: CreateProductInput): Promise<CreateProductOutput> {
+    products,
+  }: CreateStudioProductsInput): Promise<CreateProductsOutput> {
     try {
+      if (products.length === 0) {
+        return {
+          ok: false,
+          error: 'INVALID_PAYLOAD_LENGTH',
+        };
+      }
       // Find studio
-      const studio = await this.getStudioBySlug(studioSlug);
+      const studio = await this.studioRepository.findOne({ slug: studioSlug });
       if (!studio) {
         return {
           ok: false,
-          error: `Studio with slug(${studioSlug}) not found`,
+          error: 'STUDIO_NOT_FOUND',
         };
       }
-      // Create and save product
-      const newProduct = this.productRepository.create({ ...input });
-      newProduct.studio = studio;
-      const { id: productId } = await this.productRepository.save(newProduct);
-      // return id
+      // Create and save products
+      const idList: number[] = [];
+      for (const product of products) {
+        const newProduct = this.studioProductRepository.create({ ...product });
+        newProduct.studio = studio;
+        const { id } = await this.studioProductRepository.save(newProduct);
+        idList.push(id);
+      }
+      // return idList
       return {
         ok: true,
-        productId,
+        idList,
       };
     } catch (e) {
       console.log(e);
@@ -366,20 +372,19 @@ export class StudiosService {
     slug,
   }: GetStudioProductsInput): Promise<GetStudioProductsOutput> {
     try {
-      // Find products with slug
-      const products = await this.productRepository
-        .createQueryBuilder('product')
-        .leftJoin('product.studio', 'studio')
-        .where('studio.slug = :slug', { slug })
-        .getMany();
-      // If the array is empty, return error
-      if (products.length === 0) {
+      // Find studio
+      const studio = await this.studioRepository.findOne(
+        { slug },
+        { relations: ['products'] },
+      );
+      if (!studio) {
         return {
           ok: false,
-          error: `Studio with slug(${slug}) not found`,
+          error: 'STUDIO_NOT_FOUND',
         };
       }
-      // Return products
+      // return
+      const { products } = studio;
       return {
         ok: true,
         products,
@@ -390,70 +395,60 @@ export class StudiosService {
     }
   }
 
-  async updateProduct({
-    slug,
-    productId,
-    payload,
-  }: UpdateProductInput): Promise<UpdateProductOutput> {
+  async updateStudioProducts({
+    studioSlug,
+    products,
+  }: UpdateStudioProductsInput): Promise<UpdateProductsOutput> {
     try {
-      // Find product
-      const product = await this.productRepository.findOne(
-        { id: productId },
-        {
-          relations: ['studio'],
-        },
+      if (products.length === 0) {
+        return {
+          ok: false,
+          error: 'INVALID_PAYLOAD_LENGTH',
+        };
+      }
+      // Find studio
+      const studio = await this.studioRepository.findOne(
+        { slug: studioSlug },
+        { relations: ['products'] },
       );
-      if (!product) {
+      if (!studio) {
         return {
           ok: false,
-          error: `Product with id(${productId}) not found`,
+          error: 'STUDIO_NOT_FOUND',
         };
       }
-      // Check studio
-      if (product.studio.slug !== slug) {
-        return {
-          ok: false,
-          error: `Studio with slug(${slug}) does not have this product`,
-        };
+      // Overwrite
+      const { products: currentProducts } = studio;
+      const idList: number[] = [];
+      for (let i = 0; i < currentProducts.length && i < products.length; i++) {
+        currentProducts[i] = { ...currentProducts[i], ...products[i] };
+        const { id } = await this.studioProductRepository.save(
+          currentProducts[i],
+        );
+        idList.push(id);
       }
-      // Update and save
-      const updatedProduct = { ...product, ...payload };
-      await this.productRepository.save(updatedProduct);
-      return { ok: true };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
-  }
-
-  async deleteProduct({
-    slug,
-    productId,
-  }: DeleteProductInput): Promise<DeleteProductOutput> {
-    try {
-      // Find product
-      const product = await this.productRepository.findOne(
-        { id: productId },
-        {
-          relations: ['studio'],
-        },
-      );
-      if (!product) {
-        return {
-          ok: false,
-          error: `Product with id(${productId}) not found`,
-        };
+      if (currentProducts.length > products.length) {
+        // Delete products that haven't been updated
+        for (let i = products.length; i < currentProducts.length; i++) {
+          await this.studioProductRepository.delete({
+            id: currentProducts[i].id,
+          });
+        }
+      } else if (currentProducts.length < products.length) {
+        // Add more products
+        for (let i = currentProducts.length; i < products.length; i++) {
+          const newProduct = this.studioProductRepository.create({
+            ...products[i],
+          });
+          newProduct.studio = studio;
+          const { id } = await this.studioProductRepository.save(newProduct);
+          idList.push(id);
+        }
       }
-      // Check studio
-      if (product.studio.slug !== slug) {
-        return {
-          ok: false,
-          error: `Studio with slug(${slug}) does not have this product`,
-        };
-      }
-      // Delete
-      await this.productRepository.delete({ id: productId });
-      return { ok: true };
+      return {
+        ok: true,
+        idList,
+      };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
