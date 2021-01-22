@@ -10,4 +10,7 @@ export class ToggleHeartStudioInput extends PickType(
 ) {}
 
 @ObjectType()
-export class ToggleHeartStudioOutput extends CoreOutput {}
+export class ToggleHeartStudioOutput extends CoreOutput {
+  @Field(type => Boolean, { nullable: true })
+  isHearted?: boolean;
+}

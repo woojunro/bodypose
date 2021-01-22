@@ -16,15 +16,13 @@ import {
 import {
   CreateStudioProductsInput,
   CreateProductsOutput,
+  CreateSponsoredProductsInput,
 } from './dtos/create-product.dto';
 import {
   CreateStudioInput,
   CreateStudioOutput,
 } from './dtos/create-studio.dto';
-import {
-  GetStudioProductsInput,
-  GetStudioProductsOutput,
-} from './dtos/get-product.dto';
+import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
   GetAllStudiosOutput,
   GetStudioInput,
@@ -41,12 +39,14 @@ import {
 import {
   UpdateStudioProductsInput,
   UpdateProductsOutput,
+  UpdateSponsoredProductsInput,
 } from './dtos/update-product.dto';
 import {
   UpdateStudioInput,
   UpdateStudioOutput,
 } from './dtos/update-studio.dto';
 import { Branch } from './entities/branch.entity';
+import { SponsoredProduct } from './entities/sponsored-product.entity';
 import { StudioProduct } from './entities/studio-product.entity';
 import { Studio } from './entities/studio.entity';
 
@@ -59,6 +59,8 @@ export class StudiosService {
     private readonly studioProductRepository: Repository<StudioProduct>,
     @InjectRepository(Branch)
     private readonly branchRepository: Repository<Branch>,
+    @InjectRepository(SponsoredProduct)
+    private readonly sponsoredProductRepository: Repository<SponsoredProduct>,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
   ) {}
@@ -235,6 +237,7 @@ export class StudiosService {
       await this.studioRepository.save(studio);
       return {
         ok: true,
+        isHearted: !isStudioAlreadyHearted,
       };
     } catch (e) {
       console.log(e);
@@ -330,6 +333,32 @@ export class StudiosService {
     }
   }
 
+  async getProducts({ slug }: GetProductsInput): Promise<GetProductsOutput> {
+    try {
+      // Find studio
+      const studio = await this.studioRepository.findOne(
+        { slug },
+        { relations: ['products', 'sponsoredProducts'] },
+      );
+      if (!studio) {
+        return {
+          ok: false,
+          error: 'STUDIO_NOT_FOUND',
+        };
+      }
+      // return
+      const { products: studioProducts, sponsoredProducts } = studio;
+      return {
+        ok: true,
+        studioProducts,
+        sponsoredProducts,
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
   async createStudioProducts({
     studioSlug,
     products,
@@ -361,33 +390,6 @@ export class StudiosService {
       return {
         ok: true,
         idList,
-      };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
-  }
-
-  async getStudioProducts({
-    slug,
-  }: GetStudioProductsInput): Promise<GetStudioProductsOutput> {
-    try {
-      // Find studio
-      const studio = await this.studioRepository.findOne(
-        { slug },
-        { relations: ['products'] },
-      );
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
-      // return
-      const { products } = studio;
-      return {
-        ok: true,
-        products,
       };
     } catch (e) {
       console.log(e);
@@ -442,6 +444,106 @@ export class StudiosService {
           });
           newProduct.studio = studio;
           const { id } = await this.studioProductRepository.save(newProduct);
+          idList.push(id);
+        }
+      }
+      return {
+        ok: true,
+        idList,
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async createSponsoredProducts({
+    studioSlug,
+    products,
+  }: CreateSponsoredProductsInput): Promise<CreateProductsOutput> {
+    try {
+      if (products.length === 0) {
+        return {
+          ok: false,
+          error: 'INVALID_PAYLOAD_LENGTH',
+        };
+      }
+      // Find studio
+      const studio = await this.studioRepository.findOne({ slug: studioSlug });
+      if (!studio) {
+        return {
+          ok: false,
+          error: 'STUDIO_NOT_FOUND',
+        };
+      }
+      // Create and save products
+      const idList: number[] = [];
+      for (const product of products) {
+        const newProduct = this.sponsoredProductRepository.create({
+          ...product,
+        });
+        newProduct.studio = studio;
+        const { id } = await this.sponsoredProductRepository.save(newProduct);
+        idList.push(id);
+      }
+      // Return idList
+      return {
+        ok: true,
+        idList,
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async updateSponsoredProducts({
+    studioSlug,
+    products,
+  }: UpdateSponsoredProductsInput): Promise<UpdateProductsOutput> {
+    try {
+      if (products.length === 0) {
+        return {
+          ok: false,
+          error: 'INVALID_PAYLOAD_LENGTH',
+        };
+      }
+      // Find studio
+      const studio = await this.studioRepository.findOne(
+        { slug: studioSlug },
+        { relations: ['sponsoredProducts'] },
+      );
+      if (!studio) {
+        return {
+          ok: false,
+          error: 'STUDIO_NOT_FOUND',
+        };
+      }
+      // Overwrite
+      const { sponsoredProducts: currentProducts } = studio;
+      const idList: number[] = [];
+      for (let i = 0; i < currentProducts.length && i < products.length; i++) {
+        currentProducts[i] = { ...currentProducts[i], ...products[i] };
+        const { id } = await this.sponsoredProductRepository.save(
+          currentProducts[i],
+        );
+        idList.push(id);
+      }
+      if (currentProducts.length > products.length) {
+        // Delete products that haven't been updated
+        for (let i = products.length; i < currentProducts.length; i++) {
+          await this.sponsoredProductRepository.delete({
+            id: currentProducts[i].id,
+          });
+        }
+      } else if (currentProducts.length < products.length) {
+        // Add more products
+        for (let i = currentProducts.length; i < products.length; i++) {
+          const newProduct = this.sponsoredProductRepository.create({
+            ...products[i],
+          });
+          newProduct.studio = studio;
+          const { id } = await this.sponsoredProductRepository.save(newProduct);
           idList.push(id);
         }
       }
