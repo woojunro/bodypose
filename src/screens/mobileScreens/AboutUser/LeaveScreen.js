@@ -31,7 +31,7 @@ const LeaveScreen = () => {
       return <div>회원탈퇴 되었습니다.</div>;
     }
     return (
-      <>
+      <div>
         <div className="usersTopContainer">
           <FiArrowLeft
             className="usersGoBackArrow"
@@ -95,7 +95,7 @@ const LeaveScreen = () => {
         </div>
 
         <BottomNavigation pageName="users" />
-      </>
+      </div>
     );
   }
 };

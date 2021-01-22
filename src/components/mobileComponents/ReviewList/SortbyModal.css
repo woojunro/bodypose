@@ -1,13 +1,26 @@
+.reviewSortBymodalContainer {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  min-width: 320px;
+  position: relative;
+}
+
 .reviewSortBymodal {
   z-index: 50;
   position: absolute;
-  margin-left: -20px;
-  width: 100vw;
-  height: 800px;
+  left: 0;
+  width: 100%;
+  max-width: 470px;
+  min-width: 320px;
+
+  height: 100vh;
+
   background: rgba(0, 0, 0, 0.4);
 }
 .reviewSortBytrueModal {
-  width: 100%;
+  width: 100vw;
+  max-width: 470px;
   height: 150px;
   margin: auto;
 

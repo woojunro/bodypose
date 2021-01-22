@@ -13,7 +13,6 @@ import { FaSlidersH } from 'react-icons/fa';
 import GetMoreData, {
   GetConceptPhotos,
 } from '../../components/functions/WithDb/ConceptList';
-import Footer from '../../components/mobileComponents/Footer';
 
 const genderOptions = ['전체', '남성', '여성', '커플'];
 
@@ -100,67 +99,74 @@ const ConceptListScreen = () => {
   }, [gender, selectedConcepts]);
 
   return (
-    <div className="conceptListScreen">
-      <FaSlidersH
-        className="sortIcon"
-        onClick={() => setIsSelectionOpen(true)}
-      />
-      <Header pageName="concepts" />
-      <SelectionModal
-        isOpen={isSelectionOpen}
-        close={() => {
-          setIsSelectionOpen(false);
-        }}
-        selectedBgConcepts={selectedConcepts.bgConcept}
-        selectedCostumeConcepts={selectedConcepts.costumeConcept}
-        selectedObjectConcepts={selectedConcepts.objectConcept}
-        setSelection={handleConcepts}
-      />
-      <TopNavigator
-        options={genderOptions}
-        selectedGender={gender}
-        setGender={setGender}
-      />
-      <InfiniteScroll
-        dataLength={conceptArray.length}
-        next={fetchMoreData}
-        hasMore={isMore}
-        loader={<LoadingIcon />}
-        endMessage={
-          <div className="endMessageContainer">
-            <div>모든 사진을 불러왔습니다</div>
-          </div>
-        }
-      >
-        <div className="totalConcept">
-          {conceptArray.map((concept) => (
-            <ConceptListCard
-              key={concept.photoName}
-              conceptNum={conceptNum++}
-              photo={concept}
-              isModalOpen={isModalOpen}
-              setThisPhoto={handlePhotoNum}
-              openModal={openModal}
-              needFetchMoreData={needFetchMoreData}
+    <div>
+      <div className="conceptListScreen">
+        <div>
+          <div className="header">
+            <span className="headerTitle">컨셉북</span>
+            <FaSlidersH
+              className="sortIcon"
+              onClick={() => setIsSelectionOpen(true)}
             />
-          ))}
+          </div>
+          <div style={{ height: '50px' }} />
         </div>
-      </InfiniteScroll>
-      {isModalOpen ? (
-        <ConceptModal
-          whileFetching={whileFetching}
-          isOpen={isModalOpen}
-          close={closeModal}
-          concept={conceptArray[selectedPhotoNum]}
-          openModal={openModal}
-          setThisPhoto={handlePhotoNum}
-          needFetchMoreData={needFetchMoreData}
-          photoNum={selectedPhotoNum}
-          isFinalPhoto={isFinalPhoto}
-          handleIsFinalPhoto={cancleFinalPhoto}
+        <SelectionModal
+          isOpen={isSelectionOpen}
+          close={() => {
+            setIsSelectionOpen(false);
+          }}
+          selectedBgConcepts={selectedConcepts.bgConcept}
+          selectedCostumeConcepts={selectedConcepts.costumeConcept}
+          selectedObjectConcepts={selectedConcepts.objectConcept}
+          setSelection={handleConcepts}
         />
-      ) : null}
-      <BottomNavigation pageName="concepts" />
+        <TopNavigator
+          options={genderOptions}
+          selectedGender={gender}
+          setGender={setGender}
+        />
+        <InfiniteScroll
+          dataLength={conceptArray.length}
+          next={fetchMoreData}
+          hasMore={isMore}
+          loader={<LoadingIcon />}
+          endMessage={
+            <div className="endMessageContainer">
+              <div>모든 사진을 불러왔습니다</div>
+            </div>
+          }
+        >
+          <div className="totalConcept">
+            {conceptArray.map((concept) => (
+              <ConceptListCard
+                key={concept.photoName}
+                conceptNum={conceptNum++}
+                photo={concept}
+                isModalOpen={isModalOpen}
+                setThisPhoto={handlePhotoNum}
+                openModal={openModal}
+                needFetchMoreData={needFetchMoreData}
+              />
+            ))}
+          </div>
+        </InfiniteScroll>
+        {isModalOpen ? (
+          <ConceptModal
+            whileFetching={whileFetching}
+            isOpen={isModalOpen}
+            close={closeModal}
+            concept={conceptArray[selectedPhotoNum]}
+            openModal={openModal}
+            setThisPhoto={handlePhotoNum}
+            needFetchMoreData={needFetchMoreData}
+            photoNum={selectedPhotoNum}
+            isFinalPhoto={isFinalPhoto}
+            handleIsFinalPhoto={cancleFinalPhoto}
+          />
+        ) : null}
+        <BottomNavigation pageName="concepts" />
+      </div>
     </div>
   );
 };

@@ -46,23 +46,24 @@ const Modal = ({
         /// <div onClick={close}> 회색 바탕을 누를시 모달이 꺼지게 만듬
         ////<div className="modalContents" onClick={(e) => e.stopPropagation()}>
         /// 이 범위의 이벤트는 상위로 전이 막음.
-
-        <div className="reviewSortBymodal">
-          <div
-            className="reviewSortBygreyBackground"
-            onClick={() => {
-              close();
-              closeSortBy();
-            }}
-          >
-            <div className="reviewSortBytrueModal">
-              <div
-                className="reviewSortBymodalContents"
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              >
-                {renderedOptions}
+        <div className="reviewSortBymodalContainer">
+          <div className="reviewSortBymodal">
+            <div
+              className="reviewSortBygreyBackground"
+              onClick={() => {
+                close();
+                closeSortBy();
+              }}
+            >
+              <div className="reviewSortBytrueModal">
+                <div
+                  className="reviewSortBymodalContents"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  {renderedOptions}
+                </div>
               </div>
             </div>
           </div>

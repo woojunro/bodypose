@@ -15,7 +15,7 @@ const MyReviewScreen = () => {
     return <Redirect to={'/error'} />;
   }
   return (
-    <>
+    <div>
       <div className="usersTopContainer">
         <FiArrowLeft
           className="usersGoBackArrow"
@@ -29,7 +29,7 @@ const MyReviewScreen = () => {
       <div style={{ paddingLeft: '20px', paddingRight: '20px' }}>
         <ReviewScrollView reviewList={myReviews} />
       </div>
-    </>
+    </div>
   );
 };
 

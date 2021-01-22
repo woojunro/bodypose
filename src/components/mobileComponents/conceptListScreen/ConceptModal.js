@@ -78,7 +78,7 @@ const Modal = ({
   return (
     <>
       {isOpen ? (
-        <>
+        <div>
           <div className="conceptmodal">
             <div className="concepttrueModal">
               {gettingPhotoInfo ? (
@@ -156,7 +156,7 @@ const Modal = ({
               )}
             </div>
           </div>
-        </>
+        </div>
       ) : null}
     </>
   );

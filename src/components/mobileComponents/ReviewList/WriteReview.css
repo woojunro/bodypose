@@ -9,6 +9,16 @@
   height: 100vh;
   background-color: white;
 }
+.reviewContainer {
+  width: 100vw;
+  max-width: 470px;
+  height: 100vh;
+  background-color: white;
+  position: relative;
+  box-sizing: border-box;
+  margin: auto;
+  padding: 0px;
+}
 .reviewCompelteButton {
   padding-right: 20px;
   font-size: 15px;
@@ -37,8 +47,8 @@
   padding-right: 25px;
 }
 .addReviewPicButton {
-  width: 21vw;
-  height: 21vw;
+  width: 75px;
+  height: 75px;
   border-radius: 8px;
   border: 1px solid gray;
   display: flex;
@@ -68,8 +78,8 @@
   display: flex;
 }
 .previewPic {
-  width: 21vw;
-  height: 21vw;
+  width: 75px;
+  height: 75px;
   border-radius: 8px;
   border: 1px solid gray;
   overflow: hidden;
@@ -104,14 +114,15 @@
   line-height: 13px;
   margin-top: 5px;
 }
-.reviewBottomNotice {
+.reviewBottomNoticeContainer {
   position: fixed;
   bottom: 0;
   left: 0;
   font-size: 10px;
   width: 100%;
-  background-color: var(--color-greyBox);
   color: gray;
+  display: flex;
+  justify-content: center;
 }
 
 .reviewBottomNotice {
@@ -120,6 +131,8 @@
   padding-top: 5px;
   padding-bottom: 5px;
   width: 90%;
+  max-width: 370px;
+  background-color: var(--color-greyBox);
 }
 .picNumberError {
   margin-top: 3px;

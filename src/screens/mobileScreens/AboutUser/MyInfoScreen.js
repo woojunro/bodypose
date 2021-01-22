@@ -16,7 +16,7 @@ const MyInfoScreen = () => {
     return <Redirect to={'/error'} />;
   } else {
     return (
-      <>
+      <div>
         <div className="usersTopContainer">
           <FiArrowLeft
             className="usersGoBackArrow"
@@ -47,7 +47,7 @@ const MyInfoScreen = () => {
         </div>
 
         <BottomNavigation pageName="users" />
-      </>
+      </div>
     );
   }
 };

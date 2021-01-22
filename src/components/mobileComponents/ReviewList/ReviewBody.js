@@ -35,12 +35,12 @@ const ReviewBody = ({ currentReview }) => {
 
   return (
     <div className="reviewBody">
-      <div className="reviewBodyPhoto">
-        {renderedArrows()}
-        {currentReview.pic ? (
+      {currentReview.pic ? (
+        <div className="reviewBodyPhoto">
+          {renderedArrows()}
           <img alt="reviewPhoto" src={currentReview.pic[currentPic]} />
-        ) : null}
-      </div>
+        </div>
+      ) : null}
       <div className="reviewBodyText">{currentReview.text}</div>
     </div>
   );

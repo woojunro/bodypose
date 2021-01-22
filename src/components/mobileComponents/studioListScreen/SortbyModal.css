@@ -1,7 +1,11 @@
 .sortBymodal {
   z-index: 20;
+
+  width: 100vw;
+  min-width: 320px;
+  max-width: 470px;
+  height: 100vh;
   position: absolute;
-  height: 800px;
   top: 92px;
   right: 0;
   bottom: 0;
@@ -9,7 +13,9 @@
   background: rgba(0, 0, 0, 0.4);
 }
 .sortBytrueModal {
-  width: 100%;
+  min-width: 320px;
+  width: 100vw;
+  max-width: 470px;
   height: 220px;
   margin: auto;
 
@@ -20,7 +26,7 @@
   background: #fff;
 }
 .sortBygreyBackground {
-  height: 100%;
+  height: 100vh;
   width: 100%;
 }
 .sortBymodalContents {

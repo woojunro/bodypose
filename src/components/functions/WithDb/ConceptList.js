@@ -24,7 +24,7 @@ export const GetPhotoInfo = (
     setPhoto(concept.pic);
 
     setGettingPhotoInfo(false);
-  }, 500);
+  }, 200);
 };
 
 //초기 사진 불러오기.

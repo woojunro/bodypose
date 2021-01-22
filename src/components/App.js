@@ -11,7 +11,6 @@ import AboutM from '../screens/mobileScreens/AboutScreen.js';
 import ReviewListScreenM from '../screens/mobileScreens/ReviewListScreen';
 import UserScreenM from '../screens/mobileScreens/AboutUser/UserScreen';
 import HeartScreenM from '../screens/mobileScreens/HeartScreen';
-import ConceptsInfoScreenM from '../screens/mobileScreens/ConceptsInfoScreen';
 import NoticeListScreenM from '../screens/mobileScreens/NoticeListScreen';
 import NoticeScreenM from '../screens/mobileScreens/NoticeScreen';
 import ErrorScreenM from '../screens/mobileScreens/ErrorScreen';
@@ -28,62 +27,46 @@ import LeaveScreenM from '../screens/mobileScreens/AboutUser/LeaveScreen';
 import LoginContext from '../contexts/LoginContext';
 
 const App = () => {
-  //가로 900픽셀 미만이면 모바일로 처리.
-  const isPc = useMediaQuery({
-    query: '(min-width:900px)',
-  });
-
   const [logedIn, setLogedIn] = useState(false);
   const logedInValue = { logedIn, setLogedIn };
 
-  if (isPc) {
-    return <div>Pc</div>;
-  } else {
-    return (
-      <LoginContext.Provider value={logedInValue}>
-        <Router>
-          <div className="app">
-            <Route exact path="/" component={HomeScreenM} />
-            <Route path="/about" component={AboutM} />
-            <Route exact path="/studios" component={StudioListScreenM} />
-            <Route exact path="/concepts" component={ConceptListScreenM} />
-            <Route
-              exact
-              path="/concepts/:conceptNum"
-              component={ConceptsInfoScreenM}
-            />
-            <Route exact path="/reviews" component={ReviewListScreenM} />
-            <Route exact path="/studios/:id" component={StudioInfoScreenM} />
-            <Route exact path="/users" component={UserScreenM} />
-            <Route exact path="/hearts" component={HeartScreenM} />
-            <Route exact path="/notices" component={NoticeListScreenM} />
-            <Route path="/notices/:noticeNumber" component={NoticeScreenM} />
-            <Route
-              path="/reviews/:reviewNumber"
-              component={FullReviewScreenM}
-            />
-            <Route exact path="/login" component={LoginScreenM} />
-            <Route
-              exact
-              path="/changePassword"
-              component={ChangePasswordScreenM}
-            />
-            <Route
-              exact
-              path="/startWithEmail"
-              component={StartWithEmailScreenM}
-            />
-            <Route exact path="/snsInfo" component={SnsInfoScreenM} />
-            <Route exact path="/users/myInfo" component={MyInfoScreenM} />
-            <Route exact path="/users/myReview" component={MyReviewScreenM} />
+  return (
+    <LoginContext.Provider value={logedInValue}>
+      <Router>
+        <div className="app">
+          <Route exact path="/" component={HomeScreenM} />
+          <Route path="/about" component={AboutM} />
+          <Route exact path="/studios" component={StudioListScreenM} />
+          <Route exact path="/concepts" component={ConceptListScreenM} />
 
-            <Route exact path="/users/leave" component={LeaveScreenM} />
-            <Route exact path="/error" component={ErrorScreenM} />
-          </div>
-        </Router>
-      </LoginContext.Provider>
-    );
-  }
+          <Route exact path="/reviews" component={ReviewListScreenM} />
+          <Route exact path="/studios/:id" component={StudioInfoScreenM} />
+          <Route exact path="/users" component={UserScreenM} />
+          <Route exact path="/hearts" component={HeartScreenM} />
+          <Route exact path="/notices" component={NoticeListScreenM} />
+          <Route path="/notices/:noticeNumber" component={NoticeScreenM} />
+          <Route path="/reviews/:reviewNumber" component={FullReviewScreenM} />
+          <Route exact path="/login" component={LoginScreenM} />
+          <Route
+            exact
+            path="/changePassword"
+            component={ChangePasswordScreenM}
+          />
+          <Route
+            exact
+            path="/startWithEmail"
+            component={StartWithEmailScreenM}
+          />
+          <Route exact path="/snsInfo" component={SnsInfoScreenM} />
+          <Route exact path="/users/myInfo" component={MyInfoScreenM} />
+          <Route exact path="/users/myReview" component={MyReviewScreenM} />
+
+          <Route exact path="/users/leave" component={LeaveScreenM} />
+          <Route exact path="/error" component={ErrorScreenM} />
+        </div>
+      </Router>
+    </LoginContext.Provider>
+  );
 };
 
 export default App;

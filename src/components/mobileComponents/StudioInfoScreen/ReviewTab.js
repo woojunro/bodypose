@@ -6,6 +6,7 @@ import { SortOptions } from '../../mobileComponents/ReviewList/SortOptions';
 import ReviewScrollView from '../../mobileComponents/ReviewList/ReviewScrollView';
 import LoginContext from '../../../contexts/LoginContext';
 import { useHistory } from 'react-router-dom';
+import Modal from '../ReviewList/SortbyModal';
 
 const ReviewTab = ({ currentStudio, setIsWriteReviewOpen }) => {
   let sortByOptions = SortOptions;
@@ -16,6 +17,10 @@ const ReviewTab = ({ currentStudio, setIsWriteReviewOpen }) => {
   const [isThereMoreReviews, setIsThereMoreReviews] = useState(true);
   const [Reviews, setReviews] = useState([]);
   const [isSortByOpen, setIsSortByOpen] = useState(false);
+
+  const closeModal = () => {
+    setIsSortByOpen(false);
+  };
   const GetMore = () => {
     const more = Reviews.concat(
       GetMoreReview(currentStudio.studioName, sortBy.optionName)
@@ -29,19 +34,14 @@ const ReviewTab = ({ currentStudio, setIsWriteReviewOpen }) => {
     setReviews(GetReview(currentStudio.studioName, sortBy.optionName));
   }, [sortBy]);
 
-  useEffect(() => {
-    document.body.style.overflow = isSortByOpen ? 'hidden' : 'auto';
-  }, [isSortByOpen]);
   return (
-    <div className="reviewTab">
+    <div>
       <div className="reviewTabTopContainer">
         <div>
           <SortButton
             isOpen={isSortByOpen}
             open={() => setIsSortByOpen(true)}
             close={() => setIsSortByOpen(false)}
-            options={sortByOptions}
-            setOption={setSortBy}
             selectedOption={sortBy}
           />
         </div>
@@ -62,17 +62,29 @@ const ReviewTab = ({ currentStudio, setIsWriteReviewOpen }) => {
           + 리뷰 쓰기
         </div>
       </div>
-      <ReviewScrollView reviewList={Reviews} />
+      <Modal
+        isOpen={isSortByOpen}
+        close={closeModal}
+        closeSortBy={() => setIsSortByOpen(false)}
+        options={sortByOptions}
+        setOption={setSortBy}
+        selectedOption={sortBy}
+      />
+      <div className="reviewTab">
+        <ReviewScrollView reviewList={Reviews} />
 
-      {isThereMoreReviews ? (
-        <div className="seeMoreReviewContainer">
-          <div className="seeMoreReview" onClick={() => GetMore()}>
-            리뷰 더보기
+        {isThereMoreReviews ? (
+          <div className="seeMoreReviewContainer">
+            <div className="seeMoreReview" onClick={() => GetMore()}>
+              리뷰 더보기
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="seeMoreReviewContainer">모든 리뷰를 불러왔습니다.</div>
-      )}
+        ) : (
+          <div className="seeMoreReviewContainer">
+            모든 리뷰를 불러왔습니다.
+          </div>
+        )}
+      </div>
     </div>
   );
 };

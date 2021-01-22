@@ -12,27 +12,29 @@ const ChangePasswordScreen = () => {
   const history = useHistory();
 
   return (
-    <div className="joinContainer">
-      <div>
-        <FiArrowLeft
-          onClick={() => history.goBack()}
-          className="loginBackArrow"
-        />
-        <div className="loginTitle">비밀번호 바꾸기</div>
-        <div className="changePasswordNotice">
-          가입한 이메일을 입력해주세요.
+    <div>
+      <div className="joinContainer">
+        <div>
+          <FiArrowLeft
+            onClick={() => history.goBack()}
+            className="loginBackArrow"
+          />
+          <div className="loginTitle">비밀번호 바꾸기</div>
+          <div className="changePasswordNotice">
+            가입한 이메일을 입력해주세요.
+          </div>
+          <div className="joinEmailText">이메일</div>
+          <InputForm
+            className="joinInput"
+            onInputSubmit={setEmail}
+            placeholder="이메일"
+            type="text"
+          />
         </div>
-        <div className="joinEmailText">이메일</div>
-        <InputForm
-          className="joinInput"
-          onInputSubmit={setEmail}
-          placeholder="이메일"
-          type="text"
-        />
-      </div>
-      <div className="startButtonPart">
-        <div className="startButtonContainer">
-          <ChangePasswordButton email={email} />
+        <div className="startButtonPart">
+          <div className="startButtonContainer">
+            <ChangePasswordButton email={email} />
+          </div>
         </div>
       </div>
     </div>

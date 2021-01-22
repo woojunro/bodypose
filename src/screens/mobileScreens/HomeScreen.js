@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './HomeScreen.css';
 import HeaderM from '../../components/mobileComponents/HeaderM';
 import AdTap from '../../components/mobileComponents/homeScreen/AdTap';
@@ -14,8 +14,11 @@ import NoticeBox from '../../components/mobileComponents/homeScreen/NoticeBox';
 import Footer from '../../components/mobileComponents/Footer';
 
 const HomeScreen = () => {
+  useEffect(() => {
+    document.body.style.overflow = 'auto';
+  }, []);
   return (
-    <div className="homeScreen">
+    <div>
       <HeaderM pageName="home" />
       <AdTap />
       <MainCardScrollView />

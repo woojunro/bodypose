@@ -1,3 +1,7 @@
+.conceptListScreen {
+  position: relative;
+}
+
 .totalConcept {
   display: flex;
   overflow: auto;
@@ -15,7 +19,7 @@
 
 .sortIcon {
   display: flex;
-  position: fixed;
+  position: absolute;
   z-index: 35;
   right: 20px;
   top: 17px;

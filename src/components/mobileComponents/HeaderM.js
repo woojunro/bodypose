@@ -20,26 +20,6 @@ const Header = ({ pageName }) => {
       </div>
     );
   }
-  if (pageName === 'studios') {
-    return (
-      <div>
-        <div className="header">
-          <span className="headerTitle">스튜디오</span>
-        </div>
-        <div style={{ height: '50px' }} />
-      </div>
-    );
-  }
-  if (pageName === 'concepts') {
-    return (
-      <div>
-        <div className="header">
-          <span className="headerTitle">컨셉북</span>
-        </div>
-        <div style={{ height: '50px' }} />
-      </div>
-    );
-  }
   if (pageName === 'hearts') {
     return (
       <div>

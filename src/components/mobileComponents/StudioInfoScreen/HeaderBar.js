@@ -6,7 +6,7 @@ import { FiArrowLeft } from 'react-icons/fi';
 import './HeaderBar.css';
 import React, { useState, useContext } from 'react';
 
-const HeaderBar = ({ currentStudio }) => {
+const HeaderBar = ({ currentStudio, copyTextToClipboard, setIsAlertOpen }) => {
   const [isHearted, setIsHearted] = useState(currentStudio.isHearted);
   const LogedIn = useContext(LoginContext);
   const history = useHistory();
@@ -21,6 +21,10 @@ const HeaderBar = ({ currentStudio }) => {
     SetHeartDb();
     //Db에 is hearted 바꾸는 코드 넣기.
     setIsHearted(!isHearted);
+  };
+  const onclick = () => {
+    setIsAlertOpen(true);
+    copyTextToClipboard();
   };
 
   return (
@@ -43,7 +47,7 @@ const HeaderBar = ({ currentStudio }) => {
             fontSize="20px"
           />
         )}
-        <IoMdShare className="studioInfoShare" />
+        <IoMdShare onClick={() => onclick()} className="studioInfoShare" />
       </div>
     </div>
   );

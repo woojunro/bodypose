@@ -42,8 +42,13 @@ const StudioListScreen = () => {
 
   return (
     <div className="studioListScreen">
-      <SearchBar onSearchSubmit={setSearchTerm} />
-      <Header pageName="studios" />
+      <div>
+        <div className="header">
+          <span className="headerTitle">스튜디오</span>
+          <SearchBar onSearchSubmit={setSearchTerm} />
+        </div>
+        <div style={{ height: '50px' }} />
+      </div>
       <div className="contentsBox">
         <div className="buttonContainer">
           <SortButton

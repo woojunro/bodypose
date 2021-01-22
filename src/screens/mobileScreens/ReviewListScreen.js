@@ -9,6 +9,7 @@ import {
 import SortButton from '../../components/mobileComponents/ReviewList/SortButton';
 import './ReviewListScreen.css';
 import ReviewScrollView from '../../components/mobileComponents/ReviewList/ReviewScrollView';
+import Modal from '../../components/mobileComponents/ReviewList//SortbyModal';
 
 const ReviewListScreen = () => {
   let sortByOptions = SortOptions;
@@ -17,6 +18,10 @@ const ReviewListScreen = () => {
   const [isThereMoreReviews, setIsThereMoreReviews] = useState(true);
   const [Reviews, setReviews] = useState([]);
   const [isSortByOpen, setIsSortByOpen] = useState(false);
+
+  const closeModal = () => {
+    setIsSortByOpen(false);
+  };
   const GetMore = () => {
     const more = Reviews.concat(GetMoreReview());
     if (more.length === Reviews.length) {
@@ -26,12 +31,11 @@ const ReviewListScreen = () => {
   };
 
   useEffect(() => {
-    document.body.style.overflow = isSortByOpen ? 'hidden' : 'auto';
-  }, [isSortByOpen]);
-
-  useEffect(() => {
     setReviews(GetReviews(sortBy.optionName));
   }, [sortBy]);
+  useEffect(() => {
+    document.body.style.overflow = isSortByOpen ? 'hidden' : 'auto';
+  }, [isSortByOpen]);
 
   const history = useHistory();
   return (
@@ -52,11 +56,17 @@ const ReviewListScreen = () => {
           isOpen={isSortByOpen}
           open={() => setIsSortByOpen(true)}
           close={() => setIsSortByOpen(false)}
-          options={sortByOptions}
-          setOption={setSortBy}
           selectedOption={sortBy}
         />
       </div>
+      <Modal
+        isOpen={isSortByOpen}
+        close={closeModal}
+        closeSortBy={() => setIsSortByOpen(false)}
+        options={sortByOptions}
+        setOption={setSortBy}
+        selectedOption={sortBy}
+      />
       <div className="reviewPart">
         <ReviewScrollView reviewList={Reviews} />
       </div>

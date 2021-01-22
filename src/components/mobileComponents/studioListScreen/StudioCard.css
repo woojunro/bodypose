@@ -1,7 +1,7 @@
 .totalContainer {
   position: relative;
   flex: 0 0 auto;
-  min-width: 340px;
+  min-width: 320px;
   display: block;
 }
 .studioCardContainer {
@@ -91,6 +91,7 @@
   font-size: 11px;
 }
 .price {
+  font-size: 15px;
   font-weight: bold;
   padding-left: 10px;
 }

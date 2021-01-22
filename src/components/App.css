@@ -7,6 +7,15 @@
   --color-loginGray: #afafaf;
   --color-heartColor: #ff5858;
 }
+html {
+  margin: 0 auto;
+  max-width: 470px;
+}
+body {
+  height: 100%;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 [role='navigation'] {
   overflow: auto !important;
 }
