@@ -30,6 +30,7 @@ import { Branch } from './studios/entities/branch.entity';
 import { SponsoredProduct } from './studios/entities/sponsored-product.entity';
 import { AdditionalProduct } from './studios/entities/additional-product.entity';
 import { UploadsModule } from './uploads/uploads.module';
+import { GraphQLError, GraphQLFormattedError } from 'graphql';
 
 @Module({
   imports: [
@@ -79,6 +80,15 @@ import { UploadsModule } from './uploads/uploads.module';
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
+      formatError: (error: GraphQLError) => {
+        if (process.env.NODE_ENV === 'development') {
+          return error;
+        }
+        const graphQLFormattedError: GraphQLFormattedError = {
+          message: error.name,
+        };
+        return graphQLFormattedError;
+      },
     }),
     AuthModule,
     MailModule,
