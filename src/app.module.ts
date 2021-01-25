@@ -48,6 +48,9 @@ import { GraphQLError, GraphQLFormattedError } from 'graphql';
         JWT_SECRET: Joi.string().required(),
         MAILGUN_API_KEY: Joi.string().required(),
         MAILGUN_DOMAIN_NAME: Joi.string().required(),
+        GOOGLE_CLOUD_PROJECT: Joi.string().required(),
+        GCLOUD_STORAGE_BUCKET: Joi.string().required(),
+        GOOGLE_APPLICATION_CREDENTIALS: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRoot({
