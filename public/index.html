@@ -16,6 +16,30 @@
     -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=5c06d664dacc5a982b64b8e10bc8f9bb&libraries=services"></script>
+    <script type="text/javascript">
+      // F12 버튼 방지
+      $(document).ready(function(){
+          $(document).bind('keydown',function(e){
+              if ( e.keyCode == 123 /* F12 */) {
+                  e.preventDefault();
+                  e.returnValue = false;
+              }
+          });
+      });
+      
+      // 우측 클릭 방지
+      document.onmousedown=disableclick;
+      status="Right click is not available.";
+      
+      function disableclick(event){
+          if (event.button==2) {
+              alert(status);
+              return false;
+          }
+      }
+  </script>
+  
+  
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -27,8 +51,7 @@
     -->
     <title>바디포즈</title>
   </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+  <body oncontextmenu='return false' onselectstart='return false'>
     <div id="root"></div>
     <!--
       This HTML file is a template.

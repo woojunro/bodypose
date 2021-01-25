@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 import ReviewStars from './ReviewStars';
 import './WriteReview.css';
@@ -11,7 +11,8 @@ const WriteReview = ({
   isWriteReviewOpen,
   setIsWriteReviewOpen,
 }) => {
-  const [needMozaik, setNeedMozaik] = useState(false);
+  const [onlyVerify, setOnlyVerify] = useState(false);
+  //Blob의 array로 저장됨.
   const [pics, setPics] = useState([]);
   const [imgBase64, setimgBase64] = useState([]);
   const [stars, setStars] = useState(0);
@@ -19,7 +20,6 @@ const WriteReview = ({
   const [picNumberError, setPicNumberError] = useState(false);
 
   const hiddenFileInput = React.useRef(null);
-  console.log(pics);
 
   const handleClick = (event) => {
     hiddenFileInput.current.click();
@@ -27,16 +27,24 @@ const WriteReview = ({
 
   const handleChange = (event) => {
     const files = Array.from(event.target.files);
+    let compressedFiles = [];
+    const option = {
+      maxSizeMB: 0.2,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
 
     Promise.all(
       files.map((file) => {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
+          const compressedFile = await imageCompression(file, option);
           const reader = new FileReader();
           reader.addEventListener('load', (ev) => {
             resolve(ev.target.result);
           });
           reader.addEventListener('error', reject);
-          reader.readAsDataURL(file);
+          reader.readAsDataURL(compressedFile);
+          compressedFiles.push(compressedFile);
         });
       })
     ).then(
@@ -52,12 +60,19 @@ const WriteReview = ({
       setPicNumberError(true);
     } else setPicNumberError(false);
 
-    setPics(files);
+    setPics(compressedFiles);
   };
+
+  useEffect(() => {
+    if (pics < 1) {
+      setPicNumberError(true);
+    } else {
+      setPicNumberError(false);
+    }
+  }, [pics]);
 
   const handleSubmit = () => {
     if (reviewText.length < 12 || picNumberError) {
-      console.log('부족함');
     } else {
       SaveReviewToDb(studioName, reviewText, pics);
       setIsWriteReviewOpen(false);
@@ -124,40 +139,38 @@ const WriteReview = ({
           <div className="picturesPart">
             <div onClick={handleClick} className="addReviewPicButton">
               <img alt="addPic" src={Camera} />
-              <div>사진 {pics.length}/3</div>
+              <div>사진 {pics.length}/1</div>
             </div>
+
             {renderedPics()}
           </div>
-          {picNumberError ? (
-            <div className="picNumberError">
-              사진은 3장을 초과할 수 없습니다.
-            </div>
-          ) : null}
+
           <input
             style={{ marginTop: '10px' }}
             type="file"
             accept="image/jpg,image/png,image/jpeg"
-            multiple
             ref={hiddenFileInput}
             onChange={handleChange}
             style={{ display: 'none' }}
           />
 
+          <div style={{ fontSize: '12px', marginTop: '5px' }}>
+            실제 촬영 인증을 위해 최소 1장의 사진이 필요합니다.
+          </div>
+
           <div className="mozaikPart">
             <input
               type="checkbox"
-              value={needMozaik}
-              onChange={() => setNeedMozaik(!needMozaik)}
+              value={onlyVerify}
+              onChange={() => setOnlyVerify(!onlyVerify)}
               style={{ width: '15px', height: '15px' }}
             />
-            <div style={{ fontSize: '12px', marginLeft: '5px' }}>
-              얼굴(코,입) 모자이크 처리하기
+            <div
+              style={{ fontSize: '12px', marginLeft: '5px', color: 'black' }}
+            >
+              체크박스에 체크하시면, 사진은 인증 용도로만 이용되고 즉시
+              삭제됩니다.
             </div>
-          </div>
-
-          <div className="mozaikNotice">
-            얼굴 모자이크 처리를 사용하시는 경우, 서버 상황에 따라 게시까지 몇
-            시간이 소요될 수 있습니다.
           </div>
 
           <div className="reviewTextPart">
@@ -171,6 +184,13 @@ const WriteReview = ({
                 }}
               />
             </form>
+            {reviewText.length < 12 ? (
+              <div
+                style={{ color: 'red', fontSize: '12px', paddingLeft: '5px' }}
+              >
+                총 글자 수는 12글자가 넘어야합니다.
+              </div>
+            ) : null}
             <div className="reviewTextNotice">
               게시물에 부적절한 사진 혹은 표현이 포함된다면, 경고 없이 삭제될 수
               있습니다. 근거없는 비난이나 타인에게 불쾌감을 줄 수 있는 표현은

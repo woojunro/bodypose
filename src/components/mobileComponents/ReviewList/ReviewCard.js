@@ -17,9 +17,7 @@ const ReviewCard = ({ reviewContent }) => {
               <div className="reviewPhotoNum">1/{reviewContent.pic.length}</div>
             ) : null}
           </div>
-          <div>
-            <div className="reviewText">{reviewText}</div>
-          </div>
+          <div className="reviewText">{reviewText}</div>
         </div>
       );
     } else {
