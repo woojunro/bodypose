@@ -13,6 +13,10 @@ import {
   CreateAdditionalProductsInput,
 } from './dtos/create-product.dto';
 import {
+  CreateStudioReviewInput,
+  CreateStudioReviewOutput,
+} from './dtos/create-studio-review.dto';
+import {
   CreateStudioInput,
   CreateStudioOutput,
 } from './dtos/create-studio.dto';
@@ -41,6 +45,7 @@ import {
 } from './dtos/update-studio.dto';
 import { StudioProduct } from './entities/studio-product.entity';
 import { Studio } from './entities/studio.entity';
+import { UsersReviewStudios } from './entities/users-review-studios.entity';
 import { StudiosService } from './studios.service';
 
 @Resolver(of => Studio)
@@ -152,5 +157,19 @@ export class ProductResolver {
     @Args('input') input: CreateAdditionalProductsInput,
   ): Promise<CreateProductsOutput> {
     return this.studiosService.createAdditionalProducts(input);
+  }
+}
+
+@Resolver(of => UsersReviewStudios)
+export class StudioReviewResolver {
+  constructor(private readonly studiosService: StudiosService) {}
+
+  @Mutation(returns => CreateStudioReviewOutput)
+  @Roles(Role.USER)
+  createStudioReview(
+    @CurrentUser() user: User,
+    @Args('input') input: CreateStudioReviewInput,
+  ): Promise<CreateStudioReviewOutput> {
+    return this.studiosService.createStudioReview(user, input);
   }
 }

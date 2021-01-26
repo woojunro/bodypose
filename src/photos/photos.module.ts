@@ -24,7 +24,7 @@ import { ReviewPhoto } from './entities/review-photo.entity';
       ReviewPhoto,
     ]),
     forwardRef(() => UsersModule),
-    StudiosModule,
+    forwardRef(() => StudiosModule),
   ],
   providers: [PhotosService, PhotosResolver],
   exports: [PhotosService],

@@ -3,14 +3,7 @@ import { IsEnum, IsInt, IsUrl } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Studio } from 'src/studios/entities/studio.entity';
 import { User } from 'src/users/entities/user.entity';
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  RelationId,
-} from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
 import {
   BackgroundConcept,
   CostumeConcept,
@@ -45,9 +38,6 @@ export class StudioPhoto extends CoreEntity {
   })
   @Field(type => Studio)
   studio: Studio;
-
-  @RelationId((photo: StudioPhoto) => photo.studio)
-  studioId: number;
 
   @Column({
     type: 'enum',

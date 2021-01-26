@@ -6,6 +6,9 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
+import { CoreOutput } from 'src/common/dtos/output.dto';
+import { ReviewPhoto } from 'src/photos/entities/review-photo.entity';
+import { PhotosService } from 'src/photos/photos.service';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
@@ -19,6 +22,10 @@ import {
   CreateSponsoredProductsInput,
   CreateAdditionalProductsInput,
 } from './dtos/create-product.dto';
+import {
+  CreateStudioReviewInput,
+  CreateStudioReviewOutput,
+} from './dtos/create-studio-review.dto';
 import {
   CreateStudioInput,
   CreateStudioOutput,
@@ -51,6 +58,7 @@ import { Branch } from './entities/branch.entity';
 import { SponsoredProduct } from './entities/sponsored-product.entity';
 import { StudioProduct } from './entities/studio-product.entity';
 import { Studio } from './entities/studio.entity';
+import { UsersReviewStudios } from './entities/users-review-studios.entity';
 
 @Injectable()
 export class StudiosService {
@@ -65,8 +73,12 @@ export class StudiosService {
     private readonly sponsoredProductRepository: Repository<SponsoredProduct>,
     @InjectRepository(AdditionalProduct)
     private readonly additionalProductRepository: Repository<AdditionalProduct>,
+    @InjectRepository(UsersReviewStudios)
+    private readonly studioReviewRepository: Repository<UsersReviewStudios>,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
+    @Inject(forwardRef(() => PhotosService))
+    private readonly photosService: PhotosService,
   ) {}
 
   getStudioById(id: number): Promise<Studio> {
@@ -600,6 +612,69 @@ export class StudiosService {
         ok: true,
         idList,
       };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async createStudioReview(
+    user: User,
+    { studioSlug, payload }: CreateStudioReviewInput,
+  ): Promise<CreateStudioReviewOutput> {
+    try {
+      // Check validity of payload
+      const {
+        rating,
+        text,
+        isPhotoForProof,
+        photoUrls,
+        thumbnailIndex,
+      } = payload;
+      const INVALID_PAYLOAD: CoreOutput = {
+        ok: false,
+        error: 'INVALID_PAYLOAD',
+      };
+      if (rating < 1 || rating > 5) {
+        return INVALID_PAYLOAD;
+      }
+      if (text.length < 12) {
+        return INVALID_PAYLOAD;
+      }
+      if (photoUrls.length < 1 || photoUrls.length > 3) {
+        return INVALID_PAYLOAD;
+      }
+      if (thumbnailIndex < 0 || thumbnailIndex >= photoUrls.length) {
+        return INVALID_PAYLOAD;
+      }
+      // Find studio
+      const studio = await this.studioRepository.findOne({ slug: studioSlug });
+      if (!studio) {
+        return {
+          ok: false,
+          error: 'STUDIO_NOT_FOUND',
+        };
+      }
+      // Create review
+      const newReview = this.studioReviewRepository.create({
+        rating,
+        text,
+        isPhotoForProof,
+      });
+      newReview.user = user;
+      newReview.studio = studio;
+      // Create review photos
+      const reviewPhotos: ReviewPhoto[] = [];
+      for (const url of photoUrls) {
+        const newReviewPhoto = await this.photosService.createReviewPhoto(url);
+        reviewPhotos.push(newReviewPhoto);
+      }
+      newReview.photos = reviewPhotos;
+      // Set thumbnail
+      newReview.thumbnailPhoto = newReview.photos[thumbnailIndex];
+      // Save
+      await this.studioReviewRepository.save(newReview);
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;

@@ -57,6 +57,7 @@ import {
   ObjectConcept,
   PhotoConceptType,
 } from './entities/photo-concept.entity';
+import { ReviewPhoto } from './entities/review-photo.entity';
 import { StudioPhoto } from './entities/studio-photo.entity';
 import { UsersClickStudioPhotos } from './entities/users-click-studio-photos.entity';
 
@@ -73,8 +74,11 @@ export class PhotosService {
     private readonly objectConceptRepository: Repository<ObjectConcept>,
     @InjectRepository(UsersClickStudioPhotos)
     private readonly usersClickStudioPhotosRepository: Repository<UsersClickStudioPhotos>,
+    @InjectRepository(ReviewPhoto)
+    private readonly reviewPhotoRepository: Repository<ReviewPhoto>,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
+    @Inject(forwardRef(() => StudiosService))
     private readonly studiosService: StudiosService,
   ) {}
 
@@ -581,15 +585,16 @@ export class PhotosService {
     id,
     studioId,
   }: DeleteStudioPhotoInput): Promise<DeleteStudioPhotoOutput> {
+    // TODO: Change studioId to studioSlug
     try {
       const photo = await this.studioPhotoRepository.findOne({ id });
       if (!photo) {
         return {
           ok: false,
-          error: `Photo with id(${id}) not found`,
+          error: 'PHOTO_NOT_FOUND',
         };
       }
-      if (photo.studioId !== studioId) {
+      if (photo.studio.id !== studioId) {
         return {
           ok: false,
           error: `Studio with id(${studioId}) does not have this photo`,
@@ -685,5 +690,11 @@ export class PhotosService {
       console.log(e);
       return UNEXPECTED_ERROR;
     }
+  }
+
+  async createReviewPhoto(url: string): Promise<ReviewPhoto> {
+    return this.reviewPhotoRepository.save(
+      this.reviewPhotoRepository.create({ url }),
+    );
   }
 }

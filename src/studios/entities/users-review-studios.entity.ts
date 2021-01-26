@@ -53,7 +53,7 @@ export class UsersReviewStudios extends CoreEntity {
   @IsBoolean()
   isPhotoForProof: boolean;
 
-  @OneToOne(relation => ReviewPhoto)
+  @OneToOne(relation => ReviewPhoto, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn()
   @Field(type => ReviewPhoto)
   thumbnailPhoto: ReviewPhoto;
