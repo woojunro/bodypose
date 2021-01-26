@@ -103,10 +103,10 @@ export class Studio extends CoreEntity {
   @Field(type => [StudioPhoto])
   photos: StudioPhoto[];
 
-  // 스튜디오 평점
-  @Column({ nullable: true })
-  @Field(type => Number)
-  rating: number;
+  // 스튜디오 총 평점
+  @Column({ default: 0 })
+  @Field(type => Int)
+  totalRating: number;
 
   // 스튜디오 리뷰 수
   @Column({ default: 0 })

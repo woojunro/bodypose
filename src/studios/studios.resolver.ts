@@ -20,6 +20,10 @@ import {
   CreateStudioInput,
   CreateStudioOutput,
 } from './dtos/create-studio.dto';
+import {
+  DeleteStudioReviewInput,
+  DeleteStudioReviewOutput,
+} from './dtos/delete-studio-review.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
   GetStudioReviewsInput,
@@ -183,5 +187,14 @@ export class StudioReviewResolver {
     @Args('input') input: CreateStudioReviewInput,
   ): Promise<CreateStudioReviewOutput> {
     return this.studiosService.createStudioReview(user, input);
+  }
+
+  @Mutation(returns => DeleteStudioReviewOutput)
+  @Roles(Role.USER, Role.ADMIN)
+  deleteStudioReview(
+    @CurrentUser() user: User,
+    @Args('input') input: DeleteStudioReviewInput,
+  ): Promise<DeleteStudioReviewOutput> {
+    return this.studiosService.deleteStudioReview(user, input);
   }
 }

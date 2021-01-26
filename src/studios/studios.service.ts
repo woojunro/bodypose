@@ -9,7 +9,7 @@ import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { ReviewPhoto } from 'src/photos/entities/review-photo.entity';
 import { PhotosService } from 'src/photos/photos.service';
-import { User } from 'src/users/entities/user.entity';
+import { Role, User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import {
@@ -30,6 +30,10 @@ import {
   CreateStudioInput,
   CreateStudioOutput,
 } from './dtos/create-studio.dto';
+import {
+  DeleteStudioReviewInput,
+  DeleteStudioReviewOutput,
+} from './dtos/delete-studio-review.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
   GetStudioReviewsInput,
@@ -628,6 +632,13 @@ export class StudiosService {
     { studioSlug, payload }: CreateStudioReviewInput,
   ): Promise<CreateStudioReviewOutput> {
     try {
+      // Check if the user is verified
+      if (!user.isVerified) {
+        return {
+          ok: false,
+          error: 'USER_NOT_VERIFIED',
+        };
+      }
       // Check validity of payload
       const {
         rating,
@@ -685,7 +696,9 @@ export class StudiosService {
         : newReview.photos[thumbnailIndex].id;
       // Save
       await this.studioReviewRepository.save(newReview);
-      // TODO: increment studio's reviewCount
+      studio.reviewCount++;
+      studio.totalRating += rating;
+      await this.studioRepository.save(studio);
       return { ok: true };
     } catch (e) {
       console.log(e);
@@ -743,6 +756,42 @@ export class StudiosService {
         studioReviews: reviews,
         totalPages: Math.ceil(count / reviewsPerPage),
       };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async deleteStudioReview(
+    user: User,
+    { id }: DeleteStudioReviewInput,
+  ): Promise<DeleteStudioReviewOutput> {
+    try {
+      // Find review
+      const review = await this.studioReviewRepository.findOne(
+        { id },
+        { relations: ['user', 'studio'] },
+      );
+      if (!review) {
+        return {
+          ok: false,
+          error: 'STUDIO_REVIEW_NOT_FOUND',
+        };
+      }
+      // Check if the user is admin or author
+      if (user.role !== Role.ADMIN && user.id !== review.user.id) {
+        return {
+          ok: false,
+          error: 'UNAUTHORIZED',
+        };
+      }
+      // Delete and save
+      await this.studioReviewRepository.delete({ id });
+      const { studio } = review;
+      studio.reviewCount--;
+      studio.totalRating -= review.rating;
+      await this.studioRepository.save(studio);
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
