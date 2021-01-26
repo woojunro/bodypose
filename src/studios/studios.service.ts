@@ -32,6 +32,11 @@ import {
 } from './dtos/create-studio.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
+  GetStudioReviewsInput,
+  GetStudioReviewsOutput,
+  StudioReviewOrder,
+} from './dtos/get-studio-review.dto';
+import {
   GetAllStudiosOutput,
   GetStudioInput,
   GetStudioOutput,
@@ -638,6 +643,9 @@ export class StudiosService {
       if (rating < 1 || rating > 5) {
         return INVALID_PAYLOAD;
       }
+      if (!Number.isInteger(rating)) {
+        return INVALID_PAYLOAD;
+      }
       if (text.length < 12) {
         return INVALID_PAYLOAD;
       }
@@ -671,10 +679,70 @@ export class StudiosService {
       }
       newReview.photos = reviewPhotos;
       // Set thumbnail
-      newReview.thumbnailPhoto = newReview.photos[thumbnailIndex];
+      // If isPhotoForProof is true, set thumbnail to null
+      newReview.thumbnailPhotoId = isPhotoForProof
+        ? null
+        : newReview.photos[thumbnailIndex].id;
       // Save
       await this.studioReviewRepository.save(newReview);
+      // TODO: increment studio's reviewCount
       return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getStudioReviews({
+    studioSlug,
+    order,
+    page,
+  }: GetStudioReviewsInput): Promise<GetStudioReviewsOutput> {
+    try {
+      const reviewsPerPage = 5;
+      // Set query order
+      let orderByQuery: string;
+      let isDesc = true;
+      switch (order) {
+        case StudioReviewOrder.DATE:
+          orderByQuery = 'review.createdAt';
+          break;
+        case StudioReviewOrder.RATING_ASC:
+          orderByQuery = 'review.rating';
+          isDesc = false;
+          break;
+        case StudioReviewOrder.RATING_DESC:
+          orderByQuery = 'review.rating';
+          break;
+        default:
+          return {
+            ok: false,
+            error: 'INVALID_ORDER',
+          };
+      }
+      // Find reviews
+      const [reviews, count] = await this.studioReviewRepository
+        .createQueryBuilder('review')
+        .leftJoin('review.studio', 'studio')
+        .leftJoinAndSelect('review.user', 'user')
+        .leftJoinAndSelect('review.photos', 'photo')
+        .where('studio.slug = :studioSlug', { studioSlug })
+        .orderBy(orderByQuery, isDesc ? 'DESC' : 'ASC')
+        .skip((page - 1) * reviewsPerPage)
+        .take(reviewsPerPage)
+        .getManyAndCount();
+      // Make photos empty if isPhotoForProof is true
+      reviews.forEach(review => {
+        if (review.isPhotoForProof) {
+          review.photos = [];
+        }
+      });
+      // return
+      return {
+        ok: true,
+        studioReviews: reviews,
+        totalPages: Math.ceil(count / reviewsPerPage),
+      };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;

@@ -1,0 +1,23 @@
+{
+  studioReviews(input: {
+    studioSlug: "balance-button"
+    order: DATE
+  }) {
+    ok
+    error
+    totalPages
+    studioReviews {
+      id
+      createdAt
+      rating
+      text
+      user {
+        nickname
+      }
+      thumbnailPhotoId
+      photos {
+        url
+      }
+    }
+  }
+}

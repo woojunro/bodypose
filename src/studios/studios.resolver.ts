@@ -22,6 +22,10 @@ import {
 } from './dtos/create-studio.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
+  GetStudioReviewsInput,
+  GetStudioReviewsOutput,
+} from './dtos/get-studio-review.dto';
+import {
   GetAllStudiosOutput,
   GetStudioInput,
   GetStudioOutput,
@@ -163,6 +167,14 @@ export class ProductResolver {
 @Resolver(of => UsersReviewStudios)
 export class StudioReviewResolver {
   constructor(private readonly studiosService: StudiosService) {}
+
+  // Public
+  @Query(returns => GetStudioReviewsOutput)
+  studioReviews(
+    @Args('input') input: GetStudioReviewsInput,
+  ): Promise<GetStudioReviewsOutput> {
+    return this.studiosService.getStudioReviews(input);
+  }
 
   @Mutation(returns => CreateStudioReviewOutput)
   @Roles(Role.USER)
