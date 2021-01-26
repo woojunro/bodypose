@@ -10,12 +10,7 @@ export class ReviewPhoto extends CoreEntity {
   @Column()
   @Field(type => String)
   @IsUrl()
-  thumbnailUrl: string;
-
-  @Column()
-  @Field(type => String)
-  @IsUrl()
-  originalUrl: string;
+  url: string;
 
   @ManyToOne(relation => UsersReviewStudios, review => review.photos, {
     onDelete: 'CASCADE',

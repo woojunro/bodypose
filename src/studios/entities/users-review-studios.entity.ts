@@ -1,9 +1,23 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { IsInt, IsString, Max, Min, MinLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsInt,
+  IsString,
+  Max,
+  Min,
+  MinLength,
+} from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { ReviewPhoto } from 'src/photos/entities/review-photo.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { Studio } from './studio.entity';
 
 @Entity()
@@ -33,6 +47,16 @@ export class UsersReviewStudios extends CoreEntity {
   })
   @Field(type => Studio)
   studio: Studio;
+
+  @Column()
+  @Field(type => Boolean)
+  @IsBoolean()
+  isPhotoForProof: boolean;
+
+  @OneToOne(relation => ReviewPhoto)
+  @JoinColumn()
+  @Field(type => ReviewPhoto)
+  thumbnailPhoto: ReviewPhoto;
 
   @OneToMany(relation => ReviewPhoto, photo => photo.review)
   @Field(type => [ReviewPhoto])
