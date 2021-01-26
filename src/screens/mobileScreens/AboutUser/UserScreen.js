@@ -7,9 +7,11 @@ import { GetUser } from '../../../components/functions/WithDb/User';
 import { IoIosArrowForward } from 'react-icons/io/';
 import Gmail from '../../../materials/gmail.png';
 import { Logout } from '../../../components/functions/WithDb/Auth';
+import LoadingComponent from '../../../components/mobileComponents/LoadingComponent';
 
 import './UserScreen.css';
 const UserScreen = () => {
+  var loading = false;
   const LogedIn = useContext(LoginContext);
   const history = useHistory();
 
@@ -31,7 +33,9 @@ const UserScreen = () => {
     Logout();
   };
 
-  return (
+  return loading ? (
+    <LoadingComponent />
+  ) : (
     <div>
       <Header pageName="users" />
       <div className="welcome">
