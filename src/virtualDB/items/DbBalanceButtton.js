@@ -248,38 +248,40 @@ export const BalanceButtonOptionProduct = {
   ],
 };
 
-export const BalanceButtonHairMakeup = {
-  shopName: '주타메이크업',
-  shopContact: '전화번호: 0507-1372-5354, 카카오채널: 주타메이크업',
-  shopAdress: null,
-  hairWhere: 'inner',
-  adding: [
-    '업스타일 33,000원 추가',
-    '예약시 밸런스버튼 제휴예약임을 말씀해주셔야 제휴가가 적용됩니다.',
-  ],
-  items: [
-    {
-      title: '내츄럴 메이크업 + 헤어드라이',
-      originalPrice: '100,000',
-      discountPrice: '77,000',
-    },
-    {
-      title: '스페셜 메이크업 + 헤어드라이',
-      originalPrice: '130,000',
-      discountPrice: '110,000',
-    },
-    {
-      title: '남성 메이크업 + 헤어스타일링',
-      originalPrice: '80,000',
-      discountPrice: '66,000',
-    },
-    {
-      title: '바디 메이크업',
-      originalPrice: '60,000',
-      discountPrice: '55,000',
-    },
-  ],
-};
+export const BalanceButtonHairMakeup = [
+  {
+    shopName: '주타메이크업',
+    shopContact: '전화번호: 0507-1372-5354, 카카오채널: 주타메이크업',
+    shopAdress: null,
+    hairWhere: 'inner',
+    adding: [
+      '업스타일 33,000원 추가',
+      '예약시 밸런스버튼 제휴예약임을 말씀해주셔야 제휴가가 적용됩니다.',
+    ],
+    items: [
+      {
+        title: '내츄럴 메이크업 + 헤어드라이',
+        originalPrice: '100,000',
+        discountPrice: '77,000',
+      },
+      {
+        title: '스페셜 메이크업 + 헤어드라이',
+        originalPrice: '130,000',
+        discountPrice: '110,000',
+      },
+      {
+        title: '남성 메이크업 + 헤어스타일링',
+        originalPrice: '80,000',
+        discountPrice: '66,000',
+      },
+      {
+        title: '바디 메이크업',
+        originalPrice: '60,000',
+        discountPrice: '55,000',
+      },
+    ],
+  },
+];
 export const BalanceButtonIndoorPrice = {
   indoorNotice: [
     '의상과 배경지는 컨셉 수만큼 선택 가능 | 스튜디오 보유 소품 사용 가능',
@@ -293,8 +295,8 @@ export const BalanceButtonIndoorPrice = {
       conceptCount: 1,
       cutCount: 2,
       hour: 1,
-      weekDayPrice: '30,000',
-      weekEndPrice: '85,000',
+      weekDayPrice: '330,000',
+      weekEndPrice: '385,000',
       adding: null,
     },
     {

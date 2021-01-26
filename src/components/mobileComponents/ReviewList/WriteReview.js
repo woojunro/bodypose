@@ -28,6 +28,7 @@ const WriteReview = ({
 
   const handleChange = (event) => {
     const files = Array.from(event.target.files);
+    console.log(files);
     let compressedFiles = [];
     const option = {
       maxSizeMB: 0.2,
@@ -46,6 +47,7 @@ const WriteReview = ({
           reader.addEventListener('error', reject);
           reader.readAsDataURL(compressedFile);
           compressedFiles.push(compressedFile);
+          console.log(compressedFile);
         });
       })
     ).then(
