@@ -1,4 +1,4 @@
-import aavec16 from '../../../virtualDB/images/AAVEC16.jpg';
+import aavec1 from '../../../virtualDB/images/AAVEC1.jpg';
 import aavec26 from '../../../virtualDB/images/AAVEC26.jpg';
 import coco27 from '../../../virtualDB/images/Coco27.jpg';
 import Flyn29 from '../../../virtualDB/images/Flyn29.jpg';
@@ -17,14 +17,14 @@ import balanceButton83 from '../../../virtualDB/images/Balance Button83.jpg';
 export const GetMaleConcepts = () => {
   return [
     {
-      photoName: 'aavec16',
+      photoName: 'aavec1',
       studio: 'aavec',
       sex: 'male',
       title: '아베크',
       horizon: false,
       attribute: ['흑백사진', '하의', '기타도구', '소가구'],
-      pic: aavec16,
-      thumb: aavec16,
+      pic: aavec1,
+      thumb: aavec1,
     },
     {
       photoName: 'aavec26',

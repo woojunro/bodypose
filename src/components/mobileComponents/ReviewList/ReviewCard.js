@@ -8,12 +8,15 @@ const ReviewCard = ({ reviewContent }) => {
   const linkTo = '/reviews/' + reviewContent.number;
 
   const renderedbottomPart = () => {
-    if (reviewContent.pic) {
+    if (!reviewContent.isPhotoForProof) {
       return (
         <div className="reviewBottomPart">
           <div className="reviewThumb">
-            <img src={reviewContent.thumb} alt="reviewPhoto" />
-            {reviewContent.pic.length > 1 ? (
+            <img
+              src={reviewContent.pic[reviewContent.mainNumber]}
+              alt="reviewPhoto"
+            />
+            {!reviewContent.isPhotoForProof ? (
               <div className="reviewPhotoNum">1/{reviewContent.pic.length}</div>
             ) : null}
           </div>

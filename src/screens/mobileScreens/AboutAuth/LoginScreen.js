@@ -60,17 +60,21 @@ const LoginScreen = () => {
             />
             <div className="loginTitle">로그인</div>
             <div className="loginEmailText">이메일</div>
-            <InputForm
-              onInputSubmit={setEmail}
-              placeholder="이메일"
-              type="text"
-            />
+            <form>
+              <InputForm
+                onInputSubmit={setEmail}
+                placeholder="이메일"
+                type="text"
+              />
+            </form>
             <div className="loginEmailText">비밀번호</div>
-            <InputForm
-              onInputSubmit={setPassword}
-              placeholder="비밀번호"
-              type="password"
-            />{' '}
+            <form>
+              <InputForm
+                onInputSubmit={setPassword}
+                placeholder="비밀번호"
+                type="password"
+              />
+            </form>
             {!validInfo ? (
               <div className="unvalidInfoText">
                 이메일 혹은 비밀번호 오류입니다.

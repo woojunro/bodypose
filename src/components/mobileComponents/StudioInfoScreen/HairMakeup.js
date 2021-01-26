@@ -2,7 +2,6 @@ import React from 'react';
 import './HairMakeup.css';
 import { IoMdArrowDropdown, IoMdArrowDropup } from 'react-icons/io';
 import { GetHairMakeup } from '../../functions/WithDb/StudioInfo';
-import { ImArrowRight } from 'react-icons/im';
 
 const HairMakeup = ({ currentStudio, isHairOpen, setIsHairOpen }) => {
   const hairMakeup = GetHairMakeup(currentStudio.studioName);
@@ -42,8 +41,6 @@ const HairMakeup = ({ currentStudio, isHairOpen, setIsHairOpen }) => {
         {item.discountPrice ? (
           <>
             <div className="hairPrice">
-              <div>정상가 {item.originalPrice}원</div>
-              <ImArrowRight className="hairArrow" />
               <div>제휴가 {item.discountPrice}원</div>
             </div>
           </>

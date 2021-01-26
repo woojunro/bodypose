@@ -86,9 +86,25 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 .previewPic img {
-  width: 100%;
+  object-fit: cover;
+  width: 75px;
+  height: 75px;
+}
+.mainPicText {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding-left: 3px;
+  padding-top: 3px;
+  padding-right: 3px;
+  padding-bottom: 3px;
+  border-radius: 5px;
+  font-size: 11px;
+  background-color: black;
+  color: white;
 }
 .reviewTextPart {
   margin-top: 15px;

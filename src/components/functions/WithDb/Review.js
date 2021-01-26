@@ -34,6 +34,6 @@ export const RemoveReview = (reviewNumber) => {
   return console.log(reviewNumber + '삭제했다잇');
 };
 
-export const SaveReviewToDb = (studioName, text, pics) => {
+export const SaveReviewToDb = (studioName, text, pics, mainNumber) => {
   return console.log('저장됐다잇');
 };

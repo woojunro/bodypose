@@ -18,6 +18,7 @@ const WriteReview = ({
   const [stars, setStars] = useState(0);
   const [reviewText, setReviewText] = useState('');
   const [picNumberError, setPicNumberError] = useState(false);
+  const [mainNumber, setMainNumber] = useState(0);
 
   const hiddenFileInput = React.useRef(null);
 
@@ -74,7 +75,10 @@ const WriteReview = ({
   const handleSubmit = () => {
     if (reviewText.length < 12 || picNumberError) {
     } else {
-      SaveReviewToDb(studioName, reviewText, pics);
+      if (onlyVerify) {
+        setMainNumber(-1);
+      }
+      SaveReviewToDb(studioName, reviewText, pics, mainNumber);
       setIsWriteReviewOpen(false);
       window.location.reload();
     }
@@ -83,17 +87,23 @@ const WriteReview = ({
   const renderedPics = () => {
     if (pics.length === 1) {
       return (
-        <div className="previewPic">
-          <img src={imgBase64[0]} alt="" />
+        <div className="previewPic" onClick={() => setMainNumber(0)}>
+          {mainNumber === 0 ? <div className="mainPicText">대표</div> : null}
+
+          <img id="firstPic" src={imgBase64[0]} alt="" />
         </div>
       );
     } else if (pics.length === 2) {
       return (
         <>
-          <div className="previewPic">
+          <div className="previewPic" onClick={() => setMainNumber(0)}>
+            {mainNumber === 0 ? <div className="mainPicText">대표</div> : null}
+
             <img src={imgBase64[0]} alt="" />
           </div>
-          <div className="previewPic">
+          <div className="previewPic" onClick={() => setMainNumber(1)}>
+            {mainNumber === 1 ? <div className="mainPicText">대표</div> : null}
+
             <img src={imgBase64[1]} alt="" />
           </div>
         </>
@@ -101,13 +111,20 @@ const WriteReview = ({
     } else if (pics.length === 3) {
       return (
         <>
-          <div className="previewPic">
+          <div className="previewPic" onClick={() => setMainNumber(0)}>
+            {mainNumber === 0 ? <div className="mainPicText">대표</div> : null}
+
             <img src={imgBase64[0]} alt="" />
           </div>
-          <div className="previewPic">
+
+          <div className="previewPic" onClick={() => setMainNumber(1)}>
+            {mainNumber === 1 ? <div className="mainPicText">대표</div> : null}
+
             <img src={imgBase64[1]} alt="" />
           </div>
-          <div className="previewPic">
+          <div className="previewPic" onClick={() => setMainNumber(2)}>
+            {mainNumber === 2 ? <div className="mainPicText">대표</div> : null}
+
             <img src={imgBase64[2]} alt="" />
           </div>
         </>
@@ -139,7 +156,7 @@ const WriteReview = ({
           <div className="picturesPart">
             <div onClick={handleClick} className="addReviewPicButton">
               <img alt="addPic" src={Camera} />
-              <div>사진 {pics.length}/1</div>
+              <div>사진 {pics.length}/3</div>
             </div>
 
             {renderedPics()}
@@ -150,6 +167,7 @@ const WriteReview = ({
             type="file"
             accept="image/jpg,image/png,image/jpeg"
             ref={hiddenFileInput}
+            multiple
             onChange={handleChange}
             style={{ display: 'none' }}
           />
@@ -162,7 +180,10 @@ const WriteReview = ({
             <input
               type="checkbox"
               value={onlyVerify}
-              onChange={() => setOnlyVerify(!onlyVerify)}
+              onChange={() => {
+                setOnlyVerify(!onlyVerify);
+                setMainNumber(-1);
+              }}
               style={{ width: '15px', height: '15px' }}
             />
             <div

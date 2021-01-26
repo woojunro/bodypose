@@ -14,12 +14,26 @@ import NoticeBox from '../../components/mobileComponents/homeScreen/NoticeBox';
 import Footer from '../../components/mobileComponents/Footer';
 
 const HomeScreen = () => {
+  const IEText =
+    '인터넷 익스플로러는 보안에 취약하여 지원하지 않고 있습니다.\n인터넷 익스플로러에서는 사진의 비율이 깨져 보일 수 있습니다.';
+  const renderIfIE = () => {
+    var agent = navigator.userAgent.toLowerCase();
+    if (
+      (navigator.appName === 'Netscape' && agent.indexOf('trident') !== -1) ||
+      agent.indexOf('msie') !== -1
+    ) {
+      return <div className="notIEText">{IEText}</div>;
+    } else {
+      return null;
+    }
+  };
   useEffect(() => {
     document.body.style.overflow = 'auto';
   }, []);
   return (
     <div>
       <HeaderM pageName="home" />
+      {renderIfIE()}
       <AdTap />
       <MainCardScrollView />
       <SeeAll />
