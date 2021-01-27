@@ -1,5 +1,5 @@
-import { Field, InputType, Int, ObjectType, PickType } from '@nestjs/graphql';
-import { IsInt } from 'class-validator';
+import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
+import { IsString } from 'class-validator';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { StudioPhoto } from '../entities/studio-photo.entity';
 
@@ -9,9 +9,9 @@ export class DeleteStudioPhotoInput extends PickType(
   ['id'],
   InputType,
 ) {
-  @Field(type => Int)
-  @IsInt()
-  studioId: number;
+  @Field(type => String)
+  @IsString()
+  studioSlug: string;
 }
 
 @ObjectType()

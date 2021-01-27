@@ -40,7 +40,7 @@ class CreateHairMakeupProductPayload extends PickType(
 @InputType()
 class CreateHairMakeupShopPayload extends PickType(
   HairMakeupShop,
-  ['type', 'name', 'contactInfo', 'productListDescription'],
+  ['type', 'name', 'contactInfo', 'address', 'productListDescription'],
   InputType,
 ) {
   @Field(type => [CreateHairMakeupProductPayload])

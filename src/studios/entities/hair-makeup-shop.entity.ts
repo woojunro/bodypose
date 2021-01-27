@@ -41,6 +41,12 @@ export class HairMakeupShop extends CoreEntity {
   @Field(type => String, { nullable: true })
   @IsOptional()
   @IsString()
+  address?: string;
+
+  @Column({ nullable: true })
+  @Field(type => String, { nullable: true })
+  @IsOptional()
+  @IsString()
   productListDescription?: string;
 
   @OneToMany(relation => HairMakeupProduct, product => product.shop)

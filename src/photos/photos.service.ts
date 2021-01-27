@@ -360,7 +360,7 @@ export class PhotosService {
   async updatePhotoConcept({
     slug,
     conceptType,
-    payload: { slug: updatedSlug },
+    payload: { name },
   }: UpdatePhotoConceptInput): Promise<UpdatePhotoConceptOutput> {
     try {
       const concept = await this.getPhotoConceptBySlug(slug, conceptType);
@@ -370,7 +370,7 @@ export class PhotosService {
           error: 'CONCEPT_NOT_FOUND',
         };
       }
-      concept.slug = updatedSlug;
+      concept.name = name;
       let updatedConcept;
       switch (conceptType) {
         case PhotoConceptType.BACKGROUND:
@@ -434,6 +434,8 @@ export class PhotosService {
       const {
         studioSlug,
         gender,
+        thumbnailUrl,
+        originalUrl,
         backgroundConceptSlugs,
         costumeConceptSlugs,
         objectConceptSlugs,
@@ -445,7 +447,7 @@ export class PhotosService {
       if (!studioBySlug) {
         return {
           ok: false,
-          error: `Studio with that slug(${studioSlug}) not found`,
+          error: 'STUDIO_NOT_FOUND',
         };
       }
       // Create a photo
@@ -456,9 +458,8 @@ export class PhotosService {
         costumeConcepts: [],
         objectConcepts: [],
       });
-      // TODO: Upload the photo and get URL
-      newPhoto.thumbnailUrl = `http://www.fmonth.com/${Date.now()}`;
-      newPhoto.originalUrl = `http://www.fmonth.com/${Date.now()}`;
+      newPhoto.thumbnailUrl = thumbnailUrl;
+      newPhoto.originalUrl = originalUrl;
       // Attach Concepts
       for (const slug of backgroundConceptSlugs) {
         const { ok, error } = await this.attachPhotoConcept(
@@ -525,7 +526,7 @@ export class PhotosService {
       if (!photo) {
         return {
           ok: false,
-          error: `Studio Photo with id(${id}) not found`,
+          error: 'STUDIO_PHOTO_NOT_FOUND',
         };
       }
       if (gender) {
@@ -583,21 +584,23 @@ export class PhotosService {
 
   async deleteStudioPhoto({
     id,
-    studioId,
+    studioSlug,
   }: DeleteStudioPhotoInput): Promise<DeleteStudioPhotoOutput> {
-    // TODO: Change studioId to studioSlug
     try {
-      const photo = await this.studioPhotoRepository.findOne({ id });
+      const photo = await this.studioPhotoRepository.findOne(
+        { id },
+        { relations: ['studio'] },
+      );
       if (!photo) {
         return {
           ok: false,
           error: 'PHOTO_NOT_FOUND',
         };
       }
-      if (photo.studio.id !== studioId) {
+      if (photo.studio.slug !== studioSlug) {
         return {
           ok: false,
-          error: `Studio with id(${studioId}) does not have this photo`,
+          error: 'INVALID_STUDIO_SLUG',
         };
       }
       await this.studioPhotoRepository.delete({ id });
@@ -617,28 +620,31 @@ export class PhotosService {
       if (!photo) {
         return {
           ok: false,
-          error: `Studio Photo with id(${id}) not found`,
+          error: 'STUDIO_PHOTO_NOT_FOUND',
         };
       }
-      // Get user's heartStudioPhotos
-      const userToUpdate = await this.usersService.getUserById(user.id, {
-        relations: ['heartStudioPhotos'],
-      });
-      // If the photo is already hearted, delete
-      // Otherwise, push
-      const photoIndex = userToUpdate.heartStudioPhotos.findIndex(
-        photo => photo.id === id,
-      );
-      if (photoIndex === -1) {
-        userToUpdate.heartStudioPhotos.push(photo);
-        photo.heartCount++;
-      } else {
-        userToUpdate.heartStudioPhotos.splice(photoIndex, 1);
+      // Find if the user already likes the photo
+      const isPhotoAlreadyHearted = await this.studioPhotoRepository
+        .createQueryBuilder('photo')
+        .leftJoin('photo.heartUsers', 'user')
+        .where({ id })
+        .andWhere('user.id = :id', { id: user.id })
+        .getOne();
+      // Heart or Unheart the photo
+      const relationQuery = this.studioPhotoRepository
+        .createQueryBuilder('photo')
+        .relation('heartUsers')
+        .of(photo);
+      if (isPhotoAlreadyHearted) {
+        // Unheart
+        await relationQuery.remove({ id: user.id });
         photo.heartCount--;
+      } else {
+        // Heart
+        await relationQuery.add({ id: user.id });
+        photo.heartCount++;
       }
-      // Save photo and user
-      const savedPhoto = await this.studioPhotoRepository.save(photo);
-      await this.usersService.updateUser(userToUpdate);
+      await this.studioPhotoRepository.save(photo);
       return {
         ok: true,
       };
@@ -657,7 +663,7 @@ export class PhotosService {
       if (!photo) {
         return {
           ok: false,
-          error: `Photo with id(${id}) not found`,
+          error: 'PHOTO_NOT_FOUND',
         };
       }
       // Create and Save UsersClickStudioPhotos
@@ -681,7 +687,6 @@ export class PhotosService {
           id: user.id,
         })
         .getOne();
-      console.log(isPhotoHearted);
       return {
         ok: true,
         isHearted: isPhotoHearted ? true : false,

@@ -1,5 +1,5 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { IsInt, IsString, Min } from 'class-validator';
+import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { HairMakeupShop } from './hair-makeup-shop.entity';
@@ -12,11 +12,12 @@ export class HairMakeupProduct extends CoreEntity {
   @IsString()
   title: string;
 
-  @Column()
-  @Field(type => Int)
+  @Column({ nullable: true })
+  @Field(type => Int, { nullable: true })
+  @IsOptional()
   @IsInt()
   @Min(0)
-  price: number;
+  price?: number;
 
   @ManyToOne(relation => HairMakeupShop, shop => shop.products, {
     onDelete: 'CASCADE',

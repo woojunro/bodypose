@@ -1,14 +1,15 @@
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { PhotoGender, StudioPhoto } from '../entities/studio-photo.entity';
 
 @InputType()
-export class CreateStudioPhotoInput {
+export class CreateStudioPhotoInput extends PickType(
+  StudioPhoto,
+  ['gender', 'thumbnailUrl', 'originalUrl'],
+  InputType,
+) {
   @Field(type => String)
   studioSlug: string;
-
-  @Field(type => PhotoGender)
-  gender: PhotoGender;
 
   @Field(type => [String])
   backgroundConceptSlugs: string[];

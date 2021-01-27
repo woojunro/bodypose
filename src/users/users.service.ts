@@ -220,7 +220,13 @@ export class UsersService {
     try {
       const { heartStudios } = await this.userRepository.findOne(
         { id: user.id },
-        { relations: ['heartStudios', 'heartStudios.catchphrases'] },
+        {
+          relations: [
+            'heartStudios',
+            'heartStudios.catchphrases',
+            'heartStudios.coverPhoto',
+          ],
+        },
       );
       if (!heartStudios) {
         return {

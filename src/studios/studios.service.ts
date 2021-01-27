@@ -622,11 +622,6 @@ export class StudiosService {
       if (shops.length === 0) {
         return INVALID_PAYLOAD_LENGTH;
       }
-      for (const shop of shops) {
-        if (shop.products.length === 0) {
-          return INVALID_PAYLOAD_LENGTH;
-        }
-      }
       // Find studio
       const studio = await this.studioRepository.findOne(
         { slug: studioSlug },
@@ -673,18 +668,8 @@ export class StudiosService {
   }: UpdateHairMakeupShopsInput): Promise<UpdateHairMakeupShopsOutput> {
     try {
       let isDeletion = false;
-      // Validate shops
-      const INVALID_PAYLOAD_LENGTH = {
-        ok: false,
-        error: 'INVALID_PAYLOAD_LENGTH',
-      };
       if (shops.length === 0) {
         isDeletion = true;
-      }
-      for (const shop of shops) {
-        if (shop.products.length === 0) {
-          return INVALID_PAYLOAD_LENGTH;
-        }
       }
       // Find studio
       const studio = await this.studioRepository.findOne(

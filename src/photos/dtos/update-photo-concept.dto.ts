@@ -9,7 +9,7 @@ import {
 @InputType()
 class UpdatePhotoConceptPayload extends PickType(
   PhotoConcept,
-  ['slug'],
+  ['name'],
   InputType,
 ) {}
 
