@@ -3,7 +3,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { extname } from 'path';
 
 export const imageFileFilter = (req, file, callback) => {
-  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+  if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
     return callback(
       new HttpException('ONLY_IMAGE_FILES_ALLOWED', HttpStatus.BAD_REQUEST),
       false,
