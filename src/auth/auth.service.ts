@@ -5,10 +5,7 @@ import { SocialLoginMethod } from 'src/users/dtos/create-user.dto';
 import { LoginMethod } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { LoginWithEmailInput, LoginOutput } from './dtos/login.dto';
-import {
-  GetOAuthProfileWithAccessTokenOutput,
-  OAuthProfile,
-} from './dtos/oauth.dto';
+import { GetOAuthProfileWithAccessTokenOutput } from './dtos/oauth.dto';
 import { getKakaoProfileWithAccessToken } from './utils/kakaoOAuth.util';
 
 @Injectable()
@@ -26,7 +23,7 @@ export class AuthService {
     try {
       // Get a user with the inputted email
       const user = await this.usersService.getUserByEmail(email, {
-        select: ['id', 'createdWith', 'password'],
+        select: ['id', 'loginMethod', 'password'],
       });
       if (!user) {
         return {
@@ -43,7 +40,7 @@ export class AuthService {
         };
       }
       // Issue an auth token
-      const payload = { id: user.id, createdWith: user.createdWith };
+      const payload = { id: user.id, loginMethod: user.loginMethod };
       const token = this.jwtService.sign(payload);
       return {
         ok: true,
@@ -51,10 +48,7 @@ export class AuthService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -73,7 +67,7 @@ export class AuthService {
           error: 'User not found',
         };
       }
-      const payload = { id: user.id, createdWith: user.createdWith };
+      const payload = { id: user.id, loginMethod: user.loginMethod };
       const token = this.jwtService.sign(payload);
       return {
         ok: true,
@@ -81,10 +75,7 @@ export class AuthService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -114,10 +105,7 @@ export class AuthService {
       return result;
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 }

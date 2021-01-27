@@ -1,0 +1,19 @@
+mutation {
+  createBranches(input: {
+    studioSlug: "balance-button"
+    payload: [
+      {
+        name: "신논현점"
+        address: "서울시 강남구 논현동 183-14 지하1층"
+      },
+      {
+        name: "선정릉점"
+        address: "서울시 강남구 논현동 270-1 지하1층"
+      }
+    ]
+  }) {
+    ok
+    error
+    idList
+  }
+}

@@ -1,8 +1,14 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
 import { MailService } from 'src/mail/mail.service';
+import { PhotosService } from 'src/photos/photos.service';
 import { FindOneOptions, Repository } from 'typeorm';
 import {
   CreateUserWithEmailInput,
@@ -12,13 +18,14 @@ import {
   SocialLoginMethod,
 } from './dtos/create-user.dto';
 import { DeleteUserOutput } from './dtos/delete-user.dto';
-import { GetMyProfileOutput } from './dtos/get-my-profile.dto';
 import {
-  UpdateUserProfileInput,
-  UpdateUserProfileOutput,
-} from './dtos/update-user.dto';
+  GetMyProfileOutput,
+  GetMyHeartStudiosOutput,
+  GetMyHeartStudioPhotosOutput,
+  GetMyHeartStudioPhotosInput,
+} from './dtos/get-user.dto';
 import { VerifyUserOutput } from './dtos/verify-user.dto';
-import { LoginMethod, User } from './entities/user.entity';
+import { LoginMethod, Role, User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
 
 @Injectable()
@@ -31,6 +38,8 @@ export class UsersService {
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
     private readonly mailService: MailService,
+    @Inject(forwardRef(() => PhotosService))
+    private readonly photosService: PhotosService,
   ) {}
 
   checkPasswordSecurity(password: string): boolean {
@@ -52,7 +61,7 @@ export class UsersService {
       if (userByEmail) {
         return {
           ok: false,
-          error: 'User with that email already exists',
+          error: 'DUPLICATE_EMAIL',
         };
       }
       // Check password security
@@ -60,7 +69,7 @@ export class UsersService {
       if (!isPasswordSecure) {
         return {
           ok: false,
-          error: 'Password is not secure enough',
+          error: 'INSECURE_PASSWORD',
         };
       }
       // Check if there exists a user with the inputted nickname
@@ -68,28 +77,20 @@ export class UsersService {
       if (userByNickname) {
         return {
           ok: false,
-          error: 'User with that nickname already exists',
+          error: 'DUPLICATE_NICKNAME',
         };
       }
       // Create and save the user
       const newUser = this.userRepository.create({ email, password, nickname });
-      newUser.createdWith = LoginMethod.EMAIL;
+      newUser.loginMethod = LoginMethod.EMAIL;
+      newUser.role = Role.USER;
       newUser.isVerified = false;
       const createdUser = await this.userRepository.save(newUser);
       // Create verification code and send it to the user
       const newVerification = this.verificationRepository.create();
       newVerification.user = createdUser;
       const { code } = await this.verificationRepository.save(newVerification);
-      const mailOk = await this.mailService.sendConfirmationEmail(
-        newUser,
-        code,
-      );
-      if (!mailOk) {
-        return {
-          ok: false,
-          error: 'Sending confirmation email failed',
-        };
-      }
+      await this.mailService.sendConfirmationEmail(newUser, code);
       // Return a token after login
       const { ok, error, token } = await this.authService.loginWithEmail({
         email,
@@ -102,10 +103,27 @@ export class UsersService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getPossibleNickname(nickname?: string): Promise<string> {
+    try {
+      const newNickname = nickname ? nickname : '바프새내기';
+      const userWithNickname = await this.getUserByNickname(newNickname);
+      if (userWithNickname) {
+        for (let i = 1; ; i++) {
+          const userWithNewNickname = await this.getUserByNickname(
+            newNickname + i,
+          );
+          if (!userWithNewNickname) {
+            return newNickname + i;
+          }
+        }
+      }
+      return newNickname;
+    } catch (e) {
+      throw new InternalServerErrorException();
     }
   }
 
@@ -125,39 +143,26 @@ export class UsersService {
       if (!ok) {
         return { ok, error };
       }
-      // Check duplicate user
+      // If the user does not exist, create one
       let user = await this.userRepository.findOne({
-        createdWith: createWith,
+        loginMethod: createWith,
         socialId,
       });
       if (!user) {
         user = this.userRepository.create({
-          createdWith: createWith,
+          loginMethod: createWith,
           socialId,
           isVerified: true,
           ...profiles,
         });
-        // Check duplicate nickname
-        const userWithNickname = await this.getUserByNickname(nickname);
-        if (userWithNickname) {
-          for (let count = 1; ; count++) {
-            const newNickname = nickname + count;
-            const userWithNewNickname = await this.getUserByNickname(
-              newNickname,
-            );
-            if (!userWithNewNickname) {
-              user.nickname = newNickname;
-              break;
-            }
-          }
-        } else {
-          user.nickname = nickname;
-        }
+        // Get a possible nickname
+        const newNickname = await this.getPossibleNickname(nickname);
+        user.nickname = newNickname;
         user = await this.userRepository.save(user);
       }
       // Get JWT token
       const loginResult = await this.authService.loginWithOAuth(
-        user.createdWith as SocialLoginMethod,
+        user.loginMethod as SocialLoginMethod,
         user.socialId,
       );
       return {
@@ -167,10 +172,7 @@ export class UsersService {
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -193,43 +195,79 @@ export class UsersService {
   }
 
   async getUserBySocialId(
-    createdWith: SocialLoginMethod,
+    loginMethod: SocialLoginMethod,
     socialId: string,
   ): Promise<User> {
-    return this.userRepository.findOne({ createdWith, socialId });
+    return this.userRepository.findOne({ loginMethod, socialId });
   }
 
-  async getUserProfileById(id: number): Promise<GetMyProfileOutput> {
+  async getMyProfile(user: User): Promise<GetMyProfileOutput> {
+    if (!user) {
+      return UNEXPECTED_ERROR;
+    }
+
+    return {
+      ok: true,
+      profile: {
+        id: user.id,
+        email: user.email,
+        nickname: user.nickname,
+      },
+    };
+  }
+
+  async getMyHeartStudios(user: User): Promise<GetMyHeartStudiosOutput> {
     try {
-      const user = await this.getUserById(id, {
-        select: [
-          'email',
-          'gender',
-          'isVerified',
-          'nickname',
-          'profileImageUrl',
-          'createdWith',
-        ],
-      });
-      if (!user) {
+      const { heartStudios } = await this.userRepository.findOne(
+        { id: user.id },
+        {
+          relations: [
+            'heartStudios',
+            'heartStudios.catchphrases',
+            'heartStudios.coverPhoto',
+          ],
+        },
+      );
+      if (!heartStudios) {
         return {
           ok: false,
-          error: 'User not found',
+          error: 'USER_NOT_FOUND',
         };
       }
       return {
         ok: true,
-        profile: user,
+        studios: heartStudios,
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
+  async getMyHeartStudioPhotos(
+    user: User,
+    { page }: GetMyHeartStudioPhotosInput,
+  ): Promise<GetMyHeartStudioPhotosOutput> {
+    try {
+      const isUserFound = await this.userRepository.findOne({ id: user.id });
+      if (!isUserFound) {
+        return {
+          ok: false,
+          error: 'USER_NOT_FOUND',
+        };
+      }
+      return this.photosService.getHeartStudioPhotosByUserId(user.id, page);
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  updateUser(user: User): Promise<User> {
+    return this.userRepository.save(user);
+  }
+
+  /* TBU
   async updateUserProfileById(
     id: number,
     { email, nickname, ...others }: UpdateUserProfileInput,
@@ -273,26 +311,19 @@ export class UsersService {
       for (const key in others) {
         userToUpdate[key] = others[key];
       }
-      const updatedUser = await this.userRepository.save(userToUpdate);
+      const updatedUser = await this.updateUser(userToUpdate);
       return {
         ok: true,
-        profile: {
-          email: updatedUser.email,
-          nickname: updatedUser.nickname,
-          createdWith: updatedUser.createdWith,
-          gender: updatedUser.gender,
-          profileImageUrl: updatedUser.profileImageUrl,
-          isVerified: updatedUser.isVerified,
-        },
+        profile: updatedUser,
       };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
+  */
+
+  // TODO: 비밀번호 수정 구현 (재설정, 변경 both)
 
   async deleteUserById(id: number): Promise<DeleteUserOutput> {
     try {
@@ -300,7 +331,7 @@ export class UsersService {
       if (!user) {
         return {
           ok: false,
-          error: 'User not found',
+          error: 'USER_NOT_FOUND',
         };
       }
       // TODO: Handle social users
@@ -308,10 +339,7 @@ export class UsersService {
       return { ok: true };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -324,7 +352,7 @@ export class UsersService {
       if (!verification) {
         return {
           ok: false,
-          error: 'Verification not found',
+          error: 'VERIFICATION_NOT_FOUND',
         };
       }
       verification.user.isVerified = true;
@@ -333,10 +361,7 @@ export class UsersService {
       return { ok: true };
     } catch (e) {
       console.log(e);
-      return {
-        ok: false,
-        error: UNEXPECTED_ERROR,
-      };
+      return UNEXPECTED_ERROR;
     }
   }
 }

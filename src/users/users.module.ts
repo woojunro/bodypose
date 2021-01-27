@@ -6,12 +6,14 @@ import { User } from './entities/user.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { Verification } from './entities/verification.entity';
 import { MailModule } from 'src/mail/mail.module';
+import { PhotosModule } from 'src/photos/photos.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Verification]),
     forwardRef(() => AuthModule),
     MailModule,
+    forwardRef(() => PhotosModule),
   ],
   providers: [UsersService, UsersResolver],
   exports: [UsersService],

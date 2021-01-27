@@ -1,0 +1,8 @@
+mutation {
+  toggleHeartStudio(input: {
+    slug: "balance-button"
+  }) {
+    ok
+    error
+  }
+}
