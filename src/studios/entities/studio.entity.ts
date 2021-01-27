@@ -14,7 +14,7 @@ import {
 import { AdditionalProduct } from './additional-product.entity';
 import { Branch } from './branch.entity';
 import { Catchphrase } from './catchphrase.entity';
-import { SponsoredProduct } from './sponsored-product.entity';
+import { HairMakeupShop } from './hair-makeup-shop.entity';
 import { StudioProduct } from './studio-product.entity';
 import { UsersReviewStudios } from './users-review-studios.entity';
 
@@ -51,7 +51,7 @@ export class Studio extends CoreEntity {
   logoUrl?: string;
 
   // 스튜디오 커버 사진
-  @OneToOne(relation => StudioPhoto, { nullable: true })
+  @OneToOne(relation => StudioPhoto, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn()
   @Field(type => StudioPhoto, { nullable: true })
   coverPhoto?: StudioPhoto;
@@ -103,12 +103,13 @@ export class Studio extends CoreEntity {
   @Field(type => [StudioPhoto])
   photos: StudioPhoto[];
 
-  // 스튜디오 총 평점
+  // 스튜디오 평점 총합
   @Column({ default: 0 })
   @Field(type => Int)
   totalRating: number;
 
   // 스튜디오 리뷰 수
+  // totalRating / reviewCount 로 평점 산출
   @Column({ default: 0 })
   @Field(type => Int)
   reviewCount: number;
@@ -121,7 +122,7 @@ export class Studio extends CoreEntity {
   // 스튜디오 상품 (스튜디오 촬영, 야외 촬영) 목록
   @OneToMany(relation => StudioProduct, product => product.studio)
   @Field(type => [StudioProduct])
-  products: StudioProduct[];
+  studioProducts: StudioProduct[];
 
   // 스튜디오 촬영 상품 목록 설명 문구
   @Column({ nullable: true })
@@ -139,43 +140,20 @@ export class Studio extends CoreEntity {
 
   // 주중 가격 태그 (평일, 월-목 등등)
   @Column({ default: '평일' })
-  @Field(type => String)
-  @IsOptional()
+  @Field(type => String, { defaultValue: '평일' })
   @IsString()
-  weekdayPriceTag?: string;
+  weekdayPriceTag: string;
 
   // 주말 가격 태그 (주말, 공휴일, 금-일 등등)
   @Column({ default: '주말' })
-  @Field(type => String)
-  @IsOptional()
+  @Field(type => String, { defaultValue: '주말' })
   @IsString()
-  weekendPriceTag?: string;
+  weekendPriceTag: string;
 
-  // 제휴샵 이름
-  @Column({ nullable: true })
-  @Field(type => String, { nullable: true })
-  @IsOptional()
-  @IsString()
-  sponsoredShopName?: string;
-
-  // 제휴삽 연락처
-  @Column({ nullable: true })
-  @Field(type => String, { nullable: true })
-  @IsOptional()
-  @IsString()
-  sponsoredShopContact?: string;
-
-  // 제휴 상품 목록
-  @OneToMany(relation => SponsoredProduct, product => product.studio)
-  @Field(type => [SponsoredProduct])
-  sponsoredProducts: SponsoredProduct[];
-
-  // 제휴 상품 목록 설명 문구
-  @Column({ nullable: true })
-  @Field(type => String, { nullable: true })
-  @IsOptional()
-  @IsString()
-  sponsoredProductListDescription?: string;
+  // 헤어메이크업샵 목록
+  @OneToMany(relation => HairMakeupShop, shop => shop.studio)
+  @Field(type => [HairMakeupShop])
+  hairMakeupShops: HairMakeupShop[];
 
   // 추가 상품 설명 문구
   @Column({ nullable: true })

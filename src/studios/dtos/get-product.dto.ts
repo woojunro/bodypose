@@ -1,7 +1,7 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { AdditionalProduct } from '../entities/additional-product.entity';
-import { SponsoredProduct } from '../entities/sponsored-product.entity';
+import { HairMakeupShop } from '../entities/hair-makeup-shop.entity';
 import { StudioProduct } from '../entities/studio-product.entity';
 import { GetStudioInput } from './get-studio.dto';
 
@@ -13,8 +13,8 @@ export class GetProductsOutput extends CoreOutput {
   @Field(type => [StudioProduct], { nullable: true })
   studioProducts?: StudioProduct[];
 
-  @Field(type => [SponsoredProduct], { nullable: true })
-  sponsoredProducts?: SponsoredProduct[];
+  @Field(type => [HairMakeupShop], { nullable: true })
+  hairMakeupShops?: HairMakeupShop[];
 
   @Field(type => [AdditionalProduct], { nullable: true })
   additionalProducts?: AdditionalProduct[];

@@ -9,8 +9,9 @@ import {
 import {
   CreateStudioProductsInput,
   CreateProductsOutput,
-  CreateSponsoredProductsInput,
   CreateAdditionalProductsInput,
+  CreateHairMakeupShopsInput,
+  CreateHairMakeupShopsOutput,
 } from './dtos/create-product.dto';
 import {
   CreateStudioReviewInput,
@@ -45,7 +46,9 @@ import {
 import {
   UpdateStudioProductsInput,
   UpdateProductsOutput,
-  UpdateSponsoredProductsInput,
+  UpdateAdditionalProductsInput,
+  UpdateHairMakeupShopsOutput,
+  UpdateHairMakeupShopsInput,
 } from './dtos/update-product.dto';
 import {
   UpdateStudioInput,
@@ -145,26 +148,34 @@ export class ProductResolver {
 
   @Mutation(returns => CreateProductsOutput)
   @Roles(Role.ADMIN)
-  createSponsoredProducts(
-    @Args('input') input: CreateSponsoredProductsInput,
-  ): Promise<CreateProductsOutput> {
-    return this.studiosService.createSponsoredProducts(input);
-  }
-
-  @Mutation(returns => UpdateProductsOutput)
-  @Roles(Role.ADMIN)
-  updateSponsoredProducts(
-    @Args('input') input: UpdateSponsoredProductsInput,
-  ): Promise<UpdateProductsOutput> {
-    return this.studiosService.updateSponsoredProducts(input);
-  }
-
-  @Mutation(returns => CreateProductsOutput)
-  @Roles(Role.ADMIN)
   createAdditionalProducts(
     @Args('input') input: CreateAdditionalProductsInput,
   ): Promise<CreateProductsOutput> {
     return this.studiosService.createAdditionalProducts(input);
+  }
+
+  @Mutation(returns => UpdateProductsOutput)
+  @Roles(Role.ADMIN)
+  updateAdditionalProducts(
+    @Args('input') input: UpdateAdditionalProductsInput,
+  ): Promise<UpdateProductsOutput> {
+    return this.studiosService.updateAdditionalProducts(input);
+  }
+
+  @Mutation(returns => CreateHairMakeupShopsOutput)
+  @Roles(Role.ADMIN)
+  createHairMakeupShops(
+    @Args('input') input: CreateHairMakeupShopsInput,
+  ): Promise<CreateHairMakeupShopsOutput> {
+    return this.studiosService.createHairMakeupShops(input);
+  }
+
+  @Mutation(returns => UpdateHairMakeupShopsOutput)
+  @Roles(Role.ADMIN)
+  updateHairMakeupShops(
+    @Args('input') input: UpdateHairMakeupShopsInput,
+  ): Promise<UpdateHairMakeupShopsOutput> {
+    return this.studiosService.updateHairMakeupShops(input);
   }
 }
 

@@ -72,7 +72,7 @@ export class StudioProduct extends CoreEntity {
   @Min(0)
   weekendPrice: number;
 
-  @ManyToOne(relation => Studio, studio => studio.products, {
+  @ManyToOne(relation => Studio, studio => studio.studioProducts, {
     onDelete: 'CASCADE',
   })
   @Field(type => Studio)

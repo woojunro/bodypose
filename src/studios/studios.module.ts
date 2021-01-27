@@ -14,9 +14,10 @@ import { AuthModule } from 'src/auth/auth.module';
 import { StudioProduct } from './entities/studio-product.entity';
 import { UsersReviewStudios } from './entities/users-review-studios.entity';
 import { Branch } from './entities/branch.entity';
-import { SponsoredProduct } from './entities/sponsored-product.entity';
+import { HairMakeupProduct } from './entities/hair-makeup-product.entity';
 import { AdditionalProduct } from './entities/additional-product.entity';
 import { PhotosModule } from 'src/photos/photos.module';
+import { HairMakeupShop } from './entities/hair-makeup-shop.entity';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { PhotosModule } from 'src/photos/photos.module';
       Branch,
       UsersClickStudios,
       StudioProduct,
-      SponsoredProduct,
+      HairMakeupShop,
+      HairMakeupProduct,
       AdditionalProduct,
       UsersReviewStudios,
     ]),

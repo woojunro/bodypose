@@ -27,10 +27,11 @@ import { StudioProduct } from './studios/entities/studio-product.entity';
 import { UsersReviewStudios } from './studios/entities/users-review-studios.entity';
 import { ReviewPhoto } from './photos/entities/review-photo.entity';
 import { Branch } from './studios/entities/branch.entity';
-import { SponsoredProduct } from './studios/entities/sponsored-product.entity';
+import { HairMakeupProduct } from './studios/entities/hair-makeup-product.entity';
 import { AdditionalProduct } from './studios/entities/additional-product.entity';
 import { UploadsModule } from './uploads/uploads.module';
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
+import { HairMakeupShop } from './studios/entities/hair-makeup-shop.entity';
 
 @Module({
   imports: [
@@ -75,7 +76,8 @@ import { GraphQLError, GraphQLFormattedError } from 'graphql';
         ObjectConcept,
         UsersClickStudioPhotos,
         StudioProduct,
-        SponsoredProduct,
+        HairMakeupShop,
+        HairMakeupProduct,
         AdditionalProduct,
         UsersReviewStudios,
         ReviewPhoto,

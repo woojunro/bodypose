@@ -9,7 +9,8 @@ import {
 import { IsString } from 'class-validator';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { AdditionalProduct } from '../entities/additional-product.entity';
-import { SponsoredProduct } from '../entities/sponsored-product.entity';
+import { HairMakeupProduct } from '../entities/hair-makeup-product.entity';
+import { HairMakeupShop } from '../entities/hair-makeup-shop.entity';
 import { StudioProduct } from '../entities/studio-product.entity';
 
 @InputType()
@@ -30,11 +31,31 @@ export class CreateStudioProductsInput {
 }
 
 @InputType()
-class CreateSponsoredProductsPayload extends PickType(
-  SponsoredProduct,
-  ['title', 'normalPrice', 'sponsoredPrice'],
+class CreateHairMakeupProductPayload extends PickType(
+  HairMakeupProduct,
+  ['title', 'price'],
   InputType,
 ) {}
+
+@InputType()
+class CreateHairMakeupShopPayload extends PickType(
+  HairMakeupShop,
+  ['type', 'name', 'contactInfo', 'productListDescription'],
+  InputType,
+) {
+  @Field(type => [CreateHairMakeupProductPayload])
+  products: CreateHairMakeupProductPayload[];
+}
+
+@InputType()
+export class CreateHairMakeupShopsInput {
+  @Field(type => String)
+  @IsString()
+  studioSlug: string;
+
+  @Field(type => [CreateHairMakeupShopPayload])
+  shops: CreateHairMakeupShopPayload[];
+}
 
 @InputType()
 class CreateAdditionalProductsPayload extends PickType(
@@ -42,16 +63,6 @@ class CreateAdditionalProductsPayload extends PickType(
   ['title', 'description', 'price'],
   InputType,
 ) {}
-
-@InputType()
-export class CreateSponsoredProductsInput {
-  @Field(type => String)
-  @IsString()
-  studioSlug: string;
-
-  @Field(type => [CreateSponsoredProductsPayload])
-  products: CreateSponsoredProductsPayload[];
-}
 
 @InputType()
 export class CreateAdditionalProductsInput {
@@ -68,3 +79,6 @@ export class CreateProductsOutput extends CoreOutput {
   @Field(type => [Int], { nullable: true })
   idList?: number[];
 }
+
+@ObjectType()
+export class CreateHairMakeupShopsOutput extends CoreOutput {}

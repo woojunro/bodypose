@@ -19,8 +19,9 @@ import {
 import {
   CreateStudioProductsInput,
   CreateProductsOutput,
-  CreateSponsoredProductsInput,
   CreateAdditionalProductsInput,
+  CreateHairMakeupShopsInput,
+  CreateHairMakeupShopsOutput,
 } from './dtos/create-product.dto';
 import {
   CreateStudioReviewInput,
@@ -56,7 +57,9 @@ import {
 import {
   UpdateStudioProductsInput,
   UpdateProductsOutput,
-  UpdateSponsoredProductsInput,
+  UpdateAdditionalProductsInput,
+  UpdateHairMakeupShopsInput,
+  UpdateHairMakeupShopsOutput,
 } from './dtos/update-product.dto';
 import {
   UpdateStudioInput,
@@ -64,7 +67,8 @@ import {
 } from './dtos/update-studio.dto';
 import { AdditionalProduct } from './entities/additional-product.entity';
 import { Branch } from './entities/branch.entity';
-import { SponsoredProduct } from './entities/sponsored-product.entity';
+import { HairMakeupProduct } from './entities/hair-makeup-product.entity';
+import { HairMakeupShop } from './entities/hair-makeup-shop.entity';
 import { StudioProduct } from './entities/studio-product.entity';
 import { Studio } from './entities/studio.entity';
 import { UsersReviewStudios } from './entities/users-review-studios.entity';
@@ -78,8 +82,10 @@ export class StudiosService {
     private readonly studioProductRepository: Repository<StudioProduct>,
     @InjectRepository(Branch)
     private readonly branchRepository: Repository<Branch>,
-    @InjectRepository(SponsoredProduct)
-    private readonly sponsoredProductRepository: Repository<SponsoredProduct>,
+    @InjectRepository(HairMakeupShop)
+    private readonly hairMakeupShopRepository: Repository<HairMakeupShop>,
+    @InjectRepository(HairMakeupProduct)
+    private readonly hairMakeupProductRepository: Repository<HairMakeupProduct>,
     @InjectRepository(AdditionalProduct)
     private readonly additionalProductRepository: Repository<AdditionalProduct>,
     @InjectRepository(UsersReviewStudios)
@@ -186,6 +192,7 @@ export class StudiosService {
           heartStudios = [...studios];
         }
       }
+      // TODO: Pagination
       const studios = await this.studioRepository.find({
         relations: ['catchphrases'],
       });
@@ -363,7 +370,14 @@ export class StudiosService {
       // Find studio
       const studio = await this.studioRepository.findOne(
         { slug },
-        { relations: ['products', 'sponsoredProducts', 'additionalProducts'] },
+        {
+          relations: [
+            'studioProducts',
+            'hairMakeupShops',
+            'hairMakeupShops.products',
+            'additionalProducts',
+          ],
+        },
       );
       if (!studio) {
         return {
@@ -373,14 +387,14 @@ export class StudiosService {
       }
       // return
       const {
-        products: studioProducts,
-        sponsoredProducts,
+        studioProducts: studioProducts,
+        hairMakeupShops,
         additionalProducts,
       } = studio;
       return {
         ok: true,
         studioProducts,
-        sponsoredProducts,
+        hairMakeupShops,
         additionalProducts,
       };
     } catch (e) {
@@ -450,7 +464,7 @@ export class StudiosService {
         };
       }
       // Overwrite
-      const { products: currentProducts } = studio;
+      const { studioProducts: currentProducts } = studio;
       const idList: number[] = [];
       for (let i = 0; i < currentProducts.length && i < products.length; i++) {
         currentProducts[i] = { ...currentProducts[i], ...products[i] };
@@ -474,106 +488,6 @@ export class StudiosService {
           });
           newProduct.studio = studio;
           const { id } = await this.studioProductRepository.save(newProduct);
-          idList.push(id);
-        }
-      }
-      return {
-        ok: true,
-        idList,
-      };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
-  }
-
-  async createSponsoredProducts({
-    studioSlug,
-    products,
-  }: CreateSponsoredProductsInput): Promise<CreateProductsOutput> {
-    try {
-      if (products.length === 0) {
-        return {
-          ok: false,
-          error: 'INVALID_PAYLOAD_LENGTH',
-        };
-      }
-      // Find studio
-      const studio = await this.studioRepository.findOne({ slug: studioSlug });
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
-      // Create and save products
-      const idList: number[] = [];
-      for (const product of products) {
-        const newProduct = this.sponsoredProductRepository.create({
-          ...product,
-        });
-        newProduct.studio = studio;
-        const { id } = await this.sponsoredProductRepository.save(newProduct);
-        idList.push(id);
-      }
-      // Return idList
-      return {
-        ok: true,
-        idList,
-      };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
-  }
-
-  async updateSponsoredProducts({
-    studioSlug,
-    products,
-  }: UpdateSponsoredProductsInput): Promise<UpdateProductsOutput> {
-    try {
-      if (products.length === 0) {
-        return {
-          ok: false,
-          error: 'INVALID_PAYLOAD_LENGTH',
-        };
-      }
-      // Find studio
-      const studio = await this.studioRepository.findOne(
-        { slug: studioSlug },
-        { relations: ['sponsoredProducts'] },
-      );
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
-      // Overwrite
-      const { sponsoredProducts: currentProducts } = studio;
-      const idList: number[] = [];
-      for (let i = 0; i < currentProducts.length && i < products.length; i++) {
-        currentProducts[i] = { ...currentProducts[i], ...products[i] };
-        const { id } = await this.sponsoredProductRepository.save(
-          currentProducts[i],
-        );
-        idList.push(id);
-      }
-      if (currentProducts.length > products.length) {
-        // Delete products that haven't been updated
-        for (let i = products.length; i < currentProducts.length; i++) {
-          await this.sponsoredProductRepository.delete({
-            id: currentProducts[i].id,
-          });
-        }
-      } else if (currentProducts.length < products.length) {
-        // Add more products
-        for (let i = currentProducts.length; i < products.length; i++) {
-          const newProduct = this.sponsoredProductRepository.create({
-            ...products[i],
-          });
-          newProduct.studio = studio;
-          const { id } = await this.sponsoredProductRepository.save(newProduct);
           idList.push(id);
         }
       }
@@ -621,6 +535,242 @@ export class StudiosService {
         ok: true,
         idList,
       };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async updateAdditionalProducts({
+    studioSlug,
+    products,
+  }: UpdateAdditionalProductsInput): Promise<UpdateProductsOutput> {
+    try {
+      let isDeletion = false;
+      if (products.length === 0) {
+        isDeletion = true;
+      }
+      // Find studio
+      const studio = await this.studioRepository.findOne(
+        { slug: studioSlug },
+        { relations: ['additionalProducts'] },
+      );
+      if (!studio) {
+        return {
+          ok: false,
+          error: 'STUDIO_NOT_FOUND',
+        };
+      }
+      // Delete
+      if (isDeletion) {
+        for (const product of studio.additionalProducts) {
+          await this.additionalProductRepository.delete({ id: product.id });
+        }
+        return { ok: true };
+      }
+      // Overwrite
+      const { additionalProducts: currentProducts } = studio;
+      const idList: number[] = [];
+      for (let i = 0; i < currentProducts.length && i < products.length; i++) {
+        currentProducts[i] = { ...currentProducts[i], ...products[i] };
+        const { id } = await this.additionalProductRepository.save(
+          currentProducts[i],
+        );
+        idList.push(id);
+      }
+      if (currentProducts.length > products.length) {
+        // Delete products that haven't been updated
+        for (let i = products.length; i < currentProducts.length; i++) {
+          await this.additionalProductRepository.delete({
+            id: currentProducts[i].id,
+          });
+        }
+      } else if (currentProducts.length < products.length) {
+        // Add more products
+        for (let i = currentProducts.length; i < products.length; i++) {
+          const newProduct = this.additionalProductRepository.create({
+            ...products[i],
+          });
+          newProduct.studio = studio;
+          const { id } = await this.additionalProductRepository.save(
+            newProduct,
+          );
+          idList.push(id);
+        }
+      }
+      // return
+      return {
+        ok: true,
+        idList,
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async createHairMakeupShops({
+    studioSlug,
+    shops,
+  }: CreateHairMakeupShopsInput): Promise<CreateHairMakeupShopsOutput> {
+    try {
+      // Validate shops
+      const INVALID_PAYLOAD_LENGTH = {
+        ok: false,
+        error: 'INVALID_PAYLOAD_LENGTH',
+      };
+      if (shops.length === 0) {
+        return INVALID_PAYLOAD_LENGTH;
+      }
+      for (const shop of shops) {
+        if (shop.products.length === 0) {
+          return INVALID_PAYLOAD_LENGTH;
+        }
+      }
+      // Find studio
+      const studio = await this.studioRepository.findOne(
+        { slug: studioSlug },
+        { relations: ['hairMakeupShops'] },
+      );
+      if (!studio) {
+        return {
+          ok: false,
+          error: 'STUDIO_NOT_FOUND',
+        };
+      }
+      // Check if hairMakeupShops already exist
+      if (studio.hairMakeupShops.length !== 0) {
+        return {
+          ok: false,
+          error: 'HAIR_MAKEUP_SHOPS_ALREADY_EXIST',
+        };
+      }
+      // Create and save shops and products
+      for (const shop of shops) {
+        const { products, ...shopInfo } = shop;
+        const newShop = this.hairMakeupShopRepository.create({ ...shopInfo });
+        newShop.studio = studio;
+        const savedShop = await this.hairMakeupShopRepository.save(newShop);
+        for (const product of products) {
+          const newProduct = this.hairMakeupProductRepository.create({
+            ...product,
+          });
+          newProduct.shop = savedShop;
+          await this.hairMakeupProductRepository.save(newProduct);
+        }
+      }
+      // return
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async updateHairMakeupShops({
+    studioSlug,
+    shops,
+  }: UpdateHairMakeupShopsInput): Promise<UpdateHairMakeupShopsOutput> {
+    try {
+      let isDeletion = false;
+      // Validate shops
+      const INVALID_PAYLOAD_LENGTH = {
+        ok: false,
+        error: 'INVALID_PAYLOAD_LENGTH',
+      };
+      if (shops.length === 0) {
+        isDeletion = true;
+      }
+      for (const shop of shops) {
+        if (shop.products.length === 0) {
+          return INVALID_PAYLOAD_LENGTH;
+        }
+      }
+      // Find studio
+      const studio = await this.studioRepository.findOne(
+        { slug: studioSlug },
+        { relations: ['hairMakeupShops', 'hairMakeupShops.products'] },
+      );
+      if (!studio) {
+        return {
+          ok: false,
+          error: 'STUDIO_NOT_FOUND',
+        };
+      }
+      // Delete all shops
+      if (isDeletion) {
+        for (const shop of studio.hairMakeupShops) {
+          await this.hairMakeupShopRepository.delete({ id: shop.id });
+        }
+        return { ok: true };
+      }
+      // Overwrite shops
+      for (
+        let i = 0;
+        i < shops.length && i < studio.hairMakeupShops.length;
+        i++
+      ) {
+        const currentShop = studio.hairMakeupShops[i];
+        const { products, ...shopInfo } = shops[i];
+        const updatedShop = await this.hairMakeupShopRepository.save({
+          ...currentShop,
+          ...shopInfo,
+        });
+        // Overwrite products
+        for (
+          let j = 0;
+          j < products.length && j < updatedShop.products.length;
+          j++
+        ) {
+          const currentProduct = updatedShop.products[j];
+          await this.hairMakeupProductRepository.save({
+            ...currentProduct,
+            ...products[j],
+          });
+        }
+        if (updatedShop.products.length > products.length) {
+          // Delete the rest products
+          for (let j = products.length; j < updatedShop.products.length; j++) {
+            await this.hairMakeupProductRepository.delete({
+              id: updatedShop.products[j].id,
+            });
+          }
+        } else if (updatedShop.products.length < products.length) {
+          // Create new products
+          for (let j = updatedShop.products.length; j < products.length; j++) {
+            const newProduct = this.hairMakeupProductRepository.create({
+              ...products[j],
+            });
+            newProduct.shop = updatedShop;
+            await this.hairMakeupProductRepository.save(newProduct);
+          }
+        }
+      }
+      if (shops.length < studio.hairMakeupShops.length) {
+        // Delete the rest shops
+        for (let i = shops.length; i < studio.hairMakeupShops.length; i++) {
+          await this.hairMakeupShopRepository.delete({
+            id: studio.hairMakeupShops[i].id,
+          });
+        }
+      } else if (shops.length > studio.hairMakeupShops.length) {
+        // Create new shops
+        for (let i = studio.hairMakeupShops.length; i < shops.length; i++) {
+          const { products, ...shopInfo } = shops[i];
+          const newShop = this.hairMakeupShopRepository.create({ ...shopInfo });
+          newShop.studio = studio;
+          const savedShop = await this.hairMakeupShopRepository.save(newShop);
+          for (const product of products) {
+            const newProduct = this.hairMakeupProductRepository.create({
+              ...product,
+            });
+            newProduct.shop = savedShop;
+            await this.hairMakeupProductRepository.save(newProduct);
+          }
+        }
+      }
+      // return
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
