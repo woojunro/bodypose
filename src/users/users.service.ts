@@ -24,7 +24,14 @@ import {
   GetMyHeartStudioPhotosOutput,
   GetMyHeartStudioPhotosInput,
 } from './dtos/get-user.dto';
+import {
+  RequestPasswordResetInput,
+  RequestPasswordResetOutput,
+  UpdatePasswordInput,
+  UpdatePasswordOutput,
+} from './dtos/update-password.dto';
 import { VerifyUserOutput } from './dtos/verify-user.dto';
+import { PasswordReset } from './entities/password_reset.entity';
 import { LoginMethod, Role, User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
 
@@ -35,6 +42,8 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Verification)
     private readonly verificationRepository: Repository<Verification>,
+    @InjectRepository(PasswordReset)
+    private readonly passwordResetRepository: Repository<PasswordReset>,
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
     private readonly mailService: MailService,
@@ -358,6 +367,90 @@ export class UsersService {
       verification.user.isVerified = true;
       await this.userRepository.save(verification.user);
       await this.verificationRepository.delete({ id: verification.id });
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async requestPasswordReset(
+    currentUser: User,
+    { email }: RequestPasswordResetInput,
+  ): Promise<RequestPasswordResetOutput> {
+    try {
+      if (currentUser && currentUser.email !== email) {
+        return {
+          ok: false,
+          error: 'UNAUTHORIZED',
+        };
+      }
+      const user = await this.userRepository.findOne({ email });
+      if (!user) {
+        return {
+          ok: false,
+          error: 'USER_NOT_FOUND',
+        };
+      }
+      if (user.loginMethod !== LoginMethod.EMAIL) {
+        return {
+          ok: false,
+          error: 'INVALID_LOGIN_METHOD',
+        };
+      }
+      let savedReset: PasswordReset;
+      const reset = await this.passwordResetRepository
+        .createQueryBuilder('reset')
+        .leftJoin('reset.user', 'user')
+        .where('user.id = :id', { id: user.id })
+        .getOne();
+      if (reset) {
+        reset.createCode();
+        savedReset = await this.passwordResetRepository.save(reset);
+      } else {
+        const newReset = this.passwordResetRepository.create();
+        newReset.user = user;
+        savedReset = await this.passwordResetRepository.save(newReset);
+      }
+      // TODO: Send password reset mail
+      console.log(savedReset.code);
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async updatePassword({
+    code,
+    newPassword,
+  }: UpdatePasswordInput): Promise<UpdatePasswordOutput> {
+    try {
+      // Find user with code
+      const reset = await this.passwordResetRepository.findOne(
+        { code },
+        { relations: ['user'] },
+      );
+      if (!reset) {
+        return {
+          ok: false,
+          error: 'CODE_NOT_FOUND',
+        };
+      }
+      // Check security
+      if (!this.checkPasswordSecurity(newPassword)) {
+        return {
+          ok: false,
+          error: 'INSECURE_PASSWORD',
+        };
+      }
+      // Update
+      const { user } = reset;
+      user.password = newPassword;
+      await this.userRepository.save(user);
+      // Delete code
+      await this.passwordResetRepository.delete({ id: reset.id });
+      // return
       return { ok: true };
     } catch (e) {
       console.log(e);

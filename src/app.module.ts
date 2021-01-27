@@ -32,6 +32,7 @@ import { AdditionalProduct } from './studios/entities/additional-product.entity'
 import { UploadsModule } from './uploads/uploads.module';
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import { HairMakeupShop } from './studios/entities/hair-makeup-shop.entity';
+import { PasswordReset } from './users/entities/password_reset.entity';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { HairMakeupShop } from './studios/entities/hair-makeup-shop.entity';
         AdditionalProduct,
         UsersReviewStudios,
         ReviewPhoto,
+        PasswordReset,
       ],
     }),
     GraphQLModule.forRoot({

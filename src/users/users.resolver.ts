@@ -14,6 +14,12 @@ import {
   GetMyHeartStudioPhotosOutput,
   GetMyHeartStudioPhotosInput,
 } from './dtos/get-user.dto';
+import {
+  RequestPasswordResetInput,
+  RequestPasswordResetOutput,
+  UpdatePasswordInput,
+  UpdatePasswordOutput,
+} from './dtos/update-password.dto';
 import { VerifyUserInput, VerifyUserOutput } from './dtos/verify-user.dto';
 import { Role, User } from './entities/user.entity';
 import { UsersService } from './users.service';
@@ -82,5 +88,22 @@ export class UsersResolver {
   @Mutation(returns => VerifyUserOutput)
   verifyUser(@Args('input') input: VerifyUserInput): Promise<VerifyUserOutput> {
     return this.usersService.verifyUser(input.code);
+  }
+
+  // Public
+  @Mutation(returns => RequestPasswordResetOutput)
+  requestPasswordReset(
+    @CurrentUser() user: User,
+    @Args('input') input: RequestPasswordResetInput,
+  ): Promise<RequestPasswordResetOutput> {
+    return this.usersService.requestPasswordReset(user, input);
+  }
+
+  // Public
+  @Mutation(returns => UpdatePasswordOutput)
+  updatePassword(
+    @Args('input') input: UpdatePasswordInput,
+  ): Promise<UpdatePasswordOutput> {
+    return this.usersService.updatePassword(input);
   }
 }
