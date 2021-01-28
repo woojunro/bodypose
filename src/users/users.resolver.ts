@@ -76,8 +76,6 @@ export class UsersResolver {
   }
   */
 
-  // TODO: 비밀번호 재설정, 변경 구현
-
   @Mutation(returns => DeleteUserOutput)
   @Roles(Role.USER)
   deleteMyAccount(@CurrentUser() user: User): Promise<DeleteUserOutput> {

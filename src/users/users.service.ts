@@ -99,7 +99,11 @@ export class UsersService {
       const newVerification = this.verificationRepository.create();
       newVerification.user = createdUser;
       const { code } = await this.verificationRepository.save(newVerification);
-      await this.mailService.sendConfirmationEmail(newUser, code);
+      await this.mailService.sendEmailVerification(
+        createdUser.email,
+        createdUser.nickname,
+        code,
+      );
       // Return a token after login
       const { ok, error, token } = await this.authService.loginWithEmail({
         email,
@@ -332,8 +336,6 @@ export class UsersService {
   }
   */
 
-  // TODO: 비밀번호 수정 구현 (재설정, 변경 both)
-
   async deleteUserById(id: number): Promise<DeleteUserOutput> {
     try {
       const user = await this.getUserById(id);
@@ -412,9 +414,15 @@ export class UsersService {
         newReset.user = user;
         savedReset = await this.passwordResetRepository.save(newReset);
       }
-      // TODO: Send password reset mail
-      console.log(savedReset.code);
-      return { ok: true };
+      const ok = await this.mailService.sendPasswordReset(
+        user.email,
+        user.nickname,
+        savedReset.code,
+      );
+      return {
+        ok,
+        error: ok ? null : 'MAILGUN_API_ERROR',
+      };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
@@ -435,6 +443,13 @@ export class UsersService {
         return {
           ok: false,
           error: 'CODE_NOT_FOUND',
+        };
+      }
+      // Check code expire (1 hour)
+      if (Date.now() - reset.updatedAt.valueOf() > 1000 * 3600) {
+        return {
+          ok: false,
+          error: 'CODE_EXPIRED',
         };
       }
       // Check security
