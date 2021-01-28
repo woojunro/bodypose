@@ -11,6 +11,10 @@ import {
   GetNoticesInput,
   GetNoticesOutput,
 } from './dtos/get-notice.dto';
+import {
+  UpdateNoticeInput,
+  UpdateNoticeOutput,
+} from './dtos/update-notice.dto';
 import { Notice } from './entity/notice.entity';
 import { NoticesService } from './notices.service';
 
@@ -36,5 +40,11 @@ export class NoticesResolver {
     @Args('input') input: CreateNoticeInput,
   ): Promise<CreateNoticeOutput> {
     return this.noticesService.createNotice(input);
+  }
+
+  @Roles(Role.ADMIN)
+  @Mutation(returns => UpdateNoticeOutput)
+  updateNotice(@Args('input') input: UpdateNoticeInput) {
+    return this.noticesService.updateNotice(input);
   }
 }

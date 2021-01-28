@@ -13,6 +13,10 @@ import {
   GetNoticesInput,
   GetNoticesOutput,
 } from './dtos/get-notice.dto';
+import {
+  UpdateNoticeInput,
+  UpdateNoticeOutput,
+} from './dtos/update-notice.dto';
 import { Notice } from './entity/notice.entity';
 
 @Injectable()
@@ -72,6 +76,24 @@ export class NoticesService {
         ok: true,
         notice,
       };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async updateNotice({
+    id,
+    payload,
+  }: UpdateNoticeInput): Promise<UpdateNoticeOutput> {
+    try {
+      const notice = await this.noticeRepository.findOne({ id });
+      if (!notice) {
+        return this.NOTICE_NOT_FOUND;
+      }
+      const noticeToBeUpdated = { ...notice, ...payload };
+      await this.noticeRepository.save(noticeToBeUpdated);
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
