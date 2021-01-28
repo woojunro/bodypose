@@ -32,11 +32,17 @@ import { AdditionalProduct } from './studios/entities/additional-product.entity'
 import { UploadsModule } from './uploads/uploads.module';
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import { HairMakeupShop } from './studios/entities/hair-makeup-shop.entity';
+import { PasswordReset } from './users/entities/password_reset.entity';
+import { NoticesModule } from './notices/notices.module';
+import { Notice } from './notices/entity/notice.entity';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: `.env.${process.env.NODE_ENV}`,
+      envFilePath:
+        process.env.NODE_ENV !== 'production'
+          ? `.env.${process.env.NODE_ENV}`
+          : 'app.yaml',
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()
           .valid('development', 'production', 'test')
@@ -61,8 +67,8 @@ import { HairMakeupShop } from './studios/entities/hair-makeup-shop.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      synchronize: true,
-      logging: true,
+      synchronize: process.env.NODE_ENV !== 'production',
+      logging: process.env.NODE_ENV !== 'production',
       entities: [
         User,
         Verification,
@@ -81,6 +87,8 @@ import { HairMakeupShop } from './studios/entities/hair-makeup-shop.entity';
         AdditionalProduct,
         UsersReviewStudios,
         ReviewPhoto,
+        PasswordReset,
+        Notice,
       ],
     }),
     GraphQLModule.forRoot({
@@ -102,6 +110,7 @@ import { HairMakeupShop } from './studios/entities/hair-makeup-shop.entity';
     StudiosModule,
     PhotosModule,
     UploadsModule,
+    NoticesModule,
   ],
   controllers: [],
   providers: [

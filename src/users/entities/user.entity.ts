@@ -12,6 +12,7 @@ import {
 import { CoreEntity } from 'src/common/entities/core.entity';
 import {
   BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   JoinTable,
@@ -137,6 +138,7 @@ export class User extends CoreEntity {
   reviews: UsersReviewStudios[];
 
   @BeforeInsert()
+  @BeforeUpdate()
   async hashPassword(): Promise<void> {
     if (this.password) {
       try {

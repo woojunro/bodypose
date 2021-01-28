@@ -5,7 +5,7 @@ import { Studio } from '../entities/studio.entity';
 @InputType()
 export class CreateStudioInput extends PickType(
   Studio,
-  ['name', 'slug', 'contactUrl', 'reservationUrl'],
+  ['name', 'slug', 'contactUrl', 'reservationUrl', 'isOriginalPhotoProvided'],
   InputType,
 ) {}
 

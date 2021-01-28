@@ -670,8 +670,7 @@ export class PhotosService {
       const newClick = this.usersClickStudioPhotosRepository.create();
       newClick.studioPhoto = photo;
       newClick.user = user ? user : null;
-      await this.usersClickStudioPhotosRepository.save(newClick);
-      await this.studioPhotoRepository.save(photo);
+      this.usersClickStudioPhotosRepository.save(newClick);
       // Check if the user hearts the photo
       if (!user) {
         return {

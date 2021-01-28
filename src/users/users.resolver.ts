@@ -14,6 +14,16 @@ import {
   GetMyHeartStudioPhotosOutput,
   GetMyHeartStudioPhotosInput,
 } from './dtos/get-user.dto';
+import {
+  RequestPasswordResetInput,
+  RequestPasswordResetOutput,
+  UpdatePasswordInput,
+  UpdatePasswordOutput,
+} from './dtos/update-password.dto';
+import {
+  UpdateNicknameInput,
+  UpdateNicknameOutput,
+} from './dtos/update-user.dto';
 import { VerifyUserInput, VerifyUserOutput } from './dtos/verify-user.dto';
 import { Role, User } from './entities/user.entity';
 import { UsersService } from './users.service';
@@ -70,8 +80,6 @@ export class UsersResolver {
   }
   */
 
-  // TODO: 비밀번호 재설정, 변경 구현
-
   @Mutation(returns => DeleteUserOutput)
   @Roles(Role.USER)
   deleteMyAccount(@CurrentUser() user: User): Promise<DeleteUserOutput> {
@@ -82,5 +90,31 @@ export class UsersResolver {
   @Mutation(returns => VerifyUserOutput)
   verifyUser(@Args('input') input: VerifyUserInput): Promise<VerifyUserOutput> {
     return this.usersService.verifyUser(input.code);
+  }
+
+  // Public
+  @Mutation(returns => RequestPasswordResetOutput)
+  requestPasswordReset(
+    @CurrentUser() user: User,
+    @Args('input') input: RequestPasswordResetInput,
+  ): Promise<RequestPasswordResetOutput> {
+    return this.usersService.requestPasswordReset(user, input);
+  }
+
+  // Public
+  @Mutation(returns => UpdatePasswordOutput)
+  updatePassword(
+    @Args('input') input: UpdatePasswordInput,
+  ): Promise<UpdatePasswordOutput> {
+    return this.usersService.updatePassword(input);
+  }
+
+  @Roles(Role.USER)
+  @Mutation(returns => UpdateNicknameOutput)
+  updateNickname(
+    @CurrentUser() user: User,
+    @Args('input') input: UpdateNicknameInput,
+  ): Promise<UpdateNicknameOutput> {
+    return this.usersService.updateNickname(user, input);
   }
 }

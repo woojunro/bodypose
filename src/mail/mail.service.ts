@@ -3,7 +3,6 @@ import * as FormData from 'form-data';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EmailVar } from './mail.interfaces';
-import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class MailService {
@@ -24,8 +23,7 @@ export class MailService {
     try {
       const form = new FormData();
       form.append('from', `BODYPOSE <bodypose@${this.domainName}>`);
-      // TODO: Upgrade Mailgun account and change "to"
-      form.append('to', 'blackstar0223@gmail.com');
+      form.append('to', to);
       form.append('subject', subject);
       form.append('template', template);
       emailVars.forEach(emailVar => {
@@ -52,15 +50,47 @@ export class MailService {
     }
   }
 
-  async sendConfirmationEmail(user: User, code: string): Promise<boolean> {
+  async sendEmailVerification(
+    email: string,
+    nickname: string,
+    code: string,
+  ): Promise<boolean> {
     try {
       const ok = await this.sendEmail(
-        user.email,
+        email,
         '[바디포즈] 이메일을 확인해주세요.',
-        'bodypose-email-confirmation',
+        'bodypose-email-verification',
         [
-          { key: 'nickname', value: user.nickname },
-          { key: 'code', value: code },
+          { key: 'nickname', value: nickname },
+          {
+            key: 'link',
+            value: `https://www.bodypose.co.kr/verify-email/${code}`,
+          },
+        ],
+      );
+      return ok;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
+  }
+
+  async sendPasswordReset(
+    email: string,
+    nickname: string,
+    code: string,
+  ): Promise<boolean> {
+    try {
+      const ok = await this.sendEmail(
+        email,
+        '[바디포즈] 비밀번호 변경',
+        'bodypose-password-reset',
+        [
+          { key: 'nickname', value: nickname },
+          {
+            key: 'link',
+            value: `https://www.bodypose.co.kr/reset-password/${code}`,
+          },
         ],
       );
       return ok;
