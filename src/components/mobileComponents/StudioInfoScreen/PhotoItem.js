@@ -13,7 +13,6 @@ const PhotoItem = ({ currentStudio, isPhotoItemOpen, setIsPhotoItemOpen }) => {
   const outdoorItems = outdoor.prices;
   const indoorNotice = indoor.indoorNotice;
   const outdoorNotice = outdoor.outdoorNotice;
-
   const renderedArrow = () => {
     return isPhotoItemOpen ? (
       <IoMdArrowDropup fontSize="17px" />
@@ -32,10 +31,17 @@ const PhotoItem = ({ currentStudio, isPhotoItemOpen, setIsPhotoItemOpen }) => {
               <div className="itemUpper">
                 {item.peopleCount}인촬영 - {item.conceptCount}컨셉
               </div>
-              <div className="itemUnder">
-                원본+최종본 {item.cutCount}컷 |{` `}
-                {item.hour ? <span> {item.hour}시간</span> : null}
-              </div>
+              {currentStudio.isOriginalProvided ? (
+                <div className="itemUnder">
+                  원본+최종본 {item.cutCount}컷 |
+                  {item.hour ? <span> {item.hour}시간</span> : null}
+                </div>
+              ) : (
+                <div className="itemUnder">
+                  최종본 {item.cutCount}컷 |
+                  {item.hour ? <span> {item.hour}시간</span> : null}
+                </div>
+              )}
             </div>
             <div className="photoItemrightPart">
               <div className="photoItemPrice">{item.weekDayPrice}</div>

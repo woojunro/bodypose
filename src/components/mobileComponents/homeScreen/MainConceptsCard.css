@@ -6,6 +6,7 @@
   height: 200px;
   border-radius: 10px;
   box-shadow: 1px 3px 6px grey;
+  cursor: pointer;
 }
 
 .conceptsCardContainer-Vertical img {

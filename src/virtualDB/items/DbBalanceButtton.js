@@ -84,6 +84,7 @@ export const DbBalanceButton = {
   reviews: 6,
   rating: 4.3,
   hearts: 15,
+  isOriginalProvided: true,
   isHearted: true,
   logo: BalanceLogo,
   contactLink: 'https://pf.kakao.com/_xgalxgT',
