@@ -61,13 +61,9 @@ const HairMakeup = ({ currentStudio, isHairOpen, setIsHairOpen }) => {
         </div>
       );
     });
-  return (
-    <div className="categoryContainer">
-      <div onClick={() => setIsHairOpen(!isHairOpen)} className="categoryTitle">
-        헤어/메이크업{renderedArrow()}
-      </div>
-
-      {isHairOpen ? (
+  const renderedTotal = () => {
+    if (hairMakeup.length === 2) {
+      return (
         <>
           <div className="hairNoContain">
             촬영 상품 가격에는 헤어/메이크업 가격이 포함되지 않았습니다.
@@ -83,7 +79,55 @@ const HairMakeup = ({ currentStudio, isHairOpen, setIsHairOpen }) => {
           </div>
           {renderedAdding(1)}
         </>
-      ) : null}
+      );
+    } else if (hairMakeup.length === 3) {
+      return (
+        <>
+          <div className="hairNoContain">
+            촬영 상품 가격에는 헤어/메이크업 가격이 포함되지 않았습니다.
+          </div>
+          <div className="hairMakeupContainer">
+            {renderedHairshopTitle(0)}
+            <div className="itemContainer">{renderedHairItem(0)}</div>
+          </div>
+          {renderedAdding(0)}
+          <div className="hairMakeupContainer">
+            {renderedHairshopTitle(1)}
+            <div className="itemContainer">{renderedHairItem(1)}</div>
+          </div>
+          {renderedAdding(1)}
+          <div className="hairMakeupContainer">
+            {renderedHairshopTitle(2)}
+            <div className="itemContainer">{renderedHairItem(2)}</div>
+          </div>
+          {renderedAdding(2)}
+        </>
+      );
+    } else if (hairMakeup.length === 1) {
+      return (
+        <>
+          <div className="hairNoContain">
+            촬영 상품 가격에는 헤어/메이크업 가격이 포함되지 않았습니다.
+          </div>
+          <div className="hairMakeupContainer">
+            {renderedHairshopTitle(0)}
+            <div className="itemContainer">{renderedHairItem(0)}</div>
+          </div>
+          {renderedAdding(0)}
+        </>
+      );
+    } else {
+      return null;
+    }
+  };
+
+  return (
+    <div className="categoryContainer">
+      <div onClick={() => setIsHairOpen(!isHairOpen)} className="categoryTitle">
+        헤어/메이크업{renderedArrow()}
+      </div>
+
+      {isHairOpen ? renderedTotal() : null}
     </div>
   );
 };

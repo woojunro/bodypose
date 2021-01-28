@@ -86,7 +86,7 @@ const EmailJoin = () => {
           />
           {password === checkPassword ? null : (
             <div className="passwordWarning">
-              <div>패스워드가 다릅니다.</div>
+              <div>비밀번호가 다릅니다.</div>
             </div>
           )}
           <div className="joinEmailText">이름 (10자 이하)</div>

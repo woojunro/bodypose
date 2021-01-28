@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { useMediaQuery } from 'react-responsive';
 
 import HomeScreenM from '../screens/mobileScreens/HomeScreen';
 import StudioInfoScreenM from '../screens/mobileScreens/StudioInfoScreen';
@@ -23,6 +22,7 @@ import SnsInfoScreenM from '../screens/mobileScreens/AboutAuth/SnsInfoScreen';
 import MyInfoScreenM from '../screens/mobileScreens/AboutUser/MyInfoScreen';
 import MyReviewScreenM from '../screens/mobileScreens/AboutUser/MyReviewScreen';
 import LeaveScreenM from '../screens/mobileScreens/AboutUser/LeaveScreen';
+import NewPasswordScreenM from '../screens/mobileScreens/AboutAuth/NewPasswordScreen';
 
 import LoginContext from '../contexts/LoginContext';
 
@@ -46,6 +46,8 @@ const App = () => {
           <Route exact path="/notices" component={NoticeListScreenM} />
           <Route path="/notices/:noticeNumber" component={NoticeScreenM} />
           <Route path="/reviews/:reviewNumber" component={FullReviewScreenM} />
+          <Route path="/NewPassword/:authCode" component={NewPasswordScreenM} />
+
           <Route exact path="/login" component={LoginScreenM} />
           <Route
             exact

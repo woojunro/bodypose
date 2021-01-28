@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { CheckValidEmail } from '../../../components/functions/Login/LoginFunctions';
+import { CheckCorrectEmail } from '../../../components/functions/WithDb/Auth';
+
 import './ChangePasswordScreen.css';
 import InputForm from '../../../components/mobileComponents/Login/InputForm';
 import { FiArrowLeft } from 'react-icons/fi';
@@ -7,9 +10,24 @@ import ChangePasswordButton from '../../../components/mobileComponents/Login/Cha
 
 const ChangePasswordScreen = () => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
+  const [validEmail, setValidEmail] = useState(true);
+  const [correctEmail, setCorrectEmail] = useState(true);
   const history = useHistory();
+
+  const mailingFunction = () => {
+    console.log(CheckCorrectEmail(email));
+    if (CheckCorrectEmail(email)) {
+      console.log('메일 보냈다잇');
+
+      history.push('/NewPassword/123');
+    } else {
+      setCorrectEmail(false);
+    }
+  };
+
+  useEffect(() => {
+    setValidEmail(CheckValidEmail(email));
+  }, [email]);
 
   return (
     <div>
@@ -24,17 +42,33 @@ const ChangePasswordScreen = () => {
             가입한 이메일을 입력해주세요.
           </div>
           <div className="joinEmailText">이메일</div>
-          <InputForm
-            className="joinInput"
-            onInputSubmit={setEmail}
-            placeholder="이메일"
-            type="text"
-          />
+          <form>
+            <InputForm
+              className="joinInput"
+              onInputSubmit={setEmail}
+              placeholder="이메일"
+              type="text"
+            />
+          </form>
+          {validEmail ? null : (
+            <div className="noValidEmailText">
+              올바르지 않은 형식의 이메일입니다.
+            </div>
+          )}
         </div>
+
         <div className="startButtonPart">
-          <div className="startButtonContainer">
-            <ChangePasswordButton email={email} />
-          </div>
+          {correctEmail ? null : (
+            <div style={{ fontSize: '12px', marginLeft: '50px' }}>
+              가입되지 않은 이메일입니다.
+            </div>
+          )}
+
+          <ChangePasswordButton
+            onClickButton={mailingFunction}
+            email={email}
+            validEmail={validEmail}
+          />
         </div>
       </div>
     </div>

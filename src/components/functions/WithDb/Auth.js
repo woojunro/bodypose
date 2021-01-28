@@ -35,3 +35,8 @@ export const CheckAlreadyUsedEmail = (email) => {
 export const CheckAlreadyUsedUserName = (userName) => {
   return false;
 };
+
+//비밀번호 변경을 위한 이메일 확인 함수.
+export const CheckCorrectEmail = (email) => {
+  return true;
+};
