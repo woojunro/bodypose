@@ -33,6 +33,8 @@ import { UploadsModule } from './uploads/uploads.module';
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import { HairMakeupShop } from './studios/entities/hair-makeup-shop.entity';
 import { PasswordReset } from './users/entities/password_reset.entity';
+import { NoticesModule } from './notices/notices.module';
+import { Notice } from './notices/entity/notice.entity';
 
 @Module({
   imports: [
@@ -83,6 +85,7 @@ import { PasswordReset } from './users/entities/password_reset.entity';
         UsersReviewStudios,
         ReviewPhoto,
         PasswordReset,
+        Notice,
       ],
     }),
     GraphQLModule.forRoot({
@@ -104,6 +107,7 @@ import { PasswordReset } from './users/entities/password_reset.entity';
     StudiosModule,
     PhotosModule,
     UploadsModule,
+    NoticesModule,
   ],
   controllers: [],
   providers: [
