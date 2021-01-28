@@ -5,7 +5,12 @@ import {
   CreateNoticeInput,
   CreateNoticeOutput,
 } from './dtos/create-notice.dto';
-import { GetNoticesInput, GetNoticesOutput } from './dtos/get-notice.dto';
+import {
+  GetNoticeInput,
+  GetNoticeOutput,
+  GetNoticesInput,
+  GetNoticesOutput,
+} from './dtos/get-notice.dto';
 import { Notice } from './entity/notice.entity';
 import { NoticesService } from './notices.service';
 
@@ -17,6 +22,12 @@ export class NoticesResolver {
   @Query(returns => GetNoticesOutput)
   notices(@Args('input') input: GetNoticesInput): Promise<GetNoticesOutput> {
     return this.noticesService.getNotices(input);
+  }
+
+  // Public
+  @Query(returns => GetNoticeOutput)
+  notice(@Args('input') input: GetNoticeInput): Promise<GetNoticeOutput> {
+    return this.noticesService.getNotice(input);
   }
 
   @Roles(Role.ADMIN)

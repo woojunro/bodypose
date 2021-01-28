@@ -1,12 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
+import { CoreOutput } from 'src/common/dtos/output.dto';
 import { Repository } from 'typeorm';
 import {
   CreateNoticeInput,
   CreateNoticeOutput,
 } from './dtos/create-notice.dto';
-import { GetNoticesInput, GetNoticesOutput } from './dtos/get-notice.dto';
+import {
+  GetNoticeInput,
+  GetNoticeOutput,
+  GetNoticesInput,
+  GetNoticesOutput,
+} from './dtos/get-notice.dto';
 import { Notice } from './entity/notice.entity';
 
 @Injectable()
@@ -15,6 +21,11 @@ export class NoticesService {
     @InjectRepository(Notice)
     private readonly noticeRepository: Repository<Notice>,
   ) {}
+
+  private readonly NOTICE_NOT_FOUND: CoreOutput = {
+    ok: false,
+    error: 'NOTICE_NOT_FOUND',
+  };
 
   async createNotice({
     title,
@@ -44,6 +55,22 @@ export class NoticesService {
         ok: true,
         notices,
         totalPages: Math.ceil(count / noticesPerPage),
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getNotice({ id }: GetNoticeInput): Promise<GetNoticeOutput> {
+    try {
+      const notice = await this.noticeRepository.findOne({ id });
+      if (!notice) {
+        return this.NOTICE_NOT_FOUND;
+      }
+      return {
+        ok: true,
+        notice,
       };
     } catch (e) {
       console.log(e);
