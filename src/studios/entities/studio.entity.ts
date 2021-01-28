@@ -2,9 +2,11 @@ import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import {
   IsBoolean,
   IsEnum,
+  IsInt,
   IsOptional,
   IsString,
   IsUrl,
+  Min,
 } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { StudioPhoto } from 'src/photos/entities/studio-photo.entity';
@@ -131,10 +133,25 @@ export class Studio extends CoreEntity {
   @IsBoolean()
   isOriginalPhotoProvided: boolean;
 
+  // 스튜디오 상품 최저가
+  @Column({ nullable: true })
+  @Field(type => Int, { nullable: true })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  lowestPrice?: number;
+
   // 스튜디오 상품 (스튜디오 촬영, 야외 촬영) 목록
   @OneToMany(relation => StudioProduct, product => product.studio)
   @Field(type => [StudioProduct])
   studioProducts: StudioProduct[];
+
+  // 주차 정보 문구
+  @Column({ nullable: true })
+  @Field(type => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  parkingInfoDescription?: string;
 
   // 스튜디오 촬영 상품 목록 설명 문구
   @Column({ nullable: true })

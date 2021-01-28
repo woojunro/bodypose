@@ -71,6 +71,7 @@ import { HairMakeupProduct } from './entities/hair-makeup-product.entity';
 import { HairMakeupShop } from './entities/hair-makeup-shop.entity';
 import { StudioProduct } from './entities/studio-product.entity';
 import { Studio } from './entities/studio.entity';
+import { UsersClickStudios } from './entities/users-click-studios.entity';
 import { UsersReviewStudios } from './entities/users-review-studios.entity';
 
 @Injectable()
@@ -90,6 +91,8 @@ export class StudiosService {
     private readonly additionalProductRepository: Repository<AdditionalProduct>,
     @InjectRepository(UsersReviewStudios)
     private readonly studioReviewRepository: Repository<UsersReviewStudios>,
+    @InjectRepository(UsersClickStudios)
+    private readonly usersClickStudiosRepository: Repository<UsersClickStudios>,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     @Inject(forwardRef(() => PhotosService))
@@ -161,13 +164,11 @@ export class StudiosService {
           .getOne();
       }
       // Click
-      /*
-      const newClick = this.userClickStudioRepository.create({
+      const newClick = this.usersClickStudiosRepository.create({
         studio,
         user: user ? user : null,
       });
-      await this.userClickStudioRepository.save(newClick);
-      */
+      this.usersClickStudiosRepository.save(newClick);
       // Return
       return {
         ok: true,
@@ -424,12 +425,21 @@ export class StudiosService {
       }
       // Create and save products
       const idList: number[] = [];
+      let lowestPrice = -1;
       for (const product of products) {
         const newProduct = this.studioProductRepository.create({ ...product });
         newProduct.studio = studio;
-        const { id } = await this.studioProductRepository.save(newProduct);
+        const { id, weekdayPrice } = await this.studioProductRepository.save(
+          newProduct,
+        );
         idList.push(id);
+        if (lowestPrice === -1 || weekdayPrice < lowestPrice) {
+          lowestPrice = weekdayPrice;
+        }
       }
+      // Update lowestPrice
+      studio.lowestPrice = lowestPrice;
+      await this.studioRepository.save(studio);
       // return idList
       return {
         ok: true,
@@ -455,7 +465,7 @@ export class StudiosService {
       // Find studio
       const studio = await this.studioRepository.findOne(
         { slug: studioSlug },
-        { relations: ['products'] },
+        { relations: ['studioProducts'] },
       );
       if (!studio) {
         return {
@@ -466,12 +476,16 @@ export class StudiosService {
       // Overwrite
       const { studioProducts: currentProducts } = studio;
       const idList: number[] = [];
+      let lowestPrice = -1;
       for (let i = 0; i < currentProducts.length && i < products.length; i++) {
         currentProducts[i] = { ...currentProducts[i], ...products[i] };
-        const { id } = await this.studioProductRepository.save(
+        const { id, weekdayPrice } = await this.studioProductRepository.save(
           currentProducts[i],
         );
         idList.push(id);
+        if (lowestPrice === -1 || weekdayPrice < lowestPrice) {
+          lowestPrice = weekdayPrice;
+        }
       }
       if (currentProducts.length > products.length) {
         // Delete products that haven't been updated
@@ -487,10 +501,19 @@ export class StudiosService {
             ...products[i],
           });
           newProduct.studio = studio;
-          const { id } = await this.studioProductRepository.save(newProduct);
+          const { id, weekdayPrice } = await this.studioProductRepository.save(
+            newProduct,
+          );
           idList.push(id);
+          if (lowestPrice === -1 || weekdayPrice < lowestPrice) {
+            lowestPrice = weekdayPrice;
+          }
         }
       }
+      // Update lowestPrice
+      const { studioProducts, ...studioToUpdate } = studio;
+      studioToUpdate.lowestPrice = lowestPrice;
+      await this.studioRepository.save(studioToUpdate);
       return {
         ok: true,
         idList,

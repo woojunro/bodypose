@@ -17,6 +17,7 @@ class UpdateStudioPayload extends PartialType(
       'logoUrl',
       'contactUrl',
       'reservationUrl',
+      'parkingInfoDescription',
       'studioProductListDescription',
       'outdoorProductListDescription',
       'isOriginalPhotoProvided',
