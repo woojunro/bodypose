@@ -1,5 +1,11 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { IsEnum, IsOptional, IsString, IsUrl } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsUrl,
+} from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { StudioPhoto } from 'src/photos/entities/studio-photo.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -118,6 +124,12 @@ export class Studio extends CoreEntity {
   @OneToMany(relation => UsersReviewStudios, review => review.studio)
   @Field(type => [UsersReviewStudios])
   reviews: UsersReviewStudios[];
+
+  // 원본 사진 무료 제공 여부
+  @Column()
+  @Field(type => Boolean)
+  @IsBoolean()
+  isOriginalPhotoProvided: boolean;
 
   // 스튜디오 상품 (스튜디오 촬영, 야외 촬영) 목록
   @OneToMany(relation => StudioProduct, product => product.studio)

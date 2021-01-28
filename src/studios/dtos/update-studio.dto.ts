@@ -19,6 +19,7 @@ class UpdateStudioPayload extends PartialType(
       'reservationUrl',
       'studioProductListDescription',
       'outdoorProductListDescription',
+      'isOriginalPhotoProvided',
       'weekdayPriceTag',
       'weekendPriceTag',
       'additionalProductListDescription',
