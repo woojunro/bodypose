@@ -8,6 +8,10 @@ import {
   CreateNoticeOutput,
 } from './dtos/create-notice.dto';
 import {
+  DeleteNoticeInput,
+  DeleteNoticeOutput,
+} from './dtos/delete-notice.dto';
+import {
   GetNoticeInput,
   GetNoticeOutput,
   GetNoticesInput,
@@ -93,6 +97,20 @@ export class NoticesService {
       }
       const noticeToBeUpdated = { ...notice, ...payload };
       await this.noticeRepository.save(noticeToBeUpdated);
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async deleteNotice({ id }: DeleteNoticeInput): Promise<DeleteNoticeOutput> {
+    try {
+      const notice = await this.noticeRepository.findOne({ id });
+      if (!notice) {
+        return this.NOTICE_NOT_FOUND;
+      }
+      await this.noticeRepository.delete({ id });
       return { ok: true };
     } catch (e) {
       console.log(e);
