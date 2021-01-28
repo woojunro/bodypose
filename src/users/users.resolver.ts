@@ -20,6 +20,10 @@ import {
   UpdatePasswordInput,
   UpdatePasswordOutput,
 } from './dtos/update-password.dto';
+import {
+  UpdateNicknameInput,
+  UpdateNicknameOutput,
+} from './dtos/update-user.dto';
 import { VerifyUserInput, VerifyUserOutput } from './dtos/verify-user.dto';
 import { Role, User } from './entities/user.entity';
 import { UsersService } from './users.service';
@@ -103,5 +107,14 @@ export class UsersResolver {
     @Args('input') input: UpdatePasswordInput,
   ): Promise<UpdatePasswordOutput> {
     return this.usersService.updatePassword(input);
+  }
+
+  @Roles(Role.USER)
+  @Mutation(returns => UpdateNicknameOutput)
+  updateNickname(
+    @CurrentUser() user: User,
+    @Args('input') input: UpdateNicknameInput,
+  ): Promise<UpdateNicknameOutput> {
+    return this.usersService.updateNickname(user, input);
   }
 }

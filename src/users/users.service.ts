@@ -30,6 +30,10 @@ import {
   UpdatePasswordInput,
   UpdatePasswordOutput,
 } from './dtos/update-password.dto';
+import {
+  UpdateNicknameInput,
+  UpdateNicknameOutput,
+} from './dtos/update-user.dto';
 import { VerifyUserOutput } from './dtos/verify-user.dto';
 import { PasswordReset } from './entities/password_reset.entity';
 import { LoginMethod, Role, User } from './entities/user.entity';
@@ -65,20 +69,27 @@ export class UsersService {
     nickname,
   }: CreateUserWithEmailInput): Promise<CreateUserWithEmailOutput> {
     try {
-      // Check if there exists a user with the inputted email
-      const userByEmail = await this.userRepository.findOne({ email });
-      if (userByEmail) {
-        return {
-          ok: false,
-          error: 'DUPLICATE_EMAIL',
-        };
-      }
       // Check password security
       const isPasswordSecure = this.checkPasswordSecurity(password);
       if (!isPasswordSecure) {
         return {
           ok: false,
           error: 'INSECURE_PASSWORD',
+        };
+      }
+      // Check nickname length
+      if (nickname.length > 10) {
+        return {
+          ok: false,
+          error: 'INVALID_NICKNAME',
+        };
+      }
+      // Check if there exists a user with the inputted email
+      const userByEmail = await this.userRepository.findOne({ email });
+      if (userByEmail) {
+        return {
+          ok: false,
+          error: 'DUPLICATE_EMAIL',
         };
       }
       // Check if there exists a user with the inputted nickname
@@ -466,6 +477,35 @@ export class UsersService {
       // Delete code
       await this.passwordResetRepository.delete({ id: reset.id });
       // return
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async updateNickname(
+    { id }: User,
+    { nickname }: UpdateNicknameInput,
+  ): Promise<UpdateNicknameOutput> {
+    try {
+      // Check nickname length
+      if (nickname.length > 10) {
+        return {
+          ok: false,
+          error: 'INVALID_NICKNAME',
+        };
+      }
+      const userWithNickname = await this.userRepository.findOne({ nickname });
+      if (userWithNickname) {
+        return {
+          ok: false,
+          error: 'DUPLICATE_NICKNAME',
+        };
+      }
+      const user = await this.userRepository.findOne({ id });
+      user.nickname = nickname;
+      await this.userRepository.save(user);
       return { ok: true };
     } catch (e) {
       console.log(e);

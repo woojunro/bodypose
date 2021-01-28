@@ -18,3 +18,13 @@ export class UpdateUserProfileOutput extends CoreOutput {
   @Field(type => User, { nullable: true })
   profile?: User;
 }
+
+@InputType()
+export class UpdateNicknameInput extends PickType(
+  User,
+  ['nickname'],
+  InputType,
+) {}
+
+@ObjectType()
+export class UpdateNicknameOutput extends CoreOutput {}
