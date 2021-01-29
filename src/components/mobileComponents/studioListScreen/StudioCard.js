@@ -69,7 +69,7 @@ const StudioCard = ({
                 ) : null}
               </div>
               <div className="lastLine">
-                <span className="per">1인 컨셉 1개</span>
+                <span className="per">최저 가격</span>
                 <span className="price">{`${price}~`}</span>
               </div>
             </div>
