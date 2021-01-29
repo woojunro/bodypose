@@ -23,6 +23,8 @@
 }
 
 .userTap {
+  cursor: pointer;
+
   margin-top: 20px;
   margin-left: 20px;
 

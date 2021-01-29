@@ -22,6 +22,7 @@
 .reviewCompelteButton {
   padding-right: 20px;
   font-size: 15px;
+  cursor: pointer;
 }
 .reviewTopContainer {
   margin-top: 20px;
@@ -47,6 +48,8 @@
   padding-right: 25px;
 }
 .addReviewPicButton {
+  cursor: pointer;
+
   width: 75px;
   height: 75px;
   border-radius: 8px;
@@ -78,6 +81,8 @@
   display: flex;
 }
 .previewPic {
+  cursor: pointer;
+
   width: 75px;
   height: 75px;
   border-radius: 8px;

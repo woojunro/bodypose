@@ -78,10 +78,13 @@
   color: white;
   width: fit-content;
   border-radius: 5px;
+  cursor: pointer;
 }
 
 .unselectedOptionContainer {
   margin: 2px;
+  cursor: pointer;
+
   background-color: white;
   padding-top: 5px;
   padding-bottom: 5px;
@@ -109,4 +112,5 @@
   padding-top: 10px;
   padding-bottom: 10px;
   font-weight: normal;
+  cursor: pointer;
 }

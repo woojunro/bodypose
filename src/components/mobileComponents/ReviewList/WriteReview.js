@@ -21,7 +21,6 @@ const WriteReview = ({
   const [mainNumber, setMainNumber] = useState(0);
 
   const hiddenFileInput = React.useRef(null);
-
   const handleClick = (event) => {
     hiddenFileInput.current.click();
   };

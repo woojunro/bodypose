@@ -53,6 +53,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  cursor: pointer;
 }
 .unselectedBox {
   height: 100%;
@@ -60,4 +61,5 @@
   color: black;
   display: flex;
   align-items: center;
+  cursor: pointer;
 }

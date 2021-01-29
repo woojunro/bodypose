@@ -14,8 +14,25 @@ html {
 body {
   height: 100%;
   -ms-overflow-style: none;
-  scrollbar-width: none;
+  scrollbar-width: thin;
+  scrollbar-color: lightgray transparent;
 }
 [role='navigation'] {
   overflow: auto !important;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background-color: lightgray;
+}
+::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
 }

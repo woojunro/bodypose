@@ -13,6 +13,8 @@
 }
 
 .contactLink {
+  cursor: pointer;
+
   width: 50%;
   display: flex;
   justify-content: center;
@@ -21,6 +23,8 @@
   border-right: 1px solid var(--color-loginGray);
 }
 .reservationLink {
+  cursor: pointer;
+
   width: 50%;
   display: flex;
   justify-content: center;

@@ -8,6 +8,7 @@
   justify-content: center;
   background-color: var(--color-chocolate);
   color: white;
+  cursor: pointer;
 }
 
 .leaveButtonContainer {

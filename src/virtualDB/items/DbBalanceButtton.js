@@ -77,6 +77,8 @@ export const DbBalanceButton = {
     { title: '신논현점', adress: '서울시 강남구 논현동 183-14 지하1층' },
     { title: '선정릉점', adress: '서울시 강남구 논현동 270-1 지하1층' },
   ],
+  parking:
+    '신논현점: 건물 내 주차 불가합니다. 인근 유료/공영주차장을 이용해주시기 바랍니다.\n선정릉점: 팀당 1대 주차 가능합니다.',
   isEvent: false,
   weekDays: '월-목',
   weekEnds: '금-일',

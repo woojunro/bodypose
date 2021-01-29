@@ -64,6 +64,7 @@ const Modal = ({ isOpen, close, concept }) => {
                 <div style={{ width: '45px' }}></div>
                 <div className="studioTitle">{concept.title}</div>
                 <IoIosClose
+                  className="conceptModalClose"
                   onClick={() => {
                     close();
                   }}

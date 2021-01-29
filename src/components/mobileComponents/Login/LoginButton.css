@@ -8,6 +8,7 @@
   background-color: var(--color-chocolate);
   color: white;
   border-radius: 5px;
+  cursor: pointer;
 }
 
 .loginButtonContainer {

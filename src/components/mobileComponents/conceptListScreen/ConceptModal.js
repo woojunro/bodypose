@@ -125,6 +125,7 @@ const Modal = ({
                     <div style={{ width: '45px' }}></div>
                     <div className="studioTitle">{concept.title}</div>
                     <IoIosClose
+                      className="conceptModalClose"
                       onClick={() => {
                         close();
                         handleIsFinalPhoto();

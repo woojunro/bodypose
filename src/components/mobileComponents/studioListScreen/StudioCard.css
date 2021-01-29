@@ -45,8 +45,11 @@
   position: absolute;
   top: 4.5%;
   left: 89%;
+  cursor: pointer;
 }
 .cardSelectedHeart {
+  cursor: pointer;
+
   font-size: 23px;
   position: absolute;
   top: 4.5%;

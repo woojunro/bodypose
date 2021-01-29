@@ -18,6 +18,8 @@
 }
 
 .sortIcon {
+  cursor: pointer;
+
   display: flex;
   position: absolute;
   z-index: 35;

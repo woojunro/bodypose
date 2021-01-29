@@ -21,6 +21,7 @@ select:focus {
 
 .searchIcon {
   font-size: 23px;
+  cursor: pointer;
 }
 
 .closeIcon {

@@ -4,7 +4,7 @@
   margin: 0;
   display: flex;
   height: 220px;
-  overflow: auto;
+  overflow-x: scroll;
   width: 100%;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -24,8 +24,4 @@
   left: 100%;
   top: 0px;
   padding-right: 8px;
-}
-
-.scrollView ul::-webkit-scrollbar {
-  display: none;
 }

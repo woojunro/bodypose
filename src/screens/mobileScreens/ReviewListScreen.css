@@ -27,6 +27,8 @@
   padding-top: 10px;
 }
 .seeMoreReview {
+  cursor: pointer;
+
   display: flex;
 
   justify-content: center;

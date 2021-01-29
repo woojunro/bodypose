@@ -5,6 +5,8 @@
 }
 .selectedItem {
   font-weight: bold;
+  cursor: pointer;
+
   font-size: 15px;
   color: black;
   border-bottom: 1px solid black;
@@ -12,6 +14,7 @@
 }
 .unselectedItem {
   font-size: 15px;
+  cursor: pointer;
 }
 
 .reviewCount {

@@ -10,15 +10,19 @@
 .studioInfoColorHeart {
   color: var(--color-heartColor);
   font-size: 26px;
+  cursor: pointer;
 }
 .studioInfoHeart {
   font-size: 26px;
+  cursor: pointer;
 }
 .studioInfoShare {
   font-weight: bold;
   font-size: 25px;
   margin-left: 10px;
+  cursor: pointer;
 }
 .studioInfoGoBack {
   font-size: 25px;
+  cursor: pointer;
 }
