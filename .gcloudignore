@@ -1,5 +1,9 @@
 dist/
 graphql_snippets/
 node_modules/
+test/
 README.md
 .env.*
+gcp-key.json
+.eslintrc.js
+.prettierrc

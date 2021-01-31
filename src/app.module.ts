@@ -47,8 +47,14 @@ import { Notice } from './notices/entity/notice.entity';
         NODE_ENV: Joi.string()
           .valid('development', 'production', 'test')
           .required(),
-        DB_HOST: Joi.string().required(),
-        DB_PORT: Joi.string().required(),
+        DB_HOST:
+          process.env.NODE_ENV === 'development'
+            ? Joi.string().required()
+            : null,
+        DB_PORT:
+          process.env.NODE_ENV === 'development'
+            ? Joi.string().required()
+            : null,
         DB_USERNAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_NAME: Joi.string().required(),
@@ -57,40 +63,79 @@ import { Notice } from './notices/entity/notice.entity';
         MAILGUN_DOMAIN_NAME: Joi.string().required(),
         GOOGLE_CLOUD_PROJECT: Joi.string().required(),
         GCLOUD_STORAGE_BUCKET: Joi.string().required(),
-        GOOGLE_APPLICATION_CREDENTIALS: Joi.string().required(),
+        GOOGLE_APPLICATION_CREDENTIALS:
+          process.env.NODE_ENV === 'development'
+            ? Joi.string().required()
+            : null,
+        CLOUD_SQL_CONNECTION_NAME:
+          process.env.NODE_ENV === 'production'
+            ? Joi.string().required()
+            : null,
       }),
     }),
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: process.env.DB_HOST,
-      port: +process.env.DB_PORT,
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      synchronize: true,
-      logging: process.env.NODE_ENV !== 'production',
-      entities: [
-        User,
-        Verification,
-        Studio,
-        Branch,
-        Catchphrase,
-        UsersClickStudios,
-        StudioPhoto,
-        BackgroundConcept,
-        CostumeConcept,
-        ObjectConcept,
-        UsersClickStudioPhotos,
-        StudioProduct,
-        HairMakeupShop,
-        HairMakeupProduct,
-        AdditionalProduct,
-        UsersReviewStudios,
-        ReviewPhoto,
-        PasswordReset,
-        Notice,
-      ],
-    }),
+    process.env.NODE_ENV === 'production'
+      ? TypeOrmModule.forRoot({
+          type: 'mysql',
+          username: process.env.DB_USERNAME,
+          password: process.env.DB_PASSWORD,
+          database: process.env.DB_NAME,
+          extra: {
+            socketPath: `/cloudsql/${process.env.CLOUD_SQL_CONNECTION_NAME}`,
+          },
+          synchronize: false,
+          entities: [
+            User,
+            Verification,
+            Studio,
+            Branch,
+            Catchphrase,
+            UsersClickStudios,
+            StudioPhoto,
+            BackgroundConcept,
+            CostumeConcept,
+            ObjectConcept,
+            UsersClickStudioPhotos,
+            StudioProduct,
+            HairMakeupShop,
+            HairMakeupProduct,
+            AdditionalProduct,
+            UsersReviewStudios,
+            ReviewPhoto,
+            PasswordReset,
+            Notice,
+          ],
+        })
+      : TypeOrmModule.forRoot({
+          type: 'mysql',
+          host: process.env.DB_HOST,
+          port: +process.env.DB_PORT,
+          username: process.env.DB_USERNAME,
+          password: process.env.DB_PASSWORD,
+          database: process.env.DB_NAME,
+          synchronize: true,
+          logging: true,
+          entities: [
+            User,
+            Verification,
+            Studio,
+            Branch,
+            Catchphrase,
+            UsersClickStudios,
+            StudioPhoto,
+            BackgroundConcept,
+            CostumeConcept,
+            ObjectConcept,
+            UsersClickStudioPhotos,
+            StudioProduct,
+            HairMakeupShop,
+            HairMakeupProduct,
+            AdditionalProduct,
+            UsersReviewStudios,
+            ReviewPhoto,
+            PasswordReset,
+            Notice,
+          ],
+        }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
       formatError: (error: GraphQLError) => {

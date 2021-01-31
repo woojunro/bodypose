@@ -36,3 +36,4 @@ lerna-debug.log*
 # GCP
 gcp-key.json
 app.yaml
+*.pem

@@ -1,0 +1,3 @@
+dispatch:
+  - url: 'api.bodypose.co.kr/*'
+    service: bodypose-backend
