@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './HeaderM.css';
 
-import logo from '../../materials/Logo.png';
+import logoAndsymbol from '../../materials/로고+심볼.png';
 
 const Header = ({ pageName }) => {
   //홈페이지 헤더.
@@ -12,7 +12,7 @@ const Header = ({ pageName }) => {
         <div className="header">
           <div className="headerLogo">
             <Link to="/" onClick={() => window.scrollTo(0, 0)}>
-              <img src={logo} alt="BodyPose" />
+              <img src={logoAndsymbol} alt="BodyPose" />
             </Link>
           </div>
         </div>
