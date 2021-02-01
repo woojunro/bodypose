@@ -106,6 +106,13 @@ export class StudiosService {
     );
   }
 
+  checkIfStudioExists(slug: string): Promise<Studio> {
+    return this.studioRepository.findOne(
+      { slug },
+      { select: ['id', 'name', 'slug'] },
+    );
+  }
+
   getStudioBySlug(slug: string): Promise<Studio> {
     return this.studioRepository.findOne(
       { slug },

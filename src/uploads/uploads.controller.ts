@@ -2,12 +2,14 @@ import {
   Body,
   Controller,
   Post,
-  UploadedFile,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import {
+  FileFieldsInterceptor,
+  FilesInterceptor,
+} from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { RestJwtAuthGuard } from 'src/auth/rest-jwt-auth.guard';
 import { RestRoles } from 'src/auth/roles.decorator';
@@ -43,15 +45,24 @@ export class UploadsController {
   @RestRoles(Role.ADMIN)
   @UseGuards(RestJwtAuthGuard)
   @UseInterceptors(
-    FileInterceptor('photo', {
-      storage: memoryStorage(),
-      limits: {
-        fileSize: 1 * 1024 * 1024,
+    FileFieldsInterceptor(
+      [
+        { name: 'thumbnail', maxCount: 1 },
+        { name: 'original', maxCount: 1 },
+      ],
+      {
+        storage: memoryStorage(),
+        limits: {
+          fileSize: 1 * 1024 * 1024, // 1MB
+        },
+        fileFilter: imageFileFilter,
       },
-      fileFilter: imageFileFilter,
-    }),
+    ),
   )
-  async uploadStudioPhoto(@UploadedFile() photo, @Body() body: UploadPhotoDto) {
-    return this.uploadsService.uploadStudioPhoto(photo, body);
+  async uploadStudioPhoto(
+    @UploadedFiles() photos,
+    @Body() body: UploadPhotoDto,
+  ) {
+    return this.uploadsService.uploadStudioPhoto(photos, body);
   }
 }
