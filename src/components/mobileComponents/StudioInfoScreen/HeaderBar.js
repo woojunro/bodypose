@@ -11,6 +11,14 @@ const HeaderBar = ({ currentStudio, copyTextToClipboard, setIsAlertOpen }) => {
   const LogedIn = useContext(LoginContext);
   const history = useHistory();
 
+  const gobackFunction = () => {
+    if (history.location.state) {
+      history.goBack();
+    } else {
+      history.push('/');
+    }
+  };
+
   const ChangeIsHearted = () => {
     if (!LogedIn.logedIn) {
       history.push({
@@ -30,7 +38,7 @@ const HeaderBar = ({ currentStudio, copyTextToClipboard, setIsAlertOpen }) => {
   return (
     <div className="studioInfoHeader">
       <FiArrowLeft
-        onClick={() => history.goBack()}
+        onClick={() => gobackFunction()}
         className="studioInfoGoBack"
       />
       <div>

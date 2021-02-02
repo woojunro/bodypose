@@ -12,7 +12,6 @@ const ReviewOption = ({
     if (isSameUser) {
       return (
         <>
-          <div className="reviewOption">수정하기</div>
           <div className="reviewOption" onClick={() => setIsRemoveOpen(true)}>
             삭제하기
           </div>

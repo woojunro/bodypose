@@ -1,10 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import './MainCardM.css';
 
 const MainCardM = ({ title, studioName, pic, price }) => {
+  const history = useHistory();
   return (
-    <Link to={`/studios/${studioName}`} onClick={() => window.scrollTo(0, 0)}>
+    <Link
+      to={{
+        pathname: `/studios/${studioName}`,
+        state: { previousPath: history.location.pathname },
+      }}
+      onClick={() => window.scrollTo(0, 0)}
+    >
       <div className="cardContainer">
         <div>
           <img alt="card" src={pic} />

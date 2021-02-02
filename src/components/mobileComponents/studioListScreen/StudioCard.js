@@ -40,7 +40,10 @@ const StudioCard = ({
     <div className="totalContainer">
       <Link
         onClick={() => window.scrollTo(0, 0)}
-        to={`studios/${name}`}
+        to={{
+          pathname: `/studios/${name}`,
+          state: { previousPath: history.location.pathname },
+        }}
         style={{ TextDecoder: 'none', color: 'white' }}
       >
         <div className="studioCardContainer">

@@ -4,7 +4,7 @@ import { ReportReview } from '../../functions/WithDb/Review';
 const ReportModal = ({ currentReview, close, isOpen }) => {
   const renderedReasons = () => {
     return (
-      <div className="renderedReaonsContainer">
+      <div className="reviewReaonsContainer">
         <div className="reportTitle">신고하기</div>
         <div
           className="reportReason"

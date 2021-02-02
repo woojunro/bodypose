@@ -77,7 +77,10 @@ const Modal = ({ isOpen, close, concept }) => {
               </div>
               <div className="toStudioInfoContainer">
                 <Link
-                  to={`/studios/${concept.studio}`}
+                  to={{
+                    pathname: `/studios/${concept.studio}`,
+                    state: { previousPath: history.location.pathname },
+                  }}
                   className="toStudioInfo"
                   onClick={() => window.scrollTo(0, 0)}
                 >

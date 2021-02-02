@@ -4,7 +4,7 @@ import { RemoveReview } from '../../functions/WithDb/Review';
 const removeModal = ({ currentReview, close, isOpen, history }) => {
   const renderedReasons = () => {
     return (
-      <div className="renderedReaonsContainer">
+      <div className="removeReviewContainer">
         <div className="removeTitle">정말 리뷰를 삭제하시겠습니까?</div>
         <span
           className="removeAnswer"

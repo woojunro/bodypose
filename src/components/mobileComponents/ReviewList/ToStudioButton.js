@@ -1,11 +1,15 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import './ToStudioButton.css';
 
 const ToStudioButton = ({ linkTo }) => {
+  const history = useHistory();
   return (
     <Link
-      to={linkTo}
+      to={{
+        pathname: linkTo,
+        state: { previousPath: history.location.pathname },
+      }}
       onClick={() => {
         window.scrollTo({ top: 0, left: 0 });
       }}

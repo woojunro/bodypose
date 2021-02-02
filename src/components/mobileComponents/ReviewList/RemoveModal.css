@@ -37,9 +37,9 @@
   box-sizing: border-box;
 }
 
-.renderedReaonsContainer {
+.removeReviewContainer {
+  text-align: center;
   padding-top: 40px;
-  padding-left: 55px;
   height: 100%;
 }
 .removeTitle {
@@ -48,6 +48,7 @@
 }
 
 .removeAnswer {
-  margin-left: 43px;
+  margin-left: 20px;
+  margin-right: 20px;
   font-size: 20px;
 }

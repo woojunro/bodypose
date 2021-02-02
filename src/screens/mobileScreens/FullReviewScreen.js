@@ -27,7 +27,10 @@ const FullReviewScreen = ({ match }) => {
   const history = useHistory();
   const number = match.params.reviewNumber;
   const fullReview = GetFullReview(Number(number));
-  const linkTo = '/studios/' + fullReview.studioName;
+  const studioName = fullReview.studioName;
+  const linkTo = '/studios/' + studioName;
+
+  console.log(linkTo);
 
   useEffect(() => {
     if (LogedIn.logedIn) {
@@ -74,6 +77,7 @@ const FullReviewScreen = ({ match }) => {
           </div>
         </div>
         <BsThreeDotsVertical
+          style={{ cursor: 'pointer' }}
           onClick={() => {
             setIsOptionOpen(!isOptionOpen);
           }}
