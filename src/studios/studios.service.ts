@@ -202,7 +202,7 @@ export class StudiosService {
       }
       // TODO: Pagination
       const studios = await this.studioRepository.find({
-        relations: ['catchphrases'],
+        relations: ['catchphrases', 'coverPhoto'],
       });
       if (!studios) {
         throw new InternalServerErrorException();
