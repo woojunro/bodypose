@@ -191,7 +191,7 @@ export class PhotosService {
         .leftJoinAndSelect('studio_photo.objectConcepts', 'objectConcept')
         .leftJoinAndSelect('studio_photo.studio', 'studio')
         .where('heartUser.id = :id', { id })
-        .orderBy('photo.id', 'DESC')
+        .orderBy('photo.originalUrl', 'DESC')
         .skip((page - 1) * photosPerPage)
         .take(photosPerPage)
         .getManyAndCount();
