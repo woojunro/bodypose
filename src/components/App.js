@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import './App.css';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { useQuery } from '@apollo/client';
 
 import HomeScreenM from '../screens/mobileScreens/HomeScreen';
 import StudioInfoScreenM from '../screens/mobileScreens/StudioInfoScreen';
@@ -24,10 +24,31 @@ import LeaveScreenM from '../screens/mobileScreens/AboutUser/LeaveScreen';
 import NewPasswordScreenM from '../screens/mobileScreens/AboutAuth/NewPasswordScreen';
 
 import LoginContext from '../contexts/LoginContext';
+import { MY_PROFILE_QUERY } from '../gql/queries/MyProfileQuery';
+
+import './App.css';
+import AppLoadingScreen from './mobileComponents/AppLoadingScreen';
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const loggedInValue = { loggedIn, setLoggedIn };
+
+  const { loading } = useQuery(MY_PROFILE_QUERY, {
+    onCompleted: data => {
+      if (data.myProfile.ok) {
+        setLoggedIn(true);
+      }
+    },
+    onError: () => {},
+  });
+
+  if (loading) {
+    return (
+      <div className="appFullScreen">
+        <AppLoadingScreen big />
+      </div>
+    );
+  }
 
   return (
     <LoginContext.Provider value={loggedInValue}>

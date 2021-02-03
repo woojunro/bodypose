@@ -14,6 +14,10 @@ import NoticeBox from '../../components/mobileComponents/homeScreen/NoticeBox';
 import Footer from '../../components/mobileComponents/Footer';
 
 const HomeScreen = () => {
+  useEffect(() => {
+    document.body.style.overflow = 'auto';
+  }, []);
+
   const IEText =
     '인터넷 익스플로러는 보안에 취약하여 지원하지 않고 있습니다.\n인터넷 익스플로러에서는 사진의 비율이 깨져 보일 수 있습니다.';
   const renderIfIE = () => {
@@ -27,9 +31,7 @@ const HomeScreen = () => {
       return null;
     }
   };
-  useEffect(() => {
-    document.body.style.overflow = 'auto';
-  }, []);
+
   return (
     <div>
       <HeaderM pageName="home" />
