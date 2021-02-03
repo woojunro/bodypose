@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import HomeScreenM from '../screens/mobileScreens/HomeScreen';
 import StudioInfoScreenM from '../screens/mobileScreens/StudioInfoScreen';
@@ -32,7 +32,7 @@ const App = () => {
   return (
     <LoginContext.Provider value={loggedInValue}>
       <Router>
-        <div className="app">
+        <Switch className="app">
           <Route exact path="/" component={HomeScreenM} />
           <Route exact path="/studios" component={StudioListScreenM} />
           <Route exact path="/concepts" component={ConceptListScreenM} />
@@ -64,7 +64,7 @@ const App = () => {
           <Route exact path="/users/leave" component={LeaveScreenM} />
           <Route exact path="/error" component={ErrorScreenM} />
           <Route path="*" component={ErrorScreenM} />
-        </div>
+        </Switch>
       </Router>
     </LoginContext.Provider>
   );
