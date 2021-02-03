@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useQuery } from '@apollo/client';
 import './HomeScreen.css';
 import HeaderM from '../../components/mobileComponents/HeaderM';
 import AdTap from '../../components/mobileComponents/homeScreen/AdTap';
@@ -12,8 +13,15 @@ import {
 } from '../../components/mobileComponents/homeScreen/HomePageConcepts';
 import NoticeBox from '../../components/mobileComponents/homeScreen/NoticeBox';
 import Footer from '../../components/mobileComponents/Footer';
+import { MALE_PHOTO_QUERY } from '../../gql/queries/HomeScreenQuery';
+import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
 
 const HomeScreen = () => {
+  const { loading } = useQuery(MALE_PHOTO_QUERY, {
+    onCompleted: data => console.log(data),
+    onError: error => console.log(error),
+  });
+
   useEffect(() => {
     document.body.style.overflow = 'auto';
   }, []);
@@ -37,14 +45,22 @@ const HomeScreen = () => {
       <HeaderM pageName="home" />
       {renderIfIE()}
       <AdTap />
-      <MainCardScrollView />
-      <SeeAll />
-      <FemaleConcepts />
-      <MaleConcepts />
-      <CoupleConcepts />
-      <NoticeBox />
-      <Footer />
-      <BottomNavigation pageName="home" />
+      {loading ? (
+        <div>
+          <AppLoadingScreen />
+        </div>
+      ) : (
+        <>
+          <MainCardScrollView />
+          <SeeAll />
+          <FemaleConcepts />
+          <MaleConcepts />
+          <CoupleConcepts />
+          <NoticeBox />
+          <Footer />
+          <BottomNavigation pageName="home" />
+        </>
+      )}
     </div>
   );
 };
