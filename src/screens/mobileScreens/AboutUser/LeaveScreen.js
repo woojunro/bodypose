@@ -8,7 +8,7 @@ import LeaveButton from '../../../components/mobileComponents/Login/LeaveButton'
 import './LeaveScreen.css';
 
 const LeaveScreen = () => {
-  const LogedIn = useContext(LoginContext);
+  const LoggedIn = useContext(LoginContext);
   const history = useHistory();
   const [checked, setChecked] = useState(false);
   const [isLeaved, setIsLeaved] = useState(false);
@@ -17,14 +17,14 @@ const LeaveScreen = () => {
     if (isLeaved) {
       setTimeout(() => {
         history.push('/');
-        LogedIn.setLogedIn(false);
+        LoggedIn.setLoggedIn(false);
         Leave();
       }, 2000);
     }
     return null;
   }, [isLeaved]);
 
-  if (!LogedIn.logedIn) {
+  if (!LoggedIn.loggedIn) {
     return <Redirect to={'/error'} />;
   } else {
     if (isLeaved) {

@@ -8,11 +8,11 @@ import LoginContext from '../../../contexts/LoginContext';
 import BottomNavigation from '../../../components/mobileComponents/BottomNavigation';
 
 const MyInfoScreen = () => {
-  const LogedIn = useContext(LoginContext);
+  const LoggedIn = useContext(LoginContext);
   const history = useHistory();
   const user = GetUser();
 
-  if (!LogedIn.logedIn) {
+  if (!LoggedIn.loggedIn) {
     return <Redirect to={'/error'} />;
   } else {
     return (

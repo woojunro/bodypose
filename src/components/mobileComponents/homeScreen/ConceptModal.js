@@ -8,7 +8,7 @@ import LoginContext from '../../../contexts/LoginContext';
 
 const Modal = ({ isOpen, close, concept }) => {
   const [isHearted, setIsHearted] = useState(concept.isHearted);
-  const LogedIn = useContext(LoginContext);
+  const LoggedIn = useContext(LoginContext);
   const history = useHistory();
 
   const ChangeHeart = () => {
@@ -28,7 +28,7 @@ const Modal = ({ isOpen, close, concept }) => {
       </div>
     );
   } else {
-    if (LogedIn.logedIn) {
+    if (LoggedIn.loggedIn) {
       RenderedHeart = (
         <div
           onClick={() => {

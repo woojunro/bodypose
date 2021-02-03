@@ -6,7 +6,6 @@ import HomeScreenM from '../screens/mobileScreens/HomeScreen';
 import StudioInfoScreenM from '../screens/mobileScreens/StudioInfoScreen';
 import StudioListScreenM from '../screens/mobileScreens/StudioListScreen';
 import ConceptListScreenM from '../screens/mobileScreens/ConceptListScreen';
-import AboutM from '../screens/mobileScreens/AboutScreen.js';
 import ReviewListScreenM from '../screens/mobileScreens/ReviewListScreen';
 import UserScreenM from '../screens/mobileScreens/AboutUser/UserScreen';
 import HeartScreenM from '../screens/mobileScreens/HeartScreen';
@@ -27,15 +26,14 @@ import NewPasswordScreenM from '../screens/mobileScreens/AboutAuth/NewPasswordSc
 import LoginContext from '../contexts/LoginContext';
 
 const App = () => {
-  const [logedIn, setLogedIn] = useState(false);
-  const logedInValue = { logedIn, setLogedIn };
+  const [loggedIn, setLoggedIn] = useState(false);
+  const loggedInValue = { loggedIn, setLoggedIn };
 
   return (
-    <LoginContext.Provider value={logedInValue}>
+    <LoginContext.Provider value={loggedInValue}>
       <Router>
         <div className="app">
           <Route exact path="/" component={HomeScreenM} />
-          <Route path="/about" component={AboutM} />
           <Route exact path="/studios" component={StudioListScreenM} />
           <Route exact path="/concepts" component={ConceptListScreenM} />
 
@@ -65,6 +63,7 @@ const App = () => {
 
           <Route exact path="/users/leave" component={LeaveScreenM} />
           <Route exact path="/error" component={ErrorScreenM} />
+          <Route path="*" component={ErrorScreenM} />
         </div>
       </Router>
     </LoginContext.Provider>

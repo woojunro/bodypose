@@ -4,13 +4,13 @@ import { Login, CheckEmailPassword } from '../../functions/WithDb/Auth';
 import './LoginButton.css';
 
 const LoginButton = ({ email, password, setValidInfo }) => {
-  const LogedIn = useContext(LoginContext);
+  const LoggedIn = useContext(LoginContext);
 
   //Db랑 이메일, 비밀번호 비교하는 함수.
   const LoginFunction = () => {
     if (CheckEmailPassword()) {
       setValidInfo(true);
-      LogedIn.setLogedIn(true);
+      LoggedIn.setLoggedIn(true);
       Login(email, password);
     } else {
       setValidInfo(false);

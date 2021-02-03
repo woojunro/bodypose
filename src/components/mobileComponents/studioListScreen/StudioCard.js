@@ -19,14 +19,14 @@ const StudioCard = ({
   percent,
   originalPrice,
 }) => {
-  const LogedIn = useContext(LoginContext);
+  const LoggedIn = useContext(LoginContext);
   const history = useHistory();
   const adress = GetShortAdress(location);
 
   const [isHearted, setIsHearted] = useState(Hearted);
 
   const ChangeIsHearted = () => {
-    if (!LogedIn.logedIn) {
+    if (!LoggedIn.loggedIn) {
       history.push({
         pathname: '/login',
         state: { previousPath: '/studios' },

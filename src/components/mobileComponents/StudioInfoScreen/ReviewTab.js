@@ -10,7 +10,7 @@ import Modal from '../ReviewList/SortbyModal';
 
 const ReviewTab = ({ currentStudio, setIsWriteReviewOpen }) => {
   let sortByOptions = SortOptions;
-  const LogedIn = useContext(LoginContext);
+  const LoggedIn = useContext(LoginContext);
   const history = useHistory();
 
   const [sortBy, setSortBy] = useState(sortByOptions[0]);
@@ -49,7 +49,7 @@ const ReviewTab = ({ currentStudio, setIsWriteReviewOpen }) => {
         <div
           className="writeReviewButton"
           onClick={() => {
-            if (LogedIn.logedIn) {
+            if (LoggedIn.loggedIn) {
               setIsWriteReviewOpen(true);
             } else {
               history.push({
