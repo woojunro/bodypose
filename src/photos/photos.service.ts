@@ -95,43 +95,36 @@ export class PhotosService {
       } = input;
       const photosPerPage = 24;
 
-      const [photos, count] = await this.studioPhotoRepository.findAndCount({
-        join: {
-          alias: 'photo',
-          innerJoinAndSelect: {
-            backgroundConcepts: 'photo.backgroundConcepts',
-            costumeConcepts: 'photo.costumeConcepts',
-            objectConcepts: 'photo.objectConcepts',
-            studio: 'photo.studio',
-          },
-        },
-        where: qb => {
-          qb.where({
-            gender: gender ? gender : Not(IsNull()),
-          })
-            .andWhere(
-              backgroundConceptSlugs.length !== 0
-                ? 'backgroundConcepts.slug IN (:bgSlugs)'
-                : '1=1',
-              { bgSlugs: backgroundConceptSlugs },
-            )
-            .andWhere(
-              costumeConceptSlugs.length !== 0
-                ? 'costumeConcepts.slug IN (:costumeSlugs)'
-                : '1=1',
-              { costumeSlugs: costumeConceptSlugs },
-            )
-            .andWhere(
-              objectConceptSlugs.length !== 0
-                ? 'objectConcepts.slug IN (:objectSlugs)'
-                : '1=1',
-              { objectSlugs: objectConceptSlugs },
-            );
-        },
-        order: { id: 'DESC' },
-        skip: (page - 1) * photosPerPage,
-        take: photosPerPage,
-      });
+      const [photos, count] = await this.studioPhotoRepository
+        .createQueryBuilder('photo')
+        .leftJoinAndSelect('photo.backgroundConcepts', 'backgroundConcept')
+        .leftJoinAndSelect('photo.costumeConcepts', 'costumeConcept')
+        .leftJoinAndSelect('photo.objectConcepts', 'objectConcept')
+        .leftJoinAndSelect('photo.studio', 'studio')
+        .where({ gender: gender ? gender : Not(IsNull()) })
+        .andWhere(
+          backgroundConceptSlugs.length !== 0
+            ? 'backgroundConcept.slug IN (:bgSlugs)'
+            : '1=1',
+          { bgSlugs: backgroundConceptSlugs },
+        )
+        .andWhere(
+          costumeConceptSlugs.length !== 0
+            ? 'costumeConcept.slug IN (:costumeSlugs)'
+            : '1=1',
+          { costumeSlugs: costumeConceptSlugs },
+        )
+        .andWhere(
+          objectConceptSlugs.length !== 0
+            ? 'objectConcept.slug IN (:objectSlugs)'
+            : '1=1',
+          { objectSlugs: objectConceptSlugs },
+        )
+        .orderBy('photo.originalUrl', 'ASC')
+        .skip((page - 1) * photosPerPage)
+        .take(photosPerPage)
+        .getManyAndCount();
+
       // return
       return {
         ok: true,
@@ -191,7 +184,7 @@ export class PhotosService {
         .leftJoinAndSelect('studio_photo.objectConcepts', 'objectConcept')
         .leftJoinAndSelect('studio_photo.studio', 'studio')
         .where('heartUser.id = :id', { id })
-        .orderBy('photo.originalUrl', 'DESC')
+        .orderBy('photo.id', 'DESC')
         .skip((page - 1) * photosPerPage)
         .take(photosPerPage)
         .getManyAndCount();
