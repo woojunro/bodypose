@@ -17,7 +17,7 @@ export const MaleConcepts = () => {
   );
 };
 
-export const FemaleConcepts = () => {
+export const FemaleConcepts = ({ concepts }) => {
   const ConceptsList = GetFemaleConcepts();
 
   return (

@@ -43,8 +43,12 @@ body {
 }
 
 .appLoader {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: -moz-calc(100vh - 104px);
   height: -webkit-calc(100vh - 104px);
   height: calc(100vh - 104px);
+  align-items: center;
+  justify-content: center;
 }

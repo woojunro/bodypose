@@ -14,36 +14,33 @@ import NoticeBox from '../../components/mobileComponents/homeScreen/NoticeBox';
 import Footer from '../../components/mobileComponents/Footer';
 import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
 import { useQuery } from '@apollo/client';
-import {
-  HOMESCREEN_COUPLE_PHOTO_QUERY,
-  HOMESCREEN_FEMALE_PHOTO_QUERY,
-  HOMESCREEN_MALE_PHOTO_QUERY,
-} from '../../gql/queries/HomeScreenQuery';
+import { ALL_STUDIO_PHOTOS_QUERY } from '../../gql/queries/StudioPhotoQuery';
+import AppErrorScreen from '../../components/mobileComponents/AppErrorScreen';
+
+const femalePhotoPages = 12;
+const malePhotoPages = 4;
+const couplePhotoPages = 1;
+
+const randomPage = page => Math.floor(Math.random() * page) + 1;
 
 const HomeScreen = () => {
-  const { data: femaleData, loading: femaleLoading } = useQuery(
-    HOMESCREEN_FEMALE_PHOTO_QUERY,
-    {
-      onCompleted: data => console.log(data),
-      onError: err => console.log(err),
-    }
-  );
-  const { data: maleData, loading: maleLoading } = useQuery(
-    HOMESCREEN_MALE_PHOTO_QUERY,
-    {
-      onCompleted: data => console.log(data),
-      onError: err => console.log(err),
-    }
-  );
-  const { data: coupleData, loading: coupleLoading } = useQuery(
-    HOMESCREEN_COUPLE_PHOTO_QUERY,
-    {
-      onCompleted: data => console.log(data),
-      onError: err => console.log(err),
-    }
-  );
+  const {
+    data: femalePhotos,
+    loading: femaleLoading,
+    error: femaleError,
+  } = useQuery(ALL_STUDIO_PHOTOS_QUERY, {
+    variables: {
+      page: randomPage(femalePhotoPages),
+      gender: 'FEMALE',
+      backgroundConceptSlugs: [],
+      costumeConceptSlugs: [],
+      objectConceptSlugs: [],
+    },
+    onCompleted: data => console.log(data),
+  });
 
-  const loading = femaleLoading || maleLoading || coupleLoading;
+  const loading = femaleLoading;
+  const isError = femaleError;
 
   useEffect(() => {
     document.body.style.overflow = 'auto';
@@ -67,10 +64,12 @@ const HomeScreen = () => {
     <div>
       <HeaderM pageName="home" />
       {renderIfIE()}
-      {true ? (
+      {loading ? (
         <div className="appLoader">
           <AppLoadingScreen />
         </div>
+      ) : isError ? (
+        <AppErrorScreen />
       ) : (
         <>
           <AdTap />
