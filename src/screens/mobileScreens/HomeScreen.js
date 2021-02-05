@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './HomeScreen.css';
 import HeaderM from '../../components/mobileComponents/HeaderM';
 import AdTap from '../../components/mobileComponents/homeScreen/AdTap';
@@ -18,14 +18,24 @@ import { ALL_STUDIO_PHOTOS_QUERY } from '../../gql/queries/StudioPhotoQuery';
 import AppErrorScreen from '../../components/mobileComponents/AppErrorScreen';
 import { NOTICES_QUERY } from '../../gql/queries/NoticeQuery';
 
-const numOfFemalePhotos = 307;
-const numOfMalePhotos = 111;
+const numOfFemalePhotos = 306;
+const numOfMalePhotos = 112;
 const numOfCouplePhotos = 4;
 
 const take = 4;
 const randomPage = page => Math.floor(Math.random() * page) + 1;
 
 const HomeScreen = () => {
+  const [randomFemalePage] = useState(
+    randomPage(Math.floor(numOfFemalePhotos / take))
+  );
+  const [randomMalePage] = useState(
+    randomPage(Math.floor(numOfMalePhotos / take))
+  );
+  const [randomCouplePage] = useState(
+    randomPage(Math.floor(numOfCouplePhotos / take))
+  );
+
   const {
     data: femaleData,
     loading: femaleLoading,
@@ -33,7 +43,7 @@ const HomeScreen = () => {
   } = useQuery(ALL_STUDIO_PHOTOS_QUERY, {
     variables: {
       take,
-      page: randomPage(Math.floor(numOfFemalePhotos / take)),
+      page: randomFemalePage,
       gender: 'FEMALE',
       backgroundConceptSlugs: [],
       costumeConceptSlugs: [],
@@ -45,7 +55,7 @@ const HomeScreen = () => {
     {
       variables: {
         take,
-        page: randomPage(Math.floor(numOfMalePhotos / take)),
+        page: randomMalePage,
         gender: 'MALE',
         backgroundConceptSlugs: [],
         costumeConceptSlugs: [],
@@ -60,7 +70,7 @@ const HomeScreen = () => {
   } = useQuery(ALL_STUDIO_PHOTOS_QUERY, {
     variables: {
       take,
-      page: randomPage(Math.floor(numOfCouplePhotos / take)),
+      page: randomCouplePage,
       gender: 'COUPLE',
       backgroundConceptSlugs: [],
       costumeConceptSlugs: [],

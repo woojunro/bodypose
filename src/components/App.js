@@ -44,7 +44,10 @@ const App = () => {
         client.resetStore();
       }
     },
-    onError: () => {},
+    onError: () => {
+      localStorage.clear();
+      client.resetStore();
+    },
   });
 
   if (loading) {
