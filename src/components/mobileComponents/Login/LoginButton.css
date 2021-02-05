@@ -11,6 +11,10 @@
   cursor: pointer;
 }
 
+.loadingLoginButton {
+  background-color: gray;
+}
+
 .loginButtonContainer {
   margin-top: 30px;
   display: flex;

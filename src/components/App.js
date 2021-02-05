@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
+import { client } from '../apollo';
 
 import HomeScreenM from '../screens/mobileScreens/HomeScreen';
 import StudioInfoScreenM from '../screens/mobileScreens/StudioInfoScreen';
@@ -34,9 +35,13 @@ const App = () => {
   const loggedInValue = { loggedIn, setLoggedIn };
 
   const { loading } = useQuery(MY_PROFILE_QUERY, {
+    fetchPolicy: 'network-only',
     onCompleted: data => {
       if (data.myProfile.ok) {
         setLoggedIn(true);
+      } else {
+        localStorage.clear();
+        client.resetStore();
       }
     },
     onError: () => {},

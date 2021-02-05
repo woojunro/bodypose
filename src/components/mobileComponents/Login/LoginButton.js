@@ -1,31 +1,37 @@
-import React, { useContext, useState } from 'react';
+import { useMutation } from '@apollo/client';
+import React, { useContext } from 'react';
 import LoginContext from '../../../contexts/LoginContext';
-import { Login, CheckEmailPassword } from '../../functions/WithDb/Auth';
+import { EMAIL_LOGIN_MUTATION } from '../../../gql/mutations/LoginMutation';
 import './LoginButton.css';
 
 const LoginButton = ({ email, password, setValidInfo }) => {
-  const LoggedIn = useContext(LoginContext);
+  const { setLoggedIn } = useContext(LoginContext);
+  const [login, { loading }] = useMutation(EMAIL_LOGIN_MUTATION, {
+    fetchPolicy: 'no-cache',
+    onCompleted: data => {
+      if (data.loginWithEmail.ok) {
+        const { token } = data.loginWithEmail;
+        localStorage.setItem('jwt', token);
+        setLoggedIn(true);
+      } else {
+        setValidInfo(false);
+      }
+    },
+    onError: () => setValidInfo(false),
+  });
 
-  //Db랑 이메일, 비밀번호 비교하는 함수.
-  const LoginFunction = () => {
-    if (CheckEmailPassword()) {
-      setValidInfo(true);
-      LoggedIn.setLoggedIn(true);
-      Login(email, password);
-    } else {
-      setValidInfo(false);
-    }
-  };
   return (
     <div className="loginButtonContainer">
-      <div
-        className="loginButton"
-        onClick={() => {
-          LoginFunction();
-        }}
-      >
-        로그인
-      </div>
+      {loading ? (
+        <div className="loginButton loadingLoginButton">로그인</div>
+      ) : (
+        <div
+          className="loginButton"
+          onClick={() => login({ variables: { email, password } })}
+        >
+          로그인
+        </div>
+      )}
     </div>
   );
 };
