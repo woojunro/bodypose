@@ -9,7 +9,7 @@ import AppLoadingScreen from '../../../components/mobileComponents/AppLoadingScr
 
 import './UserScreen.css';
 import { useQuery } from '@apollo/client';
-import { client } from '../../../apollo';
+import { clearTokenAndCache } from '../../../apollo';
 import { MY_PROFILE_QUERY } from '../../../gql/queries/MyProfileQuery';
 
 const UserScreen = () => {
@@ -34,8 +34,7 @@ const UserScreen = () => {
   }
 
   const LogoutFunction = () => {
-    localStorage.clear();
-    client.resetStore();
+    clearTokenAndCache();
     LoggedIn.setLoggedIn(false);
     history.push('/');
   };

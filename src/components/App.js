@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
-import { client } from '../apollo';
+import { clearTokenAndCache } from '../apollo';
 
 import HomeScreenM from '../screens/mobileScreens/HomeScreen';
 import StudioInfoScreenM from '../screens/mobileScreens/StudioInfoScreen';
@@ -40,13 +40,11 @@ const App = () => {
       if (data.myProfile.ok) {
         setLoggedIn(true);
       } else {
-        localStorage.clear();
-        client.resetStore();
+        clearTokenAndCache();
       }
     },
     onError: () => {
-      localStorage.clear();
-      client.resetStore();
+      clearTokenAndCache();
     },
   });
 

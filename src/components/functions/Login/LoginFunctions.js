@@ -1,4 +1,4 @@
-export const CheckValidEmail = (email) => {
+export const CheckValidEmail = email => {
   var check = false;
   if (email.includes('@') && email.includes('.')) {
     const atIndex = email.indexOf('@');
@@ -16,12 +16,13 @@ export const CheckValidEmail = (email) => {
   return check;
 };
 
-export const CheckValidPassword = (password) => {
+export const CheckValidPassword = password => {
   var check = false;
 
   if (
     /^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?0-9a-zA-Z]*$/.test(password) &&
-    password.length > 7
+    password.length > 7 &&
+    /^(?=.*[0-9])(?=.*[a-z]).{8,}$/.test(password)
   ) {
     check = true;
   } else {
@@ -30,7 +31,7 @@ export const CheckValidPassword = (password) => {
   return check;
 };
 
-export const CheckValidUserName = (userName) => {
+export const CheckValidUserName = userName => {
   var check = false;
 
   if (

@@ -19,3 +19,8 @@ export const client = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
+
+export const clearTokenAndCache = () => {
+  localStorage.clear();
+  client.resetStore();
+};
