@@ -16,11 +16,13 @@ import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen
 import { useQuery } from '@apollo/client';
 import { ALL_STUDIO_PHOTOS_QUERY } from '../../gql/queries/StudioPhotoQuery';
 import AppErrorScreen from '../../components/mobileComponents/AppErrorScreen';
+import { NOTICES_QUERY } from '../../gql/queries/NoticeQuery';
 
-const femalePhotoPages = 12;
-const malePhotoPages = 4;
-const couplePhotoPages = 1;
+const numOfFemalePhotos = 307;
+const numOfMalePhotos = 111;
+const numOfCouplePhotos = 4;
 
+const take = 4;
 const randomPage = page => Math.floor(Math.random() * page) + 1;
 
 const HomeScreen = () => {
@@ -30,7 +32,8 @@ const HomeScreen = () => {
     error: femaleError,
   } = useQuery(ALL_STUDIO_PHOTOS_QUERY, {
     variables: {
-      page: randomPage(femalePhotoPages),
+      take,
+      page: randomPage(Math.floor(numOfFemalePhotos / take)),
       gender: 'FEMALE',
       backgroundConceptSlugs: [],
       costumeConceptSlugs: [],
@@ -41,7 +44,8 @@ const HomeScreen = () => {
     ALL_STUDIO_PHOTOS_QUERY,
     {
       variables: {
-        page: randomPage(malePhotoPages),
+        take,
+        page: randomPage(Math.floor(numOfMalePhotos / take)),
         gender: 'MALE',
         backgroundConceptSlugs: [],
         costumeConceptSlugs: [],
@@ -55,16 +59,23 @@ const HomeScreen = () => {
     error: coupleError,
   } = useQuery(ALL_STUDIO_PHOTOS_QUERY, {
     variables: {
-      page: randomPage(couplePhotoPages),
+      take,
+      page: randomPage(Math.floor(numOfCouplePhotos / take)),
       gender: 'COUPLE',
       backgroundConceptSlugs: [],
       costumeConceptSlugs: [],
       objectConceptSlugs: [],
     },
   });
+  const {
+    data: noticesData,
+    loading: noticesLoading,
+    error: noticesError,
+  } = useQuery(NOTICES_QUERY, { variables: { page: 1 } });
 
-  const loading = femaleLoading || maleLoading || coupleLoading;
-  const isError = femaleError || maleError || coupleError;
+  const loading =
+    femaleLoading || maleLoading || coupleLoading || noticesLoading;
+  const isError = femaleError || maleError || coupleError || noticesError;
 
   useEffect(() => {
     document.body.style.overflow = 'auto';
@@ -102,7 +113,7 @@ const HomeScreen = () => {
           <FemaleConcepts concepts={femaleData.allStudioPhotos.photos} />
           <MaleConcepts concepts={maleData.allStudioPhotos.photos} />
           <CoupleConcepts concepts={coupleData.allStudioPhotos.photos} />
-          <NoticeBox />
+          <NoticeBox notices={noticesData.notices.notices} />
           <Footer />
         </>
       )}

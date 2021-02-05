@@ -2,6 +2,7 @@ import { gql } from '@apollo/client';
 
 export const ALL_STUDIO_PHOTOS_QUERY = gql`
   query GetAllStudioPhotos(
+    $take: Int
     $page: Int!
     $gender: PhotoGender
     $backgroundConceptSlugs: [String!]!
@@ -10,6 +11,7 @@ export const ALL_STUDIO_PHOTOS_QUERY = gql`
   ) {
     allStudioPhotos(
       input: {
+        take: $take
         page: $page
         gender: $gender
         backgroundConceptSlugs: $backgroundConceptSlugs
@@ -19,6 +21,7 @@ export const ALL_STUDIO_PHOTOS_QUERY = gql`
     ) {
       ok
       error
+      totalPages
       photos {
         id
         thumbnailUrl
