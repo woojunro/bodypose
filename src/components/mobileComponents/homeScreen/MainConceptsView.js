@@ -10,26 +10,27 @@ const MainConceptsView = ({ ConceptsList, semiTitle }) => {
     query: '(min-width:720px)',
   });
 
-  const renderedConceptsList = ConceptsList.map((concept) => {
-    return (
-      <li key={concept.photoName}>
-        <MainConceptsCard concept={concept} />
-      </li>
-    );
-  });
+  const renderedConceptsList = conceptsList =>
+    conceptsList.map(concept => {
+      return (
+        <li key={concept.originalUrl}>
+          <MainConceptsCard concept={concept} />
+        </li>
+      );
+    });
   if (!isWide) {
     return (
       <div className="mainConcpetsView">
         <SemiTitle title={semiTitle} pageTo="/concepts" />
-        <ul> {renderedConceptsList.slice(0, 2)}</ul>
-        <ul> {renderedConceptsList.slice(2, 4)}</ul>
+        <ul> {renderedConceptsList(ConceptsList.slice(0, 2))}</ul>
+        <ul> {renderedConceptsList(ConceptsList.slice(2, 4))}</ul>
       </div>
     );
   }
   return (
     <div className="mainConcpetsView">
       <SemiTitle title={semiTitle} pageTo="/concepts" />
-      <ul> {renderedConceptsList}</ul>
+      <ul> {renderedConceptsList(ConceptsList.slice(0, 4))}</ul>
     </div>
   );
 };

@@ -47,15 +47,22 @@
   font-size: 18px;
   font-weight: bold;
 }
+
 .mainPhotoArea {
   width: 100%;
   overflow: hidden;
+  height: auto;
 }
 
 .mainPhotoArea img {
   width: 100%;
   height: auto;
+  max-height: -moz-calc(100vh - 115px);
+  max-height: -webkit-calc(100vh - 115px);
+  max-height: calc(100vh - 115px);
+  object-fit: contain;
 }
+
 .toStudioInfoContainer {
   display: flex;
   justify-content: center;

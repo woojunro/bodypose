@@ -22,7 +22,7 @@ const Modal = ({
   isFinalPhoto,
   handleIsFinalPhoto,
 }) => {
-  const LogedIn = useContext(LoginContext);
+  const LoggedIn = useContext(LoginContext);
   const [gettingPhotoInfo, setGettingPhotoInfo] = useState(true);
   const [isHearted, setIsHearted] = useState(false);
   const [photo, setPhoto] = useState(null);
@@ -49,7 +49,7 @@ const Modal = ({
       </div>
     );
   } else {
-    if (LogedIn.logedIn) {
+    if (LoggedIn.loggedIn) {
       RenderedHeart = (
         <div
           onClick={() => {

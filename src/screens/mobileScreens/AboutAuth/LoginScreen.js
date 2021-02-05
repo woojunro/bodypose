@@ -15,14 +15,14 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [validInfo, setValidInfo] = useState(true);
-  const LogedIn = useContext(LoginContext);
+  const LoggedIn = useContext(LoginContext);
   const history = useHistory();
 
   const SnsLoginFunction = () => {
     SnsLogin();
   };
 
-  if (LogedIn.logedIn) {
+  if (LoggedIn.loggedIn) {
     if (!history.location.state) {
       return <Redirect to={{ pathname: '/error' }} />;
     } else {

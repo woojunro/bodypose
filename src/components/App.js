@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import './App.css';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { useQuery } from '@apollo/client';
 
 import HomeScreenM from '../screens/mobileScreens/HomeScreen';
 import StudioInfoScreenM from '../screens/mobileScreens/StudioInfoScreen';
 import StudioListScreenM from '../screens/mobileScreens/StudioListScreen';
 import ConceptListScreenM from '../screens/mobileScreens/ConceptListScreen';
-import AboutM from '../screens/mobileScreens/AboutScreen.js';
 import ReviewListScreenM from '../screens/mobileScreens/ReviewListScreen';
 import UserScreenM from '../screens/mobileScreens/AboutUser/UserScreen';
 import HeartScreenM from '../screens/mobileScreens/HeartScreen';
@@ -25,17 +24,37 @@ import LeaveScreenM from '../screens/mobileScreens/AboutUser/LeaveScreen';
 import NewPasswordScreenM from '../screens/mobileScreens/AboutAuth/NewPasswordScreen';
 
 import LoginContext from '../contexts/LoginContext';
+import { MY_PROFILE_QUERY } from '../gql/queries/MyProfileQuery';
+
+import './App.css';
+import AppLoadingScreen from './mobileComponents/AppLoadingScreen';
 
 const App = () => {
-  const [logedIn, setLogedIn] = useState(false);
-  const logedInValue = { logedIn, setLogedIn };
+  const [loggedIn, setLoggedIn] = useState(false);
+  const loggedInValue = { loggedIn, setLoggedIn };
+
+  const { loading } = useQuery(MY_PROFILE_QUERY, {
+    onCompleted: data => {
+      if (data.myProfile.ok) {
+        setLoggedIn(true);
+      }
+    },
+    onError: () => {},
+  });
+
+  if (loading) {
+    return (
+      <div className="appFullScreen">
+        <AppLoadingScreen big />
+      </div>
+    );
+  }
 
   return (
-    <LoginContext.Provider value={logedInValue}>
+    <LoginContext.Provider value={loggedInValue}>
       <Router>
-        <div className="app">
+        <Switch className="app">
           <Route exact path="/" component={HomeScreenM} />
-          <Route path="/about" component={AboutM} />
           <Route exact path="/studios" component={StudioListScreenM} />
           <Route exact path="/concepts" component={ConceptListScreenM} />
 
@@ -65,7 +84,8 @@ const App = () => {
 
           <Route exact path="/users/leave" component={LeaveScreenM} />
           <Route exact path="/error" component={ErrorScreenM} />
-        </div>
+          <Route path="*" component={ErrorScreenM} />
+        </Switch>
       </Router>
     </LoginContext.Provider>
   );

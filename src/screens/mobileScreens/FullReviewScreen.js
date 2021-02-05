@@ -18,7 +18,7 @@ import ReviewOption from '../../components/mobileComponents/ReviewList/ReviewOpt
 
 import LoginContext from '../../contexts/LoginContext';
 const FullReviewScreen = ({ match }) => {
-  const LogedIn = useContext(LoginContext);
+  const LoggedIn = useContext(LoginContext);
   const [isOptionOpen, setIsOptionOpen] = useState(false);
   const [isSameUser, setIsSameUser] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
@@ -33,7 +33,7 @@ const FullReviewScreen = ({ match }) => {
   console.log(linkTo);
 
   useEffect(() => {
-    if (LogedIn.logedIn) {
+    if (LoggedIn.loggedIn) {
       const currentUser = GetUserName();
       if (currentUser === fullReview.userName) {
         setIsSameUser(true);

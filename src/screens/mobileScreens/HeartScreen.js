@@ -10,12 +10,12 @@ import { MakingPickContainer } from '../../components/functions/Heart/PickFuncti
 import './HeartScreen.css';
 
 const HeartScreen = () => {
-  const LogedIn = useContext(LoginContext);
+  const LoggedIn = useContext(LoginContext);
   const history = useHistory();
 
   const [pick, setPick] = useState('studio');
 
-  if (!LogedIn.logedIn) {
+  if (!LoggedIn.loggedIn) {
     return (
       <Redirect
         to={{

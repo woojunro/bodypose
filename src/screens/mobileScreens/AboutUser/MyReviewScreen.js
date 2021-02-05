@@ -7,11 +7,11 @@ import { GetUserReview } from '../../../components/functions/WithDb/User';
 import ReviewScrollView from '../../../components/mobileComponents/ReviewList/ReviewScrollView';
 
 const MyReviewScreen = () => {
-  const LogedIn = useContext(LoginContext);
+  const LoggedIn = useContext(LoginContext);
 
   const history = useHistory();
   const myReviews = GetUserReview();
-  if (!LogedIn.logedIn) {
+  if (!LoggedIn.loggedIn) {
     return <Redirect to={'/error'} />;
   }
   return (

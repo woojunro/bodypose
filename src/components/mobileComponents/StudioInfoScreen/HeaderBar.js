@@ -8,7 +8,7 @@ import React, { useState, useContext } from 'react';
 
 const HeaderBar = ({ currentStudio, copyTextToClipboard, setIsAlertOpen }) => {
   const [isHearted, setIsHearted] = useState(currentStudio.isHearted);
-  const LogedIn = useContext(LoginContext);
+  const LoggedIn = useContext(LoginContext);
   const history = useHistory();
 
   const gobackFunction = () => {
@@ -20,7 +20,7 @@ const HeaderBar = ({ currentStudio, copyTextToClipboard, setIsAlertOpen }) => {
   };
 
   const ChangeIsHearted = () => {
-    if (!LogedIn.logedIn) {
+    if (!LoggedIn.loggedIn) {
       history.push({
         pathname: '/login',
         state: { previousPath: '/studios' },

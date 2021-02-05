@@ -4,16 +4,15 @@ import { Link } from 'react-router-dom';
 
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { Carousel } from 'react-responsive-carousel';
-import { GetHomePageNotices } from '../../functions/WithDb/Notice';
 
-const NoticeBox = () => {
-  const Notices = GetHomePageNotices();
-  const renderedNotices = Notices.map((notice) => {
+const NoticeBox = ({ notices }) => {
+  const Notices = notices;
+  const renderedNotices = Notices.map(notice => {
     return (
       <Link
         onClick={() => window.scrollTo(0, 0)}
         key={notice.title}
-        to={'/notices/' + notice.noticeNumber}
+        to={'/notices/' + notice.id}
         style={{ TextDecoder: 'none', color: 'white' }}
       >
         <div className="noticeItem">{notice.title}</div>

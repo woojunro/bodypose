@@ -7,8 +7,8 @@ import { FaRegHeart } from 'react-icons/fa';
 import LoginContext from '../../../contexts/LoginContext';
 
 const Modal = ({ isOpen, close, concept }) => {
-  const [isHearted, setIsHearted] = useState(concept.isHearted);
-  const LogedIn = useContext(LoginContext);
+  const [isHearted, setIsHearted] = useState(true);
+  const LoggedIn = useContext(LoginContext);
   const history = useHistory();
 
   const ChangeHeart = () => {
@@ -28,7 +28,7 @@ const Modal = ({ isOpen, close, concept }) => {
       </div>
     );
   } else {
-    if (LogedIn.logedIn) {
+    if (LoggedIn.loggedIn) {
       RenderedHeart = (
         <div
           onClick={() => {
@@ -62,7 +62,7 @@ const Modal = ({ isOpen, close, concept }) => {
             <div className="concepttrueModal">
               <div className="topBarContainer">
                 <div style={{ width: '45px' }}></div>
-                <div className="studioTitle">{concept.title}</div>
+                <div className="studioTitle">{concept.studio.name}</div>
                 <IoIosClose
                   className="conceptModalClose"
                   onClick={() => {
@@ -72,13 +72,13 @@ const Modal = ({ isOpen, close, concept }) => {
               </div>
               <div className="conceptModalContents">
                 <div className="mainPhotoArea">
-                  <img alt="studioPicture" src={concept.pic} />
+                  <img alt="studioPicture" src={concept.originalUrl} />
                 </div>
               </div>
               <div className="toStudioInfoContainer">
                 <Link
                   to={{
-                    pathname: `/studios/${concept.studio}`,
+                    pathname: `/studios/${concept.studio.slug}`,
                     state: { previousPath: history.location.pathname },
                   }}
                   className="toStudioInfo"

@@ -12,10 +12,10 @@ import LoadingComponent from '../../../components/mobileComponents/LoadingCompon
 import './UserScreen.css';
 const UserScreen = () => {
   var loading = false;
-  const LogedIn = useContext(LoginContext);
+  const LoggedIn = useContext(LoginContext);
   const history = useHistory();
 
-  if (!LogedIn.logedIn) {
+  if (!LoggedIn.loggedIn) {
     return (
       <Redirect
         to={{
@@ -29,7 +29,7 @@ const UserScreen = () => {
   const user = GetUser();
 
   const LogoutFunction = () => {
-    LogedIn.setLogedIn(false);
+    LoggedIn.setLoggedIn(false);
     Logout();
   };
 
