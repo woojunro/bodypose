@@ -15,7 +15,7 @@ const MainConceptsCard = ({ concept }) => {
         onClick={() => setIsModalOpen(true)}
         className="conceptsCardContainer-Vertical"
       >
-        <img alt="conceptsCard" src={concept.pic} />
+        <img alt="conceptsCard" src={concept.originalUrl} />
       </div>
     </div>
   );

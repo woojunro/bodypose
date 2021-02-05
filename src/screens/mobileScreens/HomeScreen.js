@@ -25,7 +25,7 @@ const randomPage = page => Math.floor(Math.random() * page) + 1;
 
 const HomeScreen = () => {
   const {
-    data: femalePhotos,
+    data: femaleData,
     loading: femaleLoading,
     error: femaleError,
   } = useQuery(ALL_STUDIO_PHOTOS_QUERY, {
@@ -36,11 +36,35 @@ const HomeScreen = () => {
       costumeConceptSlugs: [],
       objectConceptSlugs: [],
     },
-    onCompleted: data => console.log(data),
+  });
+  const { data: maleData, loading: maleLoading, error: maleError } = useQuery(
+    ALL_STUDIO_PHOTOS_QUERY,
+    {
+      variables: {
+        page: randomPage(malePhotoPages),
+        gender: 'MALE',
+        backgroundConceptSlugs: [],
+        costumeConceptSlugs: [],
+        objectConceptSlugs: [],
+      },
+    }
+  );
+  const {
+    data: coupleData,
+    loading: coupleLoading,
+    error: coupleError,
+  } = useQuery(ALL_STUDIO_PHOTOS_QUERY, {
+    variables: {
+      page: randomPage(couplePhotoPages),
+      gender: 'COUPLE',
+      backgroundConceptSlugs: [],
+      costumeConceptSlugs: [],
+      objectConceptSlugs: [],
+    },
   });
 
-  const loading = femaleLoading;
-  const isError = femaleError;
+  const loading = femaleLoading || maleLoading || coupleLoading;
+  const isError = femaleError || maleError || coupleError;
 
   useEffect(() => {
     document.body.style.overflow = 'auto';
@@ -75,9 +99,9 @@ const HomeScreen = () => {
           <AdTap />
           <MainCardScrollView />
           <SeeAll />
-          <FemaleConcepts />
-          <MaleConcepts />
-          <CoupleConcepts />
+          <FemaleConcepts concepts={femaleData.allStudioPhotos.photos} />
+          <MaleConcepts concepts={maleData.allStudioPhotos.photos} />
+          <CoupleConcepts concepts={coupleData.allStudioPhotos.photos} />
           <NoticeBox />
           <Footer />
         </>

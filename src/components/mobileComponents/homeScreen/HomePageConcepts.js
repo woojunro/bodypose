@@ -1,39 +1,35 @@
 import React from 'react';
-import {
-  GetMaleConcepts,
-  GetFemaleConcepts,
-  GetCoupleConcepts,
-} from '../../functions/WithDb/GetHomepageConcepts';
 import MainConceptsView from './MainConceptsView';
+import shuffle from '../../functions/Shuffle';
 
-export const MaleConcepts = () => {
-  const ConceptsList = GetMaleConcepts();
+export const MaleConcepts = ({ concepts }) => {
+  const shuffledConcepts = shuffle(concepts);
 
   return (
     <MainConceptsView
-      ConceptsList={ConceptsList}
+      ConceptsList={shuffledConcepts}
       semiTitle="취향저격 남성 컨셉 추천"
     />
   );
 };
 
 export const FemaleConcepts = ({ concepts }) => {
-  const ConceptsList = GetFemaleConcepts();
+  const shuffledConcepts = shuffle(concepts);
 
   return (
     <MainConceptsView
-      ConceptsList={ConceptsList}
+      ConceptsList={shuffledConcepts}
       semiTitle="취향저격 여성 컨셉 추천"
     />
   );
 };
 
-export const CoupleConcepts = () => {
-  const ConceptsList = GetCoupleConcepts();
+export const CoupleConcepts = ({ concepts }) => {
+  const shuffledConcepts = shuffle(concepts);
 
   return (
     <MainConceptsView
-      ConceptsList={ConceptsList}
+      ConceptsList={shuffledConcepts}
       semiTitle="알콩달콩 커플 컨셉 추천"
     />
   );
