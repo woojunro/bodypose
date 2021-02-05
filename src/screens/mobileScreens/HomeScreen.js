@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { useQuery } from '@apollo/client';
 import './HomeScreen.css';
 import HeaderM from '../../components/mobileComponents/HeaderM';
 import AdTap from '../../components/mobileComponents/homeScreen/AdTap';
@@ -13,14 +12,38 @@ import {
 } from '../../components/mobileComponents/homeScreen/HomePageConcepts';
 import NoticeBox from '../../components/mobileComponents/homeScreen/NoticeBox';
 import Footer from '../../components/mobileComponents/Footer';
-import { MALE_PHOTO_QUERY } from '../../gql/queries/HomeScreenQuery';
 import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
+import { useQuery } from '@apollo/client';
+import {
+  HOMESCREEN_COUPLE_PHOTO_QUERY,
+  HOMESCREEN_FEMALE_PHOTO_QUERY,
+  HOMESCREEN_MALE_PHOTO_QUERY,
+} from '../../gql/queries/HomeScreenQuery';
 
 const HomeScreen = () => {
-  const { loading } = useQuery(MALE_PHOTO_QUERY, {
-    onCompleted: data => console.log(data),
-    onError: error => console.log(error),
-  });
+  const { data: femaleData, loading: femaleLoading } = useQuery(
+    HOMESCREEN_FEMALE_PHOTO_QUERY,
+    {
+      onCompleted: data => console.log(data),
+      onError: err => console.log(err),
+    }
+  );
+  const { data: maleData, loading: maleLoading } = useQuery(
+    HOMESCREEN_MALE_PHOTO_QUERY,
+    {
+      onCompleted: data => console.log(data),
+      onError: err => console.log(err),
+    }
+  );
+  const { data: coupleData, loading: coupleLoading } = useQuery(
+    HOMESCREEN_COUPLE_PHOTO_QUERY,
+    {
+      onCompleted: data => console.log(data),
+      onError: err => console.log(err),
+    }
+  );
+
+  const loading = femaleLoading || maleLoading || coupleLoading;
 
   useEffect(() => {
     document.body.style.overflow = 'auto';
@@ -44,13 +67,13 @@ const HomeScreen = () => {
     <div>
       <HeaderM pageName="home" />
       {renderIfIE()}
-      <AdTap />
-      {loading ? (
-        <div>
+      {true ? (
+        <div className="appLoader">
           <AppLoadingScreen />
         </div>
       ) : (
         <>
+          <AdTap />
           <MainCardScrollView />
           <SeeAll />
           <FemaleConcepts />
@@ -58,9 +81,9 @@ const HomeScreen = () => {
           <CoupleConcepts />
           <NoticeBox />
           <Footer />
-          <BottomNavigation pageName="home" />
         </>
       )}
+      <BottomNavigation pageName="home" />
     </div>
   );
 };

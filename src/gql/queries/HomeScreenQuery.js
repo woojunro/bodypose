@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
-export const MALE_PHOTO_QUERY = gql`
-  query MalePhoto {
+export const HOMESCREEN_MALE_PHOTO_QUERY = gql`
+  query HomeScreenMalePhoto {
     allStudioPhotos(
       input: {
         page: 1
@@ -26,8 +26,8 @@ export const MALE_PHOTO_QUERY = gql`
   }
 `;
 
-export const FEMALE_PHOTO_QUERY = gql`
-  query FemalePhoto {
+export const HOMESCREEN_FEMALE_PHOTO_QUERY = gql`
+  query HomeScreenFemalePhoto {
     allStudioPhotos(
       input: {
         page: 1
@@ -52,12 +52,12 @@ export const FEMALE_PHOTO_QUERY = gql`
   }
 `;
 
-export const COUPLE_PHOTO_QUERY = gql`
-  query CouplePhoto {
+export const HOMESCREEN_COUPLE_PHOTO_QUERY = gql`
+  query HomeScreenCouplePhoto {
     allStudioPhotos(
       input: {
         page: 1
-        gender: FEMALE
+        gender: COUPLE
         backgroundConceptSlugs: []
         costumeConceptSlugs: []
         objectConceptSlugs: []
