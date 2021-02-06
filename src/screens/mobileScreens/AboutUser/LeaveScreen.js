@@ -6,10 +6,11 @@ import { Leave } from '../../../components/functions/WithDb/Auth';
 import BottomNavigation from '../../../components/mobileComponents/BottomNavigation';
 import LeaveButton from '../../../components/mobileComponents/Login/LeaveButton';
 import './LeaveScreen.css';
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { MY_PROFILE_QUERY } from '../../../gql/queries/MyProfileQuery';
 import { clearTokenAndCache } from '../../../apollo';
 import AppLoadingScreen from '../../../components/mobileComponents/AppLoadingScreen';
+import { LEAVE_BODYPOSE_MUTATION } from '../../../gql/mutations/LeaveMutation';
 
 const LeaveScreen = () => {
   const LoggedIn = useContext(LoginContext);
@@ -17,17 +18,23 @@ const LeaveScreen = () => {
   const [checked, setChecked] = useState(false);
   const [isLeaved, setIsLeaved] = useState(false);
 
-  const { data: profileData, loading: profileLoading } = useQuery(
-    MY_PROFILE_QUERY,
-    {
-      fetchPolicy: 'network-only',
-      onCompleted: data => console.log(data),
-      onError: () => {
+  const { loading: profileLoading } = useQuery(MY_PROFILE_QUERY, {
+    fetchPolicy: 'network-only',
+    onCompleted: data => console.log(data),
+    onError: () => {
+      clearTokenAndCache();
+      LoggedIn.setLoggedIn(false);
+    },
+  });
+
+  const [unregister, { loading }] = useMutation(LEAVE_BODYPOSE_MUTATION, {
+    onCompleted: data => {
+      if (data.deleteMyAccount.ok) {
         clearTokenAndCache();
-        LoggedIn.setLoggedIn(false);
-      },
-    }
-  );
+        setIsLeaved(true);
+      }
+    },
+  });
 
   useEffect(() => {
     if (isLeaved) {
@@ -63,7 +70,7 @@ const LeaveScreen = () => {
           <div className="usersTopEmptyBox" />
         </div>
 
-        {profileLoading ? (
+        {profileLoading || loading ? (
           <div className="appLoader">
             <AppLoadingScreen />
           </div>
@@ -113,7 +120,7 @@ const LeaveScreen = () => {
               </div>
             </div>
             {checked ? (
-              <LeaveButton setisLeaved={setIsLeaved} />
+              <LeaveButton onClick={unregister} />
             ) : (
               <div className="unleaveButtonContainer">
                 <div className="unleaveButton">탈퇴하기</div>

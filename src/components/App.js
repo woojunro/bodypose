@@ -39,11 +39,9 @@ const App = () => {
     onCompleted: data => {
       if (data.myProfile.ok) {
         setLoggedIn(true);
-      } else {
-        clearTokenAndCache();
       }
     },
-    onError: () => {
+    onError: err => {
       clearTokenAndCache();
     },
   });
