@@ -14,7 +14,11 @@ const LoginButton = ({ email, password, setValidInfo }) => {
         localStorage.setItem('jwt', token);
         setLoggedIn(true);
       } else {
-        setValidInfo(false);
+        if (data.loginWithEmail.error === 'SOCIAL_USER') {
+          alert('소셜 가입 회원입니다. 소셜 로그인으로 다시 시도해주세요.');
+        } else {
+          setValidInfo(false);
+        }
       }
     },
     onError: () => setValidInfo(false),

@@ -9,3 +9,15 @@ export const EMAIL_LOGIN_MUTATION = gql`
     }
   }
 `;
+
+export const SOCIAL_LOGIN_MUTATION = gql`
+  mutation SocialLogin($accessToken: String!, $provider: LoginMethod!) {
+    createOrLoginUserWithOAuth(
+      input: { accessToken: $accessToken, createWith: $provider }
+    ) {
+      ok
+      error
+      token
+    }
+  }
+`;

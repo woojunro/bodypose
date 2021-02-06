@@ -20,7 +20,6 @@ const LeaveScreen = () => {
 
   const { loading: profileLoading } = useQuery(MY_PROFILE_QUERY, {
     fetchPolicy: 'network-only',
-    onCompleted: data => console.log(data),
     onError: () => {
       clearTokenAndCache();
       LoggedIn.setLoggedIn(false);
@@ -32,7 +31,14 @@ const LeaveScreen = () => {
       if (data.deleteMyAccount.ok) {
         clearTokenAndCache();
         setIsLeaved(true);
+      } else {
+        alert('오류가 발생하였습니다. 다시 시도해주세요.');
+        setChecked(false);
       }
+    },
+    onError: () => {
+      alert('오류가 발생하였습니다. 다시 시도해주세요.');
+      setChecked(false);
     },
   });
 
@@ -111,6 +117,7 @@ const LeaveScreen = () => {
             <div className="leaveAgreeContainer">
               <input
                 type="checkBox"
+                checked={checked}
                 onChange={() => {
                   setChecked(!checked);
                 }}

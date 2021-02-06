@@ -8,6 +8,7 @@ export const MY_PROFILE_QUERY = gql`
       profile {
         id
         email
+        loginMethod
         nickname
       }
     }
