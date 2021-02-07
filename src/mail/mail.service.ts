@@ -62,10 +62,7 @@ export class MailService {
         'bodypose-email-verification',
         [
           { key: 'nickname', value: nickname },
-          {
-            key: 'link',
-            value: `https://www.bodypose.co.kr/verify-email/${code}`,
-          },
+          { key: 'code', value: code },
         ],
       );
       return ok;
@@ -87,10 +84,7 @@ export class MailService {
         'bodypose-password-reset',
         [
           { key: 'nickname', value: nickname },
-          {
-            key: 'link',
-            value: `https://www.bodypose.co.kr/reset-password/${code}`,
-          },
+          { key: 'code', value: code },
         ],
       );
       return ok;

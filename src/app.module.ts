@@ -39,6 +39,7 @@ import { Notice } from './notices/entity/notice.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
       envFilePath:
         process.env.NODE_ENV !== 'production'
           ? `.env.${process.env.NODE_ENV}`
@@ -63,6 +64,7 @@ import { Notice } from './notices/entity/notice.entity';
         MAILGUN_DOMAIN_NAME: Joi.string().required(),
         GOOGLE_CLOUD_PROJECT: Joi.string().required(),
         GCLOUD_STORAGE_BUCKET: Joi.string().required(),
+        KAKAO_ADMIN_KEY: Joi.string().required(),
         GOOGLE_APPLICATION_CREDENTIALS:
           process.env.NODE_ENV === 'development'
             ? Joi.string().required()

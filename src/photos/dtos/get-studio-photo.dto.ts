@@ -1,4 +1,4 @@
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 import {
   PaginationInput,
@@ -8,6 +8,9 @@ import { PhotoGender, StudioPhoto } from '../entities/studio-photo.entity';
 
 @InputType()
 export class GetAllStudioPhotosInput extends PaginationInput {
+  @Field(type => Int, { defaultValue: 24 })
+  take: number;
+
   @Field(type => PhotoGender, { nullable: true })
   gender?: PhotoGender;
 

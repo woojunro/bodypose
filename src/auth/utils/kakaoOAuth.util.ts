@@ -1,4 +1,5 @@
 import got from 'got';
+import { CoreOutput } from 'src/common/dtos/output.dto';
 import { GetOAuthProfileWithAccessTokenOutput } from '../dtos/oauth.dto';
 
 export const getKakaoProfileWithAccessToken = async (
@@ -31,7 +32,39 @@ export const getKakaoProfileWithAccessToken = async (
     console.log(e);
     return {
       ok: false,
-      error: 'KAKAO SERVER ERROR',
+      error: 'KAKAO_SERVER_ERROR',
+    };
+  }
+};
+
+export const unlinkKakaoUser = async (
+  kakaoUserId: string,
+  adminKey: string,
+): Promise<CoreOutput> => {
+  try {
+    const response = await got.post('https://kapi.kakao.com/v1/user/unlink', {
+      headers: {
+        Authorization: `KakaoAK ${adminKey}`,
+      },
+      form: {
+        target_id_type: 'user_id',
+        target_id: Number(kakaoUserId),
+      },
+    });
+    const { id } = JSON.parse(response.body);
+    if (id.toString() === kakaoUserId) {
+      return { ok: true };
+    } else {
+      return {
+        ok: false,
+        error: 'KAKAO_SERVER_ERROR',
+      };
+    }
+  } catch (e) {
+    console.log(e);
+    return {
+      ok: false,
+      error: 'KAKAO_SERVER_ERROR',
     };
   }
 };

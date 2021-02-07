@@ -31,6 +31,13 @@ export class AuthService {
           error: 'User not found',
         };
       }
+      // Check if the user is registered by email
+      if (user.loginMethod !== LoginMethod.EMAIL) {
+        return {
+          ok: false,
+          error: 'SOCIAL_USER',
+        };
+      }
       // Check if the password is correct
       const isPasswordCorrect = await user.checkPassword(password);
       if (!isPasswordCorrect) {

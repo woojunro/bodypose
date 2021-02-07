@@ -87,20 +87,29 @@ export class PhotosService {
   ): Promise<GetAllStudioPhotosOutput> {
     try {
       const {
+        take,
         page,
         gender,
         backgroundConceptSlugs,
         costumeConceptSlugs,
         objectConceptSlugs,
       } = input;
-      const photosPerPage = 24;
+      const photosPerPage = take;
 
-      const [photos, count] = await this.studioPhotoRepository
-        .createQueryBuilder('photo')
-        .leftJoinAndSelect('photo.backgroundConcepts', 'backgroundConcept')
-        .leftJoinAndSelect('photo.costumeConcepts', 'costumeConcept')
-        .leftJoinAndSelect('photo.objectConcepts', 'objectConcept')
-        .leftJoinAndSelect('photo.studio', 'studio')
+      let query = this.studioPhotoRepository.createQueryBuilder('photo');
+      query = query.leftJoinAndSelect('photo.studio', 'studio');
+
+      if (backgroundConceptSlugs.length !== 0) {
+        query = query.leftJoin('photo.backgroundConcepts', 'backgroundConcept');
+      }
+      if (costumeConceptSlugs.length !== 0) {
+        query = query.leftJoin('photo.costumeConcepts', 'costumeConcept');
+      }
+      if (objectConceptSlugs.length !== 0) {
+        query = query.leftJoin('photo.objectConcepts', 'objectConcept');
+      }
+
+      const [photos, count] = await query
         .where({ gender: gender ? gender : Not(IsNull()) })
         .andWhere(
           backgroundConceptSlugs.length !== 0
@@ -121,8 +130,8 @@ export class PhotosService {
           { objectSlugs: objectConceptSlugs },
         )
         .orderBy('photo.originalUrl', 'ASC')
-        .skip((page - 1) * photosPerPage)
-        .take(photosPerPage)
+        .skip((page - 1) * take)
+        .take(take)
         .getManyAndCount();
 
       // return

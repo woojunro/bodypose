@@ -4,8 +4,10 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
+import { unlinkKakaoUser } from 'src/auth/utils/kakaoOAuth.util';
 import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
 import { MailService } from 'src/mail/mail.service';
 import { PhotosService } from 'src/photos/photos.service';
@@ -53,6 +55,7 @@ export class UsersService {
     private readonly mailService: MailService,
     @Inject(forwardRef(() => PhotosService))
     private readonly photosService: PhotosService,
+    private readonly configService: ConfigService,
   ) {}
 
   checkPasswordSecurity(password: string): boolean {
@@ -159,13 +162,31 @@ export class UsersService {
       const {
         ok,
         error,
-        profile: { socialId, nickname, ...profiles },
+        profile: { socialId, nickname, email, ...profiles },
       } = await this.authService.getOAuthProfileWithAccessToken(
         accessToken,
         createWith,
       );
       if (!ok) {
         return { ok, error };
+      }
+      // If there is a user with the same email, change its loginMethod
+      if (email) {
+        const userWithEmail = await this.userRepository.findOne({ email });
+        if (userWithEmail) {
+          userWithEmail.loginMethod = createWith;
+          userWithEmail.socialId = socialId;
+          // Erase password
+          userWithEmail.password = null;
+          const user = await this.userRepository.save({
+            ...userWithEmail,
+            ...profiles,
+          });
+          return await this.authService.loginWithOAuth(
+            createWith,
+            user.socialId,
+          );
+        }
       }
       // If the user does not exist, create one
       let user = await this.userRepository.findOne({
@@ -176,6 +197,7 @@ export class UsersService {
         user = this.userRepository.create({
           loginMethod: createWith,
           socialId,
+          email,
           isVerified: true,
           ...profiles,
         });
@@ -235,7 +257,9 @@ export class UsersService {
       profile: {
         id: user.id,
         email: user.email,
+        loginMethod: user.loginMethod,
         nickname: user.nickname,
+        isVerified: user.isVerified,
       },
     };
   }
@@ -356,7 +380,25 @@ export class UsersService {
           error: 'USER_NOT_FOUND',
         };
       }
-      // TODO: Handle social users
+      if (user.loginMethod !== LoginMethod.EMAIL) {
+        switch (user.loginMethod) {
+          case LoginMethod.KAKAO:
+            const adminKey = this.configService.get<string>('KAKAO_ADMIN_KEY');
+            const result = await unlinkKakaoUser(user.socialId, adminKey);
+            if (!result.ok) {
+              return {
+                ok: false,
+                error: result.error,
+              };
+            }
+            break;
+          // TODO: Naver
+          // TODO: Facebook
+          // TODO: Google
+          default:
+            throw new InternalServerErrorException();
+        }
+      }
       const result = await this.userRepository.delete({ id: user.id });
       return { ok: true };
     } catch (e) {

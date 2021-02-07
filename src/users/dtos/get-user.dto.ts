@@ -9,7 +9,13 @@ import { Studio } from 'src/studios/entities/studio.entity';
 import { User } from '../entities/user.entity';
 
 @ObjectType()
-class UserProfile extends PickType(User, ['id', 'email', 'nickname']) {}
+class UserProfile extends PickType(User, [
+  'id',
+  'loginMethod',
+  'email',
+  'nickname',
+  'isVerified',
+]) {}
 
 @ObjectType()
 export class GetMyProfileOutput extends CoreOutput {
