@@ -69,7 +69,7 @@ const App = () => {
           <Route exact path="/notices" component={NoticeListScreenM} />
           <Route path="/notices/:noticeNumber" component={NoticeScreenM} />
           <Route path="/reviews/:reviewNumber" component={FullReviewScreenM} />
-          <Route path="/NewPassword/:authCode" component={NewPasswordScreenM} />
+          <Route path="/newPassword/:authCode" component={NewPasswordScreenM} />
 
           <Route exact path="/login" component={LoginScreenM} />
           <Route
