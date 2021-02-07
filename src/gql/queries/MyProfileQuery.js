@@ -10,6 +10,7 @@ export const MY_PROFILE_QUERY = gql`
         email
         loginMethod
         nickname
+        isVerified
       }
     }
   }

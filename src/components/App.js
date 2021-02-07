@@ -18,11 +18,11 @@ import FullReviewScreenM from '../screens/mobileScreens/FullReviewScreen';
 import LoginScreenM from '../screens/mobileScreens/AboutAuth/LoginScreen';
 import ChangePasswordScreenM from '../screens/mobileScreens/AboutAuth/ChangePasswordScreen';
 import StartWithEmailScreenM from '../screens/mobileScreens/AboutAuth/StartWithEmailScreen';
-import SnsInfoScreenM from '../screens/mobileScreens/AboutAuth/SnsInfoScreen';
 import MyInfoScreenM from '../screens/mobileScreens/AboutUser/MyInfoScreen';
 import MyReviewScreenM from '../screens/mobileScreens/AboutUser/MyReviewScreen';
 import LeaveScreenM from '../screens/mobileScreens/AboutUser/LeaveScreen';
 import NewPasswordScreenM from '../screens/mobileScreens/AboutAuth/NewPasswordScreen';
+import ConfirmEmailScreenM from '../screens/mobileScreens/AboutAuth/ConfirmEmailScreen';
 
 import LoginContext from '../contexts/LoginContext';
 import { MY_PROFILE_QUERY } from '../gql/queries/MyProfileQuery';
@@ -82,7 +82,11 @@ const App = () => {
             path="/startWithEmail"
             component={StartWithEmailScreenM}
           />
-          <Route exact path="/snsInfo" component={SnsInfoScreenM} />
+          <Route
+            exact
+            path="/confirmEmail/:code"
+            component={ConfirmEmailScreenM}
+          />
           <Route exact path="/users/myInfo" component={MyInfoScreenM} />
           <Route exact path="/users/myReview" component={MyReviewScreenM} />
 
