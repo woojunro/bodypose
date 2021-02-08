@@ -20,12 +20,7 @@ import {
   SocialLoginMethod,
 } from './dtos/create-user.dto';
 import { DeleteUserOutput } from './dtos/delete-user.dto';
-import {
-  GetMyProfileOutput,
-  GetMyHeartStudiosOutput,
-  GetMyHeartStudioPhotosOutput,
-  GetMyHeartStudioPhotosInput,
-} from './dtos/get-user.dto';
+import { GetMyProfileOutput } from './dtos/get-user.dto';
 import {
   RequestPasswordResetInput,
   RequestPasswordResetOutput,
@@ -262,53 +257,6 @@ export class UsersService {
         isVerified: user.isVerified,
       },
     };
-  }
-
-  async getMyHeartStudios(user: User): Promise<GetMyHeartStudiosOutput> {
-    try {
-      const { heartStudios } = await this.userRepository.findOne(
-        { id: user.id },
-        {
-          relations: [
-            'heartStudios',
-            'heartStudios.catchphrases',
-            'heartStudios.coverPhoto',
-          ],
-        },
-      );
-      if (!heartStudios) {
-        return {
-          ok: false,
-          error: 'USER_NOT_FOUND',
-        };
-      }
-      return {
-        ok: true,
-        studios: heartStudios,
-      };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
-  }
-
-  async getMyHeartStudioPhotos(
-    user: User,
-    { page }: GetMyHeartStudioPhotosInput,
-  ): Promise<GetMyHeartStudioPhotosOutput> {
-    try {
-      const isUserFound = await this.userRepository.findOne({ id: user.id });
-      if (!isUserFound) {
-        return {
-          ok: false,
-          error: 'USER_NOT_FOUND',
-        };
-      }
-      return this.photosService.getHeartStudioPhotosByUserId(user.id, page);
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
   }
 
   updateUser(user: User): Promise<User> {

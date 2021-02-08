@@ -47,10 +47,6 @@ import {
   GetStudioOutput,
 } from './dtos/get-studio.dto';
 import {
-  ToggleHeartStudioInput,
-  ToggleHeartStudioOutput,
-} from './dtos/toggle-heart-studio.dto';
-import {
   UpdateBranchInput,
   UpdateBranchOutput,
 } from './dtos/update-branch.dto';
@@ -192,14 +188,7 @@ export class StudiosService {
 
   async getAllStudios(user: User): Promise<GetAllStudiosOutput> {
     try {
-      let heartStudios: Studio[] = [];
-      // If logged in
-      if (user) {
-        const { studios } = await this.usersService.getMyHeartStudios(user);
-        if (studios) {
-          heartStudios = [...studios];
-        }
-      }
+      const heartStudios: Studio[] = [];
       // TODO: Pagination
       const studios = await this.studioRepository.find({
         relations: ['catchphrases', 'coverPhoto'],
@@ -237,48 +226,6 @@ export class StudiosService {
       const updatedStudio = { ...studio, ...payload };
       await this.studioRepository.save(updatedStudio);
       return { ok: true };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
-  }
-
-  async toggleHeartStudio(
-    { id }: User,
-    { slug }: ToggleHeartStudioInput,
-  ): Promise<ToggleHeartStudioOutput> {
-    try {
-      const studio = await this.studioRepository.findOne({ slug });
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
-
-      const isStudioAlreadyHearted = await this.studioRepository
-        .createQueryBuilder('studio')
-        .leftJoinAndSelect('studio.heartUsers', 'user')
-        .where({ slug })
-        .andWhere('user.id = :userId', { userId: id })
-        .getOne();
-      const relationQuery = this.studioRepository
-        .createQueryBuilder('studio')
-        .relation('heartUsers')
-        .of(studio);
-      if (isStudioAlreadyHearted) {
-        await relationQuery.remove({ id });
-        studio.heartCount--;
-      } else {
-        await relationQuery.add({ id });
-        studio.heartCount++;
-      }
-      // Save
-      await this.studioRepository.save(studio);
-      return {
-        ok: true,
-        isHearted: !isStudioAlreadyHearted,
-      };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;

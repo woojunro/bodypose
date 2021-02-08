@@ -60,10 +60,6 @@ export class StudioPhoto extends CoreEntity {
   @IsInt()
   heartCount: number;
 
-  @ManyToMany(relation => User, user => user.heartStudioPhotos)
-  @Field(type => [User])
-  heartUsers: User[];
-
   @ManyToMany(relation => BackgroundConcept)
   @JoinTable({
     name: 'photos_background_concepts',

@@ -36,10 +36,6 @@ import {
   GetStudioOutput,
 } from './dtos/get-studio.dto';
 import {
-  ToggleHeartStudioInput,
-  ToggleHeartStudioOutput,
-} from './dtos/toggle-heart-studio.dto';
-import {
   UpdateBranchInput,
   UpdateBranchOutput,
 } from './dtos/update-branch.dto';
@@ -92,15 +88,6 @@ export class StudiosResolver {
     @Args('input') input: UpdateStudioInput,
   ): Promise<UpdateStudioOutput> {
     return this.studiosService.updateStudio(input);
-  }
-
-  @Mutation(returns => ToggleHeartStudioOutput)
-  @Roles(Role.USER)
-  toggleHeartStudio(
-    @CurrentUser() user: User,
-    @Args('input') input: ToggleHeartStudioInput,
-  ): Promise<ToggleHeartStudioOutput> {
-    return this.studiosService.toggleHeartStudio(user, input);
   }
 
   @Mutation(returns => CreateBranchOutput)

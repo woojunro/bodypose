@@ -119,20 +119,6 @@ export class User extends CoreEntity {
   @IsBoolean()
   isVerified: boolean;
 
-  @ManyToMany(relation => Studio, studio => studio.heartUsers)
-  @JoinTable({
-    name: 'users_heart_studios',
-  })
-  @Field(type => [Studio])
-  heartStudios: Studio[];
-
-  @ManyToMany(relation => StudioPhoto, photo => photo.heartUsers)
-  @JoinTable({
-    name: 'users_heart_studio_photos',
-  })
-  @Field(type => [StudioPhoto])
-  heartStudioPhotos: StudioPhoto[];
-
   @OneToMany(relation => UsersReviewStudios, review => review.user)
   @Field(type => [UsersReviewStudios])
   reviews: UsersReviewStudios[];

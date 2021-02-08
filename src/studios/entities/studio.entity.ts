@@ -96,11 +96,6 @@ export class Studio extends CoreEntity {
   @Field(type => [Catchphrase])
   catchphrases: Catchphrase[];
 
-  // 찜한 유저 목록
-  @ManyToMany(relation => User, user => user.heartStudios)
-  @Field(type => [User])
-  heartUsers: User[];
-
   // 찜한 유저 수
   @Column({ default: 0 })
   @Field(type => Int)
