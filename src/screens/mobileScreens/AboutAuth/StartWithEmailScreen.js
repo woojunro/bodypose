@@ -9,10 +9,6 @@ import {
   CheckValidUserName,
 } from '../../../components/functions/Login/LoginFunctions';
 import './StartWithEmailScreen.css';
-import {
-  CheckAlreadyUsedEmail,
-  CheckAlreadyUsedUserName,
-} from '../../../components/functions/WithDb/Auth';
 
 const EmailJoin = () => {
   const history = useHistory();
@@ -23,21 +19,23 @@ const EmailJoin = () => {
   const [checkPassword, setCheckPassword] = useState('');
   const [someError, setSomeError] = useState(true);
 
+  const [isEmailAlreadyUsed, setIsEmailAlreadyUsed] = useState(false);
+  const [isNameAlreadyUsed, setIsNameAlreadyUsed] = useState(false);
+
   useEffect(() => {
     if (
       CheckValidEmail(email) &&
-      !CheckAlreadyUsedEmail(email) &&
       CheckValidPassword(password) &&
       password === checkPassword &&
       CheckValidUserName(userName) &&
-      !CheckAlreadyUsedUserName(userName) &&
       checked
     ) {
       setSomeError(false);
     } else {
       setSomeError(true);
     }
-  }, [email, password, userName, checked]);
+  }, [email, password, checkPassword, userName, checked]);
+
   return (
     <div>
       <div className="joinContainer">
@@ -59,7 +57,7 @@ const EmailJoin = () => {
           {CheckValidEmail(email) || email === '' ? null : (
             <div className="passwordWarning">잘못된 이메일 형식입니다.</div>
           )}
-          {!CheckAlreadyUsedEmail(email) || email === '' ? null : (
+          {!isEmailAlreadyUsed ? null : (
             <div className="passwordWarning">이미 사용중인 이메일입니다.</div>
           )}
           <div className="joinEmailText">비밀번호 (8자 이상)</div>
@@ -68,10 +66,17 @@ const EmailJoin = () => {
             type="password"
             placeholder="비밀번호 (영문/숫자/특수문자)"
           />
-          {password.length > 7 || password === '' ? null : (
+          {password.length > 7 || password === '' ? (
+            password === '' ||
+            /^(?=.*[0-9])(?=.*[a-z]).{8,}$/.test(password) ? null : (
+              <div className="passwordWarning">
+                영문 소문자와 숫자를 각각 하나 이상 사용해주세요.
+              </div>
+            )
+          ) : (
             <div className="passwordWarning">비밀번호가 너무 짧습니다.</div>
           )}
-          {/^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?0-9a-zA-Z]*$/.test(
+          {/^[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?0-9a-zA-Z]*$/.test(
             password
           ) ? null : (
             <div className="passwordWarning">
@@ -107,7 +112,7 @@ const EmailJoin = () => {
               이름은 10글자까지 설정할 수 있습니다.
             </div>
           )}
-          {!CheckAlreadyUsedUserName(userName) || userName === '' ? null : (
+          {!isNameAlreadyUsed ? null : (
             <div className="passwordWarning">이미 사용중인 이름입니다.</div>
           )}
         </div>
@@ -122,15 +127,17 @@ const EmailJoin = () => {
             <span className="mustText">[필수] </span>
             <Link
               to="/notices/3"
+              target="_blank"
+              rel="noopener noreferrer"
               style={{ color: 'black' }}
-              onClick={() => window.scrollTo(0, 0)}
             >
               <span className="linkText"> 서비스 이용약관,</span>
             </Link>
             <Link
               to="/notices/2"
+              target="_blank"
+              rel="noopener noreferrer"
               style={{ color: 'black' }}
-              onClick={() => window.scrollTo(0, 0)}
             >
               <span className="linkText">개인정보 처리방침</span>
             </Link>
@@ -142,6 +149,8 @@ const EmailJoin = () => {
               password={password}
               userName={userName}
               someError={someError}
+              setIsEmailAlreadyUsed={setIsEmailAlreadyUsed}
+              setIsNameAlreadyUsed={setIsNameAlreadyUsed}
             />
           </div>
         </div>

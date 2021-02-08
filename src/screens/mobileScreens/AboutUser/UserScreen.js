@@ -3,17 +3,24 @@ import BottomNavigation from '../../../components/mobileComponents/BottomNavigat
 import Header from '../../../components/mobileComponents/HeaderM';
 import LoginContext from '../../../contexts/LoginContext';
 import { Redirect, useHistory, Link } from 'react-router-dom';
-import { GetUser } from '../../../components/functions/WithDb/User';
 import { IoIosArrowForward } from 'react-icons/io/';
 import Gmail from '../../../materials/gmail.png';
-import { Logout } from '../../../components/functions/WithDb/Auth';
-import LoadingComponent from '../../../components/mobileComponents/LoadingComponent';
+import AppLoadingScreen from '../../../components/mobileComponents/AppLoadingScreen';
 
 import './UserScreen.css';
+import { useQuery } from '@apollo/client';
+import { clearTokenAndCache } from '../../../apollo';
+import { MY_PROFILE_QUERY } from '../../../gql/queries/MyProfileQuery';
+
 const UserScreen = () => {
-  var loading = false;
   const LoggedIn = useContext(LoginContext);
   const history = useHistory();
+
+  const { data, loading } = useQuery(MY_PROFILE_QUERY, {
+    onError: () => {
+      LoggedIn.setLoggedIn(false);
+    },
+  });
 
   if (!LoggedIn.loggedIn) {
     return (
@@ -26,20 +33,25 @@ const UserScreen = () => {
     );
   }
 
-  const user = GetUser();
-
   const LogoutFunction = () => {
+    clearTokenAndCache();
     LoggedIn.setLoggedIn(false);
-    Logout();
+    history.push('/');
   };
 
   return loading ? (
-    <LoadingComponent />
+    <>
+      <Header pageName="users" />
+      <div className="appLoader">
+        <AppLoadingScreen />
+      </div>
+      <BottomNavigation pageName="users" />
+    </>
   ) : (
     <div>
       <Header pageName="users" />
       <div className="welcome">
-        <div className="nickNamePart">{user.userName}</div>
+        <div className="nickNamePart">{data.myProfile.profile.nickname}</div>
         <div className="welcomePart">님 환영합니다.</div>
       </div>
       <div className="userSemiTitle">계정</div>
