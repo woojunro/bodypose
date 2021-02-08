@@ -16,4 +16,6 @@
 .fullNoticeText {
   margin-top: 10px;
   font-size: 15px;
+  white-space: pre-wrap;
+  line-height: 1.75em;
 }

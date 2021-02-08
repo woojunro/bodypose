@@ -1,13 +1,20 @@
+import { useQuery } from '@apollo/client';
 import React from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
-import { useHistory } from 'react-router-dom';
-import { GetFullNotice } from '../../components/functions/WithDb/Notice';
+import { Redirect, useHistory, useParams } from 'react-router-dom';
+import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
+import { NOTICE_QUERY } from '../../gql/queries/NoticeQuery';
 import './NoticeScreen.css';
 
-const NoticeScreen = ({ match }) => {
+const NoticeScreen = () => {
+  const { noticeId } = useParams();
   const history = useHistory();
-  const noticeNum = match.params.noticeNumber;
-  const notice = GetFullNotice(noticeNum);
+  const { data, loading, error } = useQuery(NOTICE_QUERY, {
+    variables: {
+      id: Number(noticeId),
+    },
+  });
+
   return (
     <div>
       <div className="usersTopContainer">
@@ -18,11 +25,21 @@ const NoticeScreen = ({ match }) => {
           }}
         />
       </div>
-      <div className="noticeBodyPart">
-        <div className="fullNoticeTitle">{notice.title}</div>
-        <div className="fullNoticeDate">{notice.timestamp}</div>
-        <div className="fullNoticeText">{notice.text}</div>
-      </div>
+      {loading ? (
+        <div className="appLoader">
+          <AppLoadingScreen />
+        </div>
+      ) : error || !data.notice.ok ? (
+        <Redirect to="/error" />
+      ) : (
+        <div className="noticeBodyPart">
+          <div className="fullNoticeTitle">{data.notice.notice.title}</div>
+          <div className="fullNoticeDate">
+            {String(data.notice.notice.updatedAt).substr(0, 10)}
+          </div>
+          <div className="fullNoticeText">{data.notice.notice.content}</div>
+        </div>
+      )}
     </div>
   );
 };
