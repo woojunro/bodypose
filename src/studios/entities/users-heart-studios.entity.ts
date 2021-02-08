@@ -21,16 +21,16 @@ export class UsersHeartStudios {
   heartAt: Date;
 
   @ManyToOne(relation => User, { onDelete: 'SET NULL' })
-  heartingUser: User;
+  user: User;
 
-  @RelationId((entity: UsersHeartStudios) => entity.heartingUser)
+  @RelationId((entity: UsersHeartStudios) => entity.user)
   @Field(type => Int)
   userId: number;
 
   @ManyToOne(relation => Studio, { onDelete: 'CASCADE' })
-  heartedStudio: Studio;
+  studio: Studio;
 
-  @RelationId((entity: UsersHeartStudios) => entity.heartedStudio)
+  @RelationId((entity: UsersHeartStudios) => entity.studio)
   @Field(type => Int)
   studioId: number;
 }

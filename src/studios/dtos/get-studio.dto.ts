@@ -18,7 +18,7 @@ export class GetStudioOutput extends CoreOutput {
 }
 
 @ObjectType()
-export class GetAllStudiosOutput extends CoreOutput {
+export class GetStudiosOutput extends CoreOutput {
   @Field(type => [StudioWithIsHearted], { nullable: true })
   studios?: StudioWithIsHearted[];
 }

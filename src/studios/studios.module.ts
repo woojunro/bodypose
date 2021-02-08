@@ -8,6 +8,7 @@ import {
   ProductResolver,
   StudioReviewResolver,
   StudiosResolver,
+  UsersHeartStudiosResolver,
 } from './studios.resolver';
 import { UsersModule } from 'src/users/users.module';
 import { AuthModule } from 'src/auth/auth.module';
@@ -42,6 +43,7 @@ import { UsersHeartStudios } from './entities/users-heart-studios.entity';
     StudiosService,
     StudiosResolver,
     ProductResolver,
+    UsersHeartStudiosResolver,
     StudioReviewResolver,
   ],
   exports: [StudiosService],

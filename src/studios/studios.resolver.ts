@@ -31,10 +31,11 @@ import {
   GetStudioReviewsOutput,
 } from './dtos/get-studio-review.dto';
 import {
-  GetAllStudiosOutput,
+  GetStudiosOutput,
   GetStudioInput,
   GetStudioOutput,
 } from './dtos/get-studio.dto';
+import { HeartStudioInput, HeartStudioOutput } from './dtos/heart-studio.dto';
 import {
   UpdateBranchInput,
   UpdateBranchOutput,
@@ -52,6 +53,7 @@ import {
 } from './dtos/update-studio.dto';
 import { StudioProduct } from './entities/studio-product.entity';
 import { Studio } from './entities/studio.entity';
+import { UsersHeartStudios } from './entities/users-heart-studios.entity';
 import { UsersReviewStudios } from './entities/users-review-studios.entity';
 import { StudiosService } from './studios.service';
 
@@ -69,8 +71,8 @@ export class StudiosResolver {
   }
 
   // Public
-  @Query(returns => GetAllStudiosOutput)
-  allStudios(@CurrentUser() user: User): Promise<GetAllStudiosOutput> {
+  @Query(returns => GetStudiosOutput)
+  allStudios(@CurrentUser() user: User): Promise<GetStudiosOutput> {
     return this.studiosService.getAllStudios(user);
   }
 
@@ -194,5 +196,34 @@ export class StudioReviewResolver {
     @Args('input') input: DeleteStudioReviewInput,
   ): Promise<DeleteStudioReviewOutput> {
     return this.studiosService.deleteStudioReview(user, input);
+  }
+}
+
+@Resolver(of => UsersHeartStudios)
+export class UsersHeartStudiosResolver {
+  constructor(private readonly studiosService: StudiosService) {}
+
+  @Query(returns => GetStudiosOutput)
+  @Roles(Role.USER)
+  myHeartStudios(@CurrentUser() user: User): Promise<GetStudiosOutput> {
+    return this.studiosService.getHeartStudios(user);
+  }
+
+  @Mutation(returns => HeartStudioOutput)
+  @Roles(Role.USER)
+  heartStudio(
+    @CurrentUser() user: User,
+    @Args('input') input: HeartStudioInput,
+  ): Promise<HeartStudioOutput> {
+    return this.studiosService.heartStudio(user, input);
+  }
+
+  @Mutation(returns => HeartStudioOutput)
+  @Roles(Role.USER)
+  disheartStudio(
+    @CurrentUser() user: User,
+    @Args('input') input: HeartStudioInput,
+  ): Promise<HeartStudioOutput> {
+    return this.studiosService.disheartStudio(user, input);
   }
 }
