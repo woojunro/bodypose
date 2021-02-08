@@ -24,6 +24,7 @@
   display: flex;
   justify-content: center;
   margin-top: 10px;
+  margin-bottom: 30px;
 }
 .showMoreNoticeButton {
   padding-top: 7px;
@@ -31,4 +32,7 @@
   padding-left: 30px;
   padding-right: 30px;
   border: lightgray 1px solid;
+}
+.noticeListScreenNoMoreDiv {
+  font-size: smaller;
 }
