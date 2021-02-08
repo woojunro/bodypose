@@ -89,10 +89,11 @@ export class PhotosService {
         costumeConceptSlugs,
         objectConceptSlugs,
       } = input;
-      const photosPerPage = take;
 
       let query = this.studioPhotoRepository.createQueryBuilder('photo');
-      query = query.leftJoinAndSelect('photo.studio', 'studio');
+      query = query
+        .leftJoinAndSelect('photo.studio', 'studio')
+        .addSelect('SUBSTRING(photo.originalUrl, -40, 8)', 'subUrl');
 
       if (backgroundConceptSlugs.length !== 0) {
         query = query.leftJoin('photo.backgroundConcepts', 'backgroundConcept');
@@ -104,7 +105,7 @@ export class PhotosService {
         query = query.leftJoin('photo.objectConcepts', 'objectConcept');
       }
 
-      const [photos, count] = await query
+      const photos = await query
         .where({ gender: gender ? gender : Not(IsNull()) })
         .andWhere(
           backgroundConceptSlugs.length !== 0
@@ -124,16 +125,15 @@ export class PhotosService {
             : '1=1',
           { objectSlugs: objectConceptSlugs },
         )
-        .orderBy('photo.originalUrl', 'ASC')
+        .orderBy('subUrl', 'ASC')
         .skip((page - 1) * take)
         .take(take)
-        .getManyAndCount();
+        .getMany();
 
       // return
       return {
         ok: true,
         photos,
-        totalPages: Math.ceil(count / photosPerPage),
       };
     } catch (e) {
       console.log(e);
