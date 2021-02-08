@@ -59,7 +59,7 @@ const NoticeListScreen = () => {
 
   return (
     <div>
-      <div className="usersTopContainer">
+      <div className="noticeListTopContainer">
         <FiArrowLeft
           className="usersGoBackArrow"
           onClick={() => {

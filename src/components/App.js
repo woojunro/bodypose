@@ -67,7 +67,7 @@ const App = () => {
           <Route exact path="/users" component={UserScreenM} />
           <Route exact path="/hearts" component={HeartScreenM} />
           <Route exact path="/notices" component={NoticeListScreenM} />
-          <Route path="/notices/:noticeNumber" component={NoticeScreenM} />
+          <Route path="/notices/:noticeId" component={NoticeScreenM} />
           <Route path="/reviews/:reviewNumber" component={FullReviewScreenM} />
           <Route path="/newPassword/:authCode" component={NewPasswordScreenM} />
 

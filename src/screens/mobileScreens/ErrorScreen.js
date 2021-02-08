@@ -1,23 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
 const ErrorScreen = () => {
-  const [isTimeout, setIsTimeout] = useState(false);
   const history = useHistory();
 
-  setTimeout(() => {
-    setIsTimeout(true);
-  }, 3000);
-
   useEffect(() => {
-    if (isTimeout) {
+    setTimeout(() => {
       history.push('/');
-    }
-    return null;
-  }, [isTimeout]);
+    }, 3000);
+  }, []);
 
   return (
-    <div>
+    <div className="appFullScreenCenter">
       <p>잘못된 접근입니다.</p>
       <p>3초 후 홈페이지로 이동합니다.</p>
     </div>

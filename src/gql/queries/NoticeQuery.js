@@ -14,3 +14,18 @@ export const NOTICES_QUERY = gql`
     }
   }
 `;
+
+export const NOTICE_QUERY = gql`
+  query GetNotice($id: Int!) {
+    notice(input: { id: $id }) {
+      ok
+      error
+      notice {
+        id
+        updatedAt
+        title
+        content
+      }
+    }
+  }
+`;

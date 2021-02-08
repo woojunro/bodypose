@@ -1,7 +1,14 @@
+.noticeListTopContainer {
+  padding-top: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .noticeList {
+  margin-top: 15px;
   margin-left: 20px;
   margin-right: 20px;
-  padding-top: 25px;
   border-bottom: 1px solid lightgray;
 }
 .noticeCard {
