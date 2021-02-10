@@ -2,7 +2,7 @@ import React from 'react';
 import './ConceptListCard.css';
 
 const ConceptListCard = ({
-  photo,
+  src,
   setThisPhoto,
   conceptNum,
   openModal,
@@ -17,7 +17,7 @@ const ConceptListCard = ({
           needFetchMoreData(conceptNum);
         }}
       >
-        <img className="conceptListCard" alt="card" src={photo.thumb} />
+        <img className="conceptListCard" alt="card" src={src} />
       </div>
     </div>
   );

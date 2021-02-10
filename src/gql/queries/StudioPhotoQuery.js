@@ -30,6 +30,7 @@ export const ALL_STUDIO_PHOTOS_QUERY = gql`
           name
           slug
         }
+        isHearted
       }
     }
   }

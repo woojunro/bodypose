@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import BottomNavigation from '../../components/mobileComponents/BottomNavigation';
 import TopNavigator from '../../components/mobileComponents/conceptListScreen/TopNavigator';
-import Header from '../../components/mobileComponents/HeaderM';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import shuffle from '../../components/functions/Shuffle';
 import ConceptListCard from '../../components/mobileComponents/conceptListScreen/ConceptListCard';
@@ -10,26 +9,38 @@ import SelectionModal from '../../components/mobileComponents/conceptListScreen/
 import './ConceptListScreen.css';
 import LoadingIcon from '../../components/mobileComponents/conceptListScreen/LoadingIcon';
 import { FaSlidersH } from 'react-icons/fa';
-import GetMoreData, {
-  GetConceptPhotos,
-} from '../../components/functions/WithDb/ConceptList';
+import { GetConceptPhotos } from '../../components/functions/WithDb/ConceptList';
+import { useQuery } from '@apollo/client';
+import { ALL_STUDIO_PHOTOS_QUERY } from '../../gql/queries/StudioPhotoQuery';
+import { randomPage } from '../../components/functions/Concept/randomPages';
 
 const genderOptions = ['전체', '남성', '여성', '커플'];
 
 const ConceptListScreen = () => {
-  //fetching 중인가?
   const [whileFetching, setWhileFetching] = useState(false);
-  //선택된 컨셉 목록.
+  const [pageList, setPageList] = useState([1]);
+  const [selectedGender, setSelectedGender] = useState(null);
   const [selectedConcepts, setSelectedConcepts] = useState({
-    bgConcept: ['total'],
-    costumeConcept: ['total'],
-    objectConcept: ['total'],
+    bgConcept: [],
+    costumeConcept: [],
+    objectConcept: [],
+  });
+
+  const { data, fetchMore } = useQuery(ALL_STUDIO_PHOTOS_QUERY, {
+    variables: {
+      page: 1,
+      gender: selectedGender,
+      backgroundConceptSlugs: selectedConcepts.bgConcept,
+      costumeConceptSlugs: selectedConcepts.costumeConcept,
+      objectConceptSlugs: selectedConcepts.objectConcept,
+    },
+    onError: () => alert('오류가 발생하였습니다. 다시 시도해주세요.'),
   });
 
   const [isSelectionOpen, setIsSelectionOpen] = useState(false);
   const [i, setI] = useState(0);
 
-  const [isMore, setIsMore] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
   const [gender, setGender] = useState(genderOptions[0]);
   //초기에 Db에서 사진 불러와야하는 부분.
   const [conceptArray, setConceptArray] = useState(
@@ -44,53 +55,73 @@ const ConceptListScreen = () => {
   const openModal = () => {
     setIsModalOpen(true);
   };
-  const handlePhotoNum = (num) => {
+  const handlePhotoNum = num => {
     setSelectedPhotoNum(num);
   };
   const cancleFinalPhoto = () => {
     setIsFinalPhoto(false);
   };
-  const handleConcepts = (object) => {
+  const handleConcepts = object => {
     setSelectedConcepts(object);
   };
   useEffect(() => {
     document.body.style.overflow =
       isSelectionOpen || isModalOpen ? 'hidden' : 'auto';
   }, [isSelectionOpen, isModalOpen]);
-  let conceptNum = 0;
 
   const fetchMoreData = () => {
-    setI(i + 24);
+    console.log(data.allStudioPhotos.totalPages);
+    if (pageList.length === data.allStudioPhotos.totalPages) {
+      setHasMore(false);
+      return;
+    }
 
-    setTimeout(() => {
-      const currentData = conceptArray;
-      //Db에서 사진 더 불러와야 하는 부분.
-      const moreData = GetMoreData(i, currentData);
+    let newPage;
+    for (;;) {
+      newPage = randomPage(data.allStudioPhotos.totalPages);
+      if (!pageList.includes(newPage)) break;
+    }
 
-      setConceptArray(moreData);
+    fetchMore({
+      variables: {
+        page: newPage,
+        gender: selectedGender,
+        backgroundConceptSlugs: selectedConcepts.bgConcept,
+        costumeConceptSlugs: selectedConcepts.costumeConcept,
+        objectConceptSlugs: selectedConcepts.objectConcept,
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult?.allStudioPhotos.photos) return prev;
+        return Object.assign({}, prev, {
+          ...prev,
+          allStudioPhotos: {
+            ...prev.allStudioPhotos,
+            photos: [
+              ...prev.allStudioPhotos.photos,
+              ...fetchMoreResult.allStudioPhotos.photos,
+            ],
+          },
+        });
+      },
+    });
 
-      currentData.length === moreData.length
-        ? setIsMore(false)
-        : setIsMore(true);
-      //다 불러오고 fetching 상태 바꿔주기.
-      setWhileFetching(false);
-    }, 1000);
+    setPageList([...pageList, newPage]);
   };
 
   //큰 화면으로 볼 때 10개 이후 새로운 것이 필요하면 미리 불러두기.
-  const needFetchMoreData = (selectedPhotoNum) => {
-    if (selectedPhotoNum > conceptArray.length - 10 && isMore) {
+  const needFetchMoreData = selectedPhotoNum => {
+    if (selectedPhotoNum > conceptArray.length - 10 && hasMore) {
       setWhileFetching(true);
       fetchMoreData();
     }
-    if (!isMore && selectedPhotoNum === conceptArray.length - 1) {
+    if (!hasMore && selectedPhotoNum === conceptArray.length - 1) {
       setIsFinalPhoto(true);
     }
   };
   //성별 및 컨셉 바꾸면 Db에서 사진 다시 불러와야하는 부분.
   const getDb = () => {
     setI(0);
-    setIsMore(true);
+    setHasMore(true);
     setConceptArray(shuffle(GetConceptPhotos(0)));
   };
 
@@ -127,9 +158,9 @@ const ConceptListScreen = () => {
           setGender={setGender}
         />
         <InfiniteScroll
-          dataLength={conceptArray.length}
+          dataLength={data?.allStudioPhotos.photos.length || 0}
           next={fetchMoreData}
-          hasMore={isMore}
+          hasMore={hasMore}
           loader={<LoadingIcon />}
           endMessage={
             <div className="endMessageContainer">
@@ -138,12 +169,11 @@ const ConceptListScreen = () => {
           }
         >
           <div className="totalConcept">
-            {conceptArray.map((concept) => (
+            {(data?.allStudioPhotos.photos || []).map((concept, idx) => (
               <ConceptListCard
-                key={concept.photoName}
-                conceptNum={conceptNum++}
-                photo={concept}
-                isModalOpen={isModalOpen}
+                key={`concept-list-${concept.id}-${idx}`}
+                conceptNum={idx}
+                src={concept.thumbnailUrl}
                 setThisPhoto={handlePhotoNum}
                 openModal={openModal}
                 needFetchMoreData={needFetchMoreData}

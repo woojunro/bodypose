@@ -29,7 +29,6 @@ const NoticeListScreen = () => {
           ...prev,
           notices: {
             ...prev.notices,
-            totalPages: fetchMoreResult.notices.totalPages,
             notices: [
               ...prev.notices.notices,
               ...fetchMoreResult.notices.notices,
