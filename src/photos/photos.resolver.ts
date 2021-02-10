@@ -26,9 +26,14 @@ import { GetAllPhotoConceptsOutput } from './dtos/get-photo-concept.dto';
 import {
   GetAllStudioPhotosInput,
   GetAllStudioPhotosOutput,
+  GetMyHeartStudioPhotosInput,
   GetStudioPhotosInput,
   GetStudioPhotosOutput,
 } from './dtos/get-studio-photo.dto';
+import {
+  HeartStudioPhotoInput,
+  HeartStudioPhotoOutput,
+} from './dtos/heart-studio-photo.dto';
 import {
   UpdatePhotoConceptInput,
   UpdatePhotoConceptOutput,
@@ -38,6 +43,7 @@ import {
   UpdateStudioPhotoOutput,
 } from './dtos/update-studio-photo.dto';
 import { StudioPhoto } from './entities/studio-photo.entity';
+import { UsersHeartStudioPhotos } from './entities/users-heart-studio-photos.entity';
 import { PhotosService } from './photos.service';
 
 @Resolver(of => StudioPhoto)
@@ -47,17 +53,19 @@ export class PhotosResolver {
   // Public
   @Query(returns => GetAllStudioPhotosOutput)
   allStudioPhotos(
+    @CurrentUser() user: User,
     @Args('input') input: GetAllStudioPhotosInput,
   ): Promise<GetAllStudioPhotosOutput> {
-    return this.photosService.getAllStudioPhotos(input);
+    return this.photosService.getAllStudioPhotos(user, input);
   }
 
   // Public
   @Query(returns => GetStudioPhotosOutput)
   studioPhotos(
+    @CurrentUser() user: User,
     @Args('input') input: GetStudioPhotosInput,
   ): Promise<GetStudioPhotosOutput> {
-    return this.photosService.getStudioPhotos(input);
+    return this.photosService.getStudioPhotos(user, input);
   }
 
   // Public
@@ -121,5 +129,37 @@ export class PhotosResolver {
     @Args('input') input: ClickStudioPhotoInput,
   ): Promise<ClickStudioPhotoOutput> {
     return this.photosService.clickStudioPhoto(input, user);
+  }
+}
+
+@Resolver(of => UsersHeartStudioPhotos)
+export class UsersHeartStudioPhotosResolver {
+  constructor(private readonly photosService: PhotosService) {}
+
+  @Query(returns => GetStudioPhotosOutput)
+  @Roles(Role.USER)
+  myHeartStudioPhotos(
+    @CurrentUser() user: User,
+    @Args('input') input: GetMyHeartStudioPhotosInput,
+  ): Promise<GetStudioPhotosOutput> {
+    return this.photosService.getMyHeartStudioPhotos(user, input);
+  }
+
+  @Mutation(returns => HeartStudioPhotoOutput)
+  @Roles(Role.USER)
+  heartStudioPhoto(
+    @CurrentUser() user: User,
+    @Args('input') input: HeartStudioPhotoInput,
+  ): Promise<HeartStudioPhotoOutput> {
+    return this.photosService.heartStudioPhoto(user, input);
+  }
+
+  @Mutation(returns => HeartStudioPhotoOutput)
+  @Roles(Role.USER)
+  disheartStudioPhoto(
+    @CurrentUser() user: User,
+    @Args('input') input: HeartStudioPhotoInput,
+  ): Promise<HeartStudioPhotoOutput> {
+    return this.photosService.disheartStudioPhoto(user, input);
   }
 }

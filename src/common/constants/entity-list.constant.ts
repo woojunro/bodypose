@@ -7,6 +7,7 @@ import {
 import { ReviewPhoto } from 'src/photos/entities/review-photo.entity';
 import { StudioPhoto } from 'src/photos/entities/studio-photo.entity';
 import { UsersClickStudioPhotos } from 'src/photos/entities/users-click-studio-photos.entity';
+import { UsersHeartStudioPhotos } from 'src/photos/entities/users-heart-studio-photos.entity';
 import { AdditionalProduct } from 'src/studios/entities/additional-product.entity';
 import { Branch } from 'src/studios/entities/branch.entity';
 import { Catchphrase } from 'src/studios/entities/catchphrase.entity';
@@ -42,4 +43,5 @@ export const ENTITY_LIST = [
   PasswordReset,
   Notice,
   UsersHeartStudios,
+  UsersHeartStudioPhotos,
 ];
