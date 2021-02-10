@@ -23,6 +23,7 @@ import MyReviewScreenM from '../screens/mobileScreens/AboutUser/MyReviewScreen';
 import LeaveScreenM from '../screens/mobileScreens/AboutUser/LeaveScreen';
 import NewPasswordScreenM from '../screens/mobileScreens/AboutAuth/NewPasswordScreen';
 import ConfirmEmailScreenM from '../screens/mobileScreens/AboutAuth/ConfirmEmailScreen';
+import KakaoLinkScreenM from '../screens/mobileScreens/KakaoLinkScreen';
 
 import LoginContext from '../contexts/LoginContext';
 import { MY_PROFILE_QUERY } from '../gql/queries/MyProfileQuery';
@@ -36,12 +37,12 @@ const App = () => {
 
   const { loading } = useQuery(MY_PROFILE_QUERY, {
     fetchPolicy: 'network-only',
-    onCompleted: data => {
+    onCompleted: (data) => {
       if (data.myProfile.ok) {
         setLoggedIn(true);
       }
     },
-    onError: err => {
+    onError: (err) => {
       clearTokenAndCache();
     },
   });
@@ -92,6 +93,8 @@ const App = () => {
 
           <Route exact path="/users/leave" component={LeaveScreenM} />
           <Route exact path="/error" component={ErrorScreenM} />
+          <Route path="/kakaoLink/:kakaoID" component={KakaoLinkScreenM} />
+
           <Route path="*" component={ErrorScreenM} />
         </Switch>
       </Router>
