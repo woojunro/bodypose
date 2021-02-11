@@ -3,7 +3,7 @@ import './TopNavigator.css';
 
 const genderOptionsKor = ['전체', '남성', '여성', '커플'];
 
-const TopNavigator = ({ options, selectedGender, setGender }) => {
+const TopNavigator = ({ options, selectedGender, setGender, setHasMore }) => {
   const renderdOption = options.map((option, idx) => {
     return option === selectedGender ? (
       <div key={`gender-option-selected-${option}`} className="selectedText">
@@ -12,7 +12,10 @@ const TopNavigator = ({ options, selectedGender, setGender }) => {
     ) : (
       <div
         key={`gender-option-unselected-${option}`}
-        onClick={() => setGender(option)}
+        onClick={() => {
+          setHasMore(true);
+          setGender(option);
+        }}
         className="unselectedText"
       >
         {genderOptionsKor[idx]}

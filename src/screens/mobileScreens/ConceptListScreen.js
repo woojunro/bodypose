@@ -130,12 +130,6 @@ const ConceptListScreen = () => {
       setIsFinalPhoto(true);
     }
   };
-  //성별 및 컨셉 바꾸면 Db에서 사진 다시 불러와야하는 부분.
-  const getDb = () => {
-    setI(0);
-    setHasMore(true);
-    setConceptArray(shuffle(GetConceptPhotos(0)));
-  };
 
   return (
     <div>
@@ -167,6 +161,7 @@ const ConceptListScreen = () => {
           options={genderOptions}
           selectedGender={selectedGender}
           setGender={setSelectedGender}
+          setHasMore={setHasMore}
         />
         <InfiniteScroll
           dataLength={
@@ -181,7 +176,7 @@ const ConceptListScreen = () => {
           loader={<LoadingIcon />}
           endMessage={
             <div className="endMessageContainer">
-              <div>모든 사진을 불러왔습니다</div>
+              <div>모든 사진을 불러왔습니다.</div>
             </div>
           }
         >

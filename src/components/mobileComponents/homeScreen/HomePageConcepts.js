@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import MainConceptsView from './MainConceptsView';
 import shuffle from '../../functions/Shuffle';
 
 export const MaleConcepts = ({ concepts }) => {
-  const shuffledConcepts = shuffle(concepts);
+  const [shuffledConcepts] = useState(shuffle(concepts));
 
   return (
     <MainConceptsView
@@ -14,7 +14,7 @@ export const MaleConcepts = ({ concepts }) => {
 };
 
 export const FemaleConcepts = ({ concepts }) => {
-  const shuffledConcepts = shuffle(concepts);
+  const [shuffledConcepts] = useState(shuffle(concepts));
 
   return (
     <MainConceptsView
@@ -25,7 +25,7 @@ export const FemaleConcepts = ({ concepts }) => {
 };
 
 export const CoupleConcepts = ({ concepts }) => {
-  const shuffledConcepts = shuffle(concepts);
+  const [shuffledConcepts] = useState(shuffle(concepts));
 
   return (
     <MainConceptsView
