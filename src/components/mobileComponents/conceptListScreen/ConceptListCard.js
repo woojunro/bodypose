@@ -17,7 +17,7 @@ const ConceptListCard = ({
           needFetchMoreData(conceptNum);
         }}
       >
-        <img className="conceptListCard" alt="card" src={src} />
+        <img className="conceptListCard" alt="컨셉" src={src} />
       </div>
     </div>
   );
