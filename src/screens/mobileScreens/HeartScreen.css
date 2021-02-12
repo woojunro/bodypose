@@ -26,3 +26,14 @@
 
   width: 50vw;
 }
+
+.heartScreenLoadingDiv {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: -moz-calc(100vh - 159px);
+  height: -webkit-calc(100vh - 159px);
+  height: calc(100vh - 159px);
+  align-items: center;
+  justify-content: center;
+}
