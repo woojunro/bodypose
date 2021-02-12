@@ -186,7 +186,7 @@ const Modal = ({
                             );
                             setSelectedConcepts({
                               ...selectedConcepts,
-                              costumeConcept: newObjConcept,
+                              objectConcept: newObjConcept,
                             });
                           }}
                         >

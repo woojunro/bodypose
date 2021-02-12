@@ -1,20 +1,13 @@
 import React from 'react';
 import './ConceptListCard.css';
 
-const ConceptListCard = ({
-  src,
-  setThisPhoto,
-  conceptNum,
-  openModal,
-  needFetchMoreData,
-}) => {
+const ConceptListCard = ({ src, setThisPhoto, openModal }) => {
   return (
     <div className="concepListCardContainer">
       <div
         onClick={() => {
-          setThisPhoto(conceptNum);
+          setThisPhoto();
           openModal();
-          needFetchMoreData(conceptNum);
         }}
       >
         <img className="conceptListCard" alt="컨셉" src={src} />

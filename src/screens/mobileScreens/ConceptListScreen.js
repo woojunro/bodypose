@@ -2,22 +2,20 @@ import React, { useState, useEffect } from 'react';
 import BottomNavigation from '../../components/mobileComponents/BottomNavigation';
 import TopNavigator from '../../components/mobileComponents/conceptListScreen/TopNavigator';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import shuffle from '../../components/functions/Shuffle';
 import ConceptListCard from '../../components/mobileComponents/conceptListScreen/ConceptListCard';
 import ConceptModal from '../../components/mobileComponents/conceptListScreen/ConceptModal';
 import SelectionModal from '../../components/mobileComponents/conceptListScreen/SelectionModal';
 import './ConceptListScreen.css';
 import LoadingIcon from '../../components/mobileComponents/conceptListScreen/LoadingIcon';
 import { FaSlidersH } from 'react-icons/fa';
-import { GetConceptPhotos } from '../../components/functions/WithDb/ConceptList';
 import { useQuery } from '@apollo/client';
 import { ALL_STUDIO_PHOTOS_QUERY } from '../../gql/queries/StudioPhotoQuery';
 import { randomPage } from '../../components/functions/Concept/randomPages';
+import shuffle from '../../components/functions/Shuffle';
 
 const genderOptions = [null, 'MALE', 'FEMALE', 'COUPLE'];
 
 const ConceptListScreen = () => {
-  const [whileFetching, setWhileFetching] = useState(false);
   const [pageList, setPageList] = useState([1]);
   const [selectedGender, setSelectedGender] = useState(genderOptions[0]);
   const [selectedConcepts, setSelectedConcepts] = useState({
@@ -27,7 +25,8 @@ const ConceptListScreen = () => {
   });
   const [hasMore, setHasMore] = useState(true);
 
-  const { data, fetchMore } = useQuery(ALL_STUDIO_PHOTOS_QUERY, {
+  const { data, loading, fetchMore } = useQuery(ALL_STUDIO_PHOTOS_QUERY, {
+    notifyOnNetworkStatusChange: true,
     variables: {
       page: 1,
       gender: selectedGender,
@@ -38,41 +37,35 @@ const ConceptListScreen = () => {
     onCompleted: data => {
       if (!data.allStudioPhotos.ok) {
         setHasMore(false);
-        return;
-      }
-      if (data.allStudioPhotos.totalPages <= 1) {
-        setHasMore(false);
-        return;
+      } else {
+        if (data.allStudioPhotos.totalPages <= 1) {
+          setHasMore(false);
+        }
       }
     },
     onError: () => setHasMore(false),
   });
 
   const [isSelectionOpen, setIsSelectionOpen] = useState(false);
-  const [i, setI] = useState(0);
-
-  //초기에 Db에서 사진 불러와야하는 부분.
-  const [conceptArray, setConceptArray] = useState(
-    shuffle(GetConceptPhotos(i))
-  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPhotoNum, setSelectedPhotoNum] = useState(0);
-  const [isFinalPhoto, setIsFinalPhoto] = useState(false);
+
   const closeModal = () => {
     setIsModalOpen(false);
   };
+
   const openModal = () => {
     setIsModalOpen(true);
   };
+
   const handlePhotoNum = num => {
     setSelectedPhotoNum(num);
   };
-  const cancleFinalPhoto = () => {
-    setIsFinalPhoto(false);
-  };
+
   const handleConcepts = object => {
     setSelectedConcepts(object);
   };
+
   useEffect(() => {
     document.body.style.overflow =
       isSelectionOpen || isModalOpen ? 'hidden' : 'auto';
@@ -110,7 +103,7 @@ const ConceptListScreen = () => {
             ...prev.allStudioPhotos,
             photos: [
               ...prev.allStudioPhotos.photos,
-              ...fetchMoreResult.allStudioPhotos.photos,
+              ...shuffle(fetchMoreResult.allStudioPhotos.photos),
             ],
           },
         });
@@ -120,16 +113,15 @@ const ConceptListScreen = () => {
     setPageList([...pageList, newPage]);
   };
 
-  //큰 화면으로 볼 때 10개 이후 새로운 것이 필요하면 미리 불러두기.
-  const needFetchMoreData = selectedPhotoNum => {
-    if (selectedPhotoNum > conceptArray.length - 10 && hasMore) {
-      setWhileFetching(true);
+  useEffect(() => {
+    if (!data || !data.allStudioPhotos || !data.allStudioPhotos.photos) {
+      return;
+    }
+
+    if (selectedPhotoNum >= data.allStudioPhotos.photos.length - 3) {
       fetchMoreData();
     }
-    if (!hasMore && selectedPhotoNum === conceptArray.length - 1) {
-      setIsFinalPhoto(true);
-    }
-  };
+  }, [selectedPhotoNum]);
 
   return (
     <div>
@@ -186,9 +178,8 @@ const ConceptListScreen = () => {
                 key={`concept-list-${concept.id}-${idx}`}
                 conceptNum={idx}
                 src={concept.thumbnailUrl}
-                setThisPhoto={handlePhotoNum}
+                setThisPhoto={() => handlePhotoNum(idx)}
                 openModal={openModal}
-                needFetchMoreData={needFetchMoreData}
               />
             ))}
             {!data?.allStudioPhotos.photos
@@ -205,20 +196,19 @@ const ConceptListScreen = () => {
                 ))}
           </div>
         </InfiniteScroll>
-        {isModalOpen ? (
+        {isModalOpen && (
           <ConceptModal
-            whileFetching={whileFetching}
-            isOpen={isModalOpen}
             close={closeModal}
-            concept={conceptArray[selectedPhotoNum]}
-            openModal={openModal}
+            open={openModal}
+            id={data.allStudioPhotos.photos[selectedPhotoNum].id}
             setThisPhoto={handlePhotoNum}
-            needFetchMoreData={needFetchMoreData}
-            photoNum={selectedPhotoNum}
-            isFinalPhoto={isFinalPhoto}
-            handleIsFinalPhoto={cancleFinalPhoto}
+            selectedPhotoNum={selectedPhotoNum}
+            isFinalPhoto={
+              selectedPhotoNum >= data.allStudioPhotos.photos.length - 1
+            }
+            whileFetching={loading}
           />
-        ) : null}
+        )}
         <BottomNavigation pageName="concepts" />
       </div>
     </div>

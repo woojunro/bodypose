@@ -24,7 +24,6 @@ const Modal = ({ isOpen, close, concept }) => {
           return !cachedIsHearted;
         },
       },
-      broadcast: false,
     });
   };
 
