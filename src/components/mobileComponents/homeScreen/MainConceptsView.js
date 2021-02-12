@@ -13,7 +13,7 @@ const MainConceptsView = ({ ConceptsList, semiTitle }) => {
   const renderedConceptsList = conceptsList =>
     conceptsList.map(concept => {
       return (
-        <li key={concept.originalUrl}>
+        <li key={`home-${concept.studio.slug}-${concept.id}`}>
           <MainConceptsCard concept={concept} />
         </li>
       );

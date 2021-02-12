@@ -1,19 +1,24 @@
 import React from 'react';
 import './TopNavigator.css';
 
-const TopNavigator = ({ options = [], selectedGender, setGender }) => {
-  const renderdOption = options.map((option) => {
+const genderOptionsKor = ['전체', '남성', '여성', '커플'];
+
+const TopNavigator = ({ options, selectedGender, setGender, setHasMore }) => {
+  const renderdOption = options.map((option, idx) => {
     return option === selectedGender ? (
-      <div key={option} className="selectedText">
-        {option}
+      <div key={`gender-option-selected-${option}`} className="selectedText">
+        {genderOptionsKor[idx]}
       </div>
     ) : (
       <div
-        key={option}
-        onClick={() => setGender(option)}
+        key={`gender-option-unselected-${option}`}
+        onClick={() => {
+          setHasMore(true);
+          setGender(option);
+        }}
         className="unselectedText"
       >
-        {option}
+        {genderOptionsKor[idx]}
       </div>
     );
   });

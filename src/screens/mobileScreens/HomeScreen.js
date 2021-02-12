@@ -17,23 +17,24 @@ import { useQuery } from '@apollo/client';
 import { ALL_STUDIO_PHOTOS_QUERY } from '../../gql/queries/StudioPhotoQuery';
 import AppErrorScreen from '../../components/mobileComponents/AppErrorScreen';
 import { NOTICES_QUERY } from '../../gql/queries/NoticeQuery';
+import {
+  COUPLE_PHOTOS_NUM,
+  FEMALE_PHOTOS_NUM,
+  MALE_PHOTOS_NUM,
+} from '../../constants/numOfPhotos';
+import { randomPage } from '../../components/functions/Concept/randomPages';
 
-const numOfFemalePhotos = 306;
-const numOfMalePhotos = 112;
-const numOfCouplePhotos = 4;
-
-const take = 4;
-const randomPage = page => Math.floor(Math.random() * page) + 1;
+const take = 8;
 
 const HomeScreen = () => {
   const [randomFemalePage] = useState(
-    randomPage(Math.floor(numOfFemalePhotos / take))
+    randomPage(Math.floor(FEMALE_PHOTOS_NUM / take))
   );
   const [randomMalePage] = useState(
-    randomPage(Math.floor(numOfMalePhotos / take))
+    randomPage(Math.floor(MALE_PHOTOS_NUM / take))
   );
   const [randomCouplePage] = useState(
-    randomPage(Math.floor(numOfCouplePhotos / take))
+    randomPage(Math.floor(COUPLE_PHOTOS_NUM / take))
   );
 
   const {

@@ -1,205 +1,39 @@
+import { useQuery } from '@apollo/client';
 import React, { useState } from 'react';
+import { ALL_PHOTO_CONCEPTS_QUERY } from '../../../gql/queries/AllPhotoConceptsQuery';
+import AppLoadingScreen from '../AppLoadingScreen';
 import './SelectionModal.css';
-import { bgOptions, costumeOptions, objectOptions } from './SelectionOptions';
 
 const Modal = ({
-  isOpen,
   close,
   setSelection,
   selectedBgConcepts,
   selectedCostumeConcepts,
   selectedObjectConcepts,
+  setPageList,
+  setHasMore,
 }) => {
-  const [totalSelected, setTotalSelected] = useState({
+  const [selectedConcepts, setSelectedConcepts] = useState({
     bgConcept: selectedBgConcepts,
     costumeConcept: selectedCostumeConcepts,
     objectConcept: selectedObjectConcepts,
   });
-  let BgOptions = bgOptions;
-  let CostumeOptions = costumeOptions;
-  let ObjectOptions = objectOptions;
-  const setBgConcepts = (whatTo) => {
-    setTotalSelected({
-      bgConcept: whatTo,
-      costumeConcept: totalSelected.costumeConcept,
-      objectConcept: totalSelected.objectConcept,
-    });
-  };
-  const setCostumeConcepts = (whatTo) => {
-    setTotalSelected({
-      costumeConcept: whatTo,
-      bgConcept: totalSelected.bgConcept,
-      objectConcept: totalSelected.objectConcept,
-    });
-  };
-  const setObjectConcepts = (whatTo) => {
-    setTotalSelected({
-      objectConcept: whatTo,
-      costumeConcept: totalSelected.costumeConcept,
-      bgConcept: totalSelected.bgConcept,
-    });
-  };
+  const { data, loading } = useQuery(ALL_PHOTO_CONCEPTS_QUERY, {
+    onError: () => {
+      alert('오류가 발생하였습니다. 다시 시도해주세요.');
+      window.location.reload();
+    },
+  });
 
-  const addBgConcept = (option) => {
-    if (option === 'total') {
-      setBgConcepts(['total']);
-    } else {
-      if (totalSelected.bgConcept.includes('total')) {
-        const filteredItems = totalSelected.bgConcept.filter(
-          (BgConcepts) => BgConcepts !== 'total'
-        );
-        setBgConcepts([...filteredItems, option]);
-      } else {
-        setBgConcepts([...totalSelected.bgConcept, option]);
-      }
-    }
-  };
-  const deleteBgConcept = (option) => {
-    if (totalSelected.bgConcept.includes(option)) {
-      const valueToRemove = option;
-      const filteredItems = totalSelected.bgConcept.filter(
-        (BgConcepts) => BgConcepts !== valueToRemove
-      );
-      setBgConcepts(filteredItems);
-    }
-  };
-  const addCostumeConcept = (option) => {
-    if (option === 'total') {
-      setCostumeConcepts(['total']);
-    } else {
-      if (totalSelected.costumeConcept.includes('total')) {
-        const filteredItems = totalSelected.costumeConcept.filter(
-          (CostumeConcepts) => CostumeConcepts !== 'total'
-        );
-        setCostumeConcepts([...filteredItems, option]);
-      } else {
-        setCostumeConcepts([...totalSelected.costumeConcept, option]);
-      }
-    }
-  };
-  const deleteCostumeConcept = (option) => {
-    if (totalSelected.costumeConcept.includes(option)) {
-      const valueToRemove = option;
-      const filteredItems = totalSelected.costumeConcept.filter(
-        (CostumeConcepts) => CostumeConcepts !== valueToRemove
-      );
-      setCostumeConcepts(filteredItems);
-    }
-  };
-  const addObjectConcept = (option) => {
-    if (option === 'total') {
-      setObjectConcepts(['total']);
-    } else {
-      if (totalSelected.objectConcept.includes('total')) {
-        const filteredItems = totalSelected.objectConcept.filter(
-          (ObjectConcepts) => ObjectConcepts !== 'total'
-        );
-        setObjectConcepts([...filteredItems, option]);
-      } else {
-        setObjectConcepts([...totalSelected.objectConcept, option]);
-      }
-    }
-  };
-  const deleteObjectConcept = (option) => {
-    if (totalSelected.objectConcept.includes(option)) {
-      const valueToRemove = option;
-      const filteredItems = totalSelected.objectConcept.filter(
-        (ObjectConcepts) => ObjectConcepts !== valueToRemove
-      );
-      setObjectConcepts(filteredItems);
-    }
-  };
-  // 옵션 선택 버튼들 생성.
-  const renderedBgConcepts = BgOptions.map((option) => {
-    if (totalSelected.bgConcept.includes(option.optionName)) {
-      return (
-        <div
-          key={option.optionName}
-          className="selectedOptionContainer"
-          onClick={() => {
-            deleteBgConcept(option.optionName);
-          }}
-        >
-          {option.title}
-        </div>
-      );
-    } else {
-      return (
-        <div
-          key={option.optionName}
-          className="unselectedOptionContainer"
-          onClick={() => {
-            addBgConcept(option.optionName);
-          }}
-        >
-          {option.title}
-        </div>
-      );
-    }
-  });
-  const renderedCostumeConcepts = CostumeOptions.map((option) => {
-    if (totalSelected.costumeConcept.includes(option.optionName)) {
-      return (
-        <div
-          key={option.optionName}
-          className="selectedOptionContainer"
-          onClick={() => {
-            deleteCostumeConcept(option.optionName);
-          }}
-        >
-          {option.title}
-        </div>
-      );
-    } else {
-      return (
-        <div
-          key={option.optionName}
-          className="unselectedOptionContainer"
-          onClick={() => {
-            addCostumeConcept(option.optionName);
-          }}
-        >
-          {option.title}
-        </div>
-      );
-    }
-  });
-  const renderedObjectConcepts = ObjectOptions.map((option) => {
-    if (totalSelected.objectConcept.includes(option.optionName)) {
-      return (
-        <div
-          key={option.optionName}
-          className="selectedOptionContainer"
-          onClick={() => {
-            deleteObjectConcept(option.optionName);
-          }}
-        >
-          {option.title}
-        </div>
-      );
-    } else {
-      return (
-        <div
-          key={option.optionName}
-          className="unselectedOptionContainer"
-          onClick={() => {
-            addObjectConcept(option.optionName);
-          }}
-        >
-          {option.title}
-        </div>
-      );
-    }
-  });
   return (
     <>
-      {isOpen ? (
+      {!loading ? (
         <div className="selectionModal">
           <div className="selectionGreyBackground">
             <div className="selectionTrueModal">
               <div
                 className="selectionModalContents"
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                 }}
               >
@@ -210,26 +44,183 @@ const Modal = ({
                   <span className="conceptCategory">배경별</span>
                   <span className="multiSelectionGuide">(복수선택 가능)</span>
                 </div>
-                <div className="optionsContainer">{renderedBgConcepts}</div>
+                <div className="optionsContainer">
+                  <div
+                    className={`${
+                      selectedConcepts.bgConcept.length === 0 ? '' : 'un'
+                    }selectedOptionContainer`}
+                    onClick={() => {
+                      setSelectedConcepts({
+                        ...selectedConcepts,
+                        bgConcept: [],
+                      });
+                    }}
+                  >
+                    전체
+                  </div>
+                  {data.allPhotoConcepts.backgroundConcepts.map(option => {
+                    if (selectedConcepts.bgConcept.includes(option.slug)) {
+                      return (
+                        <div
+                          key={`filter-${option.slug}`}
+                          className="selectedOptionContainer"
+                          onClick={() => {
+                            const newBgConcept = selectedConcepts.bgConcept.filter(
+                              bg => option.slug !== bg
+                            );
+                            setSelectedConcepts({
+                              ...selectedConcepts,
+                              bgConcept: newBgConcept,
+                            });
+                          }}
+                        >
+                          {option.name}
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div
+                          key={`filter-${option.slug}`}
+                          className="unselectedOptionContainer"
+                          onClick={() => {
+                            setSelectedConcepts({
+                              ...selectedConcepts,
+                              bgConcept: [
+                                ...selectedConcepts.bgConcept,
+                                option.slug,
+                              ],
+                            });
+                          }}
+                        >
+                          {option.name}
+                        </div>
+                      );
+                    }
+                  })}
+                </div>
                 <div>
                   <span className="conceptCategory">의상별</span>
                   <span className="multiSelectionGuide">(복수선택 가능)</span>
                 </div>
                 <div className="optionsContainer">
-                  {renderedCostumeConcepts}
+                  <div
+                    className={`${
+                      selectedConcepts.costumeConcept.length === 0 ? '' : 'un'
+                    }selectedOptionContainer`}
+                    onClick={() => {
+                      setSelectedConcepts({
+                        ...selectedConcepts,
+                        costumeConcept: [],
+                      });
+                    }}
+                  >
+                    전체
+                  </div>
+                  {data.allPhotoConcepts.costumeConcepts.map(option => {
+                    if (selectedConcepts.costumeConcept.includes(option.slug)) {
+                      return (
+                        <div
+                          key={`filter-${option.slug}`}
+                          className="selectedOptionContainer"
+                          onClick={() => {
+                            const newCosConcept = selectedConcepts.costumeConcept.filter(
+                              cos => option.slug !== cos
+                            );
+                            setSelectedConcepts({
+                              ...selectedConcepts,
+                              costumeConcept: newCosConcept,
+                            });
+                          }}
+                        >
+                          {option.name}
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div
+                          key={`filter-${option.slug}`}
+                          className="unselectedOptionContainer"
+                          onClick={() => {
+                            setSelectedConcepts({
+                              ...selectedConcepts,
+                              costumeConcept: [
+                                ...selectedConcepts.costumeConcept,
+                                option.slug,
+                              ],
+                            });
+                          }}
+                        >
+                          {option.name}
+                        </div>
+                      );
+                    }
+                  })}
                 </div>
                 <div>
                   <span className="conceptCategory">도구별</span>
                   <span className="multiSelectionGuide">(복수선택 가능)</span>
                 </div>
-                <div className="optionsContainer">{renderedObjectConcepts}</div>
+                <div className="optionsContainer">
+                  <div
+                    className={`${
+                      selectedConcepts.objectConcept.length === 0 ? '' : 'un'
+                    }selectedOptionContainer`}
+                    onClick={() => {
+                      setSelectedConcepts({
+                        ...selectedConcepts,
+                        objectConcept: [],
+                      });
+                    }}
+                  >
+                    전체
+                  </div>
+                  {data.allPhotoConcepts.objectConcepts.map(option => {
+                    if (selectedConcepts.objectConcept.includes(option.slug)) {
+                      return (
+                        <div
+                          key={`filter-${option.slug}`}
+                          className="selectedOptionContainer"
+                          onClick={() => {
+                            const newObjConcept = selectedConcepts.objectConcept.filter(
+                              obj => option.slug !== obj
+                            );
+                            setSelectedConcepts({
+                              ...selectedConcepts,
+                              objectConcept: newObjConcept,
+                            });
+                          }}
+                        >
+                          {option.name}
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div
+                          key={`filter-${option.slug}`}
+                          className="unselectedOptionContainer"
+                          onClick={() => {
+                            setSelectedConcepts({
+                              ...selectedConcepts,
+                              objectConcept: [
+                                ...selectedConcepts.objectConcept,
+                                option.slug,
+                              ],
+                            });
+                          }}
+                        >
+                          {option.name}
+                        </div>
+                      );
+                    }
+                  })}
+                </div>
                 <div
                   className="selectCompleteButton"
                   onClick={() => {
-                    setSelection(totalSelected);
-                    setTimeout(() => {
-                      close();
-                    }, 100);
+                    setSelection(selectedConcepts);
+                    setPageList([1]);
+                    setHasMore(true);
+                    close();
                   }}
                 >
                   선택 완료
@@ -238,7 +229,15 @@ const Modal = ({
             </div>
           </div>
         </div>
-      ) : null}
+      ) : (
+        <div className="selectionModal">
+          <div className="selectionGreyBackground">
+            <div className="selectionTrueModal">
+              <AppLoadingScreen />
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

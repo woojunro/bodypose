@@ -1,18 +1,64 @@
 import React, { useState, useContext } from 'react';
+import { client } from '../../../apollo';
 import { IoIosClose } from 'react-icons/io';
 import { Link, useHistory } from 'react-router-dom';
-import { ChangeIsHearted } from '../../../components/functions/WithDb/ChangeIsHearted';
 import { FaHeart } from 'react-icons/fa';
 import { FaRegHeart } from 'react-icons/fa';
 import LoginContext from '../../../contexts/LoginContext';
+import { useMutation } from '@apollo/client';
+import {
+  DISHEART_STUDIO_PHOTO_MUTATION,
+  HEART_STUDIO_PHOTO_MUTATION,
+} from '../../../gql/mutations/HeartStudioPhotoMutation';
 
 const Modal = ({ isOpen, close, concept }) => {
-  const [isHearted, setIsHearted] = useState(true);
+  const [isHearted, setIsHearted] = useState(concept.isHearted);
   const LoggedIn = useContext(LoginContext);
   const history = useHistory();
 
+  const changeIsHearted = () => {
+    client.cache.modify({
+      id: client.cache.identify(concept),
+      fields: {
+        isHearted(cachedIsHearted) {
+          return !cachedIsHearted;
+        },
+      },
+    });
+  };
+
+  const [heartStudioPhoto] = useMutation(HEART_STUDIO_PHOTO_MUTATION, {
+    onError: () => alert('오류가 발생하였습니다. 다시 시도해주세요.'),
+    onCompleted: data => {
+      if (data.heartStudioPhoto.ok) {
+        changeIsHearted();
+      }
+    },
+  });
+
+  const [disheartStudioPhoto] = useMutation(DISHEART_STUDIO_PHOTO_MUTATION, {
+    onError: () => alert('오류가 발생하였습니다. 다시 시도해주세요.'),
+    onCompleted: data => {
+      if (data.disheartStudioPhoto.ok) {
+        changeIsHearted();
+      }
+    },
+  });
+
   const ChangeHeart = () => {
-    ChangeIsHearted();
+    if (isHearted) {
+      disheartStudioPhoto({
+        variables: {
+          id: Number(concept.id),
+        },
+      });
+    } else {
+      heartStudioPhoto({
+        variables: {
+          id: Number(concept.id),
+        },
+      });
+    }
     setIsHearted(!isHearted);
   };
 
@@ -44,6 +90,12 @@ const Modal = ({ isOpen, close, concept }) => {
           <FaRegHeart
             className="conceptRegHeart"
             onClick={() => {
+              const ok = window.confirm(
+                '로그인이 필요한 기능입니다. 로그인 하시겠습니까?'
+              );
+              if (!ok) {
+                return;
+              }
               history.push({
                 pathname: '/login',
                 state: { previousPath: history.location.pathname },
