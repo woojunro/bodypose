@@ -27,6 +27,7 @@ import {
 } from './dtos/delete-studio-review.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
+  GetAllStudioReviewsInput,
   GetStudioReviewsInput,
   GetStudioReviewsOutput,
 } from './dtos/get-studio-review.dto';
@@ -178,6 +179,14 @@ export class StudioReviewResolver {
     @Args('input') input: GetStudioReviewsInput,
   ): Promise<GetStudioReviewsOutput> {
     return this.studiosService.getStudioReviews(input);
+  }
+
+  // Public
+  @Query(returns => GetStudioReviewsOutput)
+  allStudioReviews(
+    @Args('input') input: GetAllStudioReviewsInput,
+  ): Promise<GetStudioReviewsOutput> {
+    return this.studiosService.getAllStudioReviews(input);
   }
 
   @Mutation(returns => CreateStudioReviewOutput)

@@ -37,6 +37,7 @@ import {
 } from './dtos/delete-studio-review.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
+  GetAllStudioReviewsInput,
   GetStudioReviewsInput,
   GetStudioReviewsOutput,
   StudioReviewOrder,
@@ -400,7 +401,7 @@ export class StudiosService {
       }
       // Create and save products
       const idList: number[] = [];
-      let lowestPrice = -1;
+      let lowestPrice = 0;
       for (const product of products) {
         const newProduct = this.studioProductRepository.create({ ...product });
         newProduct.studio = studio;
@@ -408,7 +409,7 @@ export class StudiosService {
           newProduct,
         );
         idList.push(id);
-        if (lowestPrice === -1 || weekdayPrice < lowestPrice) {
+        if (lowestPrice === 0 || weekdayPrice < lowestPrice) {
           lowestPrice = weekdayPrice;
         }
       }
@@ -451,14 +452,14 @@ export class StudiosService {
       // Overwrite
       const { studioProducts: currentProducts } = studio;
       const idList: number[] = [];
-      let lowestPrice = -1;
+      let lowestPrice = 0;
       for (let i = 0; i < currentProducts.length && i < products.length; i++) {
         currentProducts[i] = { ...currentProducts[i], ...products[i] };
         const { id, weekdayPrice } = await this.studioProductRepository.save(
           currentProducts[i],
         );
         idList.push(id);
-        if (lowestPrice === -1 || weekdayPrice < lowestPrice) {
+        if (lowestPrice === 0 || weekdayPrice < lowestPrice) {
           lowestPrice = weekdayPrice;
         }
       }
@@ -480,7 +481,7 @@ export class StudiosService {
             newProduct,
           );
           idList.push(id);
-          if (lowestPrice === -1 || weekdayPrice < lowestPrice) {
+          if (lowestPrice === 0 || weekdayPrice < lowestPrice) {
             lowestPrice = weekdayPrice;
           }
         }
@@ -884,6 +885,39 @@ export class StudiosService {
         }
       });
       // return
+      return {
+        ok: true,
+        studioReviews: reviews,
+        totalPages: Math.ceil(count / reviewsPerPage),
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getAllStudioReviews({
+    page,
+  }: GetAllStudioReviewsInput): Promise<GetStudioReviewsOutput> {
+    try {
+      const reviewsPerPage = 5;
+      const [reviews, count] = await this.studioReviewRepository
+        .createQueryBuilder('review')
+        .leftJoin('review.studio', 'studio')
+        .addSelect('studio.name')
+        .addSelect('studio.slug')
+        .leftJoin('review.user', 'user')
+        .addSelect('user.nickname')
+        .leftJoinAndSelect('review.photos', 'photo')
+        .orderBy('review.createdAt', 'DESC')
+        .skip((page - 1) * reviewsPerPage)
+        .take(reviewsPerPage)
+        .getManyAndCount();
+      reviews.forEach(review => {
+        if (review.isPhotoForProof) {
+          review.photos = [];
+        }
+      });
       return {
         ok: true,
         studioReviews: reviews,
