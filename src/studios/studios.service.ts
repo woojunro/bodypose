@@ -1007,7 +1007,9 @@ export class StudiosService {
         };
       }
       // 삭제
-      await this.usersHeartStudiosRepository.delete(isAlreadyHearted.id);
+      await this.usersHeartStudiosRepository.delete({
+        id: isAlreadyHearted.id,
+      });
       // 스튜디오 heartCount 감소
       studio.heartCount--;
       await this.studioRepository.save(studio);

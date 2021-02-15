@@ -720,7 +720,7 @@ export class PhotosService {
           error: 'ALREADY_DISHEARTED',
         };
       }
-      await this.usersHeartStudioPhotosRepository.delete(heart.id);
+      await this.usersHeartStudioPhotosRepository.delete({ id: heart.id });
       photo.heartCount--;
       await this.studioPhotoRepository.save(photo);
       return { ok: true, id };

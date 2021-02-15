@@ -12,9 +12,9 @@ import { Studio } from './studio.entity';
 @Entity()
 @ObjectType()
 export class UsersHeartStudios {
-  @PrimaryGeneratedColumn()
-  @Field(type => Int)
-  id: number;
+  @PrimaryGeneratedColumn({ type: 'bigint' })
+  @Field(type => BigInt)
+  id: bigint;
 
   @CreateDateColumn()
   @Field(type => Date)

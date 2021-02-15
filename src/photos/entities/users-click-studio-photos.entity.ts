@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { User } from 'src/users/entities/user.entity';
 import {
   CreateDateColumn,
@@ -11,9 +11,9 @@ import { StudioPhoto } from './studio-photo.entity';
 @Entity()
 @ObjectType()
 export class UsersClickStudioPhotos {
-  @PrimaryGeneratedColumn()
-  @Field(type => Int)
-  id: number;
+  @PrimaryGeneratedColumn({ type: 'bigint' })
+  @Field(type => BigInt)
+  id: bigint;
 
   @CreateDateColumn()
   @Field(type => Date)
