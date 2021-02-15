@@ -18,7 +18,7 @@ const MainCardM = ({ title, studioName, pic, price }) => {
         </div>
         <div className="studioInfoBox">
           <div className="studioName">{title}</div>
-          <div className="studioPrice">{price}원~</div>
+          <div className="studioPrice">{price.toLocaleString()}원~</div>
         </div>
       </div>
     </Link>

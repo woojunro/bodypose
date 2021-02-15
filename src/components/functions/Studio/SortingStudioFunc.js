@@ -8,11 +8,11 @@ import {
 import { MakingStudioList } from './MakingStudioList';
 
 const SortingStudioFunction = (sortBy, locationBy, searchTerm, allStudios) => {
-  var sortedStudio = [];
-  var returnStudio = [];
+  let sortedStudio = [];
+  let returnStudio = [];
   if (searchTerm === '') {
     if (locationBy.name === 'default') {
-      sortedStudio = allStudios;
+      sortedStudio = [...allStudios];
     } else {
       sortedStudio = SortByLocation(allStudios, locationBy.name);
     }
@@ -29,11 +29,10 @@ const SortingStudioFunction = (sortBy, locationBy, searchTerm, allStudios) => {
       returnStudio = SortByRating(sortedStudio);
     }
   } else {
-    for (var num in allStudios) {
-      if (allStudios[num].title.includes(searchTerm)) {
-        returnStudio.push(allStudios[num]);
-      }
-    }
+    returnStudio = allStudios.filter(studio =>
+      studio.name.includes(searchTerm)
+    );
+
     if (locationBy.name === 'default') {
       sortedStudio = returnStudio;
     } else {
