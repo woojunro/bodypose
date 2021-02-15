@@ -1,44 +1,49 @@
+import { useQuery } from '@apollo/client';
 import React, { useState, useEffect } from 'react';
-import { MakingStudioList } from '../../components/functions/Studio/MakingStudioList';
 
 import SortingStudioFunction from '../../components/functions/Studio/SortingStudioFunc';
-import { GetStudios } from '../../components/functions/WithDb/GetStudios';
 import BottomNavigation from '../../components/mobileComponents/BottomNavigation';
-import Footer from '../../components/mobileComponents/Footer';
-import Header from '../../components/mobileComponents/HeaderM';
 import { SearchBar } from '../../components/mobileComponents/studioListScreen/SearchBar';
 import SortButton from '../../components/mobileComponents/studioListScreen/SortButton';
 import {
-  SortByOptions,
-  LocationOptions,
+  STUDIO_SORT_OPTIONS,
+  STUDIO_LOCATION_OPTIONS,
 } from '../../components/mobileComponents/studioListScreen/SortingOptions';
 import StudioListView from '../../components/mobileComponents/studioListScreen/StudioListView';
+import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
+import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import './StudioListScreen.css';
 
 const StudioListScreen = () => {
-  const allStudios = GetStudios();
-
-  let sortByOptions = SortByOptions;
-  let locationOptions = LocationOptions;
+  const { data, loading, error } = useQuery(ALL_STUDIOS_QUERY, {
+    onError: err => console.log(err),
+  });
   const [isSortByOpen, setIsSortByOpen] = useState(false);
   const [isLocationByOpen, setIsLocationByOpen] = useState(false);
-  const [sortBy, setSortBy] = useState(sortByOptions[0]);
-  const [locationBy, setLocationBy] = useState(locationOptions[0]);
-  const [studios, setStudios] = useState(MakingStudioList(allStudios));
+  const [sortBy, setSortBy] = useState(STUDIO_SORT_OPTIONS[0]);
+  const [locationBy, setLocationBy] = useState(STUDIO_LOCATION_OPTIONS[0]);
   const [searchTerm, setSearchTerm] = useState('');
+
   useEffect(() => {
     document.body.style.overflow =
       isSortByOpen || isLocationByOpen ? 'hidden' : 'auto';
   }, [isSortByOpen, isLocationByOpen]);
-  useEffect(() => {
-    const returnStudio = SortingStudioFunction(
+
+  const studioListToBeRendered = () => {
+    if (loading) {
+      return;
+    }
+    if (error || !data || !data.allStudios.studios) {
+      return;
+    }
+
+    return SortingStudioFunction(
       sortBy,
       locationBy,
       searchTerm,
-      allStudios
+      data.allStudios.studios
     );
-    setStudios(returnStudio);
-  }, [sortBy, locationBy, searchTerm]);
+  };
 
   return (
     <div className="studioListScreen">
@@ -49,30 +54,42 @@ const StudioListScreen = () => {
         </div>
         <div style={{ height: '50px' }} />
       </div>
-      <div className="contentsBox">
-        <div className="buttonContainer">
-          <SortButton
-            change={setStudios}
-            isOpen={isSortByOpen}
-            open={() => setIsSortByOpen(true)}
-            close={() => setIsSortByOpen(false)}
-            closeAnother={() => setIsLocationByOpen(false)}
-            options={sortByOptions}
-            setOption={setSortBy}
-            selectedOption={sortBy}
-          />
-          <SortButton
-            isOpen={isLocationByOpen}
-            open={() => setIsLocationByOpen(true)}
-            close={() => setIsLocationByOpen(false)}
-            closeAnother={() => setIsSortByOpen(false)}
-            options={locationOptions}
-            setOption={setLocationBy}
-            selectedOption={locationBy}
-          />
+
+      {loading ? (
+        <div className="appLoader">
+          <AppLoadingScreen />
         </div>
-      </div>
-      <StudioListView studioList={studios} />
+      ) : error ? (
+        <div className="appLoader">
+          <p>오류가 발생하였습니다. 다시 시도해주세요.</p>
+        </div>
+      ) : (
+        <>
+          <div className="contentsBox">
+            <div className="buttonContainer">
+              <SortButton
+                isOpen={isSortByOpen}
+                open={() => setIsSortByOpen(true)}
+                close={() => setIsSortByOpen(false)}
+                closeAnother={() => setIsLocationByOpen(false)}
+                options={STUDIO_SORT_OPTIONS}
+                setOption={setSortBy}
+                selectedOption={sortBy}
+              />
+              <SortButton
+                isOpen={isLocationByOpen}
+                open={() => setIsLocationByOpen(true)}
+                close={() => setIsLocationByOpen(false)}
+                closeAnother={() => setIsSortByOpen(false)}
+                options={STUDIO_LOCATION_OPTIONS}
+                setOption={setLocationBy}
+                selectedOption={locationBy}
+              />
+            </div>
+          </div>
+          <StudioListView studioList={studioListToBeRendered()} />
+        </>
+      )}
       <BottomNavigation pageName="studios" />
     </div>
   );

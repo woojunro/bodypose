@@ -25,7 +25,7 @@ const StudioListView = ({ studioList, isHeartView = false }) => {
   });
   return (
     <div>
-      {isHeartView ? null : <div className="semiTitle">프리미엄 스튜디오</div>}
+      {isHeartView ? null : <div className="semiTitle"></div>}
       <div className="listScrollView">{renderedStudioList}</div>
     </div>
   );

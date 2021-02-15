@@ -129,8 +129,14 @@ const StudioCard = ({
               <div className="location">{adress}</div>
               <div className="thirdLine">
                 <IoIosStar color="#FFD800" fontSize="18px" />
-                <span className="rating">{rating}</span>
-                <span className="review">{`(${review}개)`}</span>
+                {review === 0 ? (
+                  <span className="noReviewSpan">리뷰 없음</span>
+                ) : (
+                  <>
+                    <span className="rating">{rating}</span>
+                    <span className="review">{`(${review}개)`}</span>
+                  </>
+                )}
               </div>
             </div>
             <div className="lower">
@@ -144,7 +150,11 @@ const StudioCard = ({
               </div>
               <div className="lastLine">
                 <span className="per">최저 가격</span>
-                <span className="price">{`${price}~`}</span>
+                {!price || price === 0 ? (
+                  <span className="price">문의 바람</span>
+                ) : (
+                  <span className="price">{`${price.toLocaleString()}원~`}</span>
+                )}
               </div>
             </div>
           </div>
