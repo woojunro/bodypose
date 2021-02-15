@@ -688,7 +688,7 @@ export class PhotosService {
       );
       photo.heartCount++;
       await this.studioPhotoRepository.save(photo);
-      return { ok: true };
+      return { ok: true, id };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
@@ -723,7 +723,7 @@ export class PhotosService {
       await this.usersHeartStudioPhotosRepository.delete(heart.id);
       photo.heartCount--;
       await this.studioPhotoRepository.save(photo);
-      return { ok: true };
+      return { ok: true, id };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
@@ -743,7 +743,7 @@ export class PhotosService {
         .leftJoinAndSelect('heart.studioPhoto', 'photo')
         .leftJoinAndSelect('photo.studio', 'studio')
         .where('user.id = :id', { id: user.id })
-        .orderBy('heart.heartAt')
+        .orderBy('heart.heartAt', 'DESC')
         .skip((page - 1) * photosPerPage)
         .take(photosPerPage)
         .getManyAndCount();
