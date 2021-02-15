@@ -22,6 +22,7 @@ const Modal = ({
   setThisPhoto,
   isFinalPhoto,
   selectedPhotoNum,
+  isForHeart = false,
 }) => {
   const concept = client.readFragment({
     id: `StudioPhotoWithIsHearted:${id}`,
@@ -83,6 +84,7 @@ const Modal = ({
           id: Number(concept.id),
         },
       });
+      if (isForHeart) close();
     } else {
       heartStudioPhoto({
         variables: {

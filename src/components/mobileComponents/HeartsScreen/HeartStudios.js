@@ -1,14 +1,33 @@
+import { useQuery } from '@apollo/client';
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 import StudioListView from '../../../components/mobileComponents/studioListScreen/StudioListView';
-
-import { GetHeartedStudio } from '../../functions/WithDb/Heart';
+import { MY_HEART_STUDIOS_QUERY } from '../../../gql/queries/MyHeartQuery';
+import AppLoadingScreen from '../AppLoadingScreen';
 
 const HeartStudio = () => {
-  const studios = GetHeartedStudio();
+  const { data, loading } = useQuery(MY_HEART_STUDIOS_QUERY, {
+    fetchPolicy: 'network-only',
+    onError: () => <Redirect to="/error" />,
+  });
 
   return (
     <div>
-      <StudioListView studioList={studios} isHeartView={true} />
+      {loading ? (
+        <div className="heartScreenLoadingDiv">
+          <AppLoadingScreen />
+        </div>
+      ) : !data.myHeartStudios.studios ||
+        data.myHeartStudios.studios.length === 0 ? (
+        <div className="heartScreenLoadingDiv">
+          <p>찜한 스튜디오가 없습니다.</p>
+        </div>
+      ) : (
+        <StudioListView
+          studioList={data.myHeartStudios.studios}
+          isHeartView={true}
+        />
+      )}
     </div>
   );
 };

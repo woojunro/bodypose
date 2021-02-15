@@ -2,12 +2,18 @@ import React, { useState, useContext } from 'react';
 import './StudioCard.css';
 import { IoIosHeartEmpty, IoIosStar, IoIosHeart } from 'react-icons/io';
 import { Link, useHistory } from 'react-router-dom';
-import { SetHeartDb } from '../../../components/functions/WithDb/GetStudios';
 import LoginContext from '../../../contexts/LoginContext';
 import GetShortAdress from '../../functions/Studio/GetShortAdress';
+import { client } from '../../../apollo';
+import { gql, useMutation } from '@apollo/client';
+import {
+  DISHEART_STUDIO_MUTATION,
+  HEART_STUDIO_MUTATION,
+} from '../../../gql/mutations/HeartStudioMutation';
 
 const StudioCard = ({
-  Hearted = false,
+  id,
+  Hearted,
   name,
   title,
   location,
@@ -25,17 +31,82 @@ const StudioCard = ({
 
   const [isHearted, setIsHearted] = useState(Hearted);
 
-  const ChangeIsHearted = () => {
+  const heart = () => {
+    client.writeFragment({
+      id: `StudioWithIsHearted:${id}`,
+      fragment: gql`
+        fragment StudioCardHeart on StudioWithIsHearted {
+          isHearted
+        }
+      `,
+      data: {
+        isHearted: true,
+      },
+    });
+  };
+
+  const disheart = () => {
+    client.writeFragment({
+      id: `StudioWithIsHearted:${id}`,
+      fragment: gql`
+        fragment StudioCardHeart on StudioWithIsHearted {
+          isHearted
+        }
+      `,
+      data: {
+        isHearted: false,
+      },
+    });
+  };
+
+  const [heartStudioPhoto] = useMutation(HEART_STUDIO_MUTATION, {
+    onError: () => alert('오류가 발생하였습니다. 다시 시도해주세요.'),
+    onCompleted: data => {
+      if (data.heartStudio.ok) {
+        heart();
+      }
+    },
+  });
+
+  const [disheartStudioPhoto] = useMutation(DISHEART_STUDIO_MUTATION, {
+    onError: () => alert('오류가 발생하였습니다. 다시 시도해주세요.'),
+    onCompleted: data => {
+      if (data.disheartStudio.ok) {
+        disheart();
+      }
+    },
+  });
+
+  const ChangeHeart = () => {
     if (!LoggedIn.loggedIn) {
+      const ok = window.confirm(
+        '로그인이 필요한 기능입니다. 로그인 하시겠습니까?'
+      );
+      if (!ok) {
+        return;
+      }
       history.push({
         pathname: '/login',
         state: { previousPath: '/studios' },
       });
     }
-    SetHeartDb();
-    //Db에 is hearted 바꾸는 코드 넣기.
+
+    if (isHearted) {
+      disheartStudioPhoto({
+        variables: {
+          slug: name,
+        },
+      });
+    } else {
+      heartStudioPhoto({
+        variables: {
+          slug: name,
+        },
+      });
+    }
     setIsHearted(!isHearted);
   };
+
   return (
     <div className="totalContainer">
       <Link
@@ -81,13 +152,13 @@ const StudioCard = ({
       </Link>
       {isHearted ? (
         <IoIosHeart
-          onClick={ChangeIsHearted}
+          onClick={ChangeHeart}
           className="cardSelectedHeart"
           fontSize="20px"
         />
       ) : (
         <IoIosHeartEmpty
-          onClick={ChangeIsHearted}
+          onClick={ChangeHeart}
           className="cardHeart"
           fontSize="20px"
         />
