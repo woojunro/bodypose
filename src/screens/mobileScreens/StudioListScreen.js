@@ -15,35 +15,32 @@ import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import './StudioListScreen.css';
 
 const StudioListScreen = () => {
-  const { data, loading, error } = useQuery(ALL_STUDIOS_QUERY, {
-    onError: err => console.log(err),
+  const { loading, error } = useQuery(ALL_STUDIOS_QUERY, {
+    onCompleted: data => {
+      if (!data || !data.allStudios.studios) {
+        return;
+      }
+      setStudios(
+        SortingStudioFunction(
+          sortBy,
+          locationBy,
+          searchTerm,
+          data.allStudios.studios
+        )
+      );
+    },
   });
   const [isSortByOpen, setIsSortByOpen] = useState(false);
   const [isLocationByOpen, setIsLocationByOpen] = useState(false);
   const [sortBy, setSortBy] = useState(STUDIO_SORT_OPTIONS[0]);
   const [locationBy, setLocationBy] = useState(STUDIO_LOCATION_OPTIONS[0]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [studios, setStudios] = useState([]);
 
   useEffect(() => {
     document.body.style.overflow =
       isSortByOpen || isLocationByOpen ? 'hidden' : 'auto';
   }, [isSortByOpen, isLocationByOpen]);
-
-  const studioListToBeRendered = () => {
-    if (loading) {
-      return;
-    }
-    if (error || !data || !data.allStudios.studios) {
-      return;
-    }
-
-    return SortingStudioFunction(
-      sortBy,
-      locationBy,
-      searchTerm,
-      data.allStudios.studios
-    );
-  };
 
   return (
     <div className="studioListScreen">
@@ -87,7 +84,7 @@ const StudioListScreen = () => {
               />
             </div>
           </div>
-          <StudioListView studioList={studioListToBeRendered()} />
+          <StudioListView studioList={studios} />
         </>
       )}
       <BottomNavigation pageName="studios" />

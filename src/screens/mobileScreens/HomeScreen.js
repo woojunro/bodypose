@@ -23,6 +23,7 @@ import {
   MALE_PHOTOS_NUM,
 } from '../../constants/numOfPhotos';
 import { randomPage } from '../../components/functions/Concept/randomPages';
+import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 
 const take = 8;
 
@@ -37,6 +38,11 @@ const HomeScreen = () => {
     randomPage(Math.floor(COUPLE_PHOTOS_NUM / take))
   );
 
+  const {
+    data: studioData,
+    loading: studioLoading,
+    error: studioError,
+  } = useQuery(ALL_STUDIOS_QUERY);
   const {
     data: femaleData,
     loading: femaleLoading,
@@ -85,8 +91,13 @@ const HomeScreen = () => {
   } = useQuery(NOTICES_QUERY, { variables: { page: 1 } });
 
   const loading =
-    femaleLoading || maleLoading || coupleLoading || noticesLoading;
-  const isError = femaleError || maleError || coupleError || noticesError;
+    femaleLoading ||
+    maleLoading ||
+    coupleLoading ||
+    noticesLoading ||
+    studioLoading;
+  const isError =
+    femaleError || maleError || coupleError || noticesError || studioError;
 
   useEffect(() => {
     document.body.style.overflow = 'auto';
@@ -119,7 +130,7 @@ const HomeScreen = () => {
       ) : (
         <>
           <AdTap />
-          <MainCardScrollView />
+          <MainCardScrollView studios={studioData.allStudios.studios} />
           <SeeAll />
           <FemaleConcepts concepts={femaleData.allStudioPhotos.photos} />
           <MaleConcepts concepts={maleData.allStudioPhotos.photos} />
