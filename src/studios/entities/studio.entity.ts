@@ -10,15 +10,7 @@ import {
 } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { StudioPhoto } from 'src/photos/entities/studio-photo.entity';
-import { User } from 'src/users/entities/user.entity';
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToMany,
-  OneToMany,
-  OneToOne,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { AdditionalProduct } from './additional-product.entity';
 import { Branch } from './branch.entity';
 import { Catchphrase } from './catchphrase.entity';
@@ -95,11 +87,6 @@ export class Studio extends CoreEntity {
   @OneToMany(relation => Catchphrase, catchphrase => catchphrase.studio)
   @Field(type => [Catchphrase])
   catchphrases: Catchphrase[];
-
-  // 찜한 유저 목록
-  @ManyToMany(relation => User, user => user.heartStudios)
-  @Field(type => [User])
-  heartUsers: User[];
 
   // 찜한 유저 수
   @Column({ default: 0 })

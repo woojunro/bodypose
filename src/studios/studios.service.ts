@@ -42,14 +42,12 @@ import {
   StudioReviewOrder,
 } from './dtos/get-studio-review.dto';
 import {
-  GetAllStudiosOutput,
+  GetStudiosOutput,
   GetStudioInput,
   GetStudioOutput,
+  StudioWithIsHearted,
 } from './dtos/get-studio.dto';
-import {
-  ToggleHeartStudioInput,
-  ToggleHeartStudioOutput,
-} from './dtos/toggle-heart-studio.dto';
+import { HeartStudioInput, HeartStudioOutput } from './dtos/heart-studio.dto';
 import {
   UpdateBranchInput,
   UpdateBranchOutput,
@@ -72,6 +70,7 @@ import { HairMakeupShop } from './entities/hair-makeup-shop.entity';
 import { StudioProduct } from './entities/studio-product.entity';
 import { Studio } from './entities/studio.entity';
 import { UsersClickStudios } from './entities/users-click-studios.entity';
+import { UsersHeartStudios } from './entities/users-heart-studios.entity';
 import { UsersReviewStudios } from './entities/users-review-studios.entity';
 
 @Injectable()
@@ -93,6 +92,8 @@ export class StudiosService {
     private readonly studioReviewRepository: Repository<UsersReviewStudios>,
     @InjectRepository(UsersClickStudios)
     private readonly usersClickStudiosRepository: Repository<UsersClickStudios>,
+    @InjectRepository(UsersHeartStudios)
+    private readonly usersHeartStudiosRepository: Repository<UsersHeartStudios>,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     @Inject(forwardRef(() => PhotosService))
@@ -161,14 +162,14 @@ export class StudiosService {
         };
       }
       // If logged in, check isHearted
-      let heartedStudio: Studio;
+      let heart: UsersHeartStudios;
       if (user) {
-        heartedStudio = await this.studioRepository
-          .createQueryBuilder('studio')
-          .leftJoinAndSelect('studio.heartUsers', 'user')
-          .where({ slug })
-          .andWhere('user.id = :userId', { userId: user.id })
-          .getOne();
+        heart = await this.usersHeartStudiosRepository.findOne({
+          where: {
+            user: user.id,
+            studio: studio.id,
+          },
+        });
       }
       // Click
       const newClick = this.usersClickStudiosRepository.create({
@@ -181,7 +182,7 @@ export class StudiosService {
         ok: true,
         studio: {
           ...studio,
-          isHearted: Boolean(user) && Boolean(heartedStudio),
+          isHearted: Boolean(user) && Boolean(heart),
         },
       };
     } catch (e) {
@@ -190,31 +191,40 @@ export class StudiosService {
     }
   }
 
-  async getAllStudios(user: User): Promise<GetAllStudiosOutput> {
+  async getAllStudios(user: User): Promise<GetStudiosOutput> {
     try {
-      let heartStudios: Studio[] = [];
-      // If logged in
-      if (user) {
-        const { studios } = await this.usersService.getMyHeartStudios(user);
-        if (studios) {
-          heartStudios = [...studios];
-        }
-      }
-      // TODO: Pagination
       const studios = await this.studioRepository.find({
-        relations: ['catchphrases', 'coverPhoto'],
+        relations: ['branches', 'coverPhoto'],
+        select: [
+          'id',
+          'name',
+          'slug',
+          'heartCount',
+          'lowestPrice',
+          'reviewCount',
+          'totalRating',
+          'premiumTier',
+        ],
       });
       if (!studios) {
         throw new InternalServerErrorException();
       }
+      let heartStudios: UsersHeartStudios[] = [];
+      if (user) {
+        heartStudios = await this.usersHeartStudiosRepository.find({
+          where: { user: user.id },
+        });
+      }
+      const studiosWithIsHearted: StudioWithIsHearted[] = [];
+      for (const studio of studios) {
+        studiosWithIsHearted.push({
+          ...studio,
+          isHearted: heartStudios.some(heart => heart.studioId === studio.id),
+        });
+      }
       return {
         ok: true,
-        studios: studios.map(studio => ({
-          ...studio,
-          isHearted: heartStudios.some(
-            heartStudio => heartStudio.slug === studio.slug,
-          ),
-        })),
+        studios: studiosWithIsHearted,
       };
     } catch (e) {
       console.log(e);
@@ -237,48 +247,6 @@ export class StudiosService {
       const updatedStudio = { ...studio, ...payload };
       await this.studioRepository.save(updatedStudio);
       return { ok: true };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
-  }
-
-  async toggleHeartStudio(
-    { id }: User,
-    { slug }: ToggleHeartStudioInput,
-  ): Promise<ToggleHeartStudioOutput> {
-    try {
-      const studio = await this.studioRepository.findOne({ slug });
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
-
-      const isStudioAlreadyHearted = await this.studioRepository
-        .createQueryBuilder('studio')
-        .leftJoinAndSelect('studio.heartUsers', 'user')
-        .where({ slug })
-        .andWhere('user.id = :userId', { userId: id })
-        .getOne();
-      const relationQuery = this.studioRepository
-        .createQueryBuilder('studio')
-        .relation('heartUsers')
-        .of(studio);
-      if (isStudioAlreadyHearted) {
-        await relationQuery.remove({ id });
-        studio.heartCount--;
-      } else {
-        await relationQuery.add({ id });
-        studio.heartCount++;
-      }
-      // Save
-      await this.studioRepository.save(studio);
-      return {
-        ok: true,
-        isHearted: !isStudioAlreadyHearted,
-      };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
@@ -957,6 +925,118 @@ export class StudiosService {
       studio.totalRating -= review.rating;
       await this.studioRepository.save(studio);
       return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async heartStudio(
+    user: User,
+    { slug }: HeartStudioInput,
+  ): Promise<HeartStudioOutput> {
+    try {
+      // 스튜디오 존재 여부 확인
+      const studio = await this.studioRepository.findOne(
+        { slug },
+        { select: ['id', 'heartCount'] },
+      );
+      if (!studio) {
+        return {
+          ok: false,
+          error: 'STUDIO_NOT_FOUND',
+        };
+      }
+      // 이미 찜 되어 있는지 확인
+      const isAlreadyHearted = await this.usersHeartStudiosRepository.findOne({
+        where: {
+          user: user.id,
+          studio: studio.id,
+        },
+      });
+      if (isAlreadyHearted) {
+        return {
+          ok: false,
+          error: 'ALREADY_HEARTED',
+        };
+      }
+      // 생성
+      await this.usersHeartStudiosRepository.save(
+        this.usersHeartStudiosRepository.create({
+          user,
+          studio,
+        }),
+      );
+      // 스튜디오 heartCount 증가
+      studio.heartCount++;
+      await this.studioRepository.save(studio);
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async disheartStudio(
+    user: User,
+    { slug }: HeartStudioInput,
+  ): Promise<HeartStudioOutput> {
+    try {
+      // 스튜디오 존재 여부 확인
+      const studio = await this.studioRepository.findOne(
+        { slug },
+        { select: ['id', 'heartCount'] },
+      );
+      if (!studio) {
+        return {
+          ok: false,
+          error: 'STUDIO_NOT_FOUND',
+        };
+      }
+      // 이미 찜 되어 있는지 확인
+      const isAlreadyHearted = await this.usersHeartStudiosRepository.findOne({
+        where: {
+          user: user.id,
+          studio: studio.id,
+        },
+      });
+      if (!isAlreadyHearted) {
+        return {
+          ok: false,
+          error: 'ALREADY_DISHEARTED',
+        };
+      }
+      // 삭제
+      await this.usersHeartStudiosRepository.delete(isAlreadyHearted.id);
+      // 스튜디오 heartCount 감소
+      studio.heartCount--;
+      await this.studioRepository.save(studio);
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getHeartStudios(user: User): Promise<GetStudiosOutput> {
+    try {
+      const heartStudios = await this.usersHeartStudiosRepository.find({
+        relations: ['studio', 'studio.coverPhoto', 'studio.branches'],
+        where: { user: user.id },
+        order: { heartAt: 'DESC' },
+      });
+      const studios: StudioWithIsHearted[] = [];
+      for (const heartStudio of heartStudios) {
+        const { studio } = heartStudio;
+        studios.push({
+          ...studio,
+          isHearted: true,
+        });
+      }
+      return {
+        ok: true,
+        studios,
+      };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;

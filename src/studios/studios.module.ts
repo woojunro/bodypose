@@ -8,6 +8,7 @@ import {
   ProductResolver,
   StudioReviewResolver,
   StudiosResolver,
+  UsersHeartStudiosResolver,
 } from './studios.resolver';
 import { UsersModule } from 'src/users/users.module';
 import { AuthModule } from 'src/auth/auth.module';
@@ -18,6 +19,7 @@ import { HairMakeupProduct } from './entities/hair-makeup-product.entity';
 import { AdditionalProduct } from './entities/additional-product.entity';
 import { PhotosModule } from 'src/photos/photos.module';
 import { HairMakeupShop } from './entities/hair-makeup-shop.entity';
+import { UsersHeartStudios } from './entities/users-heart-studios.entity';
 
 @Module({
   imports: [
@@ -31,6 +33,7 @@ import { HairMakeupShop } from './entities/hair-makeup-shop.entity';
       HairMakeupProduct,
       AdditionalProduct,
       UsersReviewStudios,
+      UsersHeartStudios,
     ]),
     AuthModule,
     forwardRef(() => UsersModule),
@@ -40,6 +43,7 @@ import { HairMakeupShop } from './entities/hair-makeup-shop.entity';
     StudiosService,
     StudiosResolver,
     ProductResolver,
+    UsersHeartStudiosResolver,
     StudioReviewResolver,
   ],
   exports: [StudiosService],

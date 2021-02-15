@@ -1,12 +1,11 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { IsEnum, IsInt, IsUrl } from 'class-validator';
+import { IsEnum, IsInt, IsString, IsUrl } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Studio } from 'src/studios/entities/studio.entity';
-import { User } from 'src/users/entities/user.entity';
 import {
+  BeforeInsert,
   Column,
   Entity,
-  Index,
   JoinTable,
   ManyToMany,
   ManyToOne,
@@ -35,11 +34,14 @@ export class StudioPhoto extends CoreEntity {
   @IsUrl()
   thumbnailUrl: string;
 
-  @Index('ORIGINAL_URL_INDEX')
   @Column()
   @Field(type => String)
   @IsUrl()
   originalUrl: string;
+
+  @Column({ length: 8 })
+  @IsString()
+  substr: string;
 
   @ManyToOne(relation => Studio, studio => studio.photos, {
     onDelete: 'CASCADE',
@@ -59,10 +61,6 @@ export class StudioPhoto extends CoreEntity {
   @Field(type => Int)
   @IsInt()
   heartCount: number;
-
-  @ManyToMany(relation => User, user => user.heartStudioPhotos)
-  @Field(type => [User])
-  heartUsers: User[];
 
   @ManyToMany(relation => BackgroundConcept)
   @JoinTable({
@@ -84,4 +82,9 @@ export class StudioPhoto extends CoreEntity {
   })
   @Field(type => [ObjectConcept])
   objectConcepts: ObjectConcept[];
+
+  @BeforeInsert()
+  extractSubstrFromOriginalUrl(): void {
+    this.substr = this.originalUrl.substr(-40, 8);
+  }
 }

@@ -5,36 +5,16 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
-import { User } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
-import { Verification } from './users/entities/verification.entity';
 import { StudiosModule } from './studios/studios.module';
-import { Studio } from './studios/entities/studio.entity';
-import { Catchphrase } from './studios/entities/catchphrase.entity';
-import { UsersClickStudios } from './studios/entities/users-click-studios.entity';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { PhotosModule } from './photos/photos.module';
-import { StudioPhoto } from './photos/entities/studio-photo.entity';
-import {
-  BackgroundConcept,
-  CostumeConcept,
-  ObjectConcept,
-} from './photos/entities/photo-concept.entity';
-import { UsersClickStudioPhotos } from './photos/entities/users-click-studio-photos.entity';
-import { StudioProduct } from './studios/entities/studio-product.entity';
-import { UsersReviewStudios } from './studios/entities/users-review-studios.entity';
-import { ReviewPhoto } from './photos/entities/review-photo.entity';
-import { Branch } from './studios/entities/branch.entity';
-import { HairMakeupProduct } from './studios/entities/hair-makeup-product.entity';
-import { AdditionalProduct } from './studios/entities/additional-product.entity';
 import { UploadsModule } from './uploads/uploads.module';
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
-import { HairMakeupShop } from './studios/entities/hair-makeup-shop.entity';
-import { PasswordReset } from './users/entities/password_reset.entity';
 import { NoticesModule } from './notices/notices.module';
-import { Notice } from './notices/entity/notice.entity';
+import { ENTITY_LIST } from './common/constants/entity-list.constant';
 
 @Module({
   imports: [
@@ -85,27 +65,7 @@ import { Notice } from './notices/entity/notice.entity';
             socketPath: `/cloudsql/${process.env.CLOUD_SQL_CONNECTION_NAME}`,
           },
           synchronize: false,
-          entities: [
-            User,
-            Verification,
-            Studio,
-            Branch,
-            Catchphrase,
-            UsersClickStudios,
-            StudioPhoto,
-            BackgroundConcept,
-            CostumeConcept,
-            ObjectConcept,
-            UsersClickStudioPhotos,
-            StudioProduct,
-            HairMakeupShop,
-            HairMakeupProduct,
-            AdditionalProduct,
-            UsersReviewStudios,
-            ReviewPhoto,
-            PasswordReset,
-            Notice,
-          ],
+          entities: ENTITY_LIST,
         })
       : TypeOrmModule.forRoot({
           type: 'mysql',
@@ -116,27 +76,7 @@ import { Notice } from './notices/entity/notice.entity';
           database: process.env.DB_NAME,
           synchronize: true,
           logging: true,
-          entities: [
-            User,
-            Verification,
-            Studio,
-            Branch,
-            Catchphrase,
-            UsersClickStudios,
-            StudioPhoto,
-            BackgroundConcept,
-            CostumeConcept,
-            ObjectConcept,
-            UsersClickStudioPhotos,
-            StudioProduct,
-            HairMakeupShop,
-            HairMakeupProduct,
-            AdditionalProduct,
-            UsersReviewStudios,
-            ReviewPhoto,
-            PasswordReset,
-            Notice,
-          ],
+          entities: ENTITY_LIST,
         }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
