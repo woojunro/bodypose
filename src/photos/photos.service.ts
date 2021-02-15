@@ -741,6 +741,7 @@ export class PhotosService {
         .select(['heart.id', 'heart.heartAt'])
         .leftJoin('heart.user', 'user')
         .leftJoinAndSelect('heart.studioPhoto', 'photo')
+        .leftJoinAndSelect('photo.studio', 'studio')
         .where('user.id = :id', { id: user.id })
         .orderBy('heart.heartAt')
         .skip((page - 1) * photosPerPage)

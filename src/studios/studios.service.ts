@@ -203,6 +203,7 @@ export class StudiosService {
           'lowestPrice',
           'reviewCount',
           'totalRating',
+          'premiumTier',
         ],
       });
       if (!studios) {
@@ -1020,7 +1021,7 @@ export class StudiosService {
   async getHeartStudios(user: User): Promise<GetStudiosOutput> {
     try {
       const heartStudios = await this.usersHeartStudiosRepository.find({
-        relations: ['studio', 'studio.coverPhoto'],
+        relations: ['studio', 'studio.coverPhoto', 'studio.branches'],
         where: { user: user.id },
         order: { heartAt: 'DESC' },
       });
