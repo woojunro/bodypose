@@ -114,7 +114,8 @@ const HeartConcepts = () => {
               ))}
         </div>
       </InfiniteScroll>
-      {isModalOpen ? (
+      {isModalOpen &&
+      selectedPhotoNum < data.myHeartStudioPhotos.photos.length ? (
         <ConceptModal
           close={() => setIsModalOpen(false)}
           open={() => setIsModalOpen(true)}

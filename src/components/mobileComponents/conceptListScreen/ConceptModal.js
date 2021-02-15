@@ -42,37 +42,45 @@ const Modal = ({
   const LoggedIn = useContext(LoginContext);
   const [isHearted, setIsHearted] = useState(concept.isHearted);
 
+  const [disheartLoading, setDisHeartLoading] = useState(false);
+
   const history = useHistory();
 
   useEffect(() => {
     setIsHearted(concept.isHearted);
   }, [concept]);
 
-  const changeIsHearted = () => {
-    client.cache.modify({
-      id: client.cache.identify(concept),
-      fields: {
-        isHearted(cachedIsHearted) {
-          return !cachedIsHearted;
-        },
+  const changeIsHearted = (id, heart) => {
+    client.writeFragment({
+      id: `StudioPhotoWithIsHearted:${id}`,
+      fragment: gql`
+        fragment StudioPhoto on StudioPhotoWithIsHearted {
+          isHearted
+        }
+      `,
+      data: {
+        isHearted: heart,
       },
     });
   };
 
   const [heartStudioPhoto] = useMutation(HEART_STUDIO_PHOTO_MUTATION, {
-    onError: () => alert('오류가 발생하였습니다. 다시 시도해주세요.'),
+    onError: () => {},
     onCompleted: data => {
       if (data.heartStudioPhoto.ok) {
-        changeIsHearted();
+        changeIsHearted(data.heartStudioPhoto.id, true);
       }
     },
   });
 
   const [disheartStudioPhoto] = useMutation(DISHEART_STUDIO_PHOTO_MUTATION, {
-    onError: () => alert('오류가 발생하였습니다. 다시 시도해주세요.'),
+    onError: () => close(),
     onCompleted: data => {
       if (data.disheartStudioPhoto.ok) {
-        changeIsHearted();
+        changeIsHearted(data.disheartStudioPhoto.id, false);
+        if (isForHeart) {
+          close();
+        }
       }
     },
   });
@@ -81,14 +89,16 @@ const Modal = ({
     if (isHearted) {
       disheartStudioPhoto({
         variables: {
-          id: Number(concept.id),
+          id,
         },
       });
-      if (isForHeart) close();
+      if (isForHeart) {
+        setDisHeartLoading(true);
+      }
     } else {
       heartStudioPhoto({
         variables: {
-          id: Number(concept.id),
+          id,
         },
       });
     }
@@ -132,76 +142,85 @@ const Modal = ({
       );
     }
   }
+
   return (
     <>
-      <div>
+      {disheartLoading ? (
         <div className="conceptmodal">
-          <div className="concepttrueModal">
-            {!isFinalPhoto ? (
-              <div className="nextArrowContainer">
-                <IoIosArrowForward
-                  className="nextButton"
+          <div className="appFullScreenCenter">
+            <LoadingIcon />
+          </div>
+        </div>
+      ) : (
+        <div>
+          <div className="conceptmodal">
+            <div className="concepttrueModal">
+              {!isFinalPhoto ? (
+                <div className="nextArrowContainer">
+                  <IoIosArrowForward
+                    className="nextButton"
+                    onClick={() => {
+                      setThisPhoto(selectedPhotoNum + 1);
+                    }}
+                  />
+                </div>
+              ) : null}
+              {selectedPhotoNum > 0 ? (
+                <div className="prevArrowContainer">
+                  <IoIosArrowBack
+                    className="prevButton"
+                    onClick={() => {
+                      setThisPhoto(selectedPhotoNum - 1);
+                    }}
+                  />
+                </div>
+              ) : null}
+              <div className="topBarContainer">
+                <div style={{ width: '45px' }}></div>
+                <div className="studioTitle">{concept.studio.name}</div>
+                <IoIosClose
+                  className="conceptModalClose"
                   onClick={() => {
-                    setThisPhoto(selectedPhotoNum + 1);
+                    close();
                   }}
                 />
               </div>
-            ) : null}
-            {selectedPhotoNum > 0 ? (
-              <div className="prevArrowContainer">
-                <IoIosArrowBack
-                  className="prevButton"
-                  onClick={() => {
-                    setThisPhoto(selectedPhotoNum - 1);
-                  }}
-                />
+              <div className="conceptModalContents">
+                <div className="mainPhotoArea">
+                  {whileFetching ? (
+                    <div className="whileLoading">
+                      <LoadingIcon />
+                    </div>
+                  ) : (
+                    <img alt="studioPicture" src={concept.originalUrl} />
+                  )}
+                </div>
               </div>
-            ) : null}
-            <div className="topBarContainer">
-              <div style={{ width: '45px' }}></div>
-              <div className="studioTitle">{concept.studio.name}</div>
-              <IoIosClose
-                className="conceptModalClose"
-                onClick={() => {
-                  close();
-                }}
-              />
-            </div>
-            <div className="conceptModalContents">
-              <div className="mainPhotoArea">
-                {whileFetching ? (
-                  <div className="whileLoading">
-                    <LoadingIcon />
+              <div className="toStudioInfoContainer">
+                {history.location.pathname ===
+                `/studios/${concept.studio.slug}` ? (
+                  <div className="toStudioInfo" onClick={() => close()}>
+                    <div>스튜디오 정보 보기</div>
                   </div>
                 ) : (
-                  <img alt="studioPicture" src={concept.originalUrl} />
+                  <Link
+                    to={{
+                      pathname: `/studios/${concept.studio.slug}`,
+                      state: { previousPath: history.location.pathname },
+                    }}
+                    className="toStudioInfo"
+                    onClick={() => window.scrollTo(0, 0)}
+                  >
+                    <div>스튜디오 정보 보기</div>
+                  </Link>
                 )}
-              </div>
-            </div>
-            <div className="toStudioInfoContainer">
-              {history.location.pathname ===
-              `/studios/${concept.studio.slug}` ? (
-                <div className="toStudioInfo" onClick={() => close()}>
-                  <div>스튜디오 정보 보기</div>
-                </div>
-              ) : (
-                <Link
-                  to={{
-                    pathname: `/studios/${concept.studio.slug}`,
-                    state: { previousPath: history.location.pathname },
-                  }}
-                  className="toStudioInfo"
-                  onClick={() => window.scrollTo(0, 0)}
-                >
-                  <div>스튜디오 정보 보기</div>
-                </Link>
-              )}
 
-              {RenderedHeart}
+                {RenderedHeart}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 };

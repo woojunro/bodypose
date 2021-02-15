@@ -5,6 +5,7 @@ export const HEART_STUDIO_PHOTO_MUTATION = gql`
     heartStudioPhoto(input: { id: $id }) {
       ok
       error
+      id
     }
   }
 `;
@@ -14,6 +15,7 @@ export const DISHEART_STUDIO_PHOTO_MUTATION = gql`
     disheartStudioPhoto(input: { id: $id }) {
       ok
       error
+      id
     }
   }
 `;
