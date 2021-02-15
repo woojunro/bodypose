@@ -72,7 +72,7 @@ const ConceptListScreen = () => {
   }, [isSelectionOpen, isModalOpen]);
 
   const fetchMoreData = () => {
-    if (!data) {
+    if (!data || !hasMore) {
       return;
     }
 
