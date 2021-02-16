@@ -27,9 +27,9 @@ class KakaoMap extends React.Component {
         // 주소-좌표 변환 객체를 생성합니다
         var geocoder = new kakao.maps.services.Geocoder();
 
-        currentLocation.forEach((adr) => {
+        currentLocation.forEach(adr => {
           // 주소로 좌표를 검색합니다
-          geocoder.addressSearch(adr.adress, function (result, status) {
+          geocoder.addressSearch(adr.address, function (result, status) {
             // 정상적으로 검색이 완료됐으면
             if (status === kakao.maps.services.Status.OK) {
               var coords = new kakao.maps.LatLng(result[0].y, result[0].x);

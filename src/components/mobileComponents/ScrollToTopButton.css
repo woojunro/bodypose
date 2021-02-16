@@ -1,0 +1,34 @@
+.scrollToTopButtonContainer {
+  width: 100vw;
+  position: fixed;
+  bottom: 0;
+  z-index: 10;
+}
+
+.scrollToTopButton {
+  margin-left: auto;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  width: 35px;
+  height: 35px;
+  border: 1.5px solid #aaaaaa;
+  box-shadow: 1.5px 1.5px 1.5px gray;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #eeeeee;
+  border-radius: 100%;
+}
+
+.scrollToTopButton img {
+  margin-top: 5px;
+  width: 10px;
+  height: auto;
+}
+
+.scrollToTopButton p {
+  margin-top: 0;
+  font-size: 10px;
+  color: black;
+}

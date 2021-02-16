@@ -16,6 +16,7 @@ import { useQuery } from '@apollo/client';
 import { STUDIO_QUERY } from '../../gql/queries/StudioQuery';
 import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
+import ScrollToTopButton from '../../components/mobileComponents/ScrollToTopButton';
 
 const StudioInfoScreen = () => {
   const { slug } = useParams();
@@ -28,6 +29,7 @@ const StudioInfoScreen = () => {
   const [navigator, setNavigator] = useState('portfolio');
   const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [offsetY, setOffsetY] = useState(0);
 
   const copyTextToClipboard = () => {
     var dummy = document.createElement('input'),
@@ -39,6 +41,12 @@ const StudioInfoScreen = () => {
     document.execCommand('copy');
     document.body.removeChild(dummy);
   };
+
+  useEffect(() => {
+    window.onscroll = () => {
+      setOffsetY(window.pageYOffset);
+    };
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = isWriteReviewOpen ? 'hidden' : 'auto';
@@ -101,6 +109,7 @@ const StudioInfoScreen = () => {
         currentStudioName={studio.name}
         studioList={studioData.allStudios.studios}
       />
+      {offsetY > 200 && <ScrollToTopButton />}
     </div>
   );
 };
