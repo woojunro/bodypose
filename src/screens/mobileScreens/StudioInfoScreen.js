@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { GetStudioInfo } from '../../components/functions/WithDb/StudioInfo';
 import HeaderBar from '../../components/mobileComponents/StudioInfoScreen/HeaderBar';
 import TitlePart from '../../components/mobileComponents/StudioInfoScreen/TitlePart';
 import StudioLinks from '../../components/mobileComponents/StudioInfoScreen/StudioLinks';
@@ -12,9 +11,20 @@ import WriteReview from '../../components/mobileComponents/ReviewList/WriteRevie
 import BottomAlertDialog from '../../components/mobileComponents/BottomAlertDialog';
 
 import SeeMoreStudio from '../../components/mobileComponents/StudioInfoScreen/SeeMoreStudio';
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@apollo/client';
+import { STUDIO_QUERY } from '../../gql/queries/StudioQuery';
+import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
+import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 
-const StudioInfoScreen = ({ match }) => {
-  const currentStudio = GetStudioInfo(match.params.id);
+const StudioInfoScreen = () => {
+  const { slug } = useParams();
+  const { data, loading } = useQuery(STUDIO_QUERY, {
+    variables: { slug },
+  });
+  const { data: studioData, loading: studioLoading } = useQuery(
+    ALL_STUDIOS_QUERY
+  );
   const [navigator, setNavigator] = useState('portfolio');
   const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -34,22 +44,33 @@ const StudioInfoScreen = ({ match }) => {
     document.body.style.overflow = isWriteReviewOpen ? 'hidden' : 'auto';
   }, [isWriteReviewOpen]);
 
+  if (loading || studioLoading) {
+    return (
+      <div className="appFullScreenCenter">
+        <AppLoadingScreen />
+      </div>
+    );
+  }
+
+  const studio = data ? data.studio.studio : null;
+
   const renderedItem = () => {
     if (navigator === 'portfolio') {
-      return <Portfolio studioName={currentStudio.studioName} />;
+      return <Portfolio studioSlug={studio.slug} studioName={studio.name} />;
     } else if (navigator === 'item') {
-      return <ItemTab currentStudio={currentStudio} />;
+      return <ItemTab currentStudio={studio} />;
     } else if (navigator === 'info') {
-      return <InfoTab currentStudio={currentStudio} />;
+      return <InfoTab currentStudio={studio} />;
     } else {
       return (
         <ReviewTab
-          currentStudio={currentStudio}
+          currentStudio={studio}
           setIsWriteReviewOpen={setIsWriteReviewOpen}
         />
       );
     }
   };
+
   return (
     <div>
       <BottomAlertDialog
@@ -58,25 +79,28 @@ const StudioInfoScreen = ({ match }) => {
         dialog="주소가 복사되었습니다."
       />
       <WriteReview
-        studioName={currentStudio.studioName}
-        studioTitle={currentStudio.title}
+        studioName={studio.slug}
+        studioTitle={studio.name}
         isWriteReviewOpen={isWriteReviewOpen}
         setIsWriteReviewOpen={setIsWriteReviewOpen}
       />
       <HeaderBar
-        currentStudio={currentStudio}
+        currentStudio={studio}
         copyTextToClipboard={copyTextToClipboard}
         setIsAlertOpen={setIsAlertOpen}
       />
-      <TitlePart currentStudio={currentStudio} />
-      <StudioLinks currentStudio={currentStudio} />
+      <TitlePart currentStudio={studio} />
+      <StudioLinks currentStudio={studio} />
       <TopNavigator
         navigator={navigator}
         setNavigator={setNavigator}
-        reviews={currentStudio.reviews}
+        reviews={studio.reviewCount}
       />
       {renderedItem()}
-      <SeeMoreStudio currentStudioName={currentStudio.studioName} />
+      <SeeMoreStudio
+        currentStudioName={studio.name}
+        studioList={studioData.allStudios.studios}
+      />
     </div>
   );
 };

@@ -37,12 +37,12 @@ const App = () => {
 
   const { loading } = useQuery(MY_PROFILE_QUERY, {
     fetchPolicy: 'network-only',
-    onCompleted: (data) => {
+    onCompleted: data => {
       if (data.myProfile.ok) {
         setLoggedIn(true);
       }
     },
-    onError: (err) => {
+    onError: err => {
       clearTokenAndCache();
     },
   });
@@ -64,7 +64,7 @@ const App = () => {
           <Route exact path="/concepts" component={ConceptListScreenM} />
 
           <Route exact path="/reviews" component={ReviewListScreenM} />
-          <Route exact path="/studios/:id" component={StudioInfoScreenM} />
+          <Route exact path="/studios/:slug" component={StudioInfoScreenM} />
           <Route exact path="/users" component={UserScreenM} />
           <Route exact path="/hearts" component={HeartScreenM} />
           <Route exact path="/notices" component={NoticeListScreenM} />

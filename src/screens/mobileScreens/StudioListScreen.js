@@ -15,7 +15,7 @@ import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import './StudioListScreen.css';
 
 const StudioListScreen = () => {
-  const { loading, error } = useQuery(ALL_STUDIOS_QUERY, {
+  const { data, loading, error } = useQuery(ALL_STUDIOS_QUERY, {
     onCompleted: data => {
       if (!data || !data.allStudios.studios) {
         return;
@@ -36,6 +36,19 @@ const StudioListScreen = () => {
   const [locationBy, setLocationBy] = useState(STUDIO_LOCATION_OPTIONS[0]);
   const [searchTerm, setSearchTerm] = useState('');
   const [studios, setStudios] = useState([]);
+
+  useEffect(() => {
+    if (data) {
+      setStudios(
+        SortingStudioFunction(
+          sortBy,
+          locationBy,
+          searchTerm,
+          data.allStudios.studios
+        )
+      );
+    }
+  }, [sortBy, locationBy, searchTerm]);
 
   useEffect(() => {
     document.body.style.overflow =

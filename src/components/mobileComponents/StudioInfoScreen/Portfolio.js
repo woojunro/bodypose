@@ -1,82 +1,74 @@
 import React, { useState, useEffect } from 'react';
 import './Portfolio.css';
 import InfiniteScroll from 'react-infinite-scroll-component';
-
 import ConceptListCard from '../conceptListScreen/ConceptListCard';
-
 import ConceptModal from '../conceptListScreen/ConceptModal';
-import {
-  GetStudioPhoto,
-  GetMorePhoto,
-} from '../../functions/WithDb/StudioInfo';
 import LoadingIcon from '../conceptListScreen/LoadingIcon';
-var conceptNum = -24;
+import { useQuery } from '@apollo/client';
+import { STUDIO_PHOTOS_QUERY } from '../../../gql/queries/StudioPhotosQuery';
 
-const Portfolio = ({ studioName }) => {
-  //fetching 중인가?
-  const [whileFetching, setWhileFetching] = useState(false);
-
-  const [i, setI] = useState(0);
-  //초기에 Db에서 사진 불러와야하는 부분.
-  const [conceptArray, setConceptArray] = useState(GetStudioPhoto(studioName));
-
-  const [isMore, setIsMore] = useState(true);
+const Portfolio = ({ studioSlug, studioName }) => {
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPhotoNum, setSelectedPhotoNum] = useState(0);
-  const [isFinalPhoto, setIsFinalPhoto] = useState(false);
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-  const handlePhotoNum = (num) => {
-    setSelectedPhotoNum(num);
-  };
-  const cancleFinalPhoto = () => {
-    setIsFinalPhoto(false);
-  };
 
-  conceptNum = 0;
+  const { data, loading, fetchMore } = useQuery(STUDIO_PHOTOS_QUERY, {
+    variables: { page: 1, studioSlug },
+    onCompleted: data => {
+      if (!data.studioPhotos.ok || data.studioPhotos.totalPages <= 1) {
+        setHasMore(false);
+      }
+    },
+    onError: () => setHasMore(false),
+  });
+
+  const fetchMoreData = () => {
+    if (!data || !hasMore) {
+      return;
+    }
+
+    if (page >= data.studioPhotos.totalPages) {
+      setHasMore(false);
+      return;
+    }
+
+    fetchMore({
+      variables: { page: page + 1 },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult?.studioPhotos.photos) return prev;
+        return Object.assign({}, prev, {
+          ...prev,
+          studioPhotos: {
+            ...prev.studioPhotos,
+            photos: [
+              ...prev.studioPhotos.photos,
+              ...fetchMoreResult.studioPhotos.photos,
+            ],
+          },
+        });
+      },
+    });
+
+    setPage(page + 1);
+  };
 
   useEffect(() => {
     document.body.style.overflow = isModalOpen ? 'hidden' : 'auto';
   }, [isModalOpen]);
 
-  const fetchMoreData = () => {
-    setI(i + 24);
-
-    setTimeout(() => {
-      const currentData = conceptArray;
-      //Db에서 사진 더 불러와야 하는 부분.
-      const moreData = GetMorePhoto(studioName, i, currentData);
-
-      setConceptArray(moreData);
-
-      currentData.length === moreData.length
-        ? setIsMore(false)
-        : setIsMore(true);
-      //다 불러오고 fetching 상태 바꿔주기.
-      setWhileFetching(false);
-    }, 1000);
-  };
-
-  //큰 화면으로 볼 때 10개 이후 새로운 것이 필요하면 미리 불러두기.
-  const needFetchMoreData = (selectedPhotoNum) => {
-    if (selectedPhotoNum > conceptArray.length - 10 && isMore) {
-      setWhileFetching(true);
-      fetchMoreData();
-    }
-    if (!isMore && selectedPhotoNum === conceptArray.length - 1) {
-      setIsFinalPhoto(true);
-    }
-  };
   return (
     <div className="portfolio">
       <InfiniteScroll
-        dataLength={conceptArray.length}
+        dataLength={
+          data === undefined
+            ? 0
+            : data.studioPhotos.photos === null
+            ? 0
+            : data.studioPhotos.photos.length
+        }
         next={fetchMoreData}
-        hasMore={isMore}
+        hasMore={hasMore}
         loader={<LoadingIcon />}
         endMessage={
           <div className="endMessageContainer">
@@ -85,31 +77,41 @@ const Portfolio = ({ studioName }) => {
         }
       >
         <div className="totalConcept">
-          {conceptArray.map((concept) => (
+          {(data?.studioPhotos.photos || []).map((concept, idx) => (
             <ConceptListCard
-              key={concept.photoName}
-              conceptNum={conceptNum++}
-              photo={concept}
-              isModalOpen={isModalOpen}
-              setThisPhoto={handlePhotoNum}
-              openModal={openModal}
-              needFetchMoreData={needFetchMoreData}
+              key={`concept-list-${concept.id}-${idx}`}
+              conceptNum={idx}
+              src={concept.thumbnailUrl}
+              setThisPhoto={() => setSelectedPhotoNum(idx)}
+              openModal={() => setIsModalOpen(true)}
             />
           ))}
+          {!data?.studioPhotos.photos
+            ? null
+            : data.studioPhotos.photos.length % 3 === 0
+            ? null
+            : [
+                ...Array(3 - (data.studioPhotos.photos.length % 3)),
+              ].map((_, idx) => (
+                <div
+                  key={`concept-blank-${idx}`}
+                  className="concepListCardContainer"
+                />
+              ))}
         </div>
       </InfiniteScroll>
-      {isModalOpen ? (
+      {isModalOpen && selectedPhotoNum < data.studioPhotos.photos.length ? (
         <ConceptModal
-          whileFetching={whileFetching}
-          isOpen={isModalOpen}
-          close={closeModal}
-          concept={conceptArray[selectedPhotoNum]}
-          openModal={openModal}
-          setThisPhoto={handlePhotoNum}
-          needFetchMoreData={needFetchMoreData}
-          photoNum={selectedPhotoNum}
-          isFinalPhoto={isFinalPhoto}
-          handleIsFinalPhoto={cancleFinalPhoto}
+          close={() => setIsModalOpen(false)}
+          open={() => setIsModalOpen(true)}
+          id={data.studioPhotos.photos[selectedPhotoNum].id}
+          setThisPhoto={setSelectedPhotoNum}
+          selectedPhotoNum={selectedPhotoNum}
+          isFinalPhoto={selectedPhotoNum >= data.studioPhotos.photos.length - 1}
+          whileFetching={loading}
+          studioPhoto={data.studioPhotos.photos[selectedPhotoNum]}
+          studioSlug={studioSlug}
+          studioName={studioName}
         />
       ) : null}
     </div>

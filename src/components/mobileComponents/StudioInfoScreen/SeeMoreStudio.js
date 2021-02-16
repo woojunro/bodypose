@@ -1,29 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import StudioCard from './StudioCard';
 import './SeeMoreStudio.css';
-import Shuffle from '../../functions/Shuffle';
+import SortingStudioFunction from '../../functions/Studio/SortingStudioFunc';
+import {
+  STUDIO_LOCATION_OPTIONS,
+  STUDIO_SORT_OPTIONS,
+} from '../studioListScreen/SortingOptions';
 
-import { GetStudios } from '../../functions/WithDb/GetStudios';
-import { SortSeeMore } from '../../functions/Studio/SortingFunctions';
+const SeeMoreStudio = ({ currentStudioName, studioList }) => {
+  const [studiosToBeRendered] = useState(
+    SortingStudioFunction(
+      STUDIO_SORT_OPTIONS[0],
+      STUDIO_LOCATION_OPTIONS[0],
+      '',
+      studioList
+    )
+      .filter(studio => studio.name !== currentStudioName)
+      .slice(0, 4)
+  );
 
-const SeeMoreStudio = (currentStudioName) => {
-  //Db에서 스튜디오 불러오는 부분.
-  let studios = GetStudios();
-  //프리미엄 스튜디오 순서 섞고 6개만 추출.
-
-  var premiumStudioList = SortSeeMore(studios, currentStudioName);
-  Shuffle(premiumStudioList);
-
-  premiumStudioList = premiumStudioList.slice(0, 6);
-
-  const renderedStudio = premiumStudioList.map((studio) => {
+  const renderedStudio = studiosToBeRendered.map(studio => {
     return (
-      <li key={studio.studioName}>
+      <li key={`seeMore-${studio.slug}`}>
         <StudioCard
-          studioName={studio.studioName}
-          pic={studio.mainPhoto}
-          price={studio.price}
-          title={studio.title}
+          studioName={studio.slug}
+          pic={studio.coverPhoto.originalUrl}
+          price={studio.lowestPrice}
+          title={studio.name}
         />
       </li>
     );
@@ -31,7 +34,9 @@ const SeeMoreStudio = (currentStudioName) => {
 
   return (
     <div>
-      <div className="seeMoreStudio">스튜디오 더 둘러보기</div>
+      <div className="seeMoreStudio">
+        <b>스튜디오 더 둘러보기</b>
+      </div>
       <span className="mainScrollView">
         <ul>{renderedStudio}</ul>
       </span>

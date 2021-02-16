@@ -23,21 +23,26 @@ const Modal = ({
   isFinalPhoto,
   selectedPhotoNum,
   isForHeart = false,
+  studioPhoto = null,
+  studioSlug = null,
+  studioName = null,
 }) => {
-  const concept = client.readFragment({
-    id: `StudioPhotoWithIsHearted:${id}`,
-    fragment: gql`
-      fragment Concept on StudioPhotoWithIsHearted {
-        id
-        originalUrl
-        isHearted
-        studio {
-          name
-          slug
-        }
-      }
-    `,
-  });
+  const concept = studioPhoto
+    ? studioPhoto
+    : client.readFragment({
+        id: `StudioPhotoWithIsHearted:${id}`,
+        fragment: gql`
+          fragment Concept on StudioPhotoWithIsHearted {
+            id
+            originalUrl
+            isHearted
+            studio {
+              name
+              slug
+            }
+          }
+        `,
+      });
 
   const LoggedIn = useContext(LoginContext);
   const [isHearted, setIsHearted] = useState(concept.isHearted);
@@ -177,7 +182,9 @@ const Modal = ({
               ) : null}
               <div className="topBarContainer">
                 <div style={{ width: '45px' }}></div>
-                <div className="studioTitle">{concept.studio.name}</div>
+                <div className="studioTitle">
+                  {studioName ? studioName : concept.studio.name}
+                </div>
                 <IoIosClose
                   className="conceptModalClose"
                   onClick={() => {
@@ -198,14 +205,14 @@ const Modal = ({
               </div>
               <div className="toStudioInfoContainer">
                 {history.location.pathname ===
-                `/studios/${concept.studio.slug}` ? (
+                `/studios/${studioSlug || concept.studio.slug}` ? (
                   <div className="toStudioInfo" onClick={() => close()}>
                     <div>스튜디오 정보 보기</div>
                   </div>
                 ) : (
                   <Link
                     to={{
-                      pathname: `/studios/${concept.studio.slug}`,
+                      pathname: `/studios/${studioSlug || concept.studio.slug}`,
                       state: { previousPath: history.location.pathname },
                     }}
                     className="toStudioInfo"
