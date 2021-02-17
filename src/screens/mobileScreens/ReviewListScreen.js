@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 import { useHistory } from 'react-router-dom';
-import { SortOptions } from '../../components/mobileComponents/ReviewList/SortOptions';
+import { REVIEW_SORTING_OPTIONS } from '../../components/mobileComponents/ReviewList/SortOptions';
 import {
   GetReviews,
   GetMoreReview,
@@ -12,7 +12,7 @@ import ReviewScrollView from '../../components/mobileComponents/ReviewList/Revie
 import Modal from '../../components/mobileComponents/ReviewList//SortbyModal';
 
 const ReviewListScreen = () => {
-  let sortByOptions = SortOptions;
+  let sortByOptions = REVIEW_SORTING_OPTIONS;
 
   const [sortBy, setSortBy] = useState(sortByOptions[0]);
   const [isThereMoreReviews, setIsThereMoreReviews] = useState(true);

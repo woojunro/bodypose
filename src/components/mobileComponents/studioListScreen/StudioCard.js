@@ -27,7 +27,7 @@ const StudioCard = ({
 }) => {
   const LoggedIn = useContext(LoginContext);
   const history = useHistory();
-  const adress = GetShortAdress(location);
+  const adress = GetShortAdress(location || '주소 없음');
 
   const [isHearted, setIsHearted] = useState(Hearted);
 
