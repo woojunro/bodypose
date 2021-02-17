@@ -1,28 +1,33 @@
 import React from 'react';
 import './OptionProduct.css';
 import { IoMdArrowDropdown, IoMdArrowDropup } from 'react-icons/io';
-import { GetOptionProduct } from '../../functions/WithDb/StudioInfo';
 
-const OptionProduct = ({ currentStudio, isOptionOpen, setIsOptionOpen }) => {
-  const options = GetOptionProduct(currentStudio.studioName);
-  const optionPrice = options.prices;
-  const optionNotice = options.optionNotice;
+const OptionProduct = ({
+  currentStudio,
+  products,
+  isOptionOpen,
+  setIsOptionOpen,
+}) => {
+  const optionNotice = currentStudio.additionalProductListDescription;
 
-  const renderedOptions = optionPrice.map((option) => {
+  const renderedOptions = products.map(option => {
     return (
-      <div key={option.title} className="optionContainer">
+      <div key={option.id} className="optionContainer">
         <div className="optionCardTop">
           <div className="optionTitle">{option.title}</div>
-          <div className="optionPrice">{option.price}</div>
+          <div className="optionPrice">{option.price.toLocaleString()}</div>
         </div>
-        <div className="optionAdding">{option.adding}</div>
+        <div className="optionAdding">{option.description}</div>
       </div>
     );
   });
-  const renderedOptionNotice = optionNotice.map((notice) => {
+  const renderedOptionNotice = (optionNotice
+    ? optionNotice.split('\n')
+    : []
+  ).map(notice => {
     return (
       <div key={notice} className="itemNotice">
-        *{notice}
+        * {notice}
       </div>
     );
   });

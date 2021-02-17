@@ -25,13 +25,15 @@ const ItemTab = ({ currentStudio, products }) => {
             setIsHairOpen={setIsHairOpen}
           />
         )}
-        {/*
-        <OptionProduct
-          currentStudio={currentStudio}
-          isOptionOpen={isOptionOpen}
-          setIsOptionOpen={setIsOptionOpen}
-        />
-        */}
+        {products.additionalProducts &&
+          products.additionalProducts.length !== 0 && (
+            <OptionProduct
+              currentStudio={currentStudio}
+              products={products.additionalProducts}
+              isOptionOpen={isOptionOpen}
+              setIsOptionOpen={setIsOptionOpen}
+            />
+          )}
       </div>
     </div>
   );

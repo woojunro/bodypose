@@ -8,7 +8,9 @@ const InfoTab = ({ currentStudio }) => {
   return (
     <div className="infoTab">
       <StudioMap currentStudio={currentStudio} />
-      <Parking currentStudio={currentStudio} />
+      {currentStudio.parkingInfoDescription && (
+        <Parking currentStudio={currentStudio} />
+      )}
     </div>
   );
 };
