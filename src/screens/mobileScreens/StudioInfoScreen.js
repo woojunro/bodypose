@@ -46,6 +46,10 @@ const StudioInfoScreen = () => {
     window.onscroll = () => {
       setOffsetY(window.pageYOffset);
     };
+    const cleanup = () => {
+      window.onscroll = () => {};
+    };
+    return cleanup;
   }, []);
 
   useEffect(() => {
@@ -61,12 +65,13 @@ const StudioInfoScreen = () => {
   }
 
   const studio = data ? data.studio.studio : null;
+  const products = data ? data.products : null;
 
   const renderedItem = () => {
     if (navigator === 'portfolio') {
       return <Portfolio studioSlug={studio.slug} studioName={studio.name} />;
     } else if (navigator === 'item') {
-      return <ItemTab currentStudio={studio} />;
+      return <ItemTab currentStudio={studio} products={products} />;
     } else if (navigator === 'info') {
       return <InfoTab currentStudio={studio} />;
     } else {

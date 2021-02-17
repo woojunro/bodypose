@@ -31,5 +31,40 @@ export const STUDIO_QUERY = gql`
         isHearted
       }
     }
+    products(input: { slug: $slug }) {
+      ok
+      error
+      studioProducts {
+        id
+        type
+        title
+        peopleCount
+        conceptCount
+        cutCount
+        minuteCount
+        description
+        weekdayPrice
+        weekendPrice
+      }
+      hairMakeupShops {
+        id
+        type
+        name
+        contactInfo
+        address
+        productListDescription
+        products {
+          id
+          title
+          price
+        }
+      }
+      additionalProducts {
+        id
+        title
+        description
+        price
+      }
+    }
   }
 `;

@@ -4,7 +4,7 @@ import PhotoItem from './PhotoItem';
 import HairMakeup from './HairMakeup';
 import OptionProduct from './OptionProduct';
 
-const ItemTab = ({ currentStudio }) => {
+const ItemTab = ({ currentStudio, products }) => {
   const [isPhotoItemOpen, setIsPhotoItemOpen] = useState(true);
   const [isHairOpen, setIsHairOpen] = useState(false);
   const [isOptionOpen, setIsOptionOpen] = useState(false);
@@ -14,9 +14,11 @@ const ItemTab = ({ currentStudio }) => {
       <div className="totalItemContainer">
         <PhotoItem
           currentStudio={currentStudio}
+          products={products.studioProducts}
           isPhotoItemOpen={isPhotoItemOpen}
           setIsPhotoItemOpen={setIsPhotoItemOpen}
         />
+        {/*
         <HairMakeup
           currentStudio={currentStudio}
           isHairOpen={isHairOpen}
@@ -27,6 +29,7 @@ const ItemTab = ({ currentStudio }) => {
           isOptionOpen={isOptionOpen}
           setIsOptionOpen={setIsOptionOpen}
         />
+        */}
       </div>
     </div>
   );
