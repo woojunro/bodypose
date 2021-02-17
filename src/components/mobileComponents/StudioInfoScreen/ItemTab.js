@@ -18,12 +18,14 @@ const ItemTab = ({ currentStudio, products }) => {
           isPhotoItemOpen={isPhotoItemOpen}
           setIsPhotoItemOpen={setIsPhotoItemOpen}
         />
+        {products.hairMakeupShops && products.hairMakeupShops.length !== 0 && (
+          <HairMakeup
+            shops={products.hairMakeupShops}
+            isHairOpen={isHairOpen}
+            setIsHairOpen={setIsHairOpen}
+          />
+        )}
         {/*
-        <HairMakeup
-          currentStudio={currentStudio}
-          isHairOpen={isHairOpen}
-          setIsHairOpen={setIsHairOpen}
-        />
         <OptionProduct
           currentStudio={currentStudio}
           isOptionOpen={isOptionOpen}

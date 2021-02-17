@@ -12,6 +12,10 @@
   border-bottom: 1px solid lightgray;
 }
 
+.hairTitleContainer {
+  margin-bottom: 10px;
+}
+
 .hairshopName {
   font-size: 13px;
 }
@@ -37,6 +41,10 @@
   border-top: lightgray 1px solid;
 }
 
+.hairItemLastContainer {
+  border-bottom: lightgray 1px solid;
+}
+
 .itemContainer {
   margin-top: 10px;
 }
@@ -55,6 +63,8 @@
   margin-right: 10px;
 }
 .hairAdding {
-  margin-top: 3px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   font-size: 11px;
+  white-space: pre-wrap;
 }
