@@ -7,6 +7,7 @@ import { UsersService } from 'src/users/users.service';
 import { LoginWithEmailInput, LoginOutput } from './dtos/login.dto';
 import { GetOAuthProfileWithAccessTokenOutput } from './dtos/oauth.dto';
 import { getKakaoProfileWithAccessToken } from './utils/kakaoOAuth.util';
+import { getNaverProfileWithAccessToken } from './utils/naverLogin.util';
 
 @Injectable()
 export class AuthService {
@@ -97,7 +98,7 @@ export class AuthService {
           result = await getKakaoProfileWithAccessToken(accessToken);
           break;
         case LoginMethod.NAVER:
-          // TODO: Naver Auth 구현
+          result = await getNaverProfileWithAccessToken(accessToken);
           break;
         case LoginMethod.GOOGLE:
           // TODO: Google Auth 구현

@@ -165,9 +165,32 @@ export class UsersService {
       if (!ok) {
         return { ok, error };
       }
+      const user = await this.userRepository.findOne({
+        loginMethod: createWith,
+        socialId,
+      });
+      if (user) {
+        // Update profile
+        if (email) user.email = email;
+        const updatedUser = { ...user, ...profiles };
+        await this.userRepository.save(updatedUser);
+        // Issue token
+        const loginResult = await this.authService.loginWithOAuth(
+          user.loginMethod as SocialLoginMethod,
+          user.socialId,
+        );
+        return {
+          ok: loginResult.ok,
+          error: loginResult.error,
+          token: loginResult.token,
+        };
+      }
       // If there is a user with the same email, change its loginMethod
       if (email) {
-        const userWithEmail = await this.userRepository.findOne({ email });
+        const userWithEmail = await this.userRepository.findOne({
+          email,
+          loginMethod: LoginMethod.EMAIL,
+        });
         if (userWithEmail) {
           userWithEmail.loginMethod = createWith;
           userWithEmail.socialId = socialId;
@@ -176,6 +199,7 @@ export class UsersService {
           const user = await this.userRepository.save({
             ...userWithEmail,
             ...profiles,
+            isVerified: true,
           });
           return await this.authService.loginWithOAuth(
             createWith,
@@ -184,27 +208,21 @@ export class UsersService {
         }
       }
       // If the user does not exist, create one
-      let user = await this.userRepository.findOne({
+      const newUser = this.userRepository.create({
         loginMethod: createWith,
         socialId,
+        email,
+        isVerified: true,
+        ...profiles,
       });
-      if (!user) {
-        user = this.userRepository.create({
-          loginMethod: createWith,
-          socialId,
-          email,
-          isVerified: true,
-          ...profiles,
-        });
-        // Get a possible nickname
-        const newNickname = await this.getPossibleNickname(nickname);
-        user.nickname = newNickname;
-        user = await this.userRepository.save(user);
-      }
+      // Get a possible nickname
+      const newNickname = await this.getPossibleNickname(nickname);
+      newUser.nickname = newNickname;
+      const createdUser = await this.userRepository.save(newUser);
       // Get JWT token
       const loginResult = await this.authService.loginWithOAuth(
-        user.loginMethod as SocialLoginMethod,
-        user.socialId,
+        createdUser.loginMethod as SocialLoginMethod,
+        createdUser.socialId,
       );
       return {
         ok: loginResult.ok,
@@ -225,7 +243,10 @@ export class UsersService {
     email: string,
     options?: FindOneOptions<User>,
   ): Promise<User> {
-    return this.userRepository.findOne({ email }, options);
+    return this.userRepository.findOne(
+      { email, loginMethod: LoginMethod.EMAIL },
+      options,
+    );
   }
 
   async getUserByNickname(
@@ -340,7 +361,8 @@ export class UsersService {
               };
             }
             break;
-          // TODO: Naver
+          case LoginMethod.NAVER:
+            break;
           // TODO: Facebook
           // TODO: Google
           default:

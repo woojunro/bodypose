@@ -9,8 +9,13 @@ import { Storage, Bucket } from '@google-cloud/storage';
 import { File } from './dtos/file.dto';
 import { randomFileName } from './utils/file-upload';
 import { format } from 'url';
-import { UploadPhotoDto } from './dtos/upload-studio-photo.dto';
+import {
+  UploadPhotoDto,
+  UploadStudioReviewDto,
+} from './dtos/upload-studio-photo.dto';
 import { StudiosService } from 'src/studios/studios.service';
+import { CreateStudioReviewOutput } from 'src/studios/dtos/create-studio-review.dto';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class UploadsService {
@@ -25,7 +30,11 @@ export class UploadsService {
     this.bucket = storage.bucket(bucket_name);
   }
 
-  async uploadReviewPhotos(photos: File[], body: UploadPhotoDto) {
+  async uploadStudioReview(
+    photos: File[],
+    body: UploadStudioReviewDto,
+    user: User,
+  ): Promise<CreateStudioReviewOutput> {
     if (photos.length < 1) {
       throw new BadRequestException('NO_PHOTOS');
     }
@@ -34,6 +43,13 @@ export class UploadsService {
     }
     if (!body.studioSlug) {
       throw new BadRequestException('NO_STUDIO_SLUG');
+    }
+
+    if (body.rating < 1 || body.rating > 5) {
+      throw new BadRequestException('INVALID_PAYLOAD');
+    }
+    if (body.thumbnailIndex < 0 || body.thumbnailIndex >= photos.length) {
+      throw new BadRequestException('INVALID_PAYLOAD');
     }
 
     const studio = await this.studiosService.checkIfStudioExists(
@@ -70,9 +86,16 @@ export class UploadsService {
     }
 
     return Promise.all(urlPromises).then(promises => {
-      return {
-        urls: [...promises],
-      };
+      return this.studiosService.createStudioReview(user, {
+        studioSlug: body.studioSlug,
+        payload: {
+          rating: Number(body.rating),
+          text: body.text,
+          isPhotoForProof: Boolean(body.isPhotoForProof),
+          photoUrls: [...promises],
+          thumbnailIndex: Number(body.thumbnailIndex),
+        },
+      });
     });
   }
 

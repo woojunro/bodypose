@@ -189,6 +189,7 @@ export class StudioReviewResolver {
     return this.studiosService.getAllStudioReviews(input);
   }
 
+  /*
   @Mutation(returns => CreateStudioReviewOutput)
   @Roles(Role.USER)
   createStudioReview(
@@ -197,6 +198,7 @@ export class StudioReviewResolver {
   ): Promise<CreateStudioReviewOutput> {
     return this.studiosService.createStudioReview(user, input);
   }
+  */
 
   @Mutation(returns => DeleteStudioReviewOutput)
   @Roles(Role.USER, Role.ADMIN)
