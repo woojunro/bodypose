@@ -13,7 +13,6 @@ import HeartScreenM from '../screens/mobileScreens/HeartScreen';
 import NoticeListScreenM from '../screens/mobileScreens/NoticeListScreen';
 import NoticeScreenM from '../screens/mobileScreens/NoticeScreen';
 import ErrorScreenM from '../screens/mobileScreens/ErrorScreen';
-import FullReviewScreenM from '../screens/mobileScreens/FullReviewScreen';
 
 import LoginScreenM from '../screens/mobileScreens/AboutAuth/LoginScreen';
 import ChangePasswordScreenM from '../screens/mobileScreens/AboutAuth/ChangePasswordScreen';
@@ -37,12 +36,12 @@ const App = () => {
 
   const { loading } = useQuery(MY_PROFILE_QUERY, {
     fetchPolicy: 'network-only',
-    onCompleted: (data) => {
+    onCompleted: data => {
       if (data.myProfile.ok) {
         setLoggedIn(true);
       }
     },
-    onError: (err) => {
+    onError: err => {
       clearTokenAndCache();
     },
   });
@@ -64,12 +63,11 @@ const App = () => {
           <Route exact path="/concepts" component={ConceptListScreenM} />
 
           <Route exact path="/reviews" component={ReviewListScreenM} />
-          <Route exact path="/studios/:id" component={StudioInfoScreenM} />
+          <Route exact path="/studios/:slug" component={StudioInfoScreenM} />
           <Route exact path="/users" component={UserScreenM} />
           <Route exact path="/hearts" component={HeartScreenM} />
           <Route exact path="/notices" component={NoticeListScreenM} />
           <Route path="/notices/:noticeId" component={NoticeScreenM} />
-          <Route path="/reviews/:reviewNumber" component={FullReviewScreenM} />
           <Route path="/newPassword/:authCode" component={NewPasswordScreenM} />
 
           <Route exact path="/login" component={LoginScreenM} />

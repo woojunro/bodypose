@@ -1,11 +1,13 @@
 import React from 'react';
 import './ReviewCard.css';
 import { GetStars } from '../../functions/Reviews/ReviewFunctions';
-import { Link } from 'react-router-dom';
 
-const ReviewCard = ({ reviewContent }) => {
+const ReviewCard = ({
+  reviewContent,
+  openReviewDetail,
+  currentStudio = null,
+}) => {
   const reviewText = reviewContent.text;
-  const linkTo = '/reviews/' + reviewContent.number;
 
   const renderedbottomPart = () => {
     if (!reviewContent.isPhotoForProof) {
@@ -13,11 +15,17 @@ const ReviewCard = ({ reviewContent }) => {
         <div className="reviewBottomPart">
           <div className="reviewThumb">
             <img
-              src={reviewContent.pic[reviewContent.mainNumber]}
+              src={
+                reviewContent.photos.filter(
+                  photo => photo.id === reviewContent.thumbnailPhotoId
+                )[0].url
+              }
               alt="reviewPhoto"
             />
             {!reviewContent.isPhotoForProof ? (
-              <div className="reviewPhotoNum">1/{reviewContent.pic.length}</div>
+              <div className="reviewPhotoNum">
+                1/{reviewContent.photos.length}
+              </div>
             ) : null}
           </div>
           <div className="reviewText">{reviewText}</div>
@@ -35,30 +43,32 @@ const ReviewCard = ({ reviewContent }) => {
     }
   };
   return (
-    <Link
-      to={linkTo}
-      style={{ decoder: 'none', color: 'white' }}
+    <div
       className="reviewLink"
       onClick={() => {
-        window.scrollTo(0, 0);
+        openReviewDetail(reviewContent.id);
       }}
     >
       <div className="reviewCardContainer">
         <div className="reviewTopPart">
-          <div className="reviewUserName">{reviewContent.userName}</div>
+          <div className="reviewUserName">{reviewContent.user.nickname}</div>
           <div className="reviewInfo">
             <div className="ratingAndStudio">
               <div className="reviewrating">
                 {GetStars(reviewContent.rating)}
               </div>
-              <div className="reviewStudio">{reviewContent.studioTitle}</div>
+              <div className="reviewStudio">
+                {currentStudio ? '' : reviewContent.studio.name}
+              </div>
             </div>
-            <div className="reviewDate">{reviewContent.timestamp}</div>
+            <div className="reviewDate">
+              {reviewContent.createdAt.split('T')[0]}
+            </div>
           </div>
         </div>
         {renderedbottomPart()}
       </div>
-    </Link>
+    </div>
   );
 };
 export default ReviewCard;

@@ -12,7 +12,7 @@ const StudioListView = ({ studioList, isHeartView = false }) => {
           name={studio.slug}
           title={studio.name}
           price={studio.lowestPrice}
-          location={studio.branches[0].address}
+          location={studio.branches.length > 0 && studio.branches[0].address}
           rating={studio.totalRating / studio.reviewCount}
           mainPhoto={studio.coverPhoto ? studio.coverPhoto.originalUrl : null}
           review={studio.reviewCount}

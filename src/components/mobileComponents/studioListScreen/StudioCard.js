@@ -27,7 +27,7 @@ const StudioCard = ({
 }) => {
   const LoggedIn = useContext(LoginContext);
   const history = useHistory();
-  const adress = GetShortAdress(location);
+  const adress = GetShortAdress(location || '주소 없음');
 
   const [isHearted, setIsHearted] = useState(Hearted);
 
@@ -133,7 +133,7 @@ const StudioCard = ({
                   <span className="noReviewSpan">리뷰 없음</span>
                 ) : (
                   <>
-                    <span className="rating">{rating}</span>
+                    <span className="rating">{rating.toFixed(1)}</span>
                     <span className="review">{`(${review}개)`}</span>
                   </>
                 )}

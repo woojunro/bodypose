@@ -41,6 +41,7 @@ const LoginScreen = () => {
 
   const loginWithKakao = () => {
     const { Kakao } = window;
+    Kakao.init(process.env.REACT_APP_KAKAO_JS_KEY);
     Kakao.Auth.login({
       success: function (response) {
         socialLogin({

@@ -1,12 +1,6 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './FullReviewScreen.css';
-import {
-  GetFullReview,
-  RemoveReview,
-} from '../../components/functions/WithDb/Review';
-import { GetUserName } from '../../components/functions/WithDb/User';
 import { FiArrowLeft } from 'react-icons/fi';
-import { useHistory } from 'react-router-dom';
 import { GetStars } from '../../components/functions/Reviews/ReviewFunctions';
 import ReviewBody from '../../components/mobileComponents/ReviewList/ReviewBody';
 import { BsThreeDotsVertical } from 'react-icons/bs';
@@ -15,65 +9,98 @@ import RemoveModal from '../../components/mobileComponents/ReviewList/RemoveModa
 
 import ToStudioButton from '../../components/mobileComponents/ReviewList/ToStudioButton';
 import ReviewOption from '../../components/mobileComponents/ReviewList/ReviewOption';
+import { client } from '../../apollo';
+import { gql } from '@apollo/client';
 
-import LoginContext from '../../contexts/LoginContext';
-const FullReviewScreen = ({ match }) => {
-  const LoggedIn = useContext(LoginContext);
+const FullReviewScreen = ({
+  id,
+  nickname,
+  close,
+  currentStudioName = null,
+  refetchReviews = () => {},
+  refetchStudio = () => {},
+}) => {
   const [isOptionOpen, setIsOptionOpen] = useState(false);
-  const [isSameUser, setIsSameUser] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
 
-  const history = useHistory();
-  const number = match.params.reviewNumber;
-  const fullReview = GetFullReview(Number(number));
-  const studioName = fullReview.studioName;
-  const linkTo = '/studios/' + studioName;
+  const fragment = currentStudioName
+    ? gql`
+        fragment reviewFragment on UsersReviewStudios {
+          id
+          createdAt
+          rating
+          text
+          thumbnailPhotoId
+          isPhotoForProof
+          photos {
+            id
+            url
+          }
+          user {
+            nickname
+          }
+        }
+      `
+    : gql`
+        fragment reviewFragmentWithStudio on UsersReviewStudios {
+          id
+          createdAt
+          rating
+          text
+          thumbnailPhotoId
+          isPhotoForProof
+          photos {
+            id
+            url
+          }
+          user {
+            nickname
+          }
+          studio {
+            name
+            slug
+          }
+        }
+      `;
 
-  console.log(linkTo);
-
-  useEffect(() => {
-    if (LoggedIn.loggedIn) {
-      const currentUser = GetUserName();
-      if (currentUser === fullReview.userName) {
-        setIsSameUser(true);
-      }
-    }
-  }, []);
+  const review = client.readFragment({
+    id: `UsersReviewStudios:${id}`,
+    fragment,
+  });
 
   return (
-    <div>
+    <div className="writeReview">
       <ReportModal
-        currentReview={fullReview.number}
+        currentReview={review.id}
         close={() => setIsReportOpen(false)}
         isOpen={isReportOpen}
       />
       <RemoveModal
-        currentReview={fullReview.number}
+        currentReview={review.id}
         close={() => setIsRemoveOpen(false)}
+        closeDetail={close}
         isOpen={isRemoveOpen}
-        history={history}
+        refetchReviews={refetchReviews}
+        refetchStudio={refetchStudio}
       />
 
       <div className="usersTopContainer">
-        <FiArrowLeft
-          className="usersGoBackArrow"
-          onClick={() => {
-            history.goBack();
-          }}
-        />
-        <div className="leaveTitle">{fullReview.studioTitle}</div>
+        <FiArrowLeft className="usersGoBackArrow" onClick={close} />
+        <div className="leaveTitle">
+          {currentStudioName ? currentStudioName : review.studio.name}
+        </div>
         <div className="usersTopEmptyBox" />
       </div>
       <div className="fullReviewTopPart">
         <div className="fullReviewLeftPart">
-          <div className="fullReviewUserName">{fullReview.userName}</div>
+          <div className="fullReviewUserName">{review.user.nickname}</div>
 
           <div className="fullratingAndStudio">
-            <div className="fullReviewrating">
-              {GetStars(fullReview.rating)}
+            <div className="fullReviewrating">{GetStars(review.rating)}</div>
+            <div className="fullReviewStudio">
+              {review.createdAt.split('T')[0]}
             </div>
-            <div className="fullReviewStudio">{fullReview.timestamp}</div>
           </div>
         </div>
         <BsThreeDotsVertical
@@ -84,8 +111,8 @@ const FullReviewScreen = ({ match }) => {
         />
         {isOptionOpen ? (
           <ReviewOption
-            reviewNumber={fullReview.number}
-            isSameUser={isSameUser}
+            reviewNumber={review.id}
+            isSameUser={nickname === review.user.nickname}
             setIsOptionOpen={setIsOptionOpen}
             setIsReportOpen={setIsReportOpen}
             setIsRemoveOpen={setIsRemoveOpen}
@@ -93,8 +120,10 @@ const FullReviewScreen = ({ match }) => {
         ) : null}
       </div>
       <div className="fullReviewBottomPart">
-        <ReviewBody currentReview={fullReview} />
-        <ToStudioButton linkTo={linkTo} />
+        <ReviewBody currentReview={review} />
+        {!currentStudioName && (
+          <ToStudioButton linkTo={`/studios/${review.studio.slug}`} />
+        )}
       </div>
     </div>
   );

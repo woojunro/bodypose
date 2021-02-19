@@ -4,7 +4,7 @@ import PhotoItem from './PhotoItem';
 import HairMakeup from './HairMakeup';
 import OptionProduct from './OptionProduct';
 
-const ItemTab = ({ currentStudio }) => {
+const ItemTab = ({ currentStudio, products }) => {
   const [isPhotoItemOpen, setIsPhotoItemOpen] = useState(true);
   const [isHairOpen, setIsHairOpen] = useState(false);
   const [isOptionOpen, setIsOptionOpen] = useState(false);
@@ -14,19 +14,26 @@ const ItemTab = ({ currentStudio }) => {
       <div className="totalItemContainer">
         <PhotoItem
           currentStudio={currentStudio}
+          products={products.studioProducts}
           isPhotoItemOpen={isPhotoItemOpen}
           setIsPhotoItemOpen={setIsPhotoItemOpen}
         />
-        <HairMakeup
-          currentStudio={currentStudio}
-          isHairOpen={isHairOpen}
-          setIsHairOpen={setIsHairOpen}
-        />
-        <OptionProduct
-          currentStudio={currentStudio}
-          isOptionOpen={isOptionOpen}
-          setIsOptionOpen={setIsOptionOpen}
-        />
+        {products.hairMakeupShops && products.hairMakeupShops.length !== 0 && (
+          <HairMakeup
+            shops={products.hairMakeupShops}
+            isHairOpen={isHairOpen}
+            setIsHairOpen={setIsHairOpen}
+          />
+        )}
+        {products.additionalProducts &&
+          products.additionalProducts.length !== 0 && (
+            <OptionProduct
+              currentStudio={currentStudio}
+              products={products.additionalProducts}
+              isOptionOpen={isOptionOpen}
+              setIsOptionOpen={setIsOptionOpen}
+            />
+          )}
       </div>
     </div>
   );

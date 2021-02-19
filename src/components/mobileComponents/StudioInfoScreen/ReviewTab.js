@@ -1,41 +1,131 @@
 import React, { useState, useEffect, useContext } from 'react';
 import './ReviewTab.css';
-import { GetReview, GetMoreReview } from '../../functions/WithDb/StudioInfo';
 import SortButton from '../../mobileComponents/ReviewList/SortButton';
-import { SortOptions } from '../../mobileComponents/ReviewList/SortOptions';
+import { REVIEW_SORTING_OPTIONS } from '../../mobileComponents/ReviewList/SortOptions';
 import ReviewScrollView from '../../mobileComponents/ReviewList/ReviewScrollView';
 import LoginContext from '../../../contexts/LoginContext';
 import { useHistory } from 'react-router-dom';
 import Modal from '../ReviewList/SortbyModal';
+import { useQuery } from '@apollo/client';
+import { STUDIO_REVIEWS_QUERY } from '../../../gql/queries/StudioReviewQuery';
+import { MY_PROFILE_QUERY } from '../../../gql/queries/MyProfileQuery';
+import LoadingIcon from '../conceptListScreen/LoadingIcon';
+import { clearTokenAndCache } from '../../../apollo';
+import WriteReview from '../ReviewList/WriteReview';
+import FullReviewScreen from '../../../screens/mobileScreens/FullReviewScreen';
 
-const ReviewTab = ({ currentStudio, setIsWriteReviewOpen }) => {
-  let sortByOptions = SortOptions;
+const ReviewTab = ({ currentStudio, refetchStudio }) => {
   const LoggedIn = useContext(LoginContext);
   const history = useHistory();
 
-  const [sortBy, setSortBy] = useState(sortByOptions[0]);
-  const [isThereMoreReviews, setIsThereMoreReviews] = useState(true);
-  const [Reviews, setReviews] = useState([]);
+  const { data: profileData, loading: profileLoading } = useQuery(
+    MY_PROFILE_QUERY,
+    {
+      onError: () => {
+        if (LoggedIn.loggedIn) {
+          clearTokenAndCache();
+          LoggedIn.setLoggedIn(false);
+          window.location.reload();
+        }
+      },
+    }
+  );
+
+  const [page, setPage] = useState(1);
+  const [sortBy, setSortBy] = useState(REVIEW_SORTING_OPTIONS[0]);
   const [isSortByOpen, setIsSortByOpen] = useState(false);
+  const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
+  const [fetchMoreLoading, setFetchMoreLoading] = useState(false);
+  const [isReviewDetailOpen, setIsReviewDetailOpen] = useState(false);
+  const [reviewDetailId, setReviewDetailId] = useState(-1);
+
+  const openReviewDetail = id => {
+    setReviewDetailId(id);
+    setIsReviewDetailOpen(true);
+  };
+
+  const closeReviewDetail = () => {
+    setIsReviewDetailOpen(false);
+    setReviewDetailId(-1);
+  };
+
+  const refetchReviews = () => {
+    refetch();
+    setIsReviewDetailOpen(false);
+    setReviewDetailId(-1);
+  };
+
+  const { data, loading, fetchMore, refetch } = useQuery(STUDIO_REVIEWS_QUERY, {
+    fetchPolicy: 'network-only',
+    variables: {
+      page: 1,
+      studioSlug: currentStudio.slug,
+      order: sortBy.optionName,
+    },
+  });
 
   const closeModal = () => {
     setIsSortByOpen(false);
   };
-  const GetMore = () => {
-    const more = Reviews.concat(
-      GetMoreReview(currentStudio.studioName, sortBy.optionName)
-    );
-    if (more.length === Reviews.length) {
-      setIsThereMoreReviews(false);
-    }
-    setReviews(more);
+
+  const GetMore = async () => {
+    setFetchMoreLoading(true);
+    await fetchMore({
+      variables: {
+        page: page + 1,
+        studioSlug: currentStudio.slug,
+        order: sortBy.optionName,
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev;
+        return Object.assign({}, prev, {
+          ...prev,
+          studioReviews: {
+            ...prev.studioReviews,
+            studioReviews: [
+              ...prev.studioReviews.studioReviews,
+              ...fetchMoreResult.studioReviews.studioReviews,
+            ],
+          },
+        });
+      },
+    });
+    setPage(page + 1);
+    setFetchMoreLoading(false);
   };
+
   useEffect(() => {
-    setReviews(GetReview(currentStudio.studioName, sortBy.optionName));
+    document.body.style.overflow = isWriteReviewOpen ? 'hidden' : 'auto';
+  }, [isWriteReviewOpen]);
+
+  useEffect(() => {
+    setPage(1);
   }, [sortBy]);
 
   return (
     <div>
+      {isWriteReviewOpen && (
+        <WriteReview
+          studioName={currentStudio.slug}
+          studioTitle={currentStudio.name}
+          isWriteReviewOpen={isWriteReviewOpen}
+          setIsWriteReviewOpen={setIsWriteReviewOpen}
+          refetchReviews={refetchReviews}
+          refetchStudio={refetchStudio}
+        />
+      )}
+      {data?.studioReviews?.studioReviews &&
+        data.studioReviews.studioReviews.length > 0 &&
+        isReviewDetailOpen && (
+          <FullReviewScreen
+            id={reviewDetailId}
+            nickname={profileData?.myProfile?.profile.nickname}
+            close={closeReviewDetail}
+            currentStudioName={currentStudio.name}
+            refetchReviews={refetchReviews}
+            refetchStudio={refetchStudio}
+          />
+        )}
       <div className="reviewTabTopContainer">
         <div>
           <SortButton
@@ -50,11 +140,21 @@ const ReviewTab = ({ currentStudio, setIsWriteReviewOpen }) => {
           className="writeReviewButton"
           onClick={() => {
             if (LoggedIn.loggedIn) {
+              if (!profileData?.myProfile?.profile.isVerified) {
+                alert(
+                  '이메일 가입 회원은 이메일 인증 후 후기 작성이 가능합니다.'
+                );
+                return;
+              }
               setIsWriteReviewOpen(true);
             } else {
+              const ok = window.confirm(
+                '로그인이 필요한 기능입니다. 로그인 하시겠습니까?'
+              );
+              if (!ok) return;
               history.push({
                 pathname: '/login',
-                state: { previousPath: `/studios/${currentStudio.studioName}` },
+                state: { previousPath: `/studios/${currentStudio.slug}` },
               });
             }
           }}
@@ -66,16 +166,25 @@ const ReviewTab = ({ currentStudio, setIsWriteReviewOpen }) => {
         isOpen={isSortByOpen}
         close={closeModal}
         closeSortBy={() => setIsSortByOpen(false)}
-        options={sortByOptions}
+        options={REVIEW_SORTING_OPTIONS}
         setOption={setSortBy}
         selectedOption={sortBy}
       />
       <div className="reviewTab">
-        <ReviewScrollView reviewList={Reviews} />
-
-        {isThereMoreReviews ? (
+        {data?.studioReviews && (
+          <ReviewScrollView
+            reviewList={data.studioReviews.studioReviews}
+            currentStudio={currentStudio}
+            openReviewDetail={openReviewDetail}
+          />
+        )}
+        {loading || profileLoading || fetchMoreLoading ? (
           <div className="seeMoreReviewContainer">
-            <div className="seeMoreReview" onClick={() => GetMore()}>
+            <LoadingIcon />
+          </div>
+        ) : page < data.studioReviews.totalPages ? (
+          <div className="seeMoreReviewContainer">
+            <div className="seeMoreReview" onClick={GetMore}>
               리뷰 더보기
             </div>
           </div>

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { GetStudioInfo } from '../../components/functions/WithDb/StudioInfo';
 import HeaderBar from '../../components/mobileComponents/StudioInfoScreen/HeaderBar';
 import TitlePart from '../../components/mobileComponents/StudioInfoScreen/TitlePart';
 import StudioLinks from '../../components/mobileComponents/StudioInfoScreen/StudioLinks';
@@ -8,16 +7,27 @@ import Portfolio from '../../components/mobileComponents/StudioInfoScreen/Portfo
 import ItemTab from '../../components/mobileComponents/StudioInfoScreen/ItemTab';
 import InfoTab from '../../components/mobileComponents/StudioInfoScreen/InfoTab';
 import ReviewTab from '../../components/mobileComponents/StudioInfoScreen/ReviewTab';
-import WriteReview from '../../components/mobileComponents/ReviewList/WriteReview';
 import BottomAlertDialog from '../../components/mobileComponents/BottomAlertDialog';
 
 import SeeMoreStudio from '../../components/mobileComponents/StudioInfoScreen/SeeMoreStudio';
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@apollo/client';
+import { STUDIO_QUERY } from '../../gql/queries/StudioQuery';
+import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
+import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
+import ScrollToTopButton from '../../components/mobileComponents/ScrollToTopButton';
 
-const StudioInfoScreen = ({ match }) => {
-  const currentStudio = GetStudioInfo(match.params.id);
+const StudioInfoScreen = () => {
+  const { slug } = useParams();
+  const { data, loading, refetch } = useQuery(STUDIO_QUERY, {
+    variables: { slug },
+  });
+  const { data: studioData, loading: studioLoading } = useQuery(
+    ALL_STUDIOS_QUERY
+  );
   const [navigator, setNavigator] = useState('portfolio');
-  const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [offsetY, setOffsetY] = useState(0);
 
   const copyTextToClipboard = () => {
     var dummy = document.createElement('input'),
@@ -31,25 +41,38 @@ const StudioInfoScreen = ({ match }) => {
   };
 
   useEffect(() => {
-    document.body.style.overflow = isWriteReviewOpen ? 'hidden' : 'auto';
-  }, [isWriteReviewOpen]);
+    window.onscroll = () => {
+      setOffsetY(window.pageYOffset);
+    };
+    const cleanup = () => {
+      window.onscroll = () => {};
+    };
+    return cleanup;
+  }, []);
+
+  if (loading || studioLoading) {
+    return (
+      <div className="appFullScreenCenter">
+        <AppLoadingScreen />
+      </div>
+    );
+  }
+
+  const studio = data ? data.studio.studio : null;
+  const products = data ? data.products : null;
 
   const renderedItem = () => {
     if (navigator === 'portfolio') {
-      return <Portfolio studioName={currentStudio.studioName} />;
+      return <Portfolio studioSlug={studio.slug} studioName={studio.name} />;
     } else if (navigator === 'item') {
-      return <ItemTab currentStudio={currentStudio} />;
+      return <ItemTab currentStudio={studio} products={products} />;
     } else if (navigator === 'info') {
-      return <InfoTab currentStudio={currentStudio} />;
+      return <InfoTab currentStudio={studio} />;
     } else {
-      return (
-        <ReviewTab
-          currentStudio={currentStudio}
-          setIsWriteReviewOpen={setIsWriteReviewOpen}
-        />
-      );
+      return <ReviewTab currentStudio={studio} refetchStudio={refetch} />;
     }
   };
+
   return (
     <div>
       <BottomAlertDialog
@@ -57,26 +80,24 @@ const StudioInfoScreen = ({ match }) => {
         setIsOpen={setIsAlertOpen}
         dialog="주소가 복사되었습니다."
       />
-      <WriteReview
-        studioName={currentStudio.studioName}
-        studioTitle={currentStudio.title}
-        isWriteReviewOpen={isWriteReviewOpen}
-        setIsWriteReviewOpen={setIsWriteReviewOpen}
-      />
       <HeaderBar
-        currentStudio={currentStudio}
+        currentStudio={studio}
         copyTextToClipboard={copyTextToClipboard}
         setIsAlertOpen={setIsAlertOpen}
       />
-      <TitlePart currentStudio={currentStudio} />
-      <StudioLinks currentStudio={currentStudio} />
+      <TitlePart currentStudio={studio} />
+      <StudioLinks currentStudio={studio} />
       <TopNavigator
         navigator={navigator}
         setNavigator={setNavigator}
-        reviews={currentStudio.reviews}
+        reviews={studio.reviewCount}
       />
       {renderedItem()}
-      <SeeMoreStudio currentStudioName={currentStudio.studioName} />
+      <SeeMoreStudio
+        currentStudioName={studio.name}
+        studioList={studioData.allStudios.studios}
+      />
+      {offsetY > 200 && <ScrollToTopButton />}
     </div>
   );
 };

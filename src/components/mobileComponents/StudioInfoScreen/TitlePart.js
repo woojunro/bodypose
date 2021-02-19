@@ -5,8 +5,8 @@ const FixedPart = ({ currentStudio }) => {
   return (
     <>
       <div className="studioInfoTitleContainer">
-        <img src={currentStudio.logo} alt="logo" />
-        <div className="stuioInfoTitle">{currentStudio.title}</div>
+        <img src={currentStudio.logoUrl} alt="logo" />
+        <div className="stuioInfoTitle">{currentStudio.name}</div>
       </div>
     </>
   );

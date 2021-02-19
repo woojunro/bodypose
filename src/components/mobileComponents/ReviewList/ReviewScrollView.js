@@ -1,11 +1,19 @@
 import React from 'react';
 import ReviewCard from './ReviewCard';
 
-const ReviewScrollView = ({ reviewList }) => {
-  const renderedReviewScroll = reviewList.map((review) => {
+const ReviewScrollView = ({
+  reviewList,
+  openReviewDetail,
+  currentStudio = null,
+}) => {
+  const renderedReviewScroll = reviewList.map(review => {
     return (
-      <div key={review.userName + review.studioTitle + review.timestamp}>
-        <ReviewCard reviewContent={review} />
+      <div key={`studioReview-${review.id}`}>
+        <ReviewCard
+          reviewContent={review}
+          currentStudio={currentStudio}
+          openReviewDetail={openReviewDetail}
+        />
       </div>
     );
   });

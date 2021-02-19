@@ -1,5 +1,5 @@
-export const SortOptions = [
-  { title: '최신순', optionName: 'byDate' },
-  { title: '평점높은순', optionName: 'byRating' },
-  { title: '평점낮은순', optionName: 'byReverseRating' },
+export const REVIEW_SORTING_OPTIONS = [
+  { title: '최신순', optionName: 'DATE' },
+  { title: '평점높은순', optionName: 'RATING_DESC' },
+  { title: '평점낮은순', optionName: 'RATING_ASC' },
 ];

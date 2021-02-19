@@ -141,3 +141,7 @@
 .conceptModalClose {
   cursor: pointer;
 }
+
+.transparentModal {
+  background-color: none;
+}

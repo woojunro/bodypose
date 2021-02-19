@@ -5,7 +5,7 @@ import KakaoMap from './KakaoMap';
 
 const StudioMap = ({ currentStudio }) => {
   const [isMapOpen, setIsMapOpen] = useState(true);
-  const adress = currentStudio.location;
+  const address = currentStudio.branches;
 
   const renderedArrow = () => {
     return isMapOpen ? (
@@ -14,11 +14,11 @@ const StudioMap = ({ currentStudio }) => {
       <IoMdArrowDropdown fontSize="17px" />
     );
   };
-  const renderedTitle = adress.map((adr) => {
+  const renderedTitle = address.map(adr => {
     return (
-      <div key={adr.title} className="studioAdress">
-        <span className="adressTitle">{adr.title}</span>
-        <span className="adressInfo"> {adr.adress}</span>
+      <div key={`kakaomap-${adr.name}`} className="studioAdress">
+        <span className="adressTitle">{adr.name}</span>
+        <span className="adressInfo"> {adr.address}</span>
       </div>
     );
   });
@@ -32,7 +32,7 @@ const StudioMap = ({ currentStudio }) => {
         <>
           <div className="MapTotalContainer">
             {renderedTitle}
-            <KakaoMap currentLocation={adress} />
+            <KakaoMap currentLocation={address} />
           </div>
         </>
       ) : null}

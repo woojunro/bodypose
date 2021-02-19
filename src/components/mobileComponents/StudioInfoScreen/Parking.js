@@ -21,7 +21,9 @@ const Parking = ({ currentStudio }) => {
       </div>
       {isParkingOpen ? (
         <>
-          <div className="parkingText">{currentStudio.parking}</div>
+          <div className="parkingText">
+            {currentStudio.parkingInfoDescription}
+          </div>
         </>
       ) : null}
     </div>
