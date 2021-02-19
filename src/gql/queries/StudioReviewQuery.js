@@ -30,3 +30,32 @@ export const STUDIO_REVIEWS_QUERY = gql`
     }
   }
 `;
+
+export const ALL_STUDIO_REVIEWS_QUERY = gql`
+  query GetAllStudioReviews($page: Int) {
+    allStudioReviews(input: { page: $page }) {
+      ok
+      error
+      totalPages
+      studioReviews {
+        id
+        createdAt
+        rating
+        text
+        thumbnailPhotoId
+        isPhotoForProof
+        photos {
+          id
+          url
+        }
+        user {
+          nickname
+        }
+        studio {
+          name
+          slug
+        }
+      }
+    }
+  }
+`;

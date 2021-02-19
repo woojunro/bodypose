@@ -43,7 +43,7 @@ const FullReviewScreen = ({
         }
       `
     : gql`
-        fragment reviewFragment on UsersReviewStudios {
+        fragment reviewFragmentWithStudio on UsersReviewStudios {
           id
           createdAt
           rating
