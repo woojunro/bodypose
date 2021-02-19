@@ -133,7 +133,7 @@ const StudioCard = ({
                   <span className="noReviewSpan">리뷰 없음</span>
                 ) : (
                   <>
-                    <span className="rating">{rating}</span>
+                    <span className="rating">{rating.toFixed(1)}</span>
                     <span className="review">{`(${review}개)`}</span>
                   </>
                 )}

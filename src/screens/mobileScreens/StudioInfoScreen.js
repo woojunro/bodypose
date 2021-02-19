@@ -7,7 +7,6 @@ import Portfolio from '../../components/mobileComponents/StudioInfoScreen/Portfo
 import ItemTab from '../../components/mobileComponents/StudioInfoScreen/ItemTab';
 import InfoTab from '../../components/mobileComponents/StudioInfoScreen/InfoTab';
 import ReviewTab from '../../components/mobileComponents/StudioInfoScreen/ReviewTab';
-import WriteReview from '../../components/mobileComponents/ReviewList/WriteReview';
 import BottomAlertDialog from '../../components/mobileComponents/BottomAlertDialog';
 
 import SeeMoreStudio from '../../components/mobileComponents/StudioInfoScreen/SeeMoreStudio';
@@ -20,14 +19,13 @@ import ScrollToTopButton from '../../components/mobileComponents/ScrollToTopButt
 
 const StudioInfoScreen = () => {
   const { slug } = useParams();
-  const { data, loading } = useQuery(STUDIO_QUERY, {
+  const { data, loading, refetch } = useQuery(STUDIO_QUERY, {
     variables: { slug },
   });
   const { data: studioData, loading: studioLoading } = useQuery(
     ALL_STUDIOS_QUERY
   );
   const [navigator, setNavigator] = useState('portfolio');
-  const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [offsetY, setOffsetY] = useState(0);
 
@@ -52,10 +50,6 @@ const StudioInfoScreen = () => {
     return cleanup;
   }, []);
 
-  useEffect(() => {
-    document.body.style.overflow = isWriteReviewOpen ? 'hidden' : 'auto';
-  }, [isWriteReviewOpen]);
-
   if (loading || studioLoading) {
     return (
       <div className="appFullScreenCenter">
@@ -75,12 +69,7 @@ const StudioInfoScreen = () => {
     } else if (navigator === 'info') {
       return <InfoTab currentStudio={studio} />;
     } else {
-      return (
-        <ReviewTab
-          currentStudio={studio}
-          setIsWriteReviewOpen={setIsWriteReviewOpen}
-        />
-      );
+      return <ReviewTab currentStudio={studio} refetchStudio={refetch} />;
     }
   };
 
@@ -90,12 +79,6 @@ const StudioInfoScreen = () => {
         isOpen={isAlertOpen}
         setIsOpen={setIsAlertOpen}
         dialog="주소가 복사되었습니다."
-      />
-      <WriteReview
-        studioName={studio.slug}
-        studioTitle={studio.name}
-        isWriteReviewOpen={isWriteReviewOpen}
-        setIsWriteReviewOpen={setIsWriteReviewOpen}
       />
       <HeaderBar
         currentStudio={studio}

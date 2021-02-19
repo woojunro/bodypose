@@ -15,7 +15,7 @@ const ReviewCard = ({ reviewContent, currentStudio = null }) => {
             <img
               src={
                 reviewContent.photos.filter(
-                  photo => (photo.id = reviewContent.thumbnailPhotoId)
+                  photo => photo.id === reviewContent.thumbnailPhotoId
                 )[0].url
               }
               alt="reviewPhoto"
@@ -58,10 +58,12 @@ const ReviewCard = ({ reviewContent, currentStudio = null }) => {
                 {GetStars(reviewContent.rating)}
               </div>
               <div className="reviewStudio">
-                {currentStudio ? currentStudio.name : reviewContent.studio.name}
+                {currentStudio ? '' : reviewContent.studio.name}
               </div>
             </div>
-            <div className="reviewDate">{reviewContent.createdAt}</div>
+            <div className="reviewDate">
+              {reviewContent.createdAt.split('T')[0]}
+            </div>
           </div>
         </div>
         {renderedbottomPart()}

@@ -18,6 +18,7 @@ export const STUDIO_REVIEWS_QUERY = gql`
         rating
         text
         thumbnailPhotoId
+        isPhotoForProof
         photos {
           id
           url

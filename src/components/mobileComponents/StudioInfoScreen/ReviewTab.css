@@ -15,11 +15,3 @@
   color: black;
   cursor: pointer;
 }
-
-.reviewLoadingDiv {
-  display: flex;
-  margin-top: 10px;
-  width: 100vw;
-  align-items: center;
-  justify-content: center;
-}

@@ -5,11 +5,16 @@ import './WriteReview.css';
 import Camera from '../../../materials/icons/camera.png';
 import imageCompression from 'browser-image-compression';
 import LoadingIcon from '../conceptListScreen/LoadingIcon';
+import axios from 'axios';
+import { BASE_URL } from '../../../constants/urls';
+
 const WriteReview = ({
   studioName,
   studioTitle,
   isWriteReviewOpen,
   setIsWriteReviewOpen,
+  refetchReviews,
+  refetchStudio,
 }) => {
   const [onlyVerify, setOnlyVerify] = useState(false);
   //Blob의 array로 저장됨.
@@ -17,7 +22,6 @@ const WriteReview = ({
   const [imgBase64, setimgBase64] = useState([]);
   const [stars, setStars] = useState(0);
   const [reviewText, setReviewText] = useState('');
-  const [picNumberError, setPicNumberError] = useState(false);
   const [mainNumber, setMainNumber] = useState(0);
 
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -29,7 +33,6 @@ const WriteReview = ({
 
   const handleChange = event => {
     const files = Array.from(event.target.files);
-    console.log(files);
     let compressedFiles = [];
     const option = {
       maxSizeMB: 0.2,
@@ -38,10 +41,9 @@ const WriteReview = ({
     };
 
     if (files.length > 3) {
-      setPicNumberError(true);
       alert('리뷰 사진은 3장을 초과할 수 없습니다.');
       return;
-    } else setPicNumberError(false);
+    }
 
     Promise.all(
       files.map(file => {
@@ -54,7 +56,6 @@ const WriteReview = ({
           reader.addEventListener('error', reject);
           reader.readAsDataURL(compressedFile);
           compressedFiles.push(compressedFile);
-          console.log(compressedFile);
         });
       })
     ).then(
@@ -70,14 +71,6 @@ const WriteReview = ({
   };
 
   useEffect(() => {
-    if (pics < 1) {
-      setPicNumberError(true);
-    } else {
-      setPicNumberError(false);
-    }
-  }, [pics]);
-
-  useEffect(() => {
     if (onlyVerify) {
       setMainNumber(-1);
     } else {
@@ -85,11 +78,50 @@ const WriteReview = ({
     }
   }, [onlyVerify]);
 
-  const handleSubmit = () => {
-    if (reviewText.length < 12 || picNumberError) {
-    } else {
-      setIsWriteReviewOpen(false);
+  const canSubmit = () =>
+    !Number.isInteger(stars) ||
+    stars < 1 ||
+    stars > 5 ||
+    pics.length < 1 ||
+    pics.length > 3 ||
+    reviewText.length < 12
+      ? false
+      : onlyVerify
+      ? true
+      : mainNumber >= 0 && mainNumber < pics.length;
+
+  const handleSubmit = async () => {
+    setSubmitLoading(true);
+    const form = new FormData();
+    form.append('studioSlug', studioName);
+    form.append('rating', `${stars}`);
+    form.append('text', reviewText);
+    form.append('isPhotoForProof', onlyVerify ? 'true' : '');
+    form.append('thumbnailIndex', onlyVerify ? '0' : `${mainNumber}`);
+    for (const pic of pics) {
+      form.append('photos', pic, pic.name);
     }
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/uploads/studio-review`,
+        form,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('jwt')}`,
+          },
+        }
+      );
+      if (response.data.ok) {
+        setIsWriteReviewOpen(false);
+        refetchReviews();
+        refetchStudio();
+      } else {
+        throw new Error();
+      }
+    } catch (e) {
+      alert('오류가 발생하였습니다. 다시 시도해주세요.');
+    }
+    setSubmitLoading(false);
   };
 
   const renderedPics = () => {
@@ -142,7 +174,7 @@ const WriteReview = ({
 
   return isWriteReviewOpen ? (
     submitLoading ? (
-      <div className="appFullScreenCenter">
+      <div className="writeReview writeReviewCenter">
         <LoadingIcon />
       </div>
     ) : (
@@ -156,7 +188,12 @@ const WriteReview = ({
               }}
             />
 
-            <div className="reviewCompelteButton" onClick={handleSubmit}>
+            <div
+              className={`reviewCompleteButton ${
+                !canSubmit() && 'reviewCompleteButtonInActive'
+              }`}
+              onClick={canSubmit() ? handleSubmit : () => {}}
+            >
               완료
             </div>
           </div>

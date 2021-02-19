@@ -8,17 +8,35 @@ import { useHistory } from 'react-router-dom';
 import Modal from '../ReviewList/SortbyModal';
 import { useQuery } from '@apollo/client';
 import { STUDIO_REVIEWS_QUERY } from '../../../gql/queries/StudioReviewQuery';
+import { MY_PROFILE_QUERY } from '../../../gql/queries/MyProfileQuery';
 import LoadingIcon from '../conceptListScreen/LoadingIcon';
+import { clearTokenAndCache } from '../../../apollo';
+import WriteReview from '../ReviewList/WriteReview';
 
-const ReviewTab = ({ currentStudio, setIsWriteReviewOpen }) => {
+const ReviewTab = ({ currentStudio, refetchStudio }) => {
   const LoggedIn = useContext(LoginContext);
   const history = useHistory();
+
+  const { data: profileData, loading: profileLoading } = useQuery(
+    MY_PROFILE_QUERY,
+    {
+      onError: () => {
+        if (LoggedIn.loggedIn) {
+          clearTokenAndCache();
+          LoggedIn.setLoggedIn(false);
+        }
+      },
+    }
+  );
 
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState(REVIEW_SORTING_OPTIONS[0]);
   const [isSortByOpen, setIsSortByOpen] = useState(false);
+  const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
+  const [fetchMoreLoading, setFetchMoreLoading] = useState(false);
 
-  const { data, loading, fetchMore } = useQuery(STUDIO_REVIEWS_QUERY, {
+  const { data, loading, fetchMore, refetch } = useQuery(STUDIO_REVIEWS_QUERY, {
+    fetchPolicy: 'network-only',
     variables: {
       page: 1,
       studioSlug: currentStudio.slug,
@@ -30,8 +48,9 @@ const ReviewTab = ({ currentStudio, setIsWriteReviewOpen }) => {
     setIsSortByOpen(false);
   };
 
-  const GetMore = () => {
-    fetchMore({
+  const GetMore = async () => {
+    setFetchMoreLoading(true);
+    await fetchMore({
       variables: {
         page: page + 1,
         studioSlug: currentStudio.slug,
@@ -52,7 +71,12 @@ const ReviewTab = ({ currentStudio, setIsWriteReviewOpen }) => {
       },
     });
     setPage(page + 1);
+    setFetchMoreLoading(false);
   };
+
+  useEffect(() => {
+    document.body.style.overflow = isWriteReviewOpen ? 'hidden' : 'auto';
+  }, [isWriteReviewOpen]);
 
   useEffect(() => {
     setPage(1);
@@ -60,6 +84,16 @@ const ReviewTab = ({ currentStudio, setIsWriteReviewOpen }) => {
 
   return (
     <div>
+      {isWriteReviewOpen && (
+        <WriteReview
+          studioName={currentStudio.slug}
+          studioTitle={currentStudio.name}
+          isWriteReviewOpen={isWriteReviewOpen}
+          setIsWriteReviewOpen={setIsWriteReviewOpen}
+          refetchReviews={refetch}
+          refetchStudio={refetchStudio}
+        />
+      )}
       <div className="reviewTabTopContainer">
         <div>
           <SortButton
@@ -74,6 +108,12 @@ const ReviewTab = ({ currentStudio, setIsWriteReviewOpen }) => {
           className="writeReviewButton"
           onClick={() => {
             if (LoggedIn.loggedIn) {
+              if (!profileData.myProfile?.profile.isVerified) {
+                alert(
+                  '이메일 가입 회원은 이메일 인증 후 후기 작성이 가능합니다.'
+                );
+                return;
+              }
               setIsWriteReviewOpen(true);
             } else {
               const ok = window.confirm(
@@ -105,8 +145,8 @@ const ReviewTab = ({ currentStudio, setIsWriteReviewOpen }) => {
             currentStudio={currentStudio}
           />
         )}
-        {loading ? (
-          <div className="reviewLoadingDiv">
+        {loading || profileLoading || fetchMoreLoading ? (
+          <div className="seeMoreReviewContainer">
             <LoadingIcon />
           </div>
         ) : page < data.studioReviews.totalPages ? (

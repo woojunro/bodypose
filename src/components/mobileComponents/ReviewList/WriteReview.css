@@ -19,10 +19,13 @@
   margin: auto;
   padding: 0px;
 }
-.reviewCompelteButton {
+.reviewCompleteButton {
   padding-right: 20px;
   font-size: 15px;
   cursor: pointer;
+}
+.reviewCompleteButtonInActive {
+  color: gray;
 }
 .reviewTopContainer {
   margin-top: 20px;
@@ -159,4 +162,10 @@
   margin-top: 3px;
   color: red;
   font-size: 13px;
+}
+
+.writeReviewCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
