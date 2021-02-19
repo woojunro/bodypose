@@ -1,11 +1,13 @@
 import React from 'react';
 import './ReviewCard.css';
 import { GetStars } from '../../functions/Reviews/ReviewFunctions';
-import { Link } from 'react-router-dom';
 
-const ReviewCard = ({ reviewContent, currentStudio = null }) => {
+const ReviewCard = ({
+  reviewContent,
+  openReviewDetail,
+  currentStudio = null,
+}) => {
   const reviewText = reviewContent.text;
-  const linkTo = '/reviews/' + reviewContent.id;
 
   const renderedbottomPart = () => {
     if (!reviewContent.isPhotoForProof) {
@@ -41,12 +43,10 @@ const ReviewCard = ({ reviewContent, currentStudio = null }) => {
     }
   };
   return (
-    <Link
-      to={linkTo}
-      style={{ decoder: 'none', color: 'white' }}
+    <div
       className="reviewLink"
       onClick={() => {
-        window.scrollTo(0, 0);
+        openReviewDetail(reviewContent.id);
       }}
     >
       <div className="reviewCardContainer">
@@ -68,7 +68,7 @@ const ReviewCard = ({ reviewContent, currentStudio = null }) => {
         </div>
         {renderedbottomPart()}
       </div>
-    </Link>
+    </div>
   );
 };
 export default ReviewCard;

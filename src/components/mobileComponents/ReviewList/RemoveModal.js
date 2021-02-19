@@ -1,7 +1,32 @@
+import { useMutation } from '@apollo/client';
 import React from 'react';
+import { DELETE_STUDIO_REVIEW_MUTATION } from '../../../gql/mutations/DeleteStudioReviewMutation';
 import './RemoveModal.css';
-import { RemoveReview } from '../../functions/WithDb/Review';
-const removeModal = ({ currentReview, close, isOpen, history }) => {
+
+const RemoveModal = ({
+  currentReview,
+  close,
+  closeDetail,
+  isOpen,
+  refetchReviews,
+  refetchStudio,
+}) => {
+  const [deleteReview] = useMutation(DELETE_STUDIO_REVIEW_MUTATION, {
+    fetchPolicy: 'no-cache',
+    onCompleted: () => {
+      close();
+      closeDetail();
+      refetchStudio();
+      refetchReviews();
+    },
+    onError: () => {
+      close();
+      closeDetail();
+      refetchStudio();
+      refetchReviews();
+    },
+  });
+
   const renderedReasons = () => {
     return (
       <div className="removeReviewContainer">
@@ -9,10 +34,11 @@ const removeModal = ({ currentReview, close, isOpen, history }) => {
         <span
           className="removeAnswer"
           onClick={() => {
-            RemoveReview(currentReview);
-            close();
-
-            history.goBack();
+            deleteReview({
+              variables: {
+                id: currentReview,
+              },
+            });
           }}
         >
           예
@@ -41,7 +67,7 @@ const removeModal = ({ currentReview, close, isOpen, history }) => {
             <div className="removeTrueModal">
               <div
                 className="removemodalContents"
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                 }}
               >
@@ -55,4 +81,4 @@ const removeModal = ({ currentReview, close, isOpen, history }) => {
   );
 };
 
-export default removeModal;
+export default RemoveModal;

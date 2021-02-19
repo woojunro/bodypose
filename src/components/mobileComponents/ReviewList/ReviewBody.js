@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './ReviewBody.css';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 
@@ -12,16 +12,27 @@ const ReviewBody = ({ currentReview }) => {
     setCurrentPic(currentPic - 1);
   };
 
+  useEffect(() => {
+    if (currentReview.thumbnailPhotoId) {
+      setCurrentPic(
+        currentReview.photos.findIndex(
+          photo => currentReview.thumbnailPhotoId === photo.id
+        )
+      );
+    }
+  }, []);
+
   const renderedArrows = () => {
     return (
       <>
-        {currentReview.pic && currentPic > 0 ? (
+        {currentReview.photos.length > 0 && currentPic > 0 ? (
           <div className="prevPicContainer">
             <IoIosArrowBack onClick={() => GetPrevPic()} className="prevPic" />
           </div>
         ) : null}
 
-        {currentReview.pic && currentPic < currentReview.pic.length - 1 ? (
+        {currentReview.photos.length > 0 &&
+        currentPic < currentReview.photos.length - 1 ? (
           <div className="nextPicContainer">
             <IoIosArrowForward
               onClick={() => GetNextPic()}
@@ -35,10 +46,10 @@ const ReviewBody = ({ currentReview }) => {
 
   return (
     <div className="reviewBody">
-      {currentReview.pic ? (
+      {currentReview.photos.length > 0 ? (
         <div className="reviewBodyPhoto">
           {renderedArrows()}
-          <img alt="reviewPhoto" src={currentReview.pic[currentPic]} />
+          <img alt="reviewPhoto" src={currentReview.photos[currentPic].url} />
         </div>
       ) : null}
       <div className="reviewBodyText">{currentReview.text}</div>

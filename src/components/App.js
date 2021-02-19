@@ -13,7 +13,6 @@ import HeartScreenM from '../screens/mobileScreens/HeartScreen';
 import NoticeListScreenM from '../screens/mobileScreens/NoticeListScreen';
 import NoticeScreenM from '../screens/mobileScreens/NoticeScreen';
 import ErrorScreenM from '../screens/mobileScreens/ErrorScreen';
-import FullReviewScreenM from '../screens/mobileScreens/FullReviewScreen';
 
 import LoginScreenM from '../screens/mobileScreens/AboutAuth/LoginScreen';
 import ChangePasswordScreenM from '../screens/mobileScreens/AboutAuth/ChangePasswordScreen';
@@ -69,7 +68,6 @@ const App = () => {
           <Route exact path="/hearts" component={HeartScreenM} />
           <Route exact path="/notices" component={NoticeListScreenM} />
           <Route path="/notices/:noticeId" component={NoticeScreenM} />
-          <Route path="/reviews/:reviewNumber" component={FullReviewScreenM} />
           <Route path="/newPassword/:authCode" component={NewPasswordScreenM} />
 
           <Route exact path="/login" component={LoginScreenM} />

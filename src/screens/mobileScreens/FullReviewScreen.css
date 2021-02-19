@@ -13,11 +13,13 @@
 }
 .fullReviewStudio {
   font-size: 12px;
+  margin-left: 5px;
 }
 
 .fullReviewUserName {
   font-size: 14px;
   font-weight: bold;
+  margin-bottom: 5px;
 }
 
 .fullReviewBottomPart {

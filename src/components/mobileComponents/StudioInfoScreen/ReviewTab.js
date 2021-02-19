@@ -12,6 +12,7 @@ import { MY_PROFILE_QUERY } from '../../../gql/queries/MyProfileQuery';
 import LoadingIcon from '../conceptListScreen/LoadingIcon';
 import { clearTokenAndCache } from '../../../apollo';
 import WriteReview from '../ReviewList/WriteReview';
+import FullReviewScreen from '../../../screens/mobileScreens/FullReviewScreen';
 
 const ReviewTab = ({ currentStudio, refetchStudio }) => {
   const LoggedIn = useContext(LoginContext);
@@ -24,6 +25,7 @@ const ReviewTab = ({ currentStudio, refetchStudio }) => {
         if (LoggedIn.loggedIn) {
           clearTokenAndCache();
           LoggedIn.setLoggedIn(false);
+          window.location.reload();
         }
       },
     }
@@ -34,6 +36,24 @@ const ReviewTab = ({ currentStudio, refetchStudio }) => {
   const [isSortByOpen, setIsSortByOpen] = useState(false);
   const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
   const [fetchMoreLoading, setFetchMoreLoading] = useState(false);
+  const [isReviewDetailOpen, setIsReviewDetailOpen] = useState(false);
+  const [reviewDetailId, setReviewDetailId] = useState(-1);
+
+  const openReviewDetail = id => {
+    setReviewDetailId(id);
+    setIsReviewDetailOpen(true);
+  };
+
+  const closeReviewDetail = () => {
+    setIsReviewDetailOpen(false);
+    setReviewDetailId(-1);
+  };
+
+  const refetchReviews = () => {
+    refetch();
+    setIsReviewDetailOpen(false);
+    setReviewDetailId(-1);
+  };
 
   const { data, loading, fetchMore, refetch } = useQuery(STUDIO_REVIEWS_QUERY, {
     fetchPolicy: 'network-only',
@@ -90,10 +110,22 @@ const ReviewTab = ({ currentStudio, refetchStudio }) => {
           studioTitle={currentStudio.name}
           isWriteReviewOpen={isWriteReviewOpen}
           setIsWriteReviewOpen={setIsWriteReviewOpen}
-          refetchReviews={refetch}
+          refetchReviews={refetchReviews}
           refetchStudio={refetchStudio}
         />
       )}
+      {data?.studioReviews?.studioReviews &&
+        data.studioReviews.studioReviews.length > 0 &&
+        isReviewDetailOpen && (
+          <FullReviewScreen
+            id={reviewDetailId}
+            nickname={profileData?.myProfile?.profile.nickname}
+            close={closeReviewDetail}
+            currentStudioName={currentStudio.name}
+            refetchReviews={refetchReviews}
+            refetchStudio={refetchStudio}
+          />
+        )}
       <div className="reviewTabTopContainer">
         <div>
           <SortButton
@@ -108,7 +140,7 @@ const ReviewTab = ({ currentStudio, refetchStudio }) => {
           className="writeReviewButton"
           onClick={() => {
             if (LoggedIn.loggedIn) {
-              if (!profileData.myProfile?.profile.isVerified) {
+              if (!profileData?.myProfile?.profile.isVerified) {
                 alert(
                   '이메일 가입 회원은 이메일 인증 후 후기 작성이 가능합니다.'
                 );
@@ -143,6 +175,7 @@ const ReviewTab = ({ currentStudio, refetchStudio }) => {
           <ReviewScrollView
             reviewList={data.studioReviews.studioReviews}
             currentStudio={currentStudio}
+            openReviewDetail={openReviewDetail}
           />
         )}
         {loading || profileLoading || fetchMoreLoading ? (
