@@ -23,7 +23,10 @@ const StudioInfoScreen = () => {
     variables: { slug },
   });
   const { data: studioData, loading: studioLoading } = useQuery(
-    ALL_STUDIOS_QUERY
+    ALL_STUDIOS_QUERY,
+    {
+      fetchPolicy: 'cache-and-network',
+    }
   );
   const [navigator, setNavigator] = useState('portfolio');
   const [isAlertOpen, setIsAlertOpen] = useState(false);

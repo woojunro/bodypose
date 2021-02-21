@@ -2,18 +2,17 @@ import React, { useState, useEffect } from 'react';
 
 import './InputForm.css';
 
-const InputForm = ({ onInputSubmit, placeholder, type }) => {
+const InputForm = ({ onInputSubmit, placeholder, type, initialValue = '' }) => {
   const [term, setTerm] = useState('');
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      onInputSubmit(term);
-    }, 400);
+    if (initialValue.length > 0) setTerm(initialValue);
+  }, []);
 
-    return () => {
-      clearTimeout(timeoutId);
-    };
+  useEffect(() => {
+    onInputSubmit(term);
   }, [term]);
+
   return (
     <div className="loginInputField">
       <input
@@ -22,7 +21,7 @@ const InputForm = ({ onInputSubmit, placeholder, type }) => {
         autoFocus={false}
         value={term}
         type={type}
-        onChange={(e) => setTerm(e.target.value)}
+        onChange={e => setTerm(e.target.value)}
       />
     </div>
   );

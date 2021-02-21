@@ -1,18 +1,16 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import './LoginScreen.css';
 import KakaoLogo from '../../../materials/kakao logo.png';
-import NaverLogo from '../../../materials/naver logo.png';
 import GoogleLogo from '../../../materials/google logo.png';
-import FacebookLogo from '../../../materials/facebook logo.png';
 import InputForm from '../../../components/mobileComponents/Login/InputForm';
 import LoginButton from '../../../components/mobileComponents/Login/LoginButton';
 import { FiArrowLeft } from 'react-icons/fi';
 import LoginContext from '../../../contexts/LoginContext';
-import { SnsLogin } from '../../../components/functions/WithDb/Auth';
 import { Link, Redirect, useHistory } from 'react-router-dom';
 import { GobackArrow } from '../../../components/functions/Login/GobackArrow';
 import { useMutation } from '@apollo/client';
 import { SOCIAL_LOGIN_MUTATION } from '../../../gql/mutations/LoginMutation';
+import GoogleLogin from 'react-google-login';
 import AppLoadingScreen from '../../../components/mobileComponents/AppLoadingScreen';
 
 const LoginScreen = () => {
@@ -35,9 +33,24 @@ const LoginScreen = () => {
     onError: () => alert('오류가 발생하였습니다. 다시 시도해주세요.'),
   });
 
-  const SnsLoginFunction = () => {
-    SnsLogin();
+  const initializeNaverLogin = () => {
+    const { naver } = window;
+    const naverLogin = new naver.LoginWithNaverId({
+      clientId: process.env.REACT_APP_NAVER_CLIENT_ID,
+      callbackUrl: process.env.REACT_APP_NAVER_LOGIN_CALLBACK_URL,
+      isPopup: false,
+      loginButton: {
+        color: 'green',
+        type: 1,
+        height: 60,
+      },
+    });
+    naverLogin.init();
   };
+
+  useEffect(() => {
+    initializeNaverLogin();
+  }, []);
 
   const loginWithKakao = () => {
     const { Kakao } = window;
@@ -53,6 +66,19 @@ const LoginScreen = () => {
       },
       fail: function (error) {
         alert('오류가 발생하였습니다. 다시 시도해주세요.');
+      },
+    });
+  };
+
+  const loginWithGoogle = token => {
+    if (!token) {
+      alert('오류가 발생하였습니다. 다시 시도해주세요.');
+      return;
+    }
+    socialLogin({
+      variables: {
+        accessToken: token,
+        provider: 'GOOGLE',
       },
     });
   };
@@ -141,24 +167,24 @@ const LoginScreen = () => {
                       alt="카카오"
                       src={KakaoLogo}
                     />
-
-                    <img
-                      className="snsLogin"
-                      onClick={() => SnsLoginFunction()}
-                      alt="네이버"
-                      src={NaverLogo}
-                    />
-                    <img
-                      className="snsLogin"
-                      onClick={() => SnsLoginFunction()}
-                      alt="페이스북"
-                      src={FacebookLogo}
-                    />
-                    <img
-                      className="snsLogin"
-                      onClick={() => SnsLoginFunction()}
-                      alt="구글"
-                      src={GoogleLogo}
+                    <div className="naverIdLoginButtonContainer">
+                      <div id="naverIdLogin" />
+                    </div>
+                    <GoogleLogin
+                      clientId={process.env.REACT_APP_GOOGLE_AUTH_CLIENT_ID}
+                      render={renderProps => (
+                        <img
+                          className="snsLogin"
+                          onClick={renderProps.onClick}
+                          alt="구글"
+                          src={GoogleLogo}
+                        />
+                      )}
+                      buttonText=""
+                      onSuccess={response => loginWithGoogle(response.tokenId)}
+                      onFailure={() =>
+                        alert('오류가 발생하였습니다. 다시 시도해주세요.')
+                      }
                     />
                   </div>
                 </div>
