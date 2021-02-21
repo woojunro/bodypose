@@ -141,15 +141,19 @@ export class PhotosService {
       let heartPhotos: UsersHeartStudioPhotos[] = [];
       if (user) {
         const photoIds = photos.map(photo => photo.id);
-        heartPhotos = await this.usersHeartStudioPhotosRepository
+        const query = this.usersHeartStudioPhotosRepository
           .createQueryBuilder('heart')
           .select(['heart.id'])
           .leftJoin('heart.user', 'user')
           .leftJoin('heart.studioPhoto', 'photo')
           .addSelect(['photo.id'])
-          .where('user.id = :id', { id: user.id })
-          .andWhere('photo.id IN (:photoIds)', { photoIds })
-          .getMany();
+          .where('user.id = :id', { id: user.id });
+
+        if (photoIds.length > 0) {
+          heartPhotos = await query
+            .andWhere('photo.id IN (:photoIds)', { photoIds })
+            .getMany();
+        }
       }
 
       // return
@@ -188,15 +192,19 @@ export class PhotosService {
       let heartPhotos: UsersHeartStudioPhotos[] = [];
       if (user) {
         const photoIds = photos.map(photo => photo.id);
-        heartPhotos = await this.usersHeartStudioPhotosRepository
+        const query = this.usersHeartStudioPhotosRepository
           .createQueryBuilder('heart')
           .select(['heart.id'])
           .leftJoin('heart.user', 'user')
           .leftJoin('heart.studioPhoto', 'photo')
           .addSelect(['photo.id'])
-          .where('user.id = :id', { id: user.id })
-          .andWhere('photo.id IN (:photoIds)', { photoIds })
-          .getMany();
+          .where('user.id = :id', { id: user.id });
+
+        if (photoIds.length > 0) {
+          heartPhotos = await query
+            .andWhere('photo.id IN (:photoIds)', { photoIds })
+            .getMany();
+        }
       }
 
       return {

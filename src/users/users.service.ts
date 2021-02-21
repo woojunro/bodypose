@@ -170,20 +170,11 @@ export class UsersService {
         socialId,
       });
       if (user) {
-        // Update profile
-        if (email) user.email = email;
-        const updatedUser = { ...user, ...profiles };
-        await this.userRepository.save(updatedUser);
         // Issue token
-        const loginResult = await this.authService.loginWithOAuth(
+        return await this.authService.loginWithOAuth(
           user.loginMethod as SocialLoginMethod,
           user.socialId,
         );
-        return {
-          ok: loginResult.ok,
-          error: loginResult.error,
-          token: loginResult.token,
-        };
       }
       // If there is a user with the same email, change its loginMethod
       if (email) {
@@ -284,60 +275,8 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
-  /* TBU
-  async updateUserProfileById(
-    id: number,
-    { email, nickname, ...others }: UpdateUserProfileInput,
-  ): Promise<UpdateUserProfileOutput> {
-    try {
-      const userToUpdate = await this.getUserById(id);
-      if (!userToUpdate) {
-        return {
-          ok: false,
-          error: 'User not found',
-        };
-      }
-
-      if (email) {
-        // If email exists, do not allow to update it
-        if (userToUpdate.email) {
-          return {
-            ok: false,
-            error: 'You cannot change email once you register',
-          };
-        }
-        const userWithEmail = await this.getUserByEmail(email);
-        if (userWithEmail) {
-          return {
-            ok: false,
-            error: 'User with that email already exists',
-          };
-        }
-        userToUpdate.email = email;
-      }
-      if (nickname) {
-        const userWithNickname = await this.getUserByNickname(nickname);
-        if (userWithNickname) {
-          return {
-            ok: false,
-            error: 'User with that nickname already exists',
-          };
-        }
-        userToUpdate.nickname = nickname;
-      }
-      for (const key in others) {
-        userToUpdate[key] = others[key];
-      }
-      const updatedUser = await this.updateUser(userToUpdate);
-      return {
-        ok: true,
-        profile: updatedUser,
-      };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
-  }
+  /* TBD
+  프로필 수정 API
   */
 
   async deleteUserById(id: number): Promise<DeleteUserOutput> {
@@ -363,8 +302,9 @@ export class UsersService {
             break;
           case LoginMethod.NAVER:
             break;
+          case LoginMethod.GOOGLE:
+            break;
           // TODO: Facebook
-          // TODO: Google
           default:
             throw new InternalServerErrorException();
         }

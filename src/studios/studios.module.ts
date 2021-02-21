@@ -20,6 +20,7 @@ import { AdditionalProduct } from './entities/additional-product.entity';
 import { PhotosModule } from 'src/photos/photos.module';
 import { HairMakeupShop } from './entities/hair-makeup-shop.entity';
 import { UsersHeartStudios } from './entities/users-heart-studios.entity';
+import { UsersReportStudioReviews } from './entities/users-report-studio-reviews.entity';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { UsersHeartStudios } from './entities/users-heart-studios.entity';
       AdditionalProduct,
       UsersReviewStudios,
       UsersHeartStudios,
+      UsersReportStudioReviews,
     ]),
     AuthModule,
     forwardRef(() => UsersModule),

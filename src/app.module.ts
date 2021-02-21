@@ -45,6 +45,7 @@ import { ENTITY_LIST } from './common/constants/entity-list.constant';
         GOOGLE_CLOUD_PROJECT: Joi.string().required(),
         GCLOUD_STORAGE_BUCKET: Joi.string().required(),
         KAKAO_ADMIN_KEY: Joi.string().required(),
+        GOOGLE_AUTH_CLIENT_ID: Joi.string().required(),
         GOOGLE_APPLICATION_CREDENTIALS:
           process.env.NODE_ENV === 'development'
             ? Joi.string().required()

@@ -10,17 +10,7 @@ import {
   IsUrl,
 } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import {
-  BeforeInsert,
-  BeforeUpdate,
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-} from 'typeorm';
-import { Studio } from 'src/studios/entities/studio.entity';
-import { StudioPhoto } from 'src/photos/entities/studio-photo.entity';
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
 import { UsersReviewStudios } from 'src/studios/entities/users-review-studios.entity';
 
 export enum LoginMethod {

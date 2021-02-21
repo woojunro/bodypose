@@ -38,6 +38,10 @@ import {
 } from './dtos/get-studio.dto';
 import { HeartStudioInput, HeartStudioOutput } from './dtos/heart-studio.dto';
 import {
+  ReportStudioReviewInput,
+  ReportStudioReviewOutput,
+} from './dtos/report-studio-review.dto';
+import {
   UpdateBranchInput,
   UpdateBranchOutput,
 } from './dtos/update-branch.dto';
@@ -189,15 +193,14 @@ export class StudioReviewResolver {
     return this.studiosService.getAllStudioReviews(input);
   }
 
-  /*
-  @Mutation(returns => CreateStudioReviewOutput)
+  @Query(returns => GetStudioReviewsOutput)
   @Roles(Role.USER)
-  createStudioReview(
-    @CurrentUser() user: User,
-    @Args('input') input: CreateStudioReviewInput,
-  ): Promise<CreateStudioReviewOutput> {
-    return this.studiosService.createStudioReview(user, input);
+  myStudioReviews(@CurrentUser() user: User): Promise<GetStudioReviewsOutput> {
+    return this.studiosService.getMyStudioReviews(user);
   }
+
+  /*
+  리뷰 작성 API는 사진 업로드 관계로 uploads에서 담당
   */
 
   @Mutation(returns => DeleteStudioReviewOutput)
@@ -207,6 +210,15 @@ export class StudioReviewResolver {
     @Args('input') input: DeleteStudioReviewInput,
   ): Promise<DeleteStudioReviewOutput> {
     return this.studiosService.deleteStudioReview(user, input);
+  }
+
+  // Public
+  @Mutation(returns => ReportStudioReviewOutput)
+  reportStudioReview(
+    @CurrentUser() user: User,
+    @Args('input') input: ReportStudioReviewInput,
+  ): Promise<ReportStudioReviewOutput> {
+    return this.studiosService.reportStudioReview(user, input);
   }
 }
 

@@ -50,6 +50,10 @@ import {
 } from './dtos/get-studio.dto';
 import { HeartStudioInput, HeartStudioOutput } from './dtos/heart-studio.dto';
 import {
+  ReportStudioReviewInput,
+  ReportStudioReviewOutput,
+} from './dtos/report-studio-review.dto';
+import {
   UpdateBranchInput,
   UpdateBranchOutput,
 } from './dtos/update-branch.dto';
@@ -72,6 +76,7 @@ import { StudioProduct } from './entities/studio-product.entity';
 import { Studio } from './entities/studio.entity';
 import { UsersClickStudios } from './entities/users-click-studios.entity';
 import { UsersHeartStudios } from './entities/users-heart-studios.entity';
+import { UsersReportStudioReviews } from './entities/users-report-studio-reviews.entity';
 import { UsersReviewStudios } from './entities/users-review-studios.entity';
 
 @Injectable()
@@ -95,6 +100,8 @@ export class StudiosService {
     private readonly usersClickStudiosRepository: Repository<UsersClickStudios>,
     @InjectRepository(UsersHeartStudios)
     private readonly usersHeartStudiosRepository: Repository<UsersHeartStudios>,
+    @InjectRepository(UsersReportStudioReviews)
+    private readonly usersReportStudioReviewsRepository: Repository<UsersReportStudioReviews>,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     @Inject(forwardRef(() => PhotosService))
@@ -871,7 +878,8 @@ export class StudiosService {
       const [reviews, count] = await this.studioReviewRepository
         .createQueryBuilder('review')
         .leftJoin('review.studio', 'studio')
-        .leftJoinAndSelect('review.user', 'user')
+        .leftJoin('review.user', 'user')
+        .addSelect('user.nickname')
         .leftJoinAndSelect('review.photos', 'photo')
         .where('studio.slug = :studioSlug', { studioSlug })
         .orderBy(orderByQuery, isDesc ? 'DESC' : 'ASC')
@@ -929,6 +937,35 @@ export class StudiosService {
     }
   }
 
+  async getMyStudioReviews(user: User): Promise<GetStudioReviewsOutput> {
+    try {
+      const { id: userId } = user;
+      const studioReviews = await this.studioReviewRepository
+        .createQueryBuilder('review')
+        .leftJoin('review.user', 'user')
+        .addSelect('user.nickname')
+        .leftJoin('review.studio', 'studio')
+        .addSelect('studio.name')
+        .addSelect('studio.slug')
+        .leftJoinAndSelect('review.photos', 'photo')
+        .where('user.id = :userId', { userId })
+        .orderBy('review.createdAt', 'DESC')
+        .getMany();
+      studioReviews.forEach(review => {
+        if (review.isPhotoForProof) {
+          review.photos = [];
+        }
+      });
+      return {
+        ok: true,
+        studioReviews,
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
   async deleteStudioReview(
     user: User,
     { id }: DeleteStudioReviewInput,
@@ -958,6 +995,56 @@ export class StudiosService {
       studio.reviewCount--;
       studio.totalRating -= review.rating;
       await this.studioRepository.save(studio);
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async reportStudioReview(
+    user: User,
+    { studioReviewId, reason, detail }: ReportStudioReviewInput,
+  ): Promise<ReportStudioReviewOutput> {
+    try {
+      const studioReview = await this.studioReviewRepository.findOne({
+        id: studioReviewId,
+      });
+      if (!studioReview) {
+        return {
+          ok: false,
+          error: 'STUDIO_REVIEW_NOT_FOUND',
+        };
+      }
+      let isAlreadyReported;
+      if (user) {
+        isAlreadyReported = await this.usersReportStudioReviewsRepository.findOne(
+          {
+            studioReview: { id: studioReviewId },
+            user: { id: user.id },
+          },
+        );
+      } else {
+        isAlreadyReported = await this.usersReportStudioReviewsRepository.findOne(
+          {
+            studioReview: { id: studioReviewId },
+          },
+        );
+      }
+      if (isAlreadyReported) {
+        return {
+          ok: false,
+          error: 'ALREADY_REPORTED',
+        };
+      }
+      await this.usersReportStudioReviewsRepository.save(
+        this.usersReportStudioReviewsRepository.create({
+          studioReview: { id: studioReviewId },
+          user,
+          reason,
+          detail,
+        }),
+      );
       return { ok: true };
     } catch (e) {
       console.log(e);
