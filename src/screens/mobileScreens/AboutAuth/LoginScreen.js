@@ -6,11 +6,11 @@ import InputForm from '../../../components/mobileComponents/Login/InputForm';
 import LoginButton from '../../../components/mobileComponents/Login/LoginButton';
 import { FiArrowLeft } from 'react-icons/fi';
 import LoginContext from '../../../contexts/LoginContext';
-import { SnsLogin } from '../../../components/functions/WithDb/Auth';
 import { Link, Redirect, useHistory } from 'react-router-dom';
 import { GobackArrow } from '../../../components/functions/Login/GobackArrow';
 import { useMutation } from '@apollo/client';
 import { SOCIAL_LOGIN_MUTATION } from '../../../gql/mutations/LoginMutation';
+import GoogleLogin from 'react-google-login';
 import AppLoadingScreen from '../../../components/mobileComponents/AppLoadingScreen';
 
 const LoginScreen = () => {
@@ -32,10 +32,6 @@ const LoginScreen = () => {
     },
     onError: () => alert('오류가 발생하였습니다. 다시 시도해주세요.'),
   });
-
-  const SnsLoginFunction = () => {
-    SnsLogin();
-  };
 
   const initializeNaverLogin = () => {
     const { naver } = window;
@@ -70,6 +66,19 @@ const LoginScreen = () => {
       },
       fail: function (error) {
         alert('오류가 발생하였습니다. 다시 시도해주세요.');
+      },
+    });
+  };
+
+  const loginWithGoogle = token => {
+    if (!token) {
+      alert('오류가 발생하였습니다. 다시 시도해주세요.');
+      return;
+    }
+    socialLogin({
+      variables: {
+        accessToken: token,
+        provider: 'GOOGLE',
       },
     });
   };
@@ -161,11 +170,21 @@ const LoginScreen = () => {
                     <div className="naverIdLoginButtonContainer">
                       <div id="naverIdLogin" />
                     </div>
-                    <img
-                      className="snsLogin"
-                      onClick={() => SnsLoginFunction()}
-                      alt="구글"
-                      src={GoogleLogo}
+                    <GoogleLogin
+                      clientId={process.env.REACT_APP_GOOGLE_AUTH_CLIENT_ID}
+                      render={renderProps => (
+                        <img
+                          className="snsLogin"
+                          onClick={renderProps.onClick}
+                          alt="구글"
+                          src={GoogleLogo}
+                        />
+                      )}
+                      buttonText=""
+                      onSuccess={response => loginWithGoogle(response.tokenId)}
+                      onFailure={() =>
+                        alert('오류가 발생하였습니다. 다시 시도해주세요.')
+                      }
                     />
                   </div>
                 </div>
