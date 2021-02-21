@@ -83,12 +83,17 @@ const MyReviewScreen = () => {
         </div>
       ) : (
         <div className="myStudioReviewsContainer">
-          {data?.myStudioReviews && (
-            <ReviewScrollView
-              reviewList={data?.myStudioReviews?.studioReviews}
-              openReviewDetail={openReviewDetail}
-            />
-          )}
+          {data?.myStudioReviews &&
+            (data.myStudioReviews.studioReviews.length > 0 ? (
+              <ReviewScrollView
+                reviewList={data?.myStudioReviews?.studioReviews}
+                openReviewDetail={openReviewDetail}
+              />
+            ) : (
+              <div className="appLoader">
+                <p>아직 작성한 리뷰가 없어요.</p>
+              </div>
+            ))}
         </div>
       )}
     </div>

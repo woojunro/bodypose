@@ -24,6 +24,7 @@ import NewPasswordScreenM from '../screens/mobileScreens/AboutAuth/NewPasswordSc
 import ConfirmEmailScreenM from '../screens/mobileScreens/AboutAuth/ConfirmEmailScreen';
 import KakaoLinkScreenM from '../screens/mobileScreens/KakaoLinkScreen';
 import NaverLoginCallbackScreenM from '../screens/mobileScreens/AboutAuth/NaverLoginCallbackScreen';
+import ChangeNameScreenM from '../screens/mobileScreens/AboutUser/ChangeNameScreen';
 
 import LoginContext from '../contexts/LoginContext';
 import { MY_PROFILE_QUERY } from '../gql/queries/MyProfileQuery';
@@ -81,6 +82,7 @@ const App = () => {
             path="/changePassword"
             component={ChangePasswordScreenM}
           />
+          <Route exact path="/changeName" component={ChangeNameScreenM} />
           <Route
             exact
             path="/startWithEmail"
