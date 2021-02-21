@@ -1,15 +1,67 @@
+import { useMutation } from '@apollo/client';
 import React, { useState } from 'react';
+import { REPORT_STUDIO_REVIEW_MUTATION } from '../../../gql/mutations/ReportStudioReviewMutation';
 import './ReportModal.css';
+
+const REPORT_REASON_OPTIONS = [
+  { front: '초상권 침해 및 무단 도용', back: 'IDENTITY_THEFT' },
+  { front: '거짓 정보', back: 'FAKE_CONTENT' },
+  { front: '비방 또는 모욕', back: 'LIBEL_INSULT' },
+  { front: '리뷰와 무관한 사진 및 글', back: 'UNRELATED_CONTENT' },
+  { front: '기타 (자세한 신고 사유 필수)', back: 'THE_OTHERS' },
+];
+
 const ReportModal = ({ currentReview, close, isOpen }) => {
-  const [reason, setReason] = useState('');
+  const [reasonIndex, setReasonIndex] = useState(-1);
   const [reasonText, setReasonText] = useState('');
+  const [reportStatus, setReportStatus] = useState('');
+
+  const [reportStudioReview] = useMutation(REPORT_STUDIO_REVIEW_MUTATION, {
+    onCompleted: data => {
+      if (data.reportStudioReview.ok) {
+        renderMessageAndClose(
+          '신고가 접수되었습니다.\n이용해주셔서 감사합니다.'
+        );
+      } else {
+        if (data.reportStudioReview.error === 'ALREADY_REPORTED') {
+          renderMessageAndClose(
+            '신고가 접수되었습니다.\n이용해주셔서 감사합니다.'
+          );
+        } else {
+          setReportStatus('오류가 발생하였습니다.\n다시 시도해주세요.');
+          setTimeout(() => setReportStatus(''), 3000);
+        }
+      }
+    },
+    onError: () => {
+      setReportStatus('오류가 발생하였습니다.\n다시 시도해주세요.');
+      setTimeout(() => setReportStatus(''), 3000);
+    },
+  });
+
+  const renderMessageAndClose = message => {
+    setReportStatus(message);
+    setTimeout(() => {
+      setReportStatus('');
+      setReasonIndex(-1);
+      setReasonText('');
+      close();
+    }, 3000);
+  };
 
   //신고하는 함수.
   const submitReport = () => {
-    if (reason === '' || (reason === '기타' && reasonText === '')) {
+    if (reasonIndex === -1 || (reasonIndex === 4 && reasonText === '')) {
       return;
     } else {
-      console.log(reason, reasonText);
+      setReportStatus('잠시만 기다려주세요...');
+      reportStudioReview({
+        variables: {
+          studioReviewId: currentReview,
+          reason: REPORT_REASON_OPTIONS[reasonIndex].back,
+          detail: reasonText,
+        },
+      });
     }
   };
 
@@ -17,72 +69,29 @@ const ReportModal = ({ currentReview, close, isOpen }) => {
     return (
       <div className="reviewReaonsContainer">
         <div className="reportTitle">신고하기</div>
-        <div
-          className={
-            reason === '초상권 침해' ? 'selectedReportReason' : 'reportReason'
-          }
-          onClick={() => {
-            setReason('초상권 침해');
-          }}
-        >
-          초상권 침해 및 무단도용
-        </div>
-        <div
-          className={
-            reason === '거짓 정보' ? 'selectedReportReason' : 'reportReason'
-          }
-          onClick={() => {
-            setReason('거짓 정보');
-          }}
-        >
-          거짓 정보
-        </div>
-        <div
-          className={
-            reason === '비방 또는 모욕'
-              ? 'selectedReportReason'
-              : 'reportReason'
-          }
-          onClick={() => {
-            setReason('비방 또는 모욕');
-          }}
-        >
-          비방 또는 모욕
-        </div>
-        <div
-          className={
-            reason === '리뷰와 무관한 사진 및 글'
-              ? 'selectedReportReason'
-              : 'reportReason'
-          }
-          onClick={() => {
-            setReason('리뷰와 무관한 사진 및 글');
-          }}
-        >
-          리뷰와 무관한 사진 및 글
-        </div>
-        <div
-          className={
-            reason === '기타' ? 'selectedReportReason' : 'reportReason'
-          }
-          onClick={() => {
-            setReason('기타');
-          }}
-        >
-          기타 (자세한 신고 사유 필수)
-        </div>
+        {REPORT_REASON_OPTIONS.map((reason, idx) => (
+          <div
+            key={`ReportReason-${reason.back}`}
+            className={
+              reasonIndex === idx ? 'selectedReportReason' : 'reportReason'
+            }
+            onClick={() => setReasonIndex(idx)}
+          >
+            {reason.front}
+          </div>
+        ))}
         <form>
           <textarea
             className="reasonTextArea"
             value={reasonText}
             placeholder="자세한 신고 사유를 입력해주세요."
-            onChange={(e) => {
+            onChange={e => {
               setReasonText(e.target.value);
             }}
           />
         </form>
         <div className="reportButtons">
-          {reason === '' || (reason === '기타' && reasonText === '') ? (
+          {reasonIndex === -1 || (reasonIndex === 4 && reasonText === '') ? (
             <div className="unactiveReportButton">신고하기</div>
           ) : (
             <div className="reportButton" onClick={() => submitReport()}>
@@ -92,7 +101,7 @@ const ReportModal = ({ currentReview, close, isOpen }) => {
           <div
             className="reportButton"
             onClick={() => {
-              setReason('');
+              setReasonIndex(-1);
               setReasonText('');
               close(false);
             }}
@@ -119,14 +128,18 @@ const ReportModal = ({ currentReview, close, isOpen }) => {
             }}
           >
             <div className="reportTrueModal">
-              <div
-                className="reportmodalContents"
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              >
-                {renderedReasons()}
-              </div>
+              {reportStatus.length > 0 ? (
+                <div className="reportTrueModalFullDiv">{reportStatus}</div>
+              ) : (
+                <div
+                  className="reportmodalContents"
+                  onClick={e => {
+                    e.stopPropagation();
+                  }}
+                >
+                  {renderedReasons()}
+                </div>
+              )}
             </div>
           </div>
         </div>
