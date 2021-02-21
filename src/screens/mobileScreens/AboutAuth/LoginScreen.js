@@ -1,9 +1,7 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import './LoginScreen.css';
 import KakaoLogo from '../../../materials/kakao logo.png';
-import NaverLogo from '../../../materials/naver logo.png';
 import GoogleLogo from '../../../materials/google logo.png';
-import FacebookLogo from '../../../materials/facebook logo.png';
 import InputForm from '../../../components/mobileComponents/Login/InputForm';
 import LoginButton from '../../../components/mobileComponents/Login/LoginButton';
 import { FiArrowLeft } from 'react-icons/fi';
@@ -38,6 +36,25 @@ const LoginScreen = () => {
   const SnsLoginFunction = () => {
     SnsLogin();
   };
+
+  const initializeNaverLogin = () => {
+    const { naver } = window;
+    const naverLogin = new naver.LoginWithNaverId({
+      clientId: process.env.REACT_APP_NAVER_CLIENT_ID,
+      callbackUrl: process.env.REACT_APP_NAVER_LOGIN_CALLBACK_URL,
+      isPopup: false,
+      loginButton: {
+        color: 'green',
+        type: 1,
+        height: 60,
+      },
+    });
+    naverLogin.init();
+  };
+
+  useEffect(() => {
+    initializeNaverLogin();
+  }, []);
 
   const loginWithKakao = () => {
     const { Kakao } = window;
@@ -141,19 +158,9 @@ const LoginScreen = () => {
                       alt="카카오"
                       src={KakaoLogo}
                     />
-
-                    <img
-                      className="snsLogin"
-                      onClick={() => SnsLoginFunction()}
-                      alt="네이버"
-                      src={NaverLogo}
-                    />
-                    <img
-                      className="snsLogin"
-                      onClick={() => SnsLoginFunction()}
-                      alt="페이스북"
-                      src={FacebookLogo}
-                    />
+                    <div className="naverIdLoginButtonContainer">
+                      <div id="naverIdLogin" />
+                    </div>
                     <img
                       className="snsLogin"
                       onClick={() => SnsLoginFunction()}
