@@ -9,7 +9,7 @@
 }
 .reportTrueModal {
   width: 80%;
-  height: 250px;
+  height: 380px;
   margin: auto;
 
   background-color: white;
@@ -26,7 +26,6 @@
 }
 .reportModalContents {
   margin: 0 auto;
-  padding-left: 20px;
   padding-right: 15px;
   padding-top: 5px;
   padding-bottom: 5px;
@@ -39,16 +38,63 @@
 
 .reviewReaonsContainer {
   padding-top: 20px;
-  padding-left: 20px;
   height: 100%;
 }
 .reportTitle {
+  padding-left: 20px;
   font-size: 15px;
 }
 
 .reportReason {
+  cursor: pointer;
   margin-left: 10px;
+  padding-left: 20px;
+
   font-size: 15px;
   margin-top: 20px;
   margin-bottom: 20px;
+}
+.selectedReportReason {
+  cursor: pointer;
+  margin-left: 10px;
+  padding-left: 20px;
+  font-weight: 900;
+
+  font-size: 15px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.reasonTextArea {
+  margin-left: 20px;
+  width: 85%;
+  height: 60px;
+  border: none;
+  background-color: var(--color-greyBox);
+  resize: none;
+  border-radius: 8px;
+  padding-top: 10px;
+  padding-left: 7px;
+  padding-right: 7px;
+  padding-bottom: 10px;
+  word-spacing: 0.1px;
+}
+.reportButtons {
+  padding-right: 20px;
+  padding-right: 20px;
+  padding-top: 8px;
+  display: flex;
+  justify-content: space-evenly;
+}
+.reportButton {
+  cursor: pointer;
+  border: 1px gray solid;
+  padding: 5px;
+  border-radius: 5px;
+}
+.unactiveReportButton {
+  border: 1px gray solid;
+  padding: 5px;
+  border-radius: 5px;
+  background-color: lightgray;
+  color: gray;
 }

@@ -1,50 +1,104 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './ReportModal.css';
-import { ReportReview } from '../../functions/WithDb/Review';
 const ReportModal = ({ currentReview, close, isOpen }) => {
+  const [reason, setReason] = useState('');
+  const [reasonText, setReasonText] = useState('');
+
+  //신고하는 함수.
+  const submitReport = () => {
+    if (reason === '' || (reason === '기타' && reasonText === '')) {
+      return;
+    } else {
+      console.log(reason, reasonText);
+    }
+  };
+
   const renderedReasons = () => {
     return (
       <div className="reviewReaonsContainer">
         <div className="reportTitle">신고하기</div>
         <div
-          className="reportReason"
+          className={
+            reason === '초상권 침해' ? 'selectedReportReason' : 'reportReason'
+          }
           onClick={() => {
-            ReportReview(currentReview, '초상권 침해');
+            setReason('초상권 침해');
           }}
         >
           초상권 침해 및 무단도용
         </div>
         <div
-          className="reportReason"
+          className={
+            reason === '거짓 정보' ? 'selectedReportReason' : 'reportReason'
+          }
           onClick={() => {
-            ReportReview(currentReview, '거짓 정보');
+            setReason('거짓 정보');
           }}
         >
           거짓 정보
         </div>
         <div
-          className="reportReason"
+          className={
+            reason === '비방 또는 모욕'
+              ? 'selectedReportReason'
+              : 'reportReason'
+          }
           onClick={() => {
-            ReportReview(currentReview, '비방 또는 모욕');
+            setReason('비방 또는 모욕');
           }}
         >
           비방 또는 모욕
         </div>
         <div
-          className="reportReason"
+          className={
+            reason === '리뷰와 무관한 사진 및 글'
+              ? 'selectedReportReason'
+              : 'reportReason'
+          }
           onClick={() => {
-            ReportReview(currentReview, '리뷰와 무관한 사진 및 글');
+            setReason('리뷰와 무관한 사진 및 글');
           }}
         >
           리뷰와 무관한 사진 및 글
         </div>
         <div
-          className="reportReason"
+          className={
+            reason === '기타' ? 'selectedReportReason' : 'reportReason'
+          }
           onClick={() => {
-            ReportReview(currentReview, '기타');
+            setReason('기타');
           }}
         >
-          기타
+          기타 (자세한 신고 사유 필수)
+        </div>
+        <form>
+          <textarea
+            className="reasonTextArea"
+            value={reasonText}
+            placeholder="자세한 신고 사유를 입력해주세요."
+            onChange={(e) => {
+              setReasonText(e.target.value);
+            }}
+          />
+        </form>
+        <div className="reportButtons">
+          {reason === '' || (reason === '기타' && reasonText === '') ? (
+            <div className="unactiveReportButton">신고하기</div>
+          ) : (
+            <div className="reportButton" onClick={() => submitReport()}>
+              신고하기
+            </div>
+          )}
+          <div
+            className="reportButton"
+            onClick={() => {
+              setReason('');
+              setReasonText('');
+              close(false);
+            }}
+          >
+            취소
+          </div>
         </div>
       </div>
     );

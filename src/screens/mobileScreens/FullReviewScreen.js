@@ -71,59 +71,63 @@ const FullReviewScreen = ({
 
   return (
     <div className="writeReview">
-      <ReportModal
-        currentReview={review.id}
-        close={() => setIsReportOpen(false)}
-        isOpen={isReportOpen}
-      />
-      <RemoveModal
-        currentReview={review.id}
-        close={() => setIsRemoveOpen(false)}
-        closeDetail={close}
-        isOpen={isRemoveOpen}
-        refetchReviews={refetchReviews}
-        refetchStudio={refetchStudio}
-      />
+      <div className="reviewContainer">
+        <ReportModal
+          currentReview={review.id}
+          close={() => setIsReportOpen(false)}
+          isOpen={isReportOpen}
+        />
+        <RemoveModal
+          currentReview={review.id}
+          close={() => setIsRemoveOpen(false)}
+          closeDetail={close}
+          isOpen={isRemoveOpen}
+          refetchReviews={refetchReviews}
+          refetchStudio={refetchStudio}
+        />
 
-      <div className="usersTopContainer">
-        <FiArrowLeft className="usersGoBackArrow" onClick={close} />
-        <div className="leaveTitle">
-          {currentStudioName ? currentStudioName : review.studio.name}
+        <div className="usersTopContainer">
+          <FiArrowLeft className="usersGoBackArrow" onClick={close} />
+          <div className="leaveTitle">
+            {currentStudioName ? currentStudioName : review.studio.name}
+          </div>
+          <div className="usersTopEmptyBox" />
         </div>
-        <div className="usersTopEmptyBox" />
-      </div>
-      <div className="fullReviewTopPart">
-        <div className="fullReviewLeftPart">
-          <div className="fullReviewUserName">{review.user.nickname}</div>
+        <div className="fullReviewTopPart">
+          <div className="fullReviewLeftPart">
+            <div className="fullReviewUserName">{review.user.nickname}</div>
 
-          <div className="fullratingAndStudio">
-            <div className="fullReviewrating">{GetStars(review.rating)}</div>
-            <div className="fullReviewStudio">
-              {review.createdAt.split('T')[0]}
+            <div className="fullratingAndStudio">
+              <div className="fullReviewrating">{GetStars(review.rating)}</div>
+              <div className="fullReviewStudio">
+                {review.createdAt.split('T')[0]}
+              </div>
             </div>
           </div>
-        </div>
-        <BsThreeDotsVertical
-          style={{ cursor: 'pointer' }}
-          onClick={() => {
-            setIsOptionOpen(!isOptionOpen);
-          }}
-        />
-        {isOptionOpen ? (
-          <ReviewOption
-            reviewNumber={review.id}
-            isSameUser={nickname === review.user.nickname}
-            setIsOptionOpen={setIsOptionOpen}
-            setIsReportOpen={setIsReportOpen}
-            setIsRemoveOpen={setIsRemoveOpen}
+          <BsThreeDotsVertical
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              setIsOptionOpen(!isOptionOpen);
+            }}
           />
-        ) : null}
-      </div>
-      <div className="fullReviewBottomPart">
-        <ReviewBody currentReview={review} />
-        {!currentStudioName && (
-          <ToStudioButton linkTo={`/studios/${review.studio.slug}`} />
-        )}
+          {isOptionOpen ? (
+            <ReviewOption
+              reviewNumber={review.id}
+              isSameUser={nickname === review.user.nickname}
+              setIsOptionOpen={setIsOptionOpen}
+              setIsReportOpen={setIsReportOpen}
+              setIsRemoveOpen={setIsRemoveOpen}
+            />
+          ) : null}
+        </div>
+        <div className="fullReviewBodyPart">
+          <ReviewBody currentReview={review} />
+        </div>
+        <div className="fullReviewBottomPart">
+          {!currentStudioName && (
+            <ToStudioButton linkTo={`/studios/${review.studio.slug}`} />
+          )}
+        </div>
       </div>
     </div>
   );
