@@ -8,8 +8,8 @@ const PhotoItem = ({
   isPhotoItemOpen,
   setIsPhotoItemOpen,
 }) => {
-  const indoor = products.filter(product => product.type === 'STUDIO');
-  const outdoor = products.filter(product => product.type === 'OUTDOOR');
+  const indoor = products.filter((product) => product.type === 'STUDIO');
+  const outdoor = products.filter((product) => product.type === 'OUTDOOR');
   const indoorNotice = currentStudio.studioProductListDescription;
   const outdoorNotice = currentStudio.outdoorProductListDescription;
   const renderedArrow = () => {
@@ -20,8 +20,8 @@ const PhotoItem = ({
     );
   };
 
-  const renderedItem = itemList =>
-    itemList.map(item => {
+  const renderedItem = (itemList) =>
+    itemList.map((item) => {
       return (
         <div key={`studioProduct-${item.id}`} className="photoItemContainer">
           <div className="photoItemTitle">{item.title}</div>
@@ -33,7 +33,7 @@ const PhotoItem = ({
                 </div>
                 {currentStudio.isOriginalPhotoProvided ? (
                   <div className="itemUnder">
-                    원본+최종본 {item.cutCount}컷
+                    원본+보정본 {item.cutCount}컷
                     {item.minuteCount && (
                       <span>
                         {item.minuteCount % 60 === 0
@@ -46,7 +46,7 @@ const PhotoItem = ({
                   </div>
                 ) : (
                   <div className="itemUnder">
-                    최종본 {item.cutCount}컷
+                    보정본 {item.cutCount}컷
                     {item.minuteCount && (
                       <span>
                         {item.minuteCount % 60 === 0
@@ -78,7 +78,7 @@ const PhotoItem = ({
 
   const renderedIndoorNotice =
     indoorNotice &&
-    indoorNotice.split('\n').map(notice => {
+    indoorNotice.split('\n').map((notice) => {
       return (
         <div key={notice} className="itemNotice">
           * {notice}
@@ -88,7 +88,7 @@ const PhotoItem = ({
 
   const renderedOutdoorNotice =
     outdoorNotice &&
-    outdoorNotice.split('\n').map(notice => {
+    outdoorNotice.split('\n').map((notice) => {
       return (
         <div key={notice} className="itemNotice">
           * {notice}
