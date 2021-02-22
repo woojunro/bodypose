@@ -9,6 +9,10 @@ import {
   CheckValidUserName,
 } from '../../../components/functions/Login/LoginFunctions';
 import './StartWithEmailScreen.css';
+import {
+  PRIVACY_NOTICE_ID,
+  TEMRS_NOTICE_ID,
+} from '../../../constants/noticeIds';
 
 const EmailJoin = () => {
   const history = useHistory();
@@ -126,7 +130,7 @@ const EmailJoin = () => {
             />
             <span className="mustText">[필수] </span>
             <Link
-              to="/notices/3"
+              to={`/notices/${TEMRS_NOTICE_ID}`}
               target="_blank"
               rel="noopener noreferrer"
               style={{ color: 'black' }}
@@ -134,7 +138,7 @@ const EmailJoin = () => {
               <span className="linkText"> 서비스 이용약관,</span>
             </Link>
             <Link
-              to="/notices/2"
+              to={`/notices/${PRIVACY_NOTICE_ID}`}
               target="_blank"
               rel="noopener noreferrer"
               style={{ color: 'black' }}

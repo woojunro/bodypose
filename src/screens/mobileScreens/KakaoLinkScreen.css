@@ -38,10 +38,11 @@
   justify-content: center;
 }
 .kakaoPhotos img {
-  width: 80%;
+  width: 60%;
 }
 .kakaoDescription {
   padding-left: 20px;
-  font-size: 10px;
-  margin-top: 20px;
+  font-size: 15px;
+  margin-top: 25px;
+  margin-right: 30px;
 }

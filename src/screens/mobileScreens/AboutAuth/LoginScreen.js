@@ -12,6 +12,10 @@ import { useMutation } from '@apollo/client';
 import { SOCIAL_LOGIN_MUTATION } from '../../../gql/mutations/LoginMutation';
 import GoogleLogin from 'react-google-login';
 import AppLoadingScreen from '../../../components/mobileComponents/AppLoadingScreen';
+import {
+  PRIVACY_NOTICE_ID,
+  TEMRS_NOTICE_ID,
+} from '../../../constants/noticeIds';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -188,6 +192,27 @@ const LoginScreen = () => {
                     />
                   </div>
                 </div>
+              </div>
+              <div className="autoAgreeContainer">
+                <span>* 소셜 로그인 시</span>
+                <Link
+                  to={`/notices/${TEMRS_NOTICE_ID}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: 'black' }}
+                >
+                  <span className="linkText"> 서비스 이용약관</span>
+                </Link>
+                <span>,</span>
+                <Link
+                  to={`/notices/${PRIVACY_NOTICE_ID}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: 'black' }}
+                >
+                  <span className="linkText">개인정보 처리방침</span>
+                </Link>
+                <span>에 동의한 것으로 간주합니다.</span>
               </div>
               <div className="noIdContainer">
                 <div className="noIdText">계정이 없으신가요?</div>
