@@ -2,7 +2,7 @@ import React from 'react';
 import './StudioLinks.css';
 
 const StudioLinks = ({ currentStudio }) => {
-  const openInNewTab = url => {
+  const openInNewTab = (url) => {
     const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
     if (newWindow) newWindow.opener = null;
   };
@@ -17,7 +17,7 @@ const StudioLinks = ({ currentStudio }) => {
           스튜디오 문의
         </div>
         <div
-          className="contactLink"
+          className="reservationLink"
           onClick={() => openInNewTab(currentStudio.reservationUrl)}
         >
           스튜디오 예약
