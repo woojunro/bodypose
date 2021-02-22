@@ -5,10 +5,7 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="바디프로필의 모든 정보, 바디포즈"
-    />
+    <meta name="description" content="바디프로필의 모든 정보, 바디포즈" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <script
       type="text/javascript"
@@ -20,31 +17,27 @@
       src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js"
       charset="utf-8"
     ></script>
-    <!-- <script type="text/javascript">
+    <script type="text/javascript">
       // F12 버튼 방지
-      $(document).ready(function(){
-          $(document).bind('keydown',function(e){
-              if ( e.keyCode == 123 /* F12 */) {
-                  e.preventDefault();
-                  e.returnValue = false;
-              }
-          });
-      });
-      
-      // 우측 클릭 방지
-      document.onmousedown=disableclick;
-      status="Right click is not available.";
-      
-      function disableclick(event){
-          if (event.button==2) {
-              alert(status);
-              return false;
+      $(document).ready(function () {
+        $(document).bind('keydown', function (e) {
+          if (e.keyCode == 123 /* F12 */) {
+            e.preventDefault();
+            e.returnValue = false;
           }
+        });
+      });
+      // 우측 클릭 방지
+      document.onmousedown = disableclick;
+      function disableclick(event) {
+        if (event.button == 2) {
+          return false;
+        }
       }
-  </script>-->
+    </script>
     <title>바디포즈</title>
   </head>
-  <body oncontextmenu="return false">
+  <body oncontextmenu="return false" ondragstart="return false">
     <div id="root"></div>
   </body>
 </html>

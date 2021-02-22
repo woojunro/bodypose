@@ -22,9 +22,11 @@ const Footer = () => {
         <span className="footerText">개인정보취급방침</span>
       </Link>
       <span className="footerText">|</span>
-      <span className="footerText" style={{ color: 'black' }}>
-        고객센터 help@fmonth.com
-      </span>
+      <a href="mailto:help@fmonth.com" className="footerMailToAnchor">
+        <span className="footerText" style={{ color: 'black' }}>
+          고객센터 help@fmonth.com
+        </span>
+      </a>
     </div>
   );
 };
