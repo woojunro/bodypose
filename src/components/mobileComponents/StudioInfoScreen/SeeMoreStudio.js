@@ -15,11 +15,11 @@ const SeeMoreStudio = ({ currentStudioName, studioList }) => {
       '',
       studioList
     )
-      .filter(studio => studio.name !== currentStudioName)
+      .filter((studio) => studio.name !== currentStudioName)
       .slice(0, 4)
   );
 
-  const renderedStudio = studiosToBeRendered.map(studio => {
+  const renderedStudio = studiosToBeRendered.map((studio) => {
     return (
       <li key={`seeMore-${studio.slug}`}>
         <StudioCard

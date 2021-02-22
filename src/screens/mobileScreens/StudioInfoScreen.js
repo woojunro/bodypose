@@ -78,6 +78,8 @@ const StudioInfoScreen = () => {
 
   return (
     <div>
+      {offsetY > 200 && <ScrollToTopButton />}
+
       <BottomAlertDialog
         isOpen={isAlertOpen}
         setIsOpen={setIsAlertOpen}
@@ -100,7 +102,6 @@ const StudioInfoScreen = () => {
         currentStudioName={studio.name}
         studioList={studioData.allStudios.studios}
       />
-      {offsetY > 200 && <ScrollToTopButton />}
     </div>
   );
 };

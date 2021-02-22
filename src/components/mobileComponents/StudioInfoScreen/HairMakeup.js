@@ -1,6 +1,11 @@
 import React from 'react';
 import './HairMakeup.css';
-import { IoMdArrowDropdown, IoMdArrowDropup } from 'react-icons/io';
+
+import {
+  IoMdArrowRoundForward,
+  IoMdArrowDropdown,
+  IoMdArrowDropup,
+} from 'react-icons/io';
 
 const HairMakeup = ({ shops, isHairOpen, setIsHairOpen }) => {
   const renderedArrow = () => {
@@ -9,6 +14,10 @@ const HairMakeup = ({ shops, isHairOpen, setIsHairOpen }) => {
     ) : (
       <IoMdArrowDropdown fontSize="17px" />
     );
+  };
+  const openInNewTab = (url) => {
+    const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+    if (newWindow) newWindow.opener = null;
   };
 
   const renderedHairshopTitle = (shop) => {
@@ -19,7 +28,17 @@ const HairMakeup = ({ shops, isHairOpen, setIsHairOpen }) => {
             <b>{shop.name}</b>
           </span>
           <span className="goOut"> (출장 헤어/메이크업)</span>
-          <div className="hairshopContact">{shop.contactInfo}</div>
+          {shop.contactInfo.startsWith('http') ? (
+            <div
+              className="hairshopLink"
+              onClick={() => openInNewTab(shop.contactInfo)}
+            >
+              <div className="hairshopContact">헤어샵 정보 보기</div>
+              <IoMdArrowRoundForward className="harishopArrow" size="13px" />
+            </div>
+          ) : (
+            <div className="hairshopContact">{shop.contactInfo}</div>
+          )}
         </>
       );
     } else if (shop.type === 'SPONSORED') {
@@ -29,7 +48,17 @@ const HairMakeup = ({ shops, isHairOpen, setIsHairOpen }) => {
             <b>{shop.name}</b>
           </div>
           <div className="hairshopAdress">{shop.address}</div>
-          <div className="hairshopContact">{shop.contactInfo}</div>
+          {shop.contactInfo.startsWith('http') ? (
+            <div
+              className="hairshopLink"
+              onClick={() => openInNewTab(shop.contactInfo)}
+            >
+              <div className="hairshopContact">헤어샵 정보 보기</div>
+              <IoMdArrowRoundForward className="harishopArrow" size="13px" />
+            </div>
+          ) : (
+            <div className="hairshopContact">{shop.contactInfo}</div>
+          )}
         </>
       );
     } else {
