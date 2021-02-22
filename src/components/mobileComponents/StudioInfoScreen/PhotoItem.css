@@ -29,8 +29,8 @@
   padding-right: 7px;
   display: flex;
 
-  padding-top: 15px;
-  padding-bottom: 15px;
+  padding-top: 13px;
+  padding-bottom: 12px;
   border-bottom: 1px solid lightgray;
 }
 
@@ -60,13 +60,13 @@
 }
 
 .itemUpper {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: bold;
   color: var(--color-footer);
 }
 .itemUnder {
   margin-top: 5px;
-  font-size: 8px;
+  font-size: 10px;
   color: var(--color-footer);
 }
 
@@ -83,9 +83,9 @@
 }
 
 .photoItemBottomPart {
-  font-size: 8px;
-  margin-top: 7px;
-  margin-bottom: -10px;
+  font-size: 9px;
+  margin-top: 5px;
+  margin-bottom: -6px;
 }
 
 .itemNotice {
