@@ -12,9 +12,12 @@ export const SortByHearts = studios => {
 };
 //지역별로 소팅하기.
 export const SortByLocation = (studios, location) => {
-  return studios.filter(studio =>
-    studio.branches[0].address.startsWith(location)
-  );
+  return studios.filter(studio => {
+    if (!studio.branches[0]) {
+      return false;
+    }
+    return studio.branches[0].address.startsWith(location);
+  });
 };
 
 //이름순으로 소팅하기.
