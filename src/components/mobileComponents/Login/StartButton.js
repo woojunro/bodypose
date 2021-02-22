@@ -3,7 +3,6 @@ import React, { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import LoginContext from '../../../contexts/LoginContext';
 import { EMAIL_REGISTER_MUTATION } from '../../../gql/mutations/RegisterMutation';
-import { SnsToDb } from '../../functions/WithDb/Auth';
 import './StartButton.css';
 
 export const StartButton = ({
@@ -63,17 +62,7 @@ export const StartButton = ({
         </div>
       ) : (
         <div className="startButtonContainer">
-          <div
-            onClick={
-              email
-                ? handleEmailLogin
-                : () => {
-                    SnsToDb(userName);
-                    history.push('/');
-                  }
-            }
-            className="startButton"
-          >
+          <div onClick={email && handleEmailLogin} className="startButton">
             시작하기
           </div>
         </div>
