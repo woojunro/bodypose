@@ -8,8 +8,8 @@ const PhotoItem = ({
   isPhotoItemOpen,
   setIsPhotoItemOpen,
 }) => {
-  const indoor = products.filter(product => product.type === 'STUDIO');
-  const outdoor = products.filter(product => product.type === 'OUTDOOR');
+  const indoor = products.filter((product) => product.type === 'STUDIO');
+  const outdoor = products.filter((product) => product.type === 'OUTDOOR');
   const indoorNotice = currentStudio.studioProductListDescription;
   const outdoorNotice = currentStudio.outdoorProductListDescription;
   const renderedArrow = () => {
@@ -20,8 +20,8 @@ const PhotoItem = ({
     );
   };
 
-  const renderedItem = itemList =>
-    itemList.map(item => {
+  const renderedItem = (itemList) =>
+    itemList.map((item) => {
       return (
         <div key={`studioProduct-${item.id}`} className="photoItemContainer">
           <div className="photoItemTitle">{item.title}</div>
@@ -37,10 +37,10 @@ const PhotoItem = ({
                     {item.minuteCount && (
                       <span>
                         {item.minuteCount % 60 === 0
-                          ? ` | ${item.minuteCount / 60}시간`
+                          ? ` | ${item.minuteCount / 60}시간 내외`
                           : ` | ${Math.floor(item.minuteCount / 60)}시간 ${
                               item.minuteCount % 60
-                            }분`}
+                            }분 내외`}
                       </span>
                     )}
                   </div>
@@ -50,10 +50,10 @@ const PhotoItem = ({
                     {item.minuteCount && (
                       <span>
                         {item.minuteCount % 60 === 0
-                          ? ` | ${item.minuteCount / 60}시간`
+                          ? ` | ${item.minuteCount / 60}시간 내외`
                           : ` | ${Math.floor(item.minuteCount / 60)}시간 ${
                               item.minuteCount % 60
-                            }분`}
+                            }분 내외`}
                       </span>
                     )}
                   </div>
@@ -78,7 +78,7 @@ const PhotoItem = ({
 
   const renderedIndoorNotice =
     indoorNotice &&
-    indoorNotice.split('\n').map(notice => {
+    indoorNotice.split('\n').map((notice) => {
       return (
         <div key={notice} className="itemNotice">
           * {notice}
@@ -88,7 +88,7 @@ const PhotoItem = ({
 
   const renderedOutdoorNotice =
     outdoorNotice &&
-    outdoorNotice.split('\n').map(notice => {
+    outdoorNotice.split('\n').map((notice) => {
       return (
         <div key={notice} className="itemNotice">
           * {notice}

@@ -28,17 +28,19 @@ const HairMakeup = ({ shops, isHairOpen, setIsHairOpen }) => {
             <b>{shop.name}</b>
           </span>
           <span className="goOut"> (출장 헤어/메이크업)</span>
-          {shop.contactInfo.startsWith('http') ? (
-            <div
-              className="hairshopLink"
-              onClick={() => openInNewTab(shop.contactInfo)}
-            >
-              <div className="hairshopContact">헤어샵 정보 보기</div>
-              <IoMdArrowRoundForward className="harishopArrow" size="13px" />
-            </div>
-          ) : (
-            <div className="hairshopContact">{shop.contactInfo}</div>
-          )}
+          {shop.contactInfo ? (
+            shop.contactInfo.startsWith('http') ? (
+              <div
+                className="hairshopLink"
+                onClick={() => openInNewTab(shop.contactInfo)}
+              >
+                <div className="hairshopContact">헤어샵 정보 보기</div>
+                <IoMdArrowRoundForward className="harishopArrow" size="13px" />
+              </div>
+            ) : (
+              <div className="hairshopContact">{shop.contactInfo}</div>
+            )
+          ) : null}
         </>
       );
     } else if (shop.type === 'SPONSORED') {
@@ -48,17 +50,19 @@ const HairMakeup = ({ shops, isHairOpen, setIsHairOpen }) => {
             <b>{shop.name}</b>
           </div>
           <div className="hairshopAdress">{shop.address}</div>
-          {shop.contactInfo.startsWith('http') ? (
-            <div
-              className="hairshopLink"
-              onClick={() => openInNewTab(shop.contactInfo)}
-            >
-              <div className="hairshopContact">헤어샵 정보 보기</div>
-              <IoMdArrowRoundForward className="harishopArrow" size="13px" />
-            </div>
-          ) : (
-            <div className="hairshopContact">{shop.contactInfo}</div>
-          )}
+          {shop.contactInfo ? (
+            shop.contactInfo.startsWith('http') ? (
+              <div
+                className="hairshopLink"
+                onClick={() => openInNewTab(shop.contactInfo)}
+              >
+                <div className="hairshopContact">헤어샵 정보 보기</div>
+                <IoMdArrowRoundForward className="harishopArrow" size="13px" />
+              </div>
+            ) : (
+              <div className="hairshopContact">{shop.contactInfo}</div>
+            )
+          ) : null}
         </>
       );
     } else {
