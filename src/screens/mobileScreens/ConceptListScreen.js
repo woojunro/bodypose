@@ -25,26 +25,29 @@ const ConceptListScreen = () => {
   });
   const [hasMore, setHasMore] = useState(true);
 
-  const { data, loading, fetchMore } = useQuery(ALL_STUDIO_PHOTOS_QUERY, {
-    notifyOnNetworkStatusChange: true,
-    variables: {
-      page: 1,
-      gender: selectedGender,
-      backgroundConceptSlugs: selectedConcepts.bgConcept,
-      costumeConceptSlugs: selectedConcepts.costumeConcept,
-      objectConceptSlugs: selectedConcepts.objectConcept,
-    },
-    onCompleted: data => {
-      if (!data.allStudioPhotos.ok) {
-        setHasMore(false);
-      } else {
-        if (data.allStudioPhotos.totalPages <= 1) {
+  const { data, loading, fetchMore, refetch } = useQuery(
+    ALL_STUDIO_PHOTOS_QUERY,
+    {
+      notifyOnNetworkStatusChange: true,
+      variables: {
+        page: 1,
+        gender: selectedGender,
+        backgroundConceptSlugs: selectedConcepts.bgConcept,
+        costumeConceptSlugs: selectedConcepts.costumeConcept,
+        objectConceptSlugs: selectedConcepts.objectConcept,
+      },
+      onCompleted: data => {
+        if (!data.allStudioPhotos.ok) {
           setHasMore(false);
+        } else {
+          if (data.allStudioPhotos.totalPages <= 1) {
+            setHasMore(false);
+          }
         }
-      }
-    },
-    onError: () => setHasMore(false),
-  });
+      },
+      onError: () => setHasMore(false),
+    }
+  );
 
   const [isSelectionOpen, setIsSelectionOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,6 +73,14 @@ const ConceptListScreen = () => {
     document.body.style.overflow =
       isSelectionOpen || isModalOpen ? 'hidden' : 'auto';
   }, [isSelectionOpen, isModalOpen]);
+
+  useEffect(() => {
+    refetch();
+  }, [selectedGender, selectedConcepts]);
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   const fetchMoreData = () => {
     if (!data || !hasMore) {

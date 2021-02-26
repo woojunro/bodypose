@@ -13,7 +13,7 @@ const Portfolio = ({ studioSlug, studioName }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPhotoNum, setSelectedPhotoNum] = useState(0);
 
-  const { data, loading, fetchMore } = useQuery(STUDIO_PHOTOS_QUERY, {
+  const { data, loading, fetchMore, refetch } = useQuery(STUDIO_PHOTOS_QUERY, {
     variables: { page: 1, studioSlug },
     onCompleted: data => {
       if (!data.studioPhotos.ok || data.studioPhotos.totalPages <= 1) {
@@ -56,6 +56,10 @@ const Portfolio = ({ studioSlug, studioName }) => {
   useEffect(() => {
     document.body.style.overflow = isModalOpen ? 'hidden' : 'auto';
   }, [isModalOpen]);
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   return (
     <div className="portfolio">

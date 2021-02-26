@@ -23,6 +23,7 @@
   justify-content: center;
   background-color: #eeeeee;
   border-radius: 100%;
+  cursor: pointer;
 }
 
 .scrollToTopButton img {
