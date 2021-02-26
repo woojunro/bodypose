@@ -21,7 +21,7 @@ const MainCardScrollView = ({ studios }) => {
         <li key={`MainCardM-${studio.slug}`}>
           <MainCardM
             studioName={studio.slug}
-            pic={studio.coverPhoto?.originalUrl}
+            pic={studio.coverPhotoUrl}
             price={studio.lowestPrice}
             title={studio.name}
           />

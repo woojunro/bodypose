@@ -9,10 +9,7 @@ export const ALL_STUDIOS_QUERY = gql`
         id
         name
         slug
-        coverPhoto {
-          id
-          originalUrl
-        }
+        coverPhotoUrl
         branches {
           name
           address
