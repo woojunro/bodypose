@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { StudioPhoto } from 'src/photos/entities/studio-photo.entity';
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { AdditionalProduct } from './additional-product.entity';
 import { Branch } from './branch.entity';
 import { Catchphrase } from './catchphrase.entity';
@@ -50,11 +50,12 @@ export class Studio extends CoreEntity {
   @IsUrl()
   logoUrl?: string;
 
-  // 스튜디오 커버 사진
-  @OneToOne(relation => StudioPhoto, { nullable: true, onDelete: 'SET NULL' })
-  @JoinColumn()
-  @Field(type => StudioPhoto, { nullable: true })
-  coverPhoto?: StudioPhoto;
+  // 스튜디오 커버 사진 URL
+  @Column({ nullable: true })
+  @Field(type => String, { nullable: true })
+  @IsOptional()
+  @IsUrl()
+  coverPhotoUrl?: string;
 
   // 문의 링크
   @Column()

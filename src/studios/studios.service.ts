@@ -159,10 +159,11 @@ export class StudiosService {
     { slug }: GetStudioInput,
   ): Promise<GetStudioOutput> {
     try {
-      const studio = await this.studioRepository.findOne(
+      let studio = await this.studioRepository.findOne(
         { slug },
         { relations: ['branches'] },
       );
+      if (!studio.coverPhotoUrl) studio = null;
       if (!studio) {
         return {
           ok: false,
@@ -202,7 +203,7 @@ export class StudiosService {
   async getAllStudios(user: User): Promise<GetStudiosOutput> {
     try {
       const studios = await this.studioRepository.find({
-        relations: ['branches', 'coverPhoto'],
+        relations: ['branches'],
         select: [
           'id',
           'name',
@@ -212,6 +213,7 @@ export class StudiosService {
           'reviewCount',
           'totalRating',
           'premiumTier',
+          'coverPhotoUrl',
         ],
       });
       if (!studios) {
@@ -225,6 +227,7 @@ export class StudiosService {
       }
       const studiosWithIsHearted: StudioWithIsHearted[] = [];
       for (const studio of studios) {
+        if (!studio.coverPhotoUrl) continue;
         studiosWithIsHearted.push({
           ...studio,
           isHearted: heartStudios.some(heart => heart.studioId === studio.id),
@@ -1144,13 +1147,14 @@ export class StudiosService {
   async getHeartStudios(user: User): Promise<GetStudiosOutput> {
     try {
       const heartStudios = await this.usersHeartStudiosRepository.find({
-        relations: ['studio', 'studio.coverPhoto', 'studio.branches'],
+        relations: ['studio', 'studio.branches'],
         where: { user: user.id },
         order: { heartAt: 'DESC' },
       });
       const studios: StudioWithIsHearted[] = [];
       for (const heartStudio of heartStudios) {
         const { studio } = heartStudio;
+        if (!studio.coverPhotoUrl) continue;
         studios.push({
           ...studio,
           isHearted: true,
