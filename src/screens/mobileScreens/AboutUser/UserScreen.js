@@ -59,7 +59,7 @@ const UserScreen = () => {
       <Link
         onClick={() => window.scrollTo(0, 0)}
         to={'/users/myInfo'}
-        style={{ textDecoration: 'none', color: 'white' }}
+        style={{ textDecoration: 'none' }}
       >
         <div className="userTap">
           <div className="userTapName">내 정보 관리</div>
@@ -70,7 +70,7 @@ const UserScreen = () => {
       <Link
         onClick={() => window.scrollTo(0, 0)}
         to={'/users/myReview'}
-        style={{ textDecoration: 'none', color: 'white' }}
+        style={{ textDecoration: 'none' }}
       >
         <div className="userTap">
           <div className="userTapName">내가 쓴 리뷰</div>
@@ -83,10 +83,7 @@ const UserScreen = () => {
       </div>
       <div className="userSemiTitle">고객센터</div>
 
-      <a
-        href="mailto:help@fmonth.com"
-        style={{ textDecoration: 'none', color: 'white' }}
-      >
+      <a href="mailto:help@fmonth.com" style={{ textDecoration: 'none' }}>
         <div className="userTap">
           <div className="mailing">
             <span className="userTapName">Contact Us</span>
@@ -99,7 +96,7 @@ const UserScreen = () => {
       <Link
         onClick={() => window.scrollTo(0, 0)}
         to={'/notices'}
-        style={{ textDecoration: 'none', color: 'white' }}
+        style={{ textDecoration: 'none' }}
       >
         <div className="userTap">
           <div className="userTapName">공지사항</div>
@@ -116,7 +113,7 @@ const UserScreen = () => {
       <Link
         onClick={() => window.scrollTo(0, 0)}
         to={'/users/leave'}
-        style={{ textDecoration: 'none', color: 'white' }}
+        style={{ textDecoration: 'none' }}
       >
         <div className="userTap">
           <div className="userTapName">탈퇴하기</div>

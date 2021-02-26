@@ -156,7 +156,7 @@ const LoginScreen = () => {
                   <Link
                     onClick={() => window.scrollTo(0, 0)}
                     to="/changePassword"
-                    style={{ TextDecoder: 'none', color: 'white' }}
+                    style={{ textDecoration: 'none' }}
                   >
                     <div className="forgotPassword">
                       비밀번호가 기억나지 않아요

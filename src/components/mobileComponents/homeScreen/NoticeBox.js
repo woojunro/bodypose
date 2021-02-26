@@ -13,7 +13,7 @@ const NoticeBox = ({ notices }) => {
         onClick={() => window.scrollTo(0, 0)}
         key={notice.title}
         to={'/notices/' + notice.id}
-        style={{ TextDecoder: 'none', color: 'white' }}
+        style={{ textDecoration: 'none' }}
       >
         <div className="noticeItem">{notice.title}</div>
       </Link>
@@ -25,7 +25,7 @@ const NoticeBox = ({ notices }) => {
       <div className="greyBox" />
       <Link
         to="/notices"
-        style={{ TextDecoder: 'none', color: 'white' }}
+        style={{ textDecoration: 'none' }}
         onClick={() => window.scrollTo(0, 0)}
       >
         <span className="noticeHeader"> 공지사항 </span>

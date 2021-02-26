@@ -8,7 +8,7 @@ const SemiTitle = ({ title, pageTo }) => {
       <span className="title">{title}</span>
       <Link
         to={pageTo}
-        style={{ TextDecoder: 'none', color: 'white' }}
+        style={{ textDecoration: 'none' }}
         onClick={() => window.scrollTo(0, 0)}
       >
         <span className="showMore"> 더보기</span>

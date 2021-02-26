@@ -27,7 +27,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "rm -rf ./build && react-scripts build && gcloud app deploy"
+    "deploy": "rm -rf ./node_modules && yarn && rm -rf ./build && react-scripts build && gcloud app deploy"
   },
   "eslintConfig": {
     "extends": [

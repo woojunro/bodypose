@@ -115,7 +115,7 @@ const StudioCard = ({
           pathname: `/studios/${name}`,
           state: { previousPath: history.location.pathname },
         }}
-        style={{ TextDecoder: 'none', color: 'white' }}
+        style={{ textDecoration: 'none' }}
       >
         <div className="studioCardContainer">
           <div className="studioImg">

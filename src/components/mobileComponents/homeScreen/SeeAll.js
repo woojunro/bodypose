@@ -13,12 +13,12 @@ const SeeAll = () => {
     { name: '리뷰', icon: SeeAllReview, pageTo: '/reviews' },
   ];
 
-  const renderedItems = items.map((item) => {
+  const renderedItems = items.map(item => {
     return (
       <li key={item.name}>
         <Link
           to={item.pageTo}
-          style={{ TextDecoder: 'none', color: 'white' }}
+          style={{ textDecoration: 'none' }}
           onClick={() => window.scrollTo(0, 0)}
         >
           <div className="itemBox">

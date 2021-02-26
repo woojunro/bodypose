@@ -9,7 +9,7 @@ const Footer = () => {
       <Link
         onClick={() => window.scrollTo(0, 0)}
         to={`/notices/${TEMRS_NOTICE_ID}`}
-        style={{ TextDecoder: 'none', color: 'white' }}
+        style={{ textDecoration: 'none' }}
       >
         <span className="footerText">이용약관</span>
       </Link>
@@ -17,7 +17,7 @@ const Footer = () => {
       <Link
         onClick={() => window.scrollTo(0, 0)}
         to={`/notices/${PRIVACY_NOTICE_ID}`}
-        style={{ TextDecoder: 'none', color: 'white' }}
+        style={{ textDecoration: 'none' }}
       >
         <span className="footerText">개인정보취급방침</span>
       </Link>
