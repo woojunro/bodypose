@@ -75,6 +75,7 @@
 .toStudioInfoContainer {
   position: fixed;
   width: 100%;
+  max-width: 470px;
   bottom: 0;
   display: flex;
   justify-content: center;
