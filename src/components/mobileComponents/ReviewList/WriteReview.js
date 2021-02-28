@@ -8,6 +8,7 @@ import LoadingIcon from '../conceptListScreen/LoadingIcon';
 import axios from 'axios';
 import { BASE_URL } from '../../../constants/urls';
 import { useHistory } from 'react-router-dom';
+import $ from 'jquery';
 
 const WriteReview = ({
   studioName,
@@ -22,6 +23,20 @@ const WriteReview = ({
   window.onpopstate = () => {
     setIsWriteReviewOpen(false);
   };
+
+  //사파리 뒤로가기 기능.
+  $(window).on('load', function () {
+    function fire_popstate() {
+      $(this).trigger('popstate'); // fire it when the page first loads
+    }
+    var lasthash = window.location.hash;
+    setInterval(function () {
+      var currenthash = window.location.hash;
+      if (lasthash !== currenthash) {
+        fire_popstate();
+      }
+    }, 500); //check every half second if the url has changed
+  });
   const [onlyVerify, setOnlyVerify] = useState(false);
   //Blob의 array로 저장됨.
   const [pics, setPics] = useState([]);

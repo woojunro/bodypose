@@ -13,6 +13,7 @@ import {
   HEART_STUDIO_PHOTO_MUTATION,
 } from '../../../gql/mutations/HeartStudioPhotoMutation';
 import { client } from '../../../apollo';
+import $ from 'jquery';
 
 const Modal = ({
   close,
@@ -49,10 +50,23 @@ const Modal = ({
   const [disheartLoading, setDisHeartLoading] = useState(false);
   const history = useHistory();
 
+  //뒤로가기 기능.
   window.addEventListener('popstate', function (e) {
     close();
   });
-
+  //사파리 뒤로가기 기능.
+  $(window).on('load', function () {
+    function fire_popstate() {
+      $(this).trigger('popstate'); // fire it when the page first loads
+    }
+    var lasthash = window.location.hash;
+    setInterval(function () {
+      var currenthash = window.location.hash;
+      if (lasthash !== currenthash) {
+        fire_popstate();
+      }
+    }, 500); //check every half second if the url has changed
+  });
   useEffect(() => {
     setIsHearted(concept.isHearted);
   }, [concept]);
