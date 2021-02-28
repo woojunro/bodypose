@@ -16,7 +16,6 @@ import { client } from '../../../apollo';
 
 const Modal = ({
   close,
-  open,
   id,
   whileFetching,
   setThisPhoto,
@@ -48,16 +47,11 @@ const Modal = ({
   const [isHearted, setIsHearted] = useState(concept.isHearted);
 
   const [disheartLoading, setDisHeartLoading] = useState(false);
-
   const history = useHistory();
-  //뒤로가기 막기.
-  window.history.pushState(null, '', window.location.href);
 
-  window.onpopstate = () => {
-    history.go(1);
-
+  window.addEventListener('popstate', function (e) {
     close();
-  };
+  });
 
   useEffect(() => {
     setIsHearted(concept.isHearted);
@@ -197,6 +191,7 @@ const Modal = ({
                   className="conceptModalClose"
                   onClick={() => {
                     close();
+                    history.goBack();
                   }}
                 />
               </div>
@@ -224,7 +219,9 @@ const Modal = ({
                       state: { previousPath: history.location.pathname },
                     }}
                     className="toStudioInfo"
-                    onClick={() => window.scrollTo(0, 0)}
+                    onClick={() => {
+                      window.scrollTo(0, 0);
+                    }}
                   >
                     <div>스튜디오 정보 보기</div>
                   </Link>

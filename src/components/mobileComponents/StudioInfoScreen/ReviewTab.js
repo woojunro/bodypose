@@ -39,7 +39,7 @@ const ReviewTab = ({ currentStudio, refetchStudio }) => {
   const [isReviewDetailOpen, setIsReviewDetailOpen] = useState(false);
   const [reviewDetailId, setReviewDetailId] = useState(-1);
 
-  const openReviewDetail = id => {
+  const openReviewDetail = (id) => {
     setReviewDetailId(id);
     setIsReviewDetailOpen(true);
   };
@@ -146,6 +146,11 @@ const ReviewTab = ({ currentStudio, refetchStudio }) => {
                 );
                 return;
               }
+              window.history.pushState(
+                null,
+                document.title,
+                window.location.href
+              );
               setIsWriteReviewOpen(true);
             } else {
               const ok = window.confirm(

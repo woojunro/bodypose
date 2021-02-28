@@ -12,6 +12,7 @@ import { useQuery } from '@apollo/client';
 import { ALL_STUDIO_PHOTOS_QUERY } from '../../gql/queries/StudioPhotoQuery';
 import { randomPage } from '../../components/functions/Concept/randomPages';
 import shuffle from '../../components/functions/Shuffle';
+import { useHistory } from 'react-router-dom';
 
 const genderOptions = [null, 'MALE', 'FEMALE', 'COUPLE'];
 
@@ -36,7 +37,7 @@ const ConceptListScreen = () => {
         costumeConceptSlugs: selectedConcepts.costumeConcept,
         objectConceptSlugs: selectedConcepts.objectConcept,
       },
-      onCompleted: data => {
+      onCompleted: (data) => {
         if (!data.allStudioPhotos.ok) {
           setHasMore(false);
         } else {
@@ -61,26 +62,25 @@ const ConceptListScreen = () => {
     setIsModalOpen(true);
   };
 
-  const handlePhotoNum = num => {
+  const handlePhotoNum = (num) => {
     setSelectedPhotoNum(num);
   };
 
-  const handleConcepts = object => {
+  const handleConcepts = (object) => {
     setSelectedConcepts(object);
   };
 
   useEffect(() => {
+    console.log(1);
     document.body.style.overflow =
       isSelectionOpen || isModalOpen ? 'hidden' : 'auto';
   }, [isSelectionOpen, isModalOpen]);
 
   useEffect(() => {
+    console.log(2);
+
     refetch();
   }, [selectedGender, selectedConcepts]);
-
-  useEffect(() => {
-    refetch();
-  }, []);
 
   const fetchMoreData = () => {
     if (!data || !hasMore) {
@@ -207,10 +207,9 @@ const ConceptListScreen = () => {
                 ))}
           </div>
         </InfiniteScroll>
-        {isModalOpen && (
+        {isModalOpen ? (
           <ConceptModal
             close={closeModal}
-            open={openModal}
             id={data.allStudioPhotos.photos[selectedPhotoNum].id}
             setThisPhoto={handlePhotoNum}
             selectedPhotoNum={selectedPhotoNum}
@@ -219,7 +218,7 @@ const ConceptListScreen = () => {
             }
             whileFetching={loading}
           />
-        )}
+        ) : null}
         <BottomNavigation pageName="concepts" />
       </div>
     </div>

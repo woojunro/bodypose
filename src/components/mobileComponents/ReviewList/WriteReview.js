@@ -19,10 +19,7 @@ const WriteReview = ({
 }) => {
   const history = useHistory();
   //뒤로가기 막기.
-  window.history.pushState(null, '', window.location.href);
-
   window.onpopstate = () => {
-    history.go(1);
     setIsWriteReviewOpen(false);
   };
   const [onlyVerify, setOnlyVerify] = useState(false);
@@ -193,6 +190,7 @@ const WriteReview = ({
             <FiArrowLeft
               className="usersGoBackArrow"
               onClick={() => {
+                history.goBack();
                 setIsWriteReviewOpen(false);
               }}
             />
