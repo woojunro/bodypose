@@ -55,10 +55,6 @@ const Modal = ({
 
   window.onpopstate = () => {
     history.go(1);
-  };
-
-  window.onpopstate = () => {
-    history.go(1);
 
     close();
   };

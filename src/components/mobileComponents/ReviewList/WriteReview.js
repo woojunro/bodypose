@@ -23,10 +23,6 @@ const WriteReview = ({
 
   window.onpopstate = () => {
     history.go(1);
-  };
-
-  window.onpopstate = () => {
-    history.go(1);
     setIsWriteReviewOpen(false);
   };
   const [onlyVerify, setOnlyVerify] = useState(false);
