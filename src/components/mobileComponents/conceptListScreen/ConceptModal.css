@@ -23,15 +23,20 @@
   background: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 .conceptModalContents {
+  height: -moz-calc(100vh - 140px);
+  height: -webkit-calc(100vh - 140px);
+  height: calc(100vh - 140px);
   margin: 0 auto;
   padding-left: 7%;
   padding-right: 7%;
   position: relative;
   box-sizing: border-box;
   align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .topBarContainer {
@@ -61,13 +66,16 @@
 .mainPhotoArea img {
   width: 95%;
   height: auto;
-  max-height: -moz-calc(100vh - 115px);
-  max-height: -webkit-calc(100vh - 115px);
-  max-height: calc(100vh - 115px);
+  max-height: -moz-calc(100vh - 140px);
+  max-height: -webkit-calc(100vh - 140px);
+  max-height: calc(100vh - 140px);
   object-fit: contain;
 }
 
 .toStudioInfoContainer {
+  position: fixed;
+  width: 100%;
+  bottom: 0;
   display: flex;
   justify-content: center;
   padding-bottom: 20px;
@@ -87,15 +95,13 @@
   text-decoration: none;
   cursor: pointer;
   margin-top: 5px;
-  margin-bottom: 32px;
 }
 .nextArrowContainer {
   position: absolute;
   cursor: pointer;
 
-  top: 50%;
+  top: 45%;
   right: 10%;
-  transform: translateY(-43%);
   z-index: 100;
 }
 .nextButton {
@@ -106,9 +112,8 @@
   display: flex;
   align-items: center;
   position: absolute;
-  top: 50%;
+  top: 45%;
   left: 10%;
-  transform: translateY(-57%);
   z-index: 100;
   cursor: pointer;
 }
@@ -123,7 +128,6 @@
   cursor: pointer;
 
   font-size: 28px;
-  margin-bottom: 32px;
   margin-top: 5px;
 }
 .conceptRegHeart {
@@ -131,7 +135,6 @@
   margin-top: 5px;
   font-size: 28px;
   cursor: pointer;
-  margin-bottom: 32px;
 }
 .whileLoading {
   display: flex;

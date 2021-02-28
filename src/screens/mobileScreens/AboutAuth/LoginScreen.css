@@ -2,7 +2,6 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
 .loginBackArrow {
@@ -11,7 +10,7 @@
   margin-top: 25px;
 }
 .loginTitle {
-  margin-top: 15px;
+  margin-top: 13px;
   margin-left: 8%;
   font-size: 22px;
   font-weight: bold;
@@ -19,7 +18,7 @@
 
 .loginEmailText {
   font-size: 12px;
-  margin-top: 25px;
+  margin-top: 17px;
   margin-left: 11%;
   color: var(--color-loginGray);
   margin-bottom: 10px;
@@ -80,9 +79,11 @@
   justify-content: center;
 }
 .noIdContainer {
+  position: fixed;
+  bottom: 0;
   width: 100%;
   padding-top: 10%;
-  margin-bottom: 25%;
+  margin-bottom: 10%;
 }
 
 .unvalidInfoText {
@@ -93,7 +94,7 @@
 }
 
 .autoAgreeContainer {
-  font-size: 10px;
+  font-size: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
