@@ -7,6 +7,7 @@ import imageCompression from 'browser-image-compression';
 import LoadingIcon from '../conceptListScreen/LoadingIcon';
 import axios from 'axios';
 import { BASE_URL } from '../../../constants/urls';
+import { useHistory } from 'react-router-dom';
 
 const WriteReview = ({
   studioName,
@@ -16,6 +17,18 @@ const WriteReview = ({
   refetchReviews,
   refetchStudio,
 }) => {
+  const history = useHistory();
+  //뒤로가기 막기.
+  window.history.pushState(null, '', window.location.href);
+
+  window.onpopstate = () => {
+    history.go(1);
+  };
+
+  window.onpopstate = () => {
+    history.go(1);
+    setIsWriteReviewOpen(false);
+  };
   const [onlyVerify, setOnlyVerify] = useState(false);
   //Blob의 array로 저장됨.
   const [pics, setPics] = useState([]);
@@ -27,11 +40,11 @@ const WriteReview = ({
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const hiddenFileInput = React.useRef(null);
-  const handleClick = event => {
+  const handleClick = (event) => {
     hiddenFileInput.current.click();
   };
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     const files = Array.from(event.target.files);
     let compressedFiles = [];
     const option = {
@@ -46,11 +59,11 @@ const WriteReview = ({
     }
 
     Promise.all(
-      files.map(file => {
+      files.map((file) => {
         return new Promise(async (resolve, reject) => {
           const compressedFile = await imageCompression(file, option);
           const reader = new FileReader();
-          reader.addEventListener('load', ev => {
+          reader.addEventListener('load', (ev) => {
             resolve(ev.target.result);
           });
           reader.addEventListener('error', reject);
@@ -59,10 +72,10 @@ const WriteReview = ({
         });
       })
     ).then(
-      images => {
+      (images) => {
         setimgBase64(images);
       },
-      error => {
+      (error) => {
         console.error(error);
       }
     );
@@ -249,7 +262,7 @@ const WriteReview = ({
                   className="reviewTextArea"
                   value={reviewText}
                   placeholder="솔직한 리뷰는 많은 분들꼐 도움이 됩니다. (12자 이상)"
-                  onChange={e => {
+                  onChange={(e) => {
                     setReviewText(e.target.value);
                   }}
                 />

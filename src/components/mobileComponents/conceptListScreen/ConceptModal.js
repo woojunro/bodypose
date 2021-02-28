@@ -50,6 +50,18 @@ const Modal = ({
   const [disheartLoading, setDisHeartLoading] = useState(false);
 
   const history = useHistory();
+  //뒤로가기 막기.
+  window.history.pushState(null, '', window.location.href);
+
+  window.onpopstate = () => {
+    history.go(1);
+  };
+
+  window.onpopstate = () => {
+    history.go(1);
+
+    close();
+  };
 
   useEffect(() => {
     setIsHearted(concept.isHearted);
@@ -71,7 +83,7 @@ const Modal = ({
 
   const [heartStudioPhoto] = useMutation(HEART_STUDIO_PHOTO_MUTATION, {
     onError: () => {},
-    onCompleted: data => {
+    onCompleted: (data) => {
       if (data.heartStudioPhoto.ok) {
         changeIsHearted(data.heartStudioPhoto.id, true);
       }
@@ -80,7 +92,7 @@ const Modal = ({
 
   const [disheartStudioPhoto] = useMutation(DISHEART_STUDIO_PHOTO_MUTATION, {
     onError: () => close(),
-    onCompleted: data => {
+    onCompleted: (data) => {
       if (data.disheartStudioPhoto.ok) {
         changeIsHearted(data.disheartStudioPhoto.id, false);
         if (isForHeart) {

@@ -18,7 +18,7 @@
 
 .loginEmailText {
   font-size: 12px;
-  margin-top: 17px;
+  margin-top: 20px;
   margin-left: 11%;
   color: var(--color-loginGray);
   margin-bottom: 10px;
@@ -82,6 +82,7 @@
   position: fixed;
   bottom: 0;
   width: 100%;
+  max-width: 470px;
   padding-top: 10%;
   margin-bottom: 10%;
 }
