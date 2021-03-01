@@ -38,12 +38,12 @@ const App = () => {
 
   const { loading } = useQuery(MY_PROFILE_QUERY, {
     fetchPolicy: 'network-only',
-    onCompleted: data => {
+    onCompleted: (data) => {
       if (data.myProfile.ok) {
         setLoggedIn(true);
       }
     },
-    onError: err => {
+    onError: (err) => {
       clearTokenAndCache();
     },
   });
