@@ -21,7 +21,7 @@ const Footer = () => {
         style={{ textDecoration: 'none' }}
         target="_blank"
       >
-        <span className="footerText">개인정보취급방침</span>
+        <span className="footerText">개인정보처리방침</span>
       </Link>
       <span className="footerText">|</span>
       <a href="mailto:help@fmonth.com" className="footerMailToAnchor">

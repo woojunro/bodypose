@@ -5,6 +5,7 @@
 }
 
 .loginBackArrow {
+  cursor: pointer;
   font-size: 25px;
   margin-left: 18px;
   margin-top: 25px;

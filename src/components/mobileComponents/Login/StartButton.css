@@ -1,4 +1,6 @@
 .startButton {
+  cursor: pointer;
+
   width: 80%;
   height: 40px;
   font-size: 20px;
@@ -18,6 +20,7 @@
 }
 .unactiveStartButton {
   width: 80%;
+  cursor: default;
   height: 40px;
   font-size: 20px;
   display: flex;

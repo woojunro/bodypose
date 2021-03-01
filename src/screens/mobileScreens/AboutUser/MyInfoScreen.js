@@ -50,7 +50,7 @@ const MyInfoScreen = () => {
               <Link
                 onClick={() => window.scrollTo(0, 0)}
                 to="/changeName"
-                style={{ Decoder: 'none', color: 'white' }}
+                style={{ textDecoration: 'none' }}
               >
                 <div className="userInfoChange">수정하기</div>
               </Link>
@@ -62,7 +62,7 @@ const MyInfoScreen = () => {
                 <Link
                   onClick={() => window.scrollTo(0, 0)}
                   to="/changePassword"
-                  style={{ Decoder: 'none', color: 'white' }}
+                  style={{ textDecoration: 'none' }}
                 >
                   <div className="userInfoChange">수정하기</div>
                 </Link>
