@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { createHistory } from 'history';
+import React, { useState, useEffect } from 'react';
+import { createBrowserHistory } from 'history';
 import ReactGA from 'react-ga';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
@@ -34,14 +34,20 @@ import { MY_PROFILE_QUERY } from '../gql/queries/MyProfileQuery';
 import './App.css';
 import AppLoadingScreen from './mobileComponents/AppLoadingScreen';
 
-ReactGA.initialize('UA-190823210-1');
-const history = createHistory(window);
+ReactGA.initialize('UA-190823210-1', {
+  debug: true,
+});
+const history = createBrowserHistory();
+history.listen((location) => {
+  ReactGA.set({ page: location.pathname });
+  ReactGA.pageview(location.pathname + location.search);
+});
 
 const App = () => {
-  history.listen((location) => {
-    window.ga('set', 'page', location.pathname + location.search);
-    window.ga('send', 'pageview');
-  });
+  useEffect(() => {
+    ReactGA.pageview(window.location.pathname + window.location.serach);
+  }, []);
+
   const [loggedIn, setLoggedIn] = useState(false);
   const loggedInValue = { loggedIn, setLoggedIn };
 
