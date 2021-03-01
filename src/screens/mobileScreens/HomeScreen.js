@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import ReactGA from 'react-ga';
 import './HomeScreen.css';
 import HeaderM from '../../components/mobileComponents/HeaderM';
 import AdTap from '../../components/mobileComponents/homeScreen/AdTap';
@@ -29,17 +28,6 @@ import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 const take = 8;
 
 const HomeScreen = () => {
-  //react ga 부분.
-  useEffect(() => {
-    getGA();
-  }, []);
-  const getGA = () => {
-    const pathName = window.location.pathname;
-    ReactGA.initialize('UA-190823210-1');
-    ReactGA.set({ page: pathName });
-    ReactGA.pageview(pathName);
-  };
-
   const [randomFemalePage] = useState(
     randomPage(Math.floor(FEMALE_PHOTOS_NUM / take))
   );

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { createHistory } from 'history';
+import ReactGA from 'react-ga';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { clearTokenAndCache } from '../apollo';
@@ -32,7 +34,14 @@ import { MY_PROFILE_QUERY } from '../gql/queries/MyProfileQuery';
 import './App.css';
 import AppLoadingScreen from './mobileComponents/AppLoadingScreen';
 
+ReactGA.initialize('UA-190823210-1');
+const history = createHistory(window);
+
 const App = () => {
+  history.listen((location) => {
+    window.ga('set', 'page', location.pathname + location.search);
+    window.ga('send', 'pageview');
+  });
   const [loggedIn, setLoggedIn] = useState(false);
   const loggedInValue = { loggedIn, setLoggedIn };
 
@@ -58,7 +67,7 @@ const App = () => {
 
   return (
     <LoginContext.Provider value={loggedInValue}>
-      <Router>
+      <Router history={history}>
         <Switch className="app">
           <Route exact path="/" component={HomeScreenM} />
           <Route exact path="/studios" component={StudioListScreenM} />
