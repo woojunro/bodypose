@@ -21,7 +21,7 @@ const NoticeScreen = () => {
         <FiArrowLeft
           className="usersGoBackArrow"
           onClick={() => {
-            history.goBack();
+            window.open('', '_self').close();
           }}
         />
       </div>

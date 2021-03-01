@@ -70,11 +70,12 @@ const NoticeListScreen = () => {
       </div>
       <div className="noticeList">
         {data?.notices &&
-          data.notices.notices.map(notice => (
+          data.notices.notices.map((notice) => (
             <Link
               to={`/notices/${notice.id}`}
               key={notice.id}
-              style={{ decoder: 'none', color: 'white' }}
+              target="_blank"
+              style={{ textDecoration: 'none' }}
             >
               <div className="noticeCard">
                 <div className="noticeCardTitle">{notice.title}</div>

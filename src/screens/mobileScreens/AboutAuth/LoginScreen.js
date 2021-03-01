@@ -212,7 +212,7 @@ const LoginScreen = () => {
                   rel="noopener noreferrer"
                   style={{ color: 'black' }}
                 >
-                  <span className="linkText">개인정보 처리방침</span>
+                  <span className="linkText">개인정보처리방침</span>
                 </Link>
                 <span>에 동의한 것으로 간주합니다.</span>
               </div>
