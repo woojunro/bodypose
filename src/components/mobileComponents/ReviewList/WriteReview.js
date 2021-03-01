@@ -19,11 +19,11 @@ const WriteReview = ({
   refetchStudio,
 }) => {
   const history = useHistory();
-  //뒤로가기 막기.
-  window.onpopstate = () => {
-    setIsWriteReviewOpen(false);
-  };
 
+  //뒤로가기 기능.
+  window.addEventListener('popstate', function (e) {
+    setIsWriteReviewOpen(false);
+  });
   //사파리 뒤로가기 기능.
   $(window).on('load', function () {
     function fire_popstate() {
@@ -37,6 +37,7 @@ const WriteReview = ({
       }
     }, 500); //check every half second if the url has changed
   });
+
   const [onlyVerify, setOnlyVerify] = useState(false);
   //Blob의 array로 저장됨.
   const [pics, setPics] = useState([]);
