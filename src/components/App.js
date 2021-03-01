@@ -34,20 +34,14 @@ import { MY_PROFILE_QUERY } from '../gql/queries/MyProfileQuery';
 import './App.css';
 import AppLoadingScreen from './mobileComponents/AppLoadingScreen';
 
-ReactGA.initialize('UA-190823210-1', {
-  debug: true,
-});
+ReactGA.initialize('UA-190823210-1');
 const history = createBrowserHistory();
 history.listen((location) => {
   ReactGA.set({ page: location.pathname });
-  ReactGA.pageview(location.pathname + location.search);
+  ReactGA.pageview(location.pathname);
 });
 
 const App = () => {
-  useEffect(() => {
-    ReactGA.pageview(window.location.pathname + window.location.serach);
-  }, []);
-
   const [loggedIn, setLoggedIn] = useState(false);
   const loggedInValue = { loggedIn, setLoggedIn };
 

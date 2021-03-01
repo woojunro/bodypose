@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 import './ReviewListScreen.css';
 import ReviewScrollView from '../../components/mobileComponents/ReviewList/ReviewScrollView';
@@ -10,8 +10,12 @@ import { clearTokenAndCache } from '../../apollo';
 import LoggedIn from '../../contexts/LoginContext';
 import FullReviewScreen from './FullReviewScreen';
 import LoadingIcon from '../../components/mobileComponents/conceptListScreen/LoadingIcon';
+import ReactGA from 'react-ga';
 
 const ReviewListScreen = () => {
+  useEffect(() => {
+    ReactGA.pageview(window.location.pathname);
+  }, []);
   const history = useHistory();
   const { data, loading, fetchMore, refetch } = useQuery(
     ALL_STUDIO_REVIEWS_QUERY,
@@ -40,7 +44,7 @@ const ReviewListScreen = () => {
   const [fetchMoreLoading, setFetchMoreLoading] = useState(false);
   const [reviewDetailId, setReviewDetailId] = useState(-1);
 
-  const openReviewDetail = id => {
+  const openReviewDetail = (id) => {
     setReviewDetailId(id);
     setIsReviewDetailOpen(true);
   };

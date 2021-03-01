@@ -16,8 +16,12 @@ import { STUDIO_QUERY } from '../../gql/queries/StudioQuery';
 import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import ScrollToTopButton from '../../components/mobileComponents/ScrollToTopButton';
+import ReactGA from 'react-ga';
 
 const StudioInfoScreen = () => {
+  useEffect(() => {
+    ReactGA.pageview(window.location.pathname);
+  }, []);
   const { slug } = useParams();
   const { data, loading, refetch } = useQuery(STUDIO_QUERY, {
     variables: { slug },

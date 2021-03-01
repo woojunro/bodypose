@@ -12,11 +12,13 @@ import { useQuery } from '@apollo/client';
 import { ALL_STUDIO_PHOTOS_QUERY } from '../../gql/queries/StudioPhotoQuery';
 import { randomPage } from '../../components/functions/Concept/randomPages';
 import shuffle from '../../components/functions/Shuffle';
-import { useHistory } from 'react-router-dom';
-
+import ReactGA from 'react-ga';
 const genderOptions = [null, 'MALE', 'FEMALE', 'COUPLE'];
 
 const ConceptListScreen = () => {
+  React.useEffect(() => {
+    ReactGA.pageview(window.location.pathname);
+  }, []);
   const [pageList, setPageList] = useState([1]);
   const [selectedGender, setSelectedGender] = useState(genderOptions[0]);
   const [selectedConcepts, setSelectedConcepts] = useState({
@@ -71,14 +73,11 @@ const ConceptListScreen = () => {
   };
 
   useEffect(() => {
-    console.log(1);
     document.body.style.overflow =
       isSelectionOpen || isModalOpen ? 'hidden' : 'auto';
   }, [isSelectionOpen, isModalOpen]);
 
   useEffect(() => {
-    console.log(2);
-
     refetch();
   }, [selectedGender, selectedConcepts]);
 

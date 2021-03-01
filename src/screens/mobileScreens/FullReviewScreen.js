@@ -11,6 +11,7 @@ import ToStudioButton from '../../components/mobileComponents/ReviewList/ToStudi
 import ReviewOption from '../../components/mobileComponents/ReviewList/ReviewOption';
 import { client } from '../../apollo';
 import { gql } from '@apollo/client';
+import ReactGA from 'react-ga';
 
 const FullReviewScreen = ({
   id,
@@ -20,6 +21,9 @@ const FullReviewScreen = ({
   refetchReviews = () => {},
   refetchStudio = () => {},
 }) => {
+  React.useEffect(() => {
+    ReactGA.pageview(window.location.pathname);
+  }, []);
   const [isOptionOpen, setIsOptionOpen] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);

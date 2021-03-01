@@ -24,10 +24,16 @@ import {
 } from '../../constants/numOfPhotos';
 import { randomPage } from '../../components/functions/Concept/randomPages';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
+import ReactGA from 'react-ga';
 
 const take = 8;
 
 const HomeScreen = () => {
+  useEffect(() => {
+    console.log(window.location.pathname);
+
+    ReactGA.pageview(window.location.pathname);
+  }, []);
   const [randomFemalePage] = useState(
     randomPage(Math.floor(FEMALE_PHOTOS_NUM / take))
   );

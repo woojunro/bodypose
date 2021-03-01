@@ -5,8 +5,12 @@ import { Redirect, useHistory, useParams } from 'react-router-dom';
 import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
 import { NOTICE_QUERY } from '../../gql/queries/NoticeQuery';
 import './NoticeScreen.css';
+import ReactGA from 'react-ga';
 
 const NoticeScreen = () => {
+  React.useEffect(() => {
+    ReactGA.pageview(window.location.pathname);
+  }, []);
   const { noticeId } = useParams();
   const history = useHistory();
   const { data, loading, error } = useQuery(NOTICE_QUERY, {
