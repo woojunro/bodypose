@@ -26,7 +26,7 @@ const LoginScreen = () => {
 
   const [socialLogin, { loading }] = useMutation(SOCIAL_LOGIN_MUTATION, {
     fetchPolicy: 'no-cache',
-    onCompleted: (data) => {
+    onCompleted: data => {
       if (data.createOrLoginUserWithOAuth.ok) {
         const { token } = data.createOrLoginUserWithOAuth;
         localStorage.setItem('jwt', token);
@@ -41,7 +41,7 @@ const LoginScreen = () => {
     const { naver } = window;
     const naverLogin = new naver.LoginWithNaverId({
       clientId: process.env.REACT_APP_NAVER_CLIENT_ID,
-      callbackUrl: process.env.REACT_APP_NAVER_LOGIN_CALLBACK_URL,
+      callbackUrl: `https://${window.location.hostname}${process.env.REACT_APP_NAVER_LOGIN_CALLBACK_URL}`,
       isPopup: false,
       loginButton: {
         color: 'green',
@@ -74,7 +74,7 @@ const LoginScreen = () => {
     });
   };
 
-  const loginWithGoogle = (token) => {
+  const loginWithGoogle = token => {
     if (!token) {
       alert('오류가 발생하였습니다. 다시 시도해주세요.');
       return;
@@ -176,7 +176,7 @@ const LoginScreen = () => {
                     </div>
                     <GoogleLogin
                       clientId={process.env.REACT_APP_GOOGLE_AUTH_CLIENT_ID}
-                      render={(renderProps) => (
+                      render={renderProps => (
                         <img
                           className="snsLogin"
                           onClick={renderProps.onClick}
@@ -185,9 +185,7 @@ const LoginScreen = () => {
                         />
                       )}
                       buttonText=""
-                      onSuccess={(response) =>
-                        loginWithGoogle(response.tokenId)
-                      }
+                      onSuccess={response => loginWithGoogle(response.tokenId)}
                       onFailure={() =>
                         alert('오류가 발생하였습니다. 다시 시도해주세요.')
                       }
