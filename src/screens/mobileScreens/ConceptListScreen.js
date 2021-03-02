@@ -19,7 +19,9 @@ const ConceptListScreen = () => {
   React.useEffect(() => {
     ReactGA.pageview(window.location.pathname);
   }, []);
-  const [pageList, setPageList] = useState([1]);
+  const [initialPage, setInitialPage] = useState(1);
+  const [isPageInitialized, setIsPageInitialized] = useState(false);
+  const [pageList, setPageList] = useState([]);
   const [selectedGender, setSelectedGender] = useState(genderOptions[0]);
   const [selectedConcepts, setSelectedConcepts] = useState({
     bgConcept: [],
@@ -28,29 +30,34 @@ const ConceptListScreen = () => {
   });
   const [hasMore, setHasMore] = useState(true);
 
-  const { data, loading, fetchMore, refetch } = useQuery(
-    ALL_STUDIO_PHOTOS_QUERY,
-    {
-      notifyOnNetworkStatusChange: true,
-      variables: {
-        page: 1,
-        gender: selectedGender,
-        backgroundConceptSlugs: selectedConcepts.bgConcept,
-        costumeConceptSlugs: selectedConcepts.costumeConcept,
-        objectConceptSlugs: selectedConcepts.objectConcept,
-      },
-      onCompleted: (data) => {
-        if (!data.allStudioPhotos.ok) {
+  const { data, loading, fetchMore } = useQuery(ALL_STUDIO_PHOTOS_QUERY, {
+    fetchPolicy: 'network-only',
+    notifyOnNetworkStatusChange: true,
+    variables: {
+      page: initialPage,
+      gender: selectedGender,
+      backgroundConceptSlugs: selectedConcepts.bgConcept,
+      costumeConceptSlugs: selectedConcepts.costumeConcept,
+      objectConceptSlugs: selectedConcepts.objectConcept,
+    },
+    onCompleted: data => {
+      if (!data.allStudioPhotos.ok) {
+        setHasMore(false);
+      } else {
+        if (data.allStudioPhotos.totalPages <= 1) {
           setHasMore(false);
         } else {
-          if (data.allStudioPhotos.totalPages <= 1) {
-            setHasMore(false);
+          if (!isPageInitialized) {
+            const newPage = randomPage(data.allStudioPhotos.totalPages - 1);
+            setInitialPage(newPage);
+            setPageList([newPage]);
+            setIsPageInitialized(true);
           }
         }
-      },
-      onError: () => setHasMore(false),
-    }
-  );
+      }
+    },
+    onError: () => setHasMore(false),
+  });
 
   const [isSelectionOpen, setIsSelectionOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -64,11 +71,11 @@ const ConceptListScreen = () => {
     setIsModalOpen(true);
   };
 
-  const handlePhotoNum = (num) => {
+  const handlePhotoNum = num => {
     setSelectedPhotoNum(num);
   };
 
-  const handleConcepts = (object) => {
+  const handleConcepts = object => {
     setSelectedConcepts(object);
   };
 
@@ -78,13 +85,15 @@ const ConceptListScreen = () => {
   }, [isSelectionOpen, isModalOpen]);
 
   useEffect(() => {
-    refetch();
-  }, [selectedGender, selectedConcepts]);
+    setInitialPage(1);
+    setIsPageInitialized(false);
+  }, [selectedConcepts, selectedGender]);
 
   const fetchMoreData = () => {
     if (!data || !hasMore) {
       return;
     }
+    if (!data.allStudioPhotos) return;
 
     if (pageList.length >= data.allStudioPhotos.totalPages) {
       setHasMore(false);
@@ -166,13 +175,7 @@ const ConceptListScreen = () => {
           setHasMore={setHasMore}
         />
         <InfiniteScroll
-          dataLength={
-            data === undefined
-              ? 0
-              : data.allStudioPhotos.photos === null
-              ? 0
-              : data.allStudioPhotos.photos.length
-          }
+          dataLength={data?.allStudioPhotos?.photos?.length || 0}
           next={fetchMoreData}
           hasMore={hasMore}
           loader={<LoadingIcon />}
@@ -183,7 +186,7 @@ const ConceptListScreen = () => {
           }
         >
           <div className="totalConcept">
-            {(data?.allStudioPhotos.photos || []).map((concept, idx) => (
+            {(data?.allStudioPhotos?.photos || []).map((concept, idx) => (
               <ConceptListCard
                 key={`concept-list-${concept.id}-${idx}`}
                 conceptNum={idx}
@@ -192,7 +195,7 @@ const ConceptListScreen = () => {
                 openModal={openModal}
               />
             ))}
-            {!data?.allStudioPhotos.photos
+            {!data?.allStudioPhotos?.photos
               ? null
               : data.allStudioPhotos.photos.length % 3 === 0
               ? null

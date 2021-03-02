@@ -30,8 +30,6 @@ const take = 8;
 
 const HomeScreen = () => {
   useEffect(() => {
-    console.log(window.location.pathname);
-
     ReactGA.pageview(window.location.pathname);
   }, []);
   const [randomFemalePage] = useState(
