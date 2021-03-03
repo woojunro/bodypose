@@ -89,6 +89,7 @@ const StudioCard = ({
         pathname: '/login',
         state: { previousPath: '/studios' },
       });
+      return;
     }
 
     if (isHearted) {
