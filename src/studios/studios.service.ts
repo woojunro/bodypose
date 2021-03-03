@@ -163,7 +163,8 @@ export class StudiosService {
         { slug },
         { relations: ['branches'] },
       );
-      if (!studio.coverPhotoUrl) studio = null;
+      if (!studio.coverPhotoUrl && (!user || user.role !== Role.ADMIN))
+        studio = null;
       if (!studio) {
         return {
           ok: false,
@@ -227,7 +228,8 @@ export class StudiosService {
       }
       const studiosWithIsHearted: StudioWithIsHearted[] = [];
       for (const studio of studios) {
-        if (!studio.coverPhotoUrl) continue;
+        if (!studio.coverPhotoUrl && (!user || user.role !== Role.ADMIN))
+          continue;
         studiosWithIsHearted.push({
           ...studio,
           isHearted: heartStudios.some(heart => heart.studioId === studio.id),
