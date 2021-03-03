@@ -885,6 +885,7 @@ export class StudiosService {
         .addSelect('user.nickname')
         .leftJoinAndSelect('review.photos', 'photo')
         .where('studio.slug = :studioSlug', { studioSlug })
+        .andWhere('studio.coverPhotoUrl IS NOT NULL')
         .orderBy(orderByQuery, isDesc ? 'DESC' : 'ASC')
         .skip((page - 1) * reviewsPerPage)
         .take(reviewsPerPage)
@@ -920,6 +921,7 @@ export class StudiosService {
         .leftJoin('review.user', 'user')
         .addSelect('user.nickname')
         .leftJoinAndSelect('review.photos', 'photo')
+        .where('studio.coverPhotoUrl IS NOT NULL')
         .orderBy('review.createdAt', 'DESC')
         .skip((page - 1) * reviewsPerPage)
         .take(reviewsPerPage)
@@ -952,6 +954,7 @@ export class StudiosService {
         .addSelect('studio.slug')
         .leftJoinAndSelect('review.photos', 'photo')
         .where('user.id = :userId', { userId })
+        .andWhere('studio.coverPhotoUrl IS NOT NULL')
         .orderBy('review.createdAt', 'DESC')
         .getMany();
       studioReviews.forEach(review => {

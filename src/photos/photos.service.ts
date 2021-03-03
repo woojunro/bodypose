@@ -114,6 +114,7 @@ export class PhotosService {
 
       const [photos, count] = await query
         .where({ gender: gender ? gender : Not(IsNull()) })
+        .andWhere('studio.coverPhotoUrl IS NOT NULL')
         .andWhere(
           backgroundConceptSlugs.length !== 0
             ? 'backgroundConcept.slug IN (:bgSlugs)'
@@ -183,6 +184,7 @@ export class PhotosService {
         .createQueryBuilder('photo')
         .leftJoinAndSelect('photo.studio', 'studio')
         .where({ gender: gender ? gender : Not(IsNull()) })
+        .andWhere('studio.coverPhotoUrl IS NOT NULL')
         .andWhere('studio.slug = :slug', { slug: studioSlug })
         .orderBy('photo.id', 'DESC')
         .take(photosPerPage)
@@ -751,6 +753,7 @@ export class PhotosService {
         .leftJoinAndSelect('heart.studioPhoto', 'photo')
         .leftJoinAndSelect('photo.studio', 'studio')
         .where('user.id = :id', { id: user.id })
+        .andWhere('studio.coverPhotoUrl IS NOT NULL')
         .orderBy('heart.heartAt', 'DESC')
         .skip((page - 1) * photosPerPage)
         .take(photosPerPage)
