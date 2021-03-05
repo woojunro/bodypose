@@ -38,6 +38,8 @@ const PhotoItem = ({
                       <span>
                         {item.minuteCount % 60 === 0
                           ? ` | ${item.minuteCount / 60}시간 내외`
+                          : item.minuteCount < 60
+                          ? ` | ${item.minuteCount}분 내외`
                           : ` | ${Math.floor(item.minuteCount / 60)}시간 ${
                               item.minuteCount % 60
                             }분 내외`}
@@ -51,6 +53,8 @@ const PhotoItem = ({
                       <span>
                         {item.minuteCount % 60 === 0
                           ? ` | ${item.minuteCount / 60}시간 내외`
+                          : item.minuteCount < 60
+                          ? ` | ${item.minuteCount}분 내외`
                           : ` | ${Math.floor(item.minuteCount / 60)}시간 ${
                               item.minuteCount % 60
                             }분 내외`}
