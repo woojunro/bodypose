@@ -49,7 +49,7 @@ const HairMakeup = ({ shops, isHairOpen, setIsHairOpen }) => {
           <div className="hairshopName">
             <b>{shop.name}</b>
           </div>
-          <div className="hairshopAdress">{shop.address}</div>
+          <div className="hairshopAdress">주소 : {shop.address}</div>
           {shop.contactInfo ? (
             shop.contactInfo.startsWith('http') ? (
               <div
