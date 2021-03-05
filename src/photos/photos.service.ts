@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { StudiosService } from 'src/studios/studios.service';
+import { UploadsService } from 'src/uploads/uploads.service';
 import { Role, User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { FindOneOptions, IsNull, Not, Repository } from 'typeorm';
@@ -83,6 +84,8 @@ export class PhotosService {
     private readonly usersService: UsersService,
     @Inject(forwardRef(() => StudiosService))
     private readonly studiosService: StudiosService,
+    @Inject(forwardRef(() => UploadsService))
+    private readonly uploadsService: UploadsService,
   ) {}
 
   async getAllStudioPhotos(
@@ -627,6 +630,15 @@ export class PhotosService {
         };
       }
       await this.studioPhotoRepository.delete({ id });
+      // Delete photos in storage
+      const thumbnailPhoto = photo.thumbnailUrl.substring(
+        photo.thumbnailUrl.indexOf('studio-photos'),
+      );
+      const originalPhoto = photo.originalUrl.substring(
+        photo.originalUrl.indexOf('studio-photos'),
+      );
+      await this.uploadsService.deleteFile(thumbnailPhoto);
+      await this.uploadsService.deleteFile(originalPhoto);
       return { ok: true };
     } catch (e) {
       console.log(e);

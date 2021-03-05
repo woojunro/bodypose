@@ -9,6 +9,7 @@ import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { ReviewPhoto } from 'src/photos/entities/review-photo.entity';
 import { PhotosService } from 'src/photos/photos.service';
+import { UploadsService } from 'src/uploads/uploads.service';
 import { Role, User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
@@ -106,6 +107,8 @@ export class StudiosService {
     private readonly usersService: UsersService,
     @Inject(forwardRef(() => PhotosService))
     private readonly photosService: PhotosService,
+    @Inject(forwardRef(() => UploadsService))
+    private readonly uploadsService: UploadsService,
   ) {}
 
   getStudioById(id: number): Promise<Studio> {
@@ -982,7 +985,7 @@ export class StudiosService {
       // Find review
       const review = await this.studioReviewRepository.findOne(
         { id },
-        { relations: ['user', 'studio'] },
+        { relations: ['user', 'studio', 'photos'] },
       );
       if (!review) {
         return {
@@ -1003,6 +1006,13 @@ export class StudiosService {
       studio.reviewCount--;
       studio.totalRating -= review.rating;
       await this.studioRepository.save(studio);
+      // Delete photos in storage
+      for (const photo of review.photos) {
+        const filename = photo.url.substring(
+          photo.url.indexOf('review-photos'),
+        );
+        await this.uploadsService.deleteFile(filename);
+      }
       return { ok: true };
     } catch (e) {
       console.log(e);

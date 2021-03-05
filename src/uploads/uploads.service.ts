@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -23,6 +25,7 @@ export class UploadsService {
 
   constructor(
     private readonly configService: ConfigService,
+    @Inject(forwardRef(() => StudiosService))
     private readonly studiosService: StudiosService,
   ) {
     const storage = new Storage();
@@ -178,5 +181,9 @@ export class UploadsService {
         originalUrl: promises[1],
       };
     });
+  }
+
+  async deleteFile(filename: string): Promise<void> {
+    await this.bucket.file(filename).delete();
   }
 }

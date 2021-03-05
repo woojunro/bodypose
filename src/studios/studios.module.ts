@@ -21,6 +21,7 @@ import { PhotosModule } from 'src/photos/photos.module';
 import { HairMakeupShop } from './entities/hair-makeup-shop.entity';
 import { UsersHeartStudios } from './entities/users-heart-studios.entity';
 import { UsersReportStudioReviews } from './entities/users-report-studio-reviews.entity';
+import { UploadsModule } from 'src/uploads/uploads.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { UsersReportStudioReviews } from './entities/users-report-studio-reviews
     AuthModule,
     forwardRef(() => UsersModule),
     forwardRef(() => PhotosModule),
+    forwardRef(() => UploadsModule),
   ],
   providers: [
     StudiosService,
