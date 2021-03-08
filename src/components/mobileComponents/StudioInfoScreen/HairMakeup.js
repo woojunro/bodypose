@@ -15,12 +15,12 @@ const HairMakeup = ({ shops, isHairOpen, setIsHairOpen }) => {
       <IoMdArrowDropdown fontSize="17px" />
     );
   };
-  const openInNewTab = (url) => {
+  const openInNewTab = url => {
     const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
     if (newWindow) newWindow.opener = null;
   };
 
-  const renderedHairshopTitle = (shop) => {
+  const renderedHairshopTitle = shop => {
     if (shop.type === 'VISIT') {
       return (
         <>
@@ -49,7 +49,9 @@ const HairMakeup = ({ shops, isHairOpen, setIsHairOpen }) => {
           <div className="hairshopName">
             <b>{shop.name}</b>
           </div>
-          <div className="hairshopAdress">주소 : {shop.address}</div>
+          {shop.address && (
+            <div className="hairshopAdress">주소 : {shop.address}</div>
+          )}
           {shop.contactInfo ? (
             shop.contactInfo.startsWith('http') ? (
               <div
@@ -88,7 +90,7 @@ const HairMakeup = ({ shops, isHairOpen, setIsHairOpen }) => {
           <div className="hairNoContain">
             촬영 상품 가격에는 헤어/메이크업 가격이 포함되지 않았습니다.
           </div>
-          {shops.map((shop) => (
+          {shops.map(shop => (
             <div
               key={`hairMakeupShop-${shop.id}`}
               className="hairMakeupContainer"
