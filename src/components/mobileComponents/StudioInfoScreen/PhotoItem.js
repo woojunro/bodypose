@@ -29,7 +29,9 @@ const PhotoItem = ({
             <div className="photoItemTopPart">
               <div className="photoItemleftPart">
                 <div className="itemUpper">
-                  {item.peopleCount}인촬영 - {item.conceptCount}컨셉
+                  {item.conceptCount === 0
+                    ? `${item.peopleCount}인촬영 `
+                    : `${item.peopleCount}인촬영 - ${item.conceptCount}컨셉`}
                 </div>
                 {currentStudio.isOriginalPhotoProvided ? (
                   <div className="itemUnder">
