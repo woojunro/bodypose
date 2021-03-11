@@ -24,6 +24,7 @@ class UpdateStudioPayload extends PartialType(
       'weekdayPriceTag',
       'weekendPriceTag',
       'additionalProductListDescription',
+      'coverPhotoUrl',
     ],
     InputType,
   ),
