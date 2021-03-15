@@ -7,8 +7,6 @@ import imageCompression from 'browser-image-compression';
 import LoadingIcon from '../conceptListScreen/LoadingIcon';
 import axios from 'axios';
 import { BASE_URL } from '../../../constants/urls';
-import { useHistory } from 'react-router-dom';
-import $ from 'jquery';
 
 const WriteReview = ({
   studioName,
@@ -18,26 +16,6 @@ const WriteReview = ({
   refetchReviews,
   refetchStudio,
 }) => {
-  const history = useHistory();
-
-  //뒤로가기 기능.
-  window.addEventListener('popstate', function (e) {
-    setIsWriteReviewOpen(false);
-  });
-  //사파리 뒤로가기 기능.
-  $(window).on('load', function () {
-    function fire_popstate() {
-      $(this).trigger('popstate'); // fire it when the page first loads
-    }
-    var lasthash = window.location.hash;
-    setInterval(function () {
-      var currenthash = window.location.hash;
-      if (lasthash !== currenthash) {
-        fire_popstate();
-      }
-    }, 500); //check every half second if the url has changed
-  });
-
   const [onlyVerify, setOnlyVerify] = useState(false);
   //Blob의 array로 저장됨.
   const [pics, setPics] = useState([]);
@@ -49,11 +27,11 @@ const WriteReview = ({
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const hiddenFileInput = React.useRef(null);
-  const handleClick = (event) => {
+  const handleClick = event => {
     hiddenFileInput.current.click();
   };
 
-  const handleChange = (event) => {
+  const handleChange = event => {
     const files = Array.from(event.target.files);
     let compressedFiles = [];
     const option = {
@@ -68,11 +46,11 @@ const WriteReview = ({
     }
 
     Promise.all(
-      files.map((file) => {
+      files.map(file => {
         return new Promise(async (resolve, reject) => {
           const compressedFile = await imageCompression(file, option);
           const reader = new FileReader();
-          reader.addEventListener('load', (ev) => {
+          reader.addEventListener('load', ev => {
             resolve(ev.target.result);
           });
           reader.addEventListener('error', reject);
@@ -81,10 +59,10 @@ const WriteReview = ({
         });
       })
     ).then(
-      (images) => {
+      images => {
         setimgBase64(images);
       },
-      (error) => {
+      error => {
         console.error(error);
       }
     );
@@ -206,7 +184,6 @@ const WriteReview = ({
             <FiArrowLeft
               className="usersGoBackArrow"
               onClick={() => {
-                history.goBack();
                 setIsWriteReviewOpen(false);
               }}
             />
@@ -272,7 +249,7 @@ const WriteReview = ({
                   className="reviewTextArea"
                   value={reviewText}
                   placeholder="솔직한 리뷰는 많은 분들꼐 도움이 됩니다. (12자 이상)"
-                  onChange={(e) => {
+                  onChange={e => {
                     setReviewText(e.target.value);
                   }}
                 />
@@ -293,10 +270,10 @@ const WriteReview = ({
 
             <div className="reviewBottomNoticeContainer">
               <div className="reviewBottomNotice">
-                솔직하게 작성하신 리뷰는 주문을 괸하는 분들께 큰 도움이 됩니다.
-                하지만 허위 리뷰나 명예훼손, 욕설, 비방글 등 선량한 업주나
-                제3자의 권리를 침해하는 게시물은 서비스 이용약관이나 관련 법률에
-                따라 제재를 받을 수 있습니다. 에프먼스는 위와 같은 게시물
+                솔직하게 작성하신 리뷰는 예약을 고민하는 분들께 큰 도움이
+                됩니다. 하지만 허위 리뷰나 명예훼손, 욕설, 비방글 등 선량한
+                업주나 제3자의 권리를 침해하는 게시물은 서비스 이용약관이나 관련
+                법률에 따라 제재를 받을 수 있습니다. 에프먼스는 위와 같은 게시물
                 작성자에게 경고, 주의 등의 조치를 취할 수 있고, 해당 게시물을
                 삭제할 수 있습니다. 게시에 따른 책임은 작성자에게 있으며,
                 에프먼스는 이에 대한 법적 책임을 지지 않습니다.

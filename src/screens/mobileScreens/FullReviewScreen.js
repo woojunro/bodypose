@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './FullReviewScreen.css';
 import { FiArrowLeft } from 'react-icons/fi';
 import { GetStars } from '../../components/functions/Reviews/ReviewFunctions';
@@ -72,6 +72,10 @@ const FullReviewScreen = ({
     id: `UsersReviewStudios:${id}`,
     fragment,
   });
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="writeReview">

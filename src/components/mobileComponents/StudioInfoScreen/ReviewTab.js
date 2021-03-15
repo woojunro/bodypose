@@ -39,7 +39,7 @@ const ReviewTab = ({ currentStudio, refetchStudio }) => {
   const [isReviewDetailOpen, setIsReviewDetailOpen] = useState(false);
   const [reviewDetailId, setReviewDetailId] = useState(-1);
 
-  const openReviewDetail = (id) => {
+  const openReviewDetail = id => {
     setReviewDetailId(id);
     setIsReviewDetailOpen(true);
   };
@@ -95,10 +95,6 @@ const ReviewTab = ({ currentStudio, refetchStudio }) => {
   };
 
   useEffect(() => {
-    document.body.style.overflow = isWriteReviewOpen ? 'hidden' : 'auto';
-  }, [isWriteReviewOpen]);
-
-  useEffect(() => {
     setPage(1);
   }, [sortBy]);
 
@@ -126,79 +122,78 @@ const ReviewTab = ({ currentStudio, refetchStudio }) => {
             refetchStudio={refetchStudio}
           />
         )}
-      <div className="reviewTabTopContainer">
-        <div>
-          <SortButton
-            isOpen={isSortByOpen}
-            open={() => setIsSortByOpen(true)}
-            close={() => setIsSortByOpen(false)}
-            selectedOption={sortBy}
-          />
-        </div>
+      {!isWriteReviewOpen && !isReviewDetailOpen && (
+        <>
+          <div className="reviewTabTopContainer">
+            <div>
+              <SortButton
+                isOpen={isSortByOpen}
+                open={() => setIsSortByOpen(true)}
+                close={() => setIsSortByOpen(false)}
+                selectedOption={sortBy}
+              />
+            </div>
 
-        <div
-          className="writeReviewButton"
-          onClick={() => {
-            if (LoggedIn.loggedIn) {
-              if (!profileData?.myProfile?.profile.isVerified) {
-                alert(
-                  '이메일 가입 회원은 이메일 인증 후 후기 작성이 가능합니다.'
-                );
-                return;
-              }
-              window.history.pushState(
-                null,
-                document.title,
-                window.location.href
-              );
-              setIsWriteReviewOpen(true);
-            } else {
-              const ok = window.confirm(
-                '로그인이 필요한 기능입니다. 로그인 하시겠습니까?'
-              );
-              if (!ok) return;
-              history.push({
-                pathname: '/login',
-                state: { previousPath: `/studios/${currentStudio.slug}` },
-              });
-            }
-          }}
-        >
-          + 리뷰 쓰기
-        </div>
-      </div>
-      <Modal
-        isOpen={isSortByOpen}
-        close={closeModal}
-        closeSortBy={() => setIsSortByOpen(false)}
-        options={REVIEW_SORTING_OPTIONS}
-        setOption={setSortBy}
-        selectedOption={sortBy}
-      />
-      <div className="reviewTab">
-        {data?.studioReviews && (
-          <ReviewScrollView
-            reviewList={data.studioReviews.studioReviews}
-            currentStudio={currentStudio}
-            openReviewDetail={openReviewDetail}
-          />
-        )}
-        {loading || profileLoading || fetchMoreLoading ? (
-          <div className="seeMoreReviewContainer">
-            <LoadingIcon />
-          </div>
-        ) : page < data.studioReviews.totalPages ? (
-          <div className="seeMoreReviewContainer">
-            <div className="seeMoreReview" onClick={GetMore}>
-              리뷰 더보기
+            <div
+              className="writeReviewButton"
+              onClick={() => {
+                if (LoggedIn.loggedIn) {
+                  if (!profileData?.myProfile?.profile.isVerified) {
+                    alert(
+                      '이메일 가입 회원은 이메일 인증 후 후기 작성이 가능합니다.'
+                    );
+                    return;
+                  }
+                  setIsWriteReviewOpen(true);
+                } else {
+                  const ok = window.confirm(
+                    '로그인이 필요한 기능입니다. 로그인 하시겠습니까?'
+                  );
+                  if (!ok) return;
+                  history.push({
+                    pathname: '/login',
+                    state: { previousPath: `/studios/${currentStudio.slug}` },
+                  });
+                }
+              }}
+            >
+              + 리뷰 쓰기
             </div>
           </div>
-        ) : (
-          <div className="seeMoreReviewContainer">
-            모든 리뷰를 불러왔습니다.
+          <Modal
+            isOpen={isSortByOpen}
+            close={closeModal}
+            closeSortBy={() => setIsSortByOpen(false)}
+            options={REVIEW_SORTING_OPTIONS}
+            setOption={setSortBy}
+            selectedOption={sortBy}
+          />
+          <div className="reviewTab">
+            {data?.studioReviews && (
+              <ReviewScrollView
+                reviewList={data.studioReviews.studioReviews}
+                currentStudio={currentStudio}
+                openReviewDetail={openReviewDetail}
+              />
+            )}
+            {loading || profileLoading || fetchMoreLoading ? (
+              <div className="seeMoreReviewContainer">
+                <LoadingIcon />
+              </div>
+            ) : page < data.studioReviews.totalPages ? (
+              <div className="seeMoreReviewContainer">
+                <div className="seeMoreReview" onClick={GetMore}>
+                  리뷰 더보기
+                </div>
+              </div>
+            ) : (
+              <div className="seeMoreReviewContainer">
+                모든 리뷰를 불러왔습니다.
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 };

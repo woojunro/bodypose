@@ -44,7 +44,7 @@ const ReviewListScreen = () => {
   const [fetchMoreLoading, setFetchMoreLoading] = useState(false);
   const [reviewDetailId, setReviewDetailId] = useState(-1);
 
-  const openReviewDetail = (id) => {
+  const openReviewDetail = id => {
     setReviewDetailId(id);
     setIsReviewDetailOpen(true);
   };
@@ -87,46 +87,51 @@ const ReviewListScreen = () => {
   return (
     <div>
       {data?.allStudioReviews?.studioReviews &&
-        data.allStudioReviews.studioReviews.length > 0 &&
-        isReviewDetailOpen && (
-          <FullReviewScreen
-            id={reviewDetailId}
-            nickname={profileData?.myProfile?.profile.nickname}
-            close={closeReviewDetail}
-            refetchReviews={refetchReviews}
-          />
-        )}
-      <div className="reviewListTopContainer">
-        <FiArrowLeft
-          className="usersGoBackArrow"
-          onClick={() => {
-            history.goBack();
-          }}
+      data.allStudioReviews.studioReviews.length > 0 &&
+      isReviewDetailOpen ? (
+        <FullReviewScreen
+          id={reviewDetailId}
+          nickname={profileData?.myProfile?.profile.nickname}
+          close={closeReviewDetail}
+          refetchReviews={refetchReviews}
         />
-        <div className="leaveTitle">리뷰모아보기</div>
-        <div className="usersTopEmptyBox" />
-      </div>
-      <div style={{ width: '100%', height: '50px' }} />
-      <div className="reviewPart">
-        {data?.allStudioReviews && (
-          <ReviewScrollView
-            reviewList={data?.allStudioReviews?.studioReviews}
-            openReviewDetail={openReviewDetail}
-          />
-        )}
-      </div>
-      {loading || profileLoading || fetchMoreLoading ? (
-        <div className="seeMoreReviewContainer">
-          <LoadingIcon />
-        </div>
-      ) : page < data.allStudioReviews.totalPages ? (
-        <div className="seeMoreReviewContainer">
-          <div className="seeMoreReview" onClick={GetMore}>
-            리뷰 더보기
-          </div>
-        </div>
       ) : (
-        <div className="seeMoreReviewContainer">모든 리뷰를 불러왔습니다.</div>
+        <>
+          <div className="reviewListTopContainer">
+            <FiArrowLeft
+              className="usersGoBackArrow"
+              onClick={() => {
+                history.goBack();
+              }}
+            />
+            <div className="leaveTitle">리뷰모아보기</div>
+            <div className="usersTopEmptyBox" />
+          </div>
+          <div style={{ width: '100%', height: '50px' }} />
+          <div className="reviewPart">
+            {data?.allStudioReviews && (
+              <ReviewScrollView
+                reviewList={data?.allStudioReviews?.studioReviews}
+                openReviewDetail={openReviewDetail}
+              />
+            )}
+          </div>
+          {loading || profileLoading || fetchMoreLoading ? (
+            <div className="seeMoreReviewContainer">
+              <LoadingIcon />
+            </div>
+          ) : page < data.allStudioReviews.totalPages ? (
+            <div className="seeMoreReviewContainer">
+              <div className="seeMoreReview" onClick={GetMore}>
+                리뷰 더보기
+              </div>
+            </div>
+          ) : (
+            <div className="seeMoreReviewContainer">
+              모든 리뷰를 불러왔습니다.
+            </div>
+          )}
+        </>
       )}
     </div>
   );

@@ -6,6 +6,7 @@ const ToStudioButton = ({ linkTo }) => {
   const history = useHistory();
   return (
     <Link
+      style={{ textDecoration: 'none' }}
       to={{
         pathname: linkTo,
         state: { previousPath: history.location.pathname },

@@ -3,7 +3,7 @@
   bottom: 0;
   width: 100%;
   max-width: 470px;
-  z-index: 10;
+  z-index: 10000;
   pointer-events: none;
 }
 
