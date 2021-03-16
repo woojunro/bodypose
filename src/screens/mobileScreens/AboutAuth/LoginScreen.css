@@ -29,6 +29,7 @@
   margin-top: 10px;
   color: gray;
 text-decoration: underline grey;
+cursor: pointer;
 }
 .forgotPasswordContainer {
   width: 90%;
@@ -80,6 +81,8 @@ text-decoration: underline grey;
   display: flex;
   justify-content: center;
   text-decoration: underline grey;
+  cursor: pointer;
+
 }
 .noIdContainer {
   position: fixed;
@@ -102,4 +105,5 @@ text-decoration: underline grey;
   align-items: center;
   justify-content: center;
   margin-top: 20px;
+  
 }

@@ -197,23 +197,25 @@ const LoginScreen = () => {
               </div>
               <div className="autoAgreeContainer">
                 <span>소셜 로그인 시</span>
-                <Link
-                  to={`/notices/${TEMRS_NOTICE_ID}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: 'black' }}
+
+                <span
+                  onClick={() => {
+                    history.push(`/notices/${TEMRS_NOTICE_ID}`);
+                  }}
+                  className="linkText"
                 >
-                  <span className="linkText">이용약관</span>
-                </Link>
+                  이용약관
+                </span>
                 <span>,</span>
-                <Link
-                  to={`/notices/${PRIVACY_NOTICE_ID}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: 'black' }}
+
+                <span
+                  onClick={() => {
+                    history.push(`/notices/${PRIVACY_NOTICE_ID}`);
+                  }}
+                  className="linkText"
                 >
-                  <span className="linkText">개인정보처리방침</span>
-                </Link>
+                  개인정보처리방침
+                </span>
                 <span>에 동의한 것으로 간주합니다.</span>
               </div>
               <div className="noIdContainer">

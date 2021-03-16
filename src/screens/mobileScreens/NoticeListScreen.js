@@ -75,19 +75,18 @@ const NoticeListScreen = () => {
       <div className="noticeList">
         {data?.notices &&
           data.notices.notices.map((notice) => (
-            <Link
-              to={`/notices/${notice.id}`}
-              key={notice.id}
-              target="_blank"
-              style={{ textDecoration: 'none' }}
+            <div
+              onClick={() => {
+                history.push(`/notices/${notice.id}`);
+                window.scrollTo(0, 0);
+              }}
+              className="noticeCard"
             >
-              <div className="noticeCard">
-                <div className="noticeCardTitle">{notice.title}</div>
-                <div className="noticeDate">
-                  {String(notice.updatedAt).substr(0, 10)}
-                </div>
+              <div className="noticeCardTitle">{notice.title}</div>
+              <div className="noticeDate">
+                {String(notice.updatedAt).substr(0, 10)}
               </div>
-            </Link>
+            </div>
           ))}
       </div>
       {loading ? (

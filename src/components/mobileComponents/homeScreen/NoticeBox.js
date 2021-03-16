@@ -10,15 +10,15 @@ const NoticeBox = ({ notices }) => {
   const Notices = notices;
   const renderedNotices = Notices.map((notice) => {
     return (
-      <Link
-        onClick={() => window.scrollTo(0, 0)}
-        key={notice.title}
-        target="_blank"
-        to={'/notices/' + notice.id}
-        style={{ textDecoration: 'none' }}
+      <div
+        onClick={() => {
+          history.push('/notices/' + notice.id);
+          window.scrollTo(0, 0);
+        }}
+        className="noticeItem"
       >
-        <div className="noticeItem">{notice.title}</div>
-      </Link>
+        {notice.title}
+      </div>
     );
   });
 
