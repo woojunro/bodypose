@@ -227,18 +227,20 @@ const Modal = ({
                     <div>스튜디오 정보 보기</div>
                   </div>
                 ) : (
-                  <Link
-                    to={{
-                      pathname: `/studios/${studioSlug || concept.studio.slug}`,
-                      state: { previousPath: history.location.pathname },
-                    }}
+                  <div
                     className="toStudioInfo"
                     onClick={() => {
+                      history.push({
+                        pathname: `/studios/${
+                          studioSlug || concept.studio.slug
+                        }`,
+                        state: { previousPath: history.location.pathname },
+                      });
                       window.scrollTo(0, 0);
                     }}
                   >
-                    <div>스튜디오 정보 보기</div>
-                  </Link>
+                    스튜디오 정보 보기
+                  </div>
                 )}
 
                 {RenderedHeart}

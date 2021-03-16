@@ -29,7 +29,7 @@ const Modal = ({ isOpen, close, concept }) => {
 
   const [heartStudioPhoto] = useMutation(HEART_STUDIO_PHOTO_MUTATION, {
     onError: () => alert('오류가 발생하였습니다. 다시 시도해주세요.'),
-    onCompleted: data => {
+    onCompleted: (data) => {
       if (data.heartStudioPhoto.ok) {
         changeIsHearted();
       }
@@ -38,7 +38,7 @@ const Modal = ({ isOpen, close, concept }) => {
 
   const [disheartStudioPhoto] = useMutation(DISHEART_STUDIO_PHOTO_MUTATION, {
     onError: () => alert('오류가 발생하였습니다. 다시 시도해주세요.'),
-    onCompleted: data => {
+    onCompleted: (data) => {
       if (data.disheartStudioPhoto.ok) {
         changeIsHearted();
       }
@@ -128,16 +128,18 @@ const Modal = ({ isOpen, close, concept }) => {
                 </div>
               </div>
               <div className="toStudioInfoContainer">
-                <Link
-                  to={{
-                    pathname: `/studios/${concept.studio.slug}`,
-                    state: { previousPath: history.location.pathname },
-                  }}
+                <div
                   className="toStudioInfo"
-                  onClick={() => window.scrollTo(0, 0)}
+                  onClick={() => {
+                    history.push({
+                      pathname: `/studios/${concept.studio.slug}`,
+                      state: { previousPath: history.location.pathname },
+                    });
+                    window.scrollTo(0, 0);
+                  }}
                 >
-                  <div>스튜디오 정보 보기</div>
-                </Link>
+                  스튜디오 정보 보기
+                </div>
                 {RenderedHeart}
               </div>
             </div>

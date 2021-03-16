@@ -25,15 +25,16 @@
   margin-bottom: 10px;
 }
 .forgotPassword {
-  width: 100%;
   font-size: 11px;
   margin-top: 10px;
   color: gray;
+text-decoration: underline grey;
 }
 .forgotPasswordContainer {
   width: 90%;
   display: flex;
   justify-content: flex-end;
+
 }
 .snsLoginContainerContainer {
   width: 100%;
@@ -78,6 +79,7 @@
   color: gray;
   display: flex;
   justify-content: center;
+  text-decoration: underline grey;
 }
 .noIdContainer {
   position: fixed;

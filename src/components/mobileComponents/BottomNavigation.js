@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import BookSelected from '../../materials/icons/book-selected.png';
 import Book from '../../materials/icons/book.png';
 import CameraSelected from '../../materials/icons/camera-selected.png';
@@ -13,6 +13,7 @@ import User from '../../materials/icons/user.png';
 import './BottomNavigation.css';
 
 const BottomNavigation = ({ pageName }) => {
+  const history = useHistory();
   const tabs = [
     {
       name: 'home',
@@ -57,22 +58,21 @@ const BottomNavigation = ({ pageName }) => {
     },
   ];
 
-  const renderedTabs = tabs.map(tab => {
+  const renderedTabs = tabs.map((tab) => {
     return (
       <li key={tab.name}>
-        <Link
-          to={tab.pageTo}
-          style={{ textDecoration: 'none' }}
-          onClick={() => window.scrollTo(0, 0)}
+        <div
+          className="tabContainer"
+          onClick={() => {
+            history.push(tab.pageTo);
+          }}
         >
-          <div className="tabContainer">
-            <img
-              alt={tab.name}
-              src={pageName === tab.name ? tab.seletecdIcon : tab.emptyIcon}
-            />
-            <div className="tabName">{tab.title}</div>
-          </div>
-        </Link>
+          <img
+            alt={tab.name}
+            src={pageName === tab.name ? tab.seletecdIcon : tab.emptyIcon}
+          />
+          <div className="tabName">{tab.title}</div>
+        </div>
       </li>
     );
   });
