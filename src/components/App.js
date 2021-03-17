@@ -69,15 +69,10 @@ const App = () => {
     <LoginContext.Provider value={loggedInValue}>
       <Router history={history}>
         <Switch className="app">
-          <Route exact path="/">
-            <HomeScreenM />
-          </Route>
-          <Route exact path="/studios">
-            <StudioListScreenM />
-          </Route>
-          <Route exact path="/concepts">
-            <ConceptListScreenM />
-          </Route>
+          <Route exact path="/" component={HomeScreenM} />
+          <Route exact path="/studios" component={StudioListScreenM} />
+          <Route exact path="/concepts" component={ConceptListScreenM} />
+
           <Route exact path="/reviews" component={ReviewListScreenM} />
           <Route exact path="/studios/:slug" component={StudioInfoScreenM} />
           <Route exact path="/users" component={UserScreenM} />
