@@ -40,7 +40,7 @@ const ConceptListScreen = () => {
       costumeConceptSlugs: selectedConcepts.costumeConcept,
       objectConceptSlugs: selectedConcepts.objectConcept,
     },
-    onCompleted: data => {
+    onCompleted: (data) => {
       if (!data.allStudioPhotos.ok) {
         setHasMore(false);
       } else {
@@ -71,11 +71,11 @@ const ConceptListScreen = () => {
     setIsModalOpen(true);
   };
 
-  const handlePhotoNum = num => {
+  const handlePhotoNum = (num) => {
     setSelectedPhotoNum(num);
   };
 
-  const handleConcepts = object => {
+  const handleConcepts = (object) => {
     setSelectedConcepts(object);
   };
 
@@ -148,10 +148,14 @@ const ConceptListScreen = () => {
         <div>
           <div className="header">
             <span className="headerTitle">컨셉북</span>
-            <FaSlidersH
+            <span
               className="sortIcon"
               onClick={() => setIsSelectionOpen(!isSelectionOpen)}
-            />
+            >
+              <span className="sortIconText">필터</span>
+
+              <FaSlidersH />
+            </span>
           </div>
           <div style={{ height: '50px' }} />
         </div>
