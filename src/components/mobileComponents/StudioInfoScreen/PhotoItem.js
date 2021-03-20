@@ -21,7 +21,7 @@ const PhotoItem = ({
   };
 
   const splitMinMaxPeopleCount = (stringToSplit) => {
-    var arrayOfMinMax = stringToSplit.split('88');
+    var arrayOfMinMax = stringToSplit.split('90');
     return `${arrayOfMinMax[0]}~${arrayOfMinMax[1]}`;
   };
 
@@ -29,7 +29,7 @@ const PhotoItem = ({
     itemList.map((item) => {
       const peopleCountStr = String(item.peopleCount);
       var minmaxPeopleCount = 0;
-      if (peopleCountStr.includes(88)) {
+      if (peopleCountStr.includes(90)) {
         minmaxPeopleCount = splitMinMaxPeopleCount(peopleCountStr);
       }
       return (
