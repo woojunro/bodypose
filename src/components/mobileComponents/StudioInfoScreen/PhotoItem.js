@@ -21,7 +21,7 @@ const PhotoItem = ({
   };
 
   const splitMinMaxPeopleCount = (stringToSplit) => {
-    var arrayOfMinMax = stringToSplit.split('90');
+    var arrayOfMinMax = stringToSplit.split('126');
     return `${arrayOfMinMax[0]}~${arrayOfMinMax[1]}`;
   };
 
@@ -29,7 +29,7 @@ const PhotoItem = ({
     itemList.map((item) => {
       const peopleCountStr = String(item.peopleCount);
       var minmaxPeopleCount = 0;
-      if (peopleCountStr.includes(90)) {
+      if (peopleCountStr.includes(126)) {
         minmaxPeopleCount = splitMinMaxPeopleCount(peopleCountStr);
       }
       return (
@@ -40,10 +40,10 @@ const PhotoItem = ({
               <div className="photoItemleftPart">
                 <div className="itemUpper">
                   {item.conceptCount === 0
-                    ? item.peopleCount > 1000
+                    ? peopleCountStr.includes(126)
                       ? `$${minmaxPeopleCount}인촬영`
                       : `${item.peopleCount}인촬영 `
-                    : item.peopleCount > 1000
+                    : peopleCountStr.includes(126)
                     ? `${minmaxPeopleCount}인촬영 - ${item.conceptCount}컨셉`
                     : `${item.peopleCount}인촬영 - ${item.conceptCount}컨셉`}
                 </div>
