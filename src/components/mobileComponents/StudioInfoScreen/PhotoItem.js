@@ -20,8 +20,18 @@ const PhotoItem = ({
     );
   };
 
+  const splitMinMaxPeopleCount = (stringToSplit) => {
+    var arrayOfMinMax = stringToSplit.split('88');
+    return `${arrayOfMinMax[0]}~${arrayOfMinMax[1]}`;
+  };
+
   const renderedItem = (itemList) =>
     itemList.map((item) => {
+      const peopleCountStr = String(item.peopleCount);
+      var minmaxPeopleCount = 0;
+      if (peopleCountStr.includes(88)) {
+        minmaxPeopleCount = splitMinMaxPeopleCount(peopleCountStr);
+      }
       return (
         <div key={`studioProduct-${item.id}`} className="photoItemContainer">
           <div className="photoItemTitle">{item.title}</div>
@@ -30,12 +40,16 @@ const PhotoItem = ({
               <div className="photoItemleftPart">
                 <div className="itemUpper">
                   {item.conceptCount === 0
-                    ? `${item.peopleCount}인촬영 `
+                    ? item.peopleCount > 1000
+                      ? `$${minmaxPeopleCount}인촬영`
+                      : `${item.peopleCount}인촬영 `
+                    : item.peopleCount > 1000
+                    ? `${minmaxPeopleCount}인촬영 - ${item.conceptCount}컨셉`
                     : `${item.peopleCount}인촬영 - ${item.conceptCount}컨셉`}
                 </div>
                 {currentStudio.isOriginalPhotoProvided ? (
                   <div className="itemUnder">
-                    원본+보정본 {item.cutCount}컷
+                    보정본 {item.cutCount}컷+원본
                     {item.minuteCount && (
                       <span>
                         {item.minuteCount % 60 === 0
