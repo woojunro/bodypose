@@ -29,6 +29,8 @@ export const STUDIO_QUERY = gql`
         weekendPriceTag
         additionalProductListDescription
         isHearted
+        reservationInfoDescription
+        cancelInfoDescription
       }
     }
     products(input: { slug: $slug }) {
