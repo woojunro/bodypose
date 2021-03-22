@@ -8,7 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { StudiosService } from 'src/studios/studios.service';
-import { User } from 'src/users/entities/user.entity';
+import { UploadsService } from 'src/uploads/uploads.service';
+import { Role, User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { FindOneOptions, IsNull, Not, Repository } from 'typeorm';
 import {
@@ -83,6 +84,8 @@ export class PhotosService {
     private readonly usersService: UsersService,
     @Inject(forwardRef(() => StudiosService))
     private readonly studiosService: StudiosService,
+    @Inject(forwardRef(() => UploadsService))
+    private readonly uploadsService: UploadsService,
   ) {}
 
   async getAllStudioPhotos(
@@ -114,6 +117,7 @@ export class PhotosService {
 
       const [photos, count] = await query
         .where({ gender: gender ? gender : Not(IsNull()) })
+        .andWhere('studio.coverPhotoUrl IS NOT NULL')
         .andWhere(
           backgroundConceptSlugs.length !== 0
             ? 'backgroundConcept.slug IN (:bgSlugs)'
@@ -141,15 +145,19 @@ export class PhotosService {
       let heartPhotos: UsersHeartStudioPhotos[] = [];
       if (user) {
         const photoIds = photos.map(photo => photo.id);
-        heartPhotos = await this.usersHeartStudioPhotosRepository
+        const query = this.usersHeartStudioPhotosRepository
           .createQueryBuilder('heart')
           .select(['heart.id'])
           .leftJoin('heart.user', 'user')
           .leftJoin('heart.studioPhoto', 'photo')
           .addSelect(['photo.id'])
-          .where('user.id = :id', { id: user.id })
-          .andWhere('photo.id IN (:photoIds)', { photoIds })
-          .getMany();
+          .where('user.id = :id', { id: user.id });
+
+        if (photoIds.length > 0) {
+          heartPhotos = await query
+            .andWhere('photo.id IN (:photoIds)', { photoIds })
+            .getMany();
+        }
       }
 
       // return
@@ -179,6 +187,11 @@ export class PhotosService {
         .createQueryBuilder('photo')
         .leftJoinAndSelect('photo.studio', 'studio')
         .where({ gender: gender ? gender : Not(IsNull()) })
+        .andWhere(
+          user && user.role === Role.ADMIN
+            ? '1=1'
+            : 'studio.coverPhotoUrl IS NOT NULL',
+        )
         .andWhere('studio.slug = :slug', { slug: studioSlug })
         .orderBy('photo.id', 'DESC')
         .take(photosPerPage)
@@ -188,15 +201,19 @@ export class PhotosService {
       let heartPhotos: UsersHeartStudioPhotos[] = [];
       if (user) {
         const photoIds = photos.map(photo => photo.id);
-        heartPhotos = await this.usersHeartStudioPhotosRepository
+        const query = this.usersHeartStudioPhotosRepository
           .createQueryBuilder('heart')
           .select(['heart.id'])
           .leftJoin('heart.user', 'user')
           .leftJoin('heart.studioPhoto', 'photo')
           .addSelect(['photo.id'])
-          .where('user.id = :id', { id: user.id })
-          .andWhere('photo.id IN (:photoIds)', { photoIds })
-          .getMany();
+          .where('user.id = :id', { id: user.id });
+
+        if (photoIds.length > 0) {
+          heartPhotos = await query
+            .andWhere('photo.id IN (:photoIds)', { photoIds })
+            .getMany();
+        }
       }
 
       return {
@@ -613,6 +630,15 @@ export class PhotosService {
         };
       }
       await this.studioPhotoRepository.delete({ id });
+      // Delete photos in storage
+      const thumbnailPhoto = photo.thumbnailUrl.substring(
+        photo.thumbnailUrl.indexOf('studio-photos'),
+      );
+      const originalPhoto = photo.originalUrl.substring(
+        photo.originalUrl.indexOf('studio-photos'),
+      );
+      await this.uploadsService.deleteFile(thumbnailPhoto);
+      await this.uploadsService.deleteFile(originalPhoto);
       return { ok: true };
     } catch (e) {
       console.log(e);
@@ -688,7 +714,7 @@ export class PhotosService {
       );
       photo.heartCount++;
       await this.studioPhotoRepository.save(photo);
-      return { ok: true };
+      return { ok: true, id };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
@@ -720,10 +746,10 @@ export class PhotosService {
           error: 'ALREADY_DISHEARTED',
         };
       }
-      await this.usersHeartStudioPhotosRepository.delete(heart.id);
+      await this.usersHeartStudioPhotosRepository.delete({ id: heart.id });
       photo.heartCount--;
       await this.studioPhotoRepository.save(photo);
-      return { ok: true };
+      return { ok: true, id };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
@@ -743,7 +769,8 @@ export class PhotosService {
         .leftJoinAndSelect('heart.studioPhoto', 'photo')
         .leftJoinAndSelect('photo.studio', 'studio')
         .where('user.id = :id', { id: user.id })
-        .orderBy('heart.heartAt')
+        .andWhere('studio.coverPhotoUrl IS NOT NULL')
+        .orderBy('heart.heartAt', 'DESC')
         .skip((page - 1) * photosPerPage)
         .take(photosPerPage)
         .getManyAndCount();

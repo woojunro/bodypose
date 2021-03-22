@@ -8,5 +8,6 @@ async function bootstrap() {
   app.enableCors();
   const PORT = Number(process.env.PORT) || 8080;
   await app.listen(PORT);
+  console.log(`SERVER IS LISTENING AT PORT ${PORT}`);
 }
 bootstrap();

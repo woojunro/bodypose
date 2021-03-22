@@ -16,6 +16,7 @@ import { UsersModule } from 'src/users/users.module';
 import { StudiosModule } from 'src/studios/studios.module';
 import { ReviewPhoto } from './entities/review-photo.entity';
 import { UsersHeartStudioPhotos } from './entities/users-heart-studio-photos.entity';
+import { UploadsModule } from 'src/uploads/uploads.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { UsersHeartStudioPhotos } from './entities/users-heart-studio-photos.ent
     ]),
     forwardRef(() => UsersModule),
     forwardRef(() => StudiosModule),
+    forwardRef(() => UploadsModule),
   ],
   providers: [PhotosService, PhotosResolver, UsersHeartStudioPhotosResolver],
   exports: [PhotosService],

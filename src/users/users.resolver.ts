@@ -49,7 +49,7 @@ export class UsersResolver {
     return this.usersService.createOrLoginUserWithOAuth(input);
   }
 
-  /* TBU
+  /* TBD
   @Mutation(returns => UpdateUserProfileOutput)
   @Roles(Role.USER)
   updateMyProfile(

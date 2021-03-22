@@ -9,6 +9,7 @@ import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { ReviewPhoto } from 'src/photos/entities/review-photo.entity';
 import { PhotosService } from 'src/photos/photos.service';
+import { UploadsService } from 'src/uploads/uploads.service';
 import { Role, User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
@@ -37,6 +38,7 @@ import {
 } from './dtos/delete-studio-review.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
+  GetAllStudioReviewsInput,
   GetStudioReviewsInput,
   GetStudioReviewsOutput,
   StudioReviewOrder,
@@ -48,6 +50,10 @@ import {
   StudioWithIsHearted,
 } from './dtos/get-studio.dto';
 import { HeartStudioInput, HeartStudioOutput } from './dtos/heart-studio.dto';
+import {
+  ReportStudioReviewInput,
+  ReportStudioReviewOutput,
+} from './dtos/report-studio-review.dto';
 import {
   UpdateBranchInput,
   UpdateBranchOutput,
@@ -71,6 +77,7 @@ import { StudioProduct } from './entities/studio-product.entity';
 import { Studio } from './entities/studio.entity';
 import { UsersClickStudios } from './entities/users-click-studios.entity';
 import { UsersHeartStudios } from './entities/users-heart-studios.entity';
+import { UsersReportStudioReviews } from './entities/users-report-studio-reviews.entity';
 import { UsersReviewStudios } from './entities/users-review-studios.entity';
 
 @Injectable()
@@ -94,10 +101,14 @@ export class StudiosService {
     private readonly usersClickStudiosRepository: Repository<UsersClickStudios>,
     @InjectRepository(UsersHeartStudios)
     private readonly usersHeartStudiosRepository: Repository<UsersHeartStudios>,
+    @InjectRepository(UsersReportStudioReviews)
+    private readonly usersReportStudioReviewsRepository: Repository<UsersReportStudioReviews>,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     @Inject(forwardRef(() => PhotosService))
     private readonly photosService: PhotosService,
+    @Inject(forwardRef(() => UploadsService))
+    private readonly uploadsService: UploadsService,
   ) {}
 
   getStudioById(id: number): Promise<Studio> {
@@ -151,10 +162,12 @@ export class StudiosService {
     { slug }: GetStudioInput,
   ): Promise<GetStudioOutput> {
     try {
-      const studio = await this.studioRepository.findOne(
+      let studio = await this.studioRepository.findOne(
         { slug },
         { relations: ['branches'] },
       );
+      if (!studio.coverPhotoUrl && (!user || user.role !== Role.ADMIN))
+        studio = null;
       if (!studio) {
         return {
           ok: false,
@@ -194,7 +207,7 @@ export class StudiosService {
   async getAllStudios(user: User): Promise<GetStudiosOutput> {
     try {
       const studios = await this.studioRepository.find({
-        relations: ['branches', 'coverPhoto'],
+        relations: ['branches'],
         select: [
           'id',
           'name',
@@ -204,6 +217,7 @@ export class StudiosService {
           'reviewCount',
           'totalRating',
           'premiumTier',
+          'coverPhotoUrl',
         ],
       });
       if (!studios) {
@@ -217,6 +231,8 @@ export class StudiosService {
       }
       const studiosWithIsHearted: StudioWithIsHearted[] = [];
       for (const studio of studios) {
+        if (!studio.coverPhotoUrl && (!user || user.role !== Role.ADMIN))
+          continue;
         studiosWithIsHearted.push({
           ...studio,
           isHearted: heartStudios.some(heart => heart.studioId === studio.id),
@@ -400,7 +416,7 @@ export class StudiosService {
       }
       // Create and save products
       const idList: number[] = [];
-      let lowestPrice = -1;
+      let lowestPrice = 0;
       for (const product of products) {
         const newProduct = this.studioProductRepository.create({ ...product });
         newProduct.studio = studio;
@@ -408,7 +424,10 @@ export class StudiosService {
           newProduct,
         );
         idList.push(id);
-        if (lowestPrice === -1 || weekdayPrice < lowestPrice) {
+        if (
+          lowestPrice === 0 ||
+          (weekdayPrice !== 0 && weekdayPrice < lowestPrice)
+        ) {
           lowestPrice = weekdayPrice;
         }
       }
@@ -451,14 +470,17 @@ export class StudiosService {
       // Overwrite
       const { studioProducts: currentProducts } = studio;
       const idList: number[] = [];
-      let lowestPrice = -1;
+      let lowestPrice = 0;
       for (let i = 0; i < currentProducts.length && i < products.length; i++) {
         currentProducts[i] = { ...currentProducts[i], ...products[i] };
         const { id, weekdayPrice } = await this.studioProductRepository.save(
           currentProducts[i],
         );
         idList.push(id);
-        if (lowestPrice === -1 || weekdayPrice < lowestPrice) {
+        if (
+          lowestPrice === 0 ||
+          (weekdayPrice !== 0 && weekdayPrice < lowestPrice)
+        ) {
           lowestPrice = weekdayPrice;
         }
       }
@@ -480,7 +502,10 @@ export class StudiosService {
             newProduct,
           );
           idList.push(id);
-          if (lowestPrice === -1 || weekdayPrice < lowestPrice) {
+          if (
+            lowestPrice === 0 ||
+            (weekdayPrice !== 0 && weekdayPrice < lowestPrice)
+          ) {
             lowestPrice = weekdayPrice;
           }
         }
@@ -870,9 +895,11 @@ export class StudiosService {
       const [reviews, count] = await this.studioReviewRepository
         .createQueryBuilder('review')
         .leftJoin('review.studio', 'studio')
-        .leftJoinAndSelect('review.user', 'user')
+        .leftJoin('review.user', 'user')
+        .addSelect('user.nickname')
         .leftJoinAndSelect('review.photos', 'photo')
         .where('studio.slug = :studioSlug', { studioSlug })
+        .andWhere('studio.coverPhotoUrl IS NOT NULL')
         .orderBy(orderByQuery, isDesc ? 'DESC' : 'ASC')
         .skip((page - 1) * reviewsPerPage)
         .take(reviewsPerPage)
@@ -895,6 +922,70 @@ export class StudiosService {
     }
   }
 
+  async getAllStudioReviews({
+    page,
+  }: GetAllStudioReviewsInput): Promise<GetStudioReviewsOutput> {
+    try {
+      const reviewsPerPage = 5;
+      const [reviews, count] = await this.studioReviewRepository
+        .createQueryBuilder('review')
+        .leftJoin('review.studio', 'studio')
+        .addSelect('studio.name')
+        .addSelect('studio.slug')
+        .leftJoin('review.user', 'user')
+        .addSelect('user.nickname')
+        .leftJoinAndSelect('review.photos', 'photo')
+        .where('studio.coverPhotoUrl IS NOT NULL')
+        .orderBy('review.createdAt', 'DESC')
+        .skip((page - 1) * reviewsPerPage)
+        .take(reviewsPerPage)
+        .getManyAndCount();
+      reviews.forEach(review => {
+        if (review.isPhotoForProof) {
+          review.photos = [];
+        }
+      });
+      return {
+        ok: true,
+        studioReviews: reviews,
+        totalPages: Math.ceil(count / reviewsPerPage),
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getMyStudioReviews(user: User): Promise<GetStudioReviewsOutput> {
+    try {
+      const { id: userId } = user;
+      const studioReviews = await this.studioReviewRepository
+        .createQueryBuilder('review')
+        .leftJoin('review.user', 'user')
+        .addSelect('user.nickname')
+        .leftJoin('review.studio', 'studio')
+        .addSelect('studio.name')
+        .addSelect('studio.slug')
+        .leftJoinAndSelect('review.photos', 'photo')
+        .where('user.id = :userId', { userId })
+        .andWhere('studio.coverPhotoUrl IS NOT NULL')
+        .orderBy('review.createdAt', 'DESC')
+        .getMany();
+      studioReviews.forEach(review => {
+        if (review.isPhotoForProof) {
+          review.photos = [];
+        }
+      });
+      return {
+        ok: true,
+        studioReviews,
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
   async deleteStudioReview(
     user: User,
     { id }: DeleteStudioReviewInput,
@@ -903,7 +994,7 @@ export class StudiosService {
       // Find review
       const review = await this.studioReviewRepository.findOne(
         { id },
-        { relations: ['user', 'studio'] },
+        { relations: ['user', 'studio', 'photos'] },
       );
       if (!review) {
         return {
@@ -918,12 +1009,69 @@ export class StudiosService {
           error: 'UNAUTHORIZED',
         };
       }
+      // Delete photos in storage
+      for (const photo of review.photos) {
+        const filename = photo.url.substring(
+          photo.url.indexOf('review-photos'),
+        );
+        await this.uploadsService.deleteFile(filename);
+      }
       // Delete and save
-      await this.studioReviewRepository.delete({ id });
       const { studio } = review;
       studio.reviewCount--;
       studio.totalRating -= review.rating;
       await this.studioRepository.save(studio);
+      await this.studioReviewRepository.delete({ id });
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async reportStudioReview(
+    user: User,
+    { studioReviewId, reason, detail }: ReportStudioReviewInput,
+  ): Promise<ReportStudioReviewOutput> {
+    try {
+      const studioReview = await this.studioReviewRepository.findOne({
+        id: studioReviewId,
+      });
+      if (!studioReview) {
+        return {
+          ok: false,
+          error: 'STUDIO_REVIEW_NOT_FOUND',
+        };
+      }
+      let isAlreadyReported;
+      if (user) {
+        isAlreadyReported = await this.usersReportStudioReviewsRepository.findOne(
+          {
+            studioReview: { id: studioReviewId },
+            user: { id: user.id },
+          },
+        );
+      } else {
+        isAlreadyReported = await this.usersReportStudioReviewsRepository.findOne(
+          {
+            studioReview: { id: studioReviewId },
+          },
+        );
+      }
+      if (isAlreadyReported) {
+        return {
+          ok: false,
+          error: 'ALREADY_REPORTED',
+        };
+      }
+      await this.usersReportStudioReviewsRepository.save(
+        this.usersReportStudioReviewsRepository.create({
+          studioReview: { id: studioReviewId },
+          user,
+          reason,
+          detail,
+        }),
+      );
       return { ok: true };
     } catch (e) {
       console.log(e);
@@ -1007,7 +1155,9 @@ export class StudiosService {
         };
       }
       // 삭제
-      await this.usersHeartStudiosRepository.delete(isAlreadyHearted.id);
+      await this.usersHeartStudiosRepository.delete({
+        id: isAlreadyHearted.id,
+      });
       // 스튜디오 heartCount 감소
       studio.heartCount--;
       await this.studioRepository.save(studio);
@@ -1021,13 +1171,14 @@ export class StudiosService {
   async getHeartStudios(user: User): Promise<GetStudiosOutput> {
     try {
       const heartStudios = await this.usersHeartStudiosRepository.find({
-        relations: ['studio', 'studio.coverPhoto', 'studio.branches'],
+        relations: ['studio', 'studio.branches'],
         where: { user: user.id },
         order: { heartAt: 'DESC' },
       });
       const studios: StudioWithIsHearted[] = [];
       for (const heartStudio of heartStudios) {
         const { studio } = heartStudio;
+        if (!studio.coverPhotoUrl) continue;
         studios.push({
           ...studio,
           isHearted: true,

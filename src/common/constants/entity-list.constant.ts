@@ -17,6 +17,7 @@ import { StudioProduct } from 'src/studios/entities/studio-product.entity';
 import { Studio } from 'src/studios/entities/studio.entity';
 import { UsersClickStudios } from 'src/studios/entities/users-click-studios.entity';
 import { UsersHeartStudios } from 'src/studios/entities/users-heart-studios.entity';
+import { UsersReportStudioReviews } from 'src/studios/entities/users-report-studio-reviews.entity';
 import { UsersReviewStudios } from 'src/studios/entities/users-review-studios.entity';
 import { PasswordReset } from 'src/users/entities/password_reset.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -44,4 +45,5 @@ export const ENTITY_LIST = [
   Notice,
   UsersHeartStudios,
   UsersHeartStudioPhotos,
+  UsersReportStudioReviews,
 ];

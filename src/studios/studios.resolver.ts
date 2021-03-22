@@ -27,6 +27,7 @@ import {
 } from './dtos/delete-studio-review.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
+  GetAllStudioReviewsInput,
   GetStudioReviewsInput,
   GetStudioReviewsOutput,
 } from './dtos/get-studio-review.dto';
@@ -36,6 +37,10 @@ import {
   GetStudioOutput,
 } from './dtos/get-studio.dto';
 import { HeartStudioInput, HeartStudioOutput } from './dtos/heart-studio.dto';
+import {
+  ReportStudioReviewInput,
+  ReportStudioReviewOutput,
+} from './dtos/report-studio-review.dto';
 import {
   UpdateBranchInput,
   UpdateBranchOutput,
@@ -180,14 +185,23 @@ export class StudioReviewResolver {
     return this.studiosService.getStudioReviews(input);
   }
 
-  @Mutation(returns => CreateStudioReviewOutput)
-  @Roles(Role.USER)
-  createStudioReview(
-    @CurrentUser() user: User,
-    @Args('input') input: CreateStudioReviewInput,
-  ): Promise<CreateStudioReviewOutput> {
-    return this.studiosService.createStudioReview(user, input);
+  // Public
+  @Query(returns => GetStudioReviewsOutput)
+  allStudioReviews(
+    @Args('input') input: GetAllStudioReviewsInput,
+  ): Promise<GetStudioReviewsOutput> {
+    return this.studiosService.getAllStudioReviews(input);
   }
+
+  @Query(returns => GetStudioReviewsOutput)
+  @Roles(Role.USER)
+  myStudioReviews(@CurrentUser() user: User): Promise<GetStudioReviewsOutput> {
+    return this.studiosService.getMyStudioReviews(user);
+  }
+
+  /*
+  리뷰 작성 API는 사진 업로드 관계로 uploads에서 담당
+  */
 
   @Mutation(returns => DeleteStudioReviewOutput)
   @Roles(Role.USER, Role.ADMIN)
@@ -196,6 +210,15 @@ export class StudioReviewResolver {
     @Args('input') input: DeleteStudioReviewInput,
   ): Promise<DeleteStudioReviewOutput> {
     return this.studiosService.deleteStudioReview(user, input);
+  }
+
+  // Public
+  @Mutation(returns => ReportStudioReviewOutput)
+  reportStudioReview(
+    @CurrentUser() user: User,
+    @Args('input') input: ReportStudioReviewInput,
+  ): Promise<ReportStudioReviewOutput> {
+    return this.studiosService.reportStudioReview(user, input);
   }
 }
 

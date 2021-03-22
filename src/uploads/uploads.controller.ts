@@ -11,10 +11,15 @@ import {
   FilesInterceptor,
 } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
+import { CurrentRestUser } from 'src/auth/current-user.decorator';
 import { RestJwtAuthGuard } from 'src/auth/rest-jwt-auth.guard';
 import { RestRoles } from 'src/auth/roles.decorator';
-import { Role } from 'src/users/entities/user.entity';
-import { UploadPhotoDto } from './dtos/upload-studio-photo.dto';
+import { CreateStudioReviewOutput } from 'src/studios/dtos/create-studio-review.dto';
+import { Role, User } from 'src/users/entities/user.entity';
+import {
+  UploadPhotoDto,
+  UploadStudioReviewDto,
+} from './dtos/upload-studio-photo.dto';
 import { UploadsService } from './uploads.service';
 import { imageFileFilter } from './utils/file-upload';
 
@@ -22,7 +27,7 @@ import { imageFileFilter } from './utils/file-upload';
 export class UploadsController {
   constructor(private readonly uploadsService: UploadsService) {}
 
-  @Post('review-photos')
+  @Post('studio-review')
   @RestRoles(Role.USER)
   @UseGuards(RestJwtAuthGuard)
   @UseInterceptors(
@@ -36,9 +41,10 @@ export class UploadsController {
   )
   async uploadReviewPhotos(
     @UploadedFiles() photos,
-    @Body() body: UploadPhotoDto,
-  ) {
-    return this.uploadsService.uploadReviewPhotos(photos, body);
+    @Body() body: UploadStudioReviewDto,
+    @CurrentRestUser() user: User,
+  ): Promise<CreateStudioReviewOutput> {
+    return this.uploadsService.uploadStudioReview(photos, body, user);
   }
 
   @Post('studio-photo')

@@ -32,6 +32,9 @@ export class GetStudioReviewsInput extends PaginationInput {
   order: StudioReviewOrder;
 }
 
+@InputType()
+export class GetAllStudioReviewsInput extends PaginationInput {}
+
 @ObjectType()
 export class GetStudioReviewsOutput extends PaginationOutput {
   @Field(type => [UsersReviewStudios], { nullable: true })

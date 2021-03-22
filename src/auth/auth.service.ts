@@ -1,4 +1,5 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
 import { SocialLoginMethod } from 'src/users/dtos/create-user.dto';
@@ -6,7 +7,9 @@ import { LoginMethod } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { LoginWithEmailInput, LoginOutput } from './dtos/login.dto';
 import { GetOAuthProfileWithAccessTokenOutput } from './dtos/oauth.dto';
+import { getGoogleProfileWithAccessToken } from './utils/googleAuth.util';
 import { getKakaoProfileWithAccessToken } from './utils/kakaoOAuth.util';
+import { getNaverProfileWithAccessToken } from './utils/naverLogin.util';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +17,7 @@ export class AuthService {
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   async loginWithEmail({
@@ -97,10 +101,13 @@ export class AuthService {
           result = await getKakaoProfileWithAccessToken(accessToken);
           break;
         case LoginMethod.NAVER:
-          // TODO: Naver Auth 구현
+          result = await getNaverProfileWithAccessToken(accessToken);
           break;
         case LoginMethod.GOOGLE:
-          // TODO: Google Auth 구현
+          result = await getGoogleProfileWithAccessToken(
+            this.configService.get<string>('GOOGLE_AUTH_CLIENT_ID'),
+            accessToken,
+          );
           break;
         default:
           result = {

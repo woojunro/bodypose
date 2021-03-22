@@ -165,9 +165,23 @@ export class UsersService {
       if (!ok) {
         return { ok, error };
       }
+      const user = await this.userRepository.findOne({
+        loginMethod: createWith,
+        socialId,
+      });
+      if (user) {
+        // Issue token
+        return await this.authService.loginWithOAuth(
+          user.loginMethod as SocialLoginMethod,
+          user.socialId,
+        );
+      }
       // If there is a user with the same email, change its loginMethod
       if (email) {
-        const userWithEmail = await this.userRepository.findOne({ email });
+        const userWithEmail = await this.userRepository.findOne({
+          email,
+          loginMethod: LoginMethod.EMAIL,
+        });
         if (userWithEmail) {
           userWithEmail.loginMethod = createWith;
           userWithEmail.socialId = socialId;
@@ -176,6 +190,7 @@ export class UsersService {
           const user = await this.userRepository.save({
             ...userWithEmail,
             ...profiles,
+            isVerified: true,
           });
           return await this.authService.loginWithOAuth(
             createWith,
@@ -184,27 +199,21 @@ export class UsersService {
         }
       }
       // If the user does not exist, create one
-      let user = await this.userRepository.findOne({
+      const newUser = this.userRepository.create({
         loginMethod: createWith,
         socialId,
+        email,
+        isVerified: true,
+        ...profiles,
       });
-      if (!user) {
-        user = this.userRepository.create({
-          loginMethod: createWith,
-          socialId,
-          email,
-          isVerified: true,
-          ...profiles,
-        });
-        // Get a possible nickname
-        const newNickname = await this.getPossibleNickname(nickname);
-        user.nickname = newNickname;
-        user = await this.userRepository.save(user);
-      }
+      // Get a possible nickname
+      const newNickname = await this.getPossibleNickname(nickname);
+      newUser.nickname = newNickname;
+      const createdUser = await this.userRepository.save(newUser);
       // Get JWT token
       const loginResult = await this.authService.loginWithOAuth(
-        user.loginMethod as SocialLoginMethod,
-        user.socialId,
+        createdUser.loginMethod as SocialLoginMethod,
+        createdUser.socialId,
       );
       return {
         ok: loginResult.ok,
@@ -225,7 +234,10 @@ export class UsersService {
     email: string,
     options?: FindOneOptions<User>,
   ): Promise<User> {
-    return this.userRepository.findOne({ email }, options);
+    return this.userRepository.findOne(
+      { email, loginMethod: LoginMethod.EMAIL },
+      options,
+    );
   }
 
   async getUserByNickname(
@@ -263,60 +275,8 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
-  /* TBU
-  async updateUserProfileById(
-    id: number,
-    { email, nickname, ...others }: UpdateUserProfileInput,
-  ): Promise<UpdateUserProfileOutput> {
-    try {
-      const userToUpdate = await this.getUserById(id);
-      if (!userToUpdate) {
-        return {
-          ok: false,
-          error: 'User not found',
-        };
-      }
-
-      if (email) {
-        // If email exists, do not allow to update it
-        if (userToUpdate.email) {
-          return {
-            ok: false,
-            error: 'You cannot change email once you register',
-          };
-        }
-        const userWithEmail = await this.getUserByEmail(email);
-        if (userWithEmail) {
-          return {
-            ok: false,
-            error: 'User with that email already exists',
-          };
-        }
-        userToUpdate.email = email;
-      }
-      if (nickname) {
-        const userWithNickname = await this.getUserByNickname(nickname);
-        if (userWithNickname) {
-          return {
-            ok: false,
-            error: 'User with that nickname already exists',
-          };
-        }
-        userToUpdate.nickname = nickname;
-      }
-      for (const key in others) {
-        userToUpdate[key] = others[key];
-      }
-      const updatedUser = await this.updateUser(userToUpdate);
-      return {
-        ok: true,
-        profile: updatedUser,
-      };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
-  }
+  /* TBD
+  프로필 수정 API
   */
 
   async deleteUserById(id: number): Promise<DeleteUserOutput> {
@@ -340,9 +300,11 @@ export class UsersService {
               };
             }
             break;
-          // TODO: Naver
+          case LoginMethod.NAVER:
+            break;
+          case LoginMethod.GOOGLE:
+            break;
           // TODO: Facebook
-          // TODO: Google
           default:
             throw new InternalServerErrorException();
         }
