@@ -48,6 +48,10 @@ const StudioInfoScreen = () => {
   };
 
   useEffect(() => {
+    setNavigator('portfolio');
+  }, [slug]);
+
+  useEffect(() => {
     window.onscroll = () => {
       setOffsetY(window.pageYOffset);
     };
