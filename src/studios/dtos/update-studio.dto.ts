@@ -25,6 +25,8 @@ class UpdateStudioPayload extends PartialType(
       'weekendPriceTag',
       'additionalProductListDescription',
       'coverPhotoUrl',
+      'reservationInfoDescription',
+      'cancelInfoDescription',
     ],
     InputType,
   ),

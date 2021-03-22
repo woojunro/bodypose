@@ -141,6 +141,20 @@ export class Studio extends CoreEntity {
   @IsString()
   parkingInfoDescription?: string;
 
+  // 예약 방법 정보 문구
+  @Column({ type: 'text', nullable: true })
+  @Field(type => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  reservationInfoDescription?: string;
+
+  // 취소, 환불 정보 문구
+  @Column({ type: 'text', nullable: true })
+  @Field(type => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  cancelInfoDescription?: string;
+
   // 스튜디오 촬영 상품 목록 설명 문구
   @Column({ nullable: true })
   @Field(type => String, { nullable: true })
