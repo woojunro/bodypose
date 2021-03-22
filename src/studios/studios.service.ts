@@ -424,7 +424,10 @@ export class StudiosService {
           newProduct,
         );
         idList.push(id);
-        if (lowestPrice === 0 || weekdayPrice < lowestPrice) {
+        if (
+          lowestPrice === 0 ||
+          (weekdayPrice !== 0 && weekdayPrice < lowestPrice)
+        ) {
           lowestPrice = weekdayPrice;
         }
       }
@@ -474,7 +477,10 @@ export class StudiosService {
           currentProducts[i],
         );
         idList.push(id);
-        if (lowestPrice === 0 || weekdayPrice < lowestPrice) {
+        if (
+          lowestPrice === 0 ||
+          (weekdayPrice !== 0 && weekdayPrice < lowestPrice)
+        ) {
           lowestPrice = weekdayPrice;
         }
       }
@@ -496,7 +502,10 @@ export class StudiosService {
             newProduct,
           );
           idList.push(id);
-          if (lowestPrice === 0 || weekdayPrice < lowestPrice) {
+          if (
+            lowestPrice === 0 ||
+            (weekdayPrice !== 0 && weekdayPrice < lowestPrice)
+          ) {
             lowestPrice = weekdayPrice;
           }
         }
@@ -1000,12 +1009,6 @@ export class StudiosService {
           error: 'UNAUTHORIZED',
         };
       }
-      // Delete and save
-      await this.studioReviewRepository.delete({ id });
-      const { studio } = review;
-      studio.reviewCount--;
-      studio.totalRating -= review.rating;
-      await this.studioRepository.save(studio);
       // Delete photos in storage
       for (const photo of review.photos) {
         const filename = photo.url.substring(
@@ -1013,6 +1016,12 @@ export class StudiosService {
         );
         await this.uploadsService.deleteFile(filename);
       }
+      // Delete and save
+      const { studio } = review;
+      studio.reviewCount--;
+      studio.totalRating -= review.rating;
+      await this.studioRepository.save(studio);
+      await this.studioReviewRepository.delete({ id });
       return { ok: true };
     } catch (e) {
       console.log(e);
