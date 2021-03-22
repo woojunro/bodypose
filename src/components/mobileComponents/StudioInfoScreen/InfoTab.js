@@ -16,7 +16,7 @@ const InfoTab = ({ currentStudio }) => {
       )}
       {currentStudio.reservationInfoDescription && (
         <InfoToggleDiv
-          title="예약 정보"
+          title="예약 방법"
           content={currentStudio.reservationInfoDescription}
         />
       )}

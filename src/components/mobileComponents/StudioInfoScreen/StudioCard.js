@@ -8,7 +8,10 @@ const StudioCard = ({ title, studioName, pic, price }) => {
     <div
       className="seeMoreCardContainer"
       onClick={() => {
-        history.push(`/studios/${studioName}`);
+        history.push({
+          pathname: `/studios/${studioName}`,
+          state: { previousPath: history.location.pathname },
+        });
         window.scrollTo(0, 0);
       }}
     >
