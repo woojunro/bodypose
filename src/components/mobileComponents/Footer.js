@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { PRIVACY_NOTICE_ID, TEMRS_NOTICE_ID } from '../../constants/noticeIds';
 import './Footer.css';
 
@@ -9,7 +9,7 @@ const Footer = () => {
     <div className="footer">
       <span
         onClick={() => {
-          history.push(`/noticex/${TEMRS_NOTICE_ID}`);
+          history.push(`/notices/${TEMRS_NOTICE_ID}`);
           window.scrollTo(0, 0);
         }}
         className="footerText"
@@ -20,7 +20,7 @@ const Footer = () => {
 
       <span
         onClick={() => {
-          history.push(`/noticex/${PRIVACY_NOTICE_ID}`);
+          history.push(`/notices/${PRIVACY_NOTICE_ID}`);
           window.scrollTo(0, 0);
         }}
         className="footerText"
