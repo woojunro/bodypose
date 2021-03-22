@@ -1,0 +1,10 @@
+mutation {
+  loginWithEmail(input: {
+    email: "nicolas@gmail.com"
+    password: "abcde12345"
+  }) {
+    ok
+    error
+    token
+  }
+}

@@ -1,0 +1,8 @@
+mutation {
+  verifyUser(input: {
+    code: ""
+  }) {
+    ok
+    error
+  }
+}

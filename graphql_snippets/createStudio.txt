@@ -1,0 +1,13 @@
+mutation {
+  createStudio(input: {
+    name: "밸런스버튼"
+    slug: "balance-button"
+    contactUrl: "https://pf.kakao.com/_xgalxgT"
+    reservationUrl: "http://balancebutton.com/reservation"
+  }) {
+    ok
+    error
+    id
+    slug
+  }
+}

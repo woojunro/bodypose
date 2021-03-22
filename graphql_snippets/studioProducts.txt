@@ -1,0 +1,29 @@
+query {
+  products(input: {
+    slug: "balance-button"
+  }) {
+    ok
+    error
+    studioProducts {
+      type
+      title
+      peopleCount
+      conceptCount
+      cutCount
+      minuteCount
+      description
+      weekdayPrice
+      weekendPrice
+    }
+    sponsoredProducts {
+      title
+      normalPrice
+      sponsoredPrice
+    }
+    additionalProducts {
+      title
+      description
+      price
+    }
+  }
+}
