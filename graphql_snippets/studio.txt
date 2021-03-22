@@ -1,0 +1,20 @@
+query {
+  studio(input: {
+    slug: "balance-button"
+  }) {
+    ok
+    error
+    studio {
+      id
+      name
+      logoUrl
+      contactUrl
+      reservationUrl
+      branches {
+        name
+        address
+      }
+      isHearted
+    }
+  }
+}

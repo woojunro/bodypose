@@ -1,0 +1,11 @@
+query {
+  myProfile {
+    ok
+    error
+    profile {
+      id
+      email
+      nickname
+    }
+  }
+}
