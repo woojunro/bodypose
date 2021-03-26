@@ -67,6 +67,7 @@ import { ENTITY_LIST } from './common/constants/entity-list.constant';
           },
           synchronize: false,
           entities: ENTITY_LIST,
+          charset: 'utf8mb4',
         })
       : TypeOrmModule.forRoot({
           type: 'mysql',
@@ -78,6 +79,7 @@ import { ENTITY_LIST } from './common/constants/entity-list.constant';
           synchronize: true,
           logging: true,
           entities: ENTITY_LIST,
+          charset: 'utf8mb4',
         }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
