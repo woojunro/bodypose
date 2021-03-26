@@ -180,17 +180,19 @@ export class StudioReviewResolver {
   // Public
   @Query(returns => GetStudioReviewsOutput)
   studioReviews(
+    @CurrentUser() user: User,
     @Args('input') input: GetStudioReviewsInput,
   ): Promise<GetStudioReviewsOutput> {
-    return this.studiosService.getStudioReviews(input);
+    return this.studiosService.getStudioReviews(user, input);
   }
 
   // Public
   @Query(returns => GetStudioReviewsOutput)
   allStudioReviews(
+    @CurrentUser() user: User,
     @Args('input') input: GetAllStudioReviewsInput,
   ): Promise<GetStudioReviewsOutput> {
-    return this.studiosService.getAllStudioReviews(input);
+    return this.studiosService.getAllStudioReviews(user, input);
   }
 
   @Query(returns => GetStudioReviewsOutput)

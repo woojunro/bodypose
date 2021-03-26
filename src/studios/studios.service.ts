@@ -864,11 +864,10 @@ export class StudiosService {
     }
   }
 
-  async getStudioReviews({
-    studioSlug,
-    order,
-    page,
-  }: GetStudioReviewsInput): Promise<GetStudioReviewsOutput> {
+  async getStudioReviews(
+    user: User,
+    { studioSlug, order, page }: GetStudioReviewsInput,
+  ): Promise<GetStudioReviewsOutput> {
     try {
       const reviewsPerPage = 5;
       // Set query order
@@ -906,7 +905,7 @@ export class StudiosService {
         .getManyAndCount();
       // Make photos empty if isPhotoForProof is true
       reviews.forEach(review => {
-        if (review.isPhotoForProof) {
+        if (user?.role !== Role.ADMIN && review.isPhotoForProof) {
           review.photos = [];
         }
       });
@@ -922,9 +921,10 @@ export class StudiosService {
     }
   }
 
-  async getAllStudioReviews({
-    page,
-  }: GetAllStudioReviewsInput): Promise<GetStudioReviewsOutput> {
+  async getAllStudioReviews(
+    user: User,
+    { page }: GetAllStudioReviewsInput,
+  ): Promise<GetStudioReviewsOutput> {
     try {
       const reviewsPerPage = 5;
       const [reviews, count] = await this.studioReviewRepository
@@ -941,7 +941,7 @@ export class StudiosService {
         .take(reviewsPerPage)
         .getManyAndCount();
       reviews.forEach(review => {
-        if (review.isPhotoForProof) {
+        if (user?.role !== Role.ADMIN && review.isPhotoForProof) {
           review.photos = [];
         }
       });
