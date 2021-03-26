@@ -4,7 +4,6 @@
   left: 0;
   z-index: 100;
   width: 100vw;
-  height: 100vh;
   background-color: white;
 }
 .reviewContainer {
@@ -47,6 +46,7 @@
   margin-top: 10px;
   padding-left: 25px;
   padding-right: 25px;
+  background-color: white;
 }
 .addReviewPicButton {
   cursor: pointer;
