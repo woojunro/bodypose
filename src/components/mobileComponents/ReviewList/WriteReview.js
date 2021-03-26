@@ -248,7 +248,7 @@ const WriteReview = ({
                 <textarea
                   className="reviewTextArea"
                   value={reviewText}
-                  placeholder="솔직한 리뷰는 많은 분들꼐 도움이 됩니다. (12자 이상)"
+                  placeholder="솔직한 리뷰는 많은 분들께 도움이 됩니다. (12자 이상)"
                   onChange={e => {
                     setReviewText(e.target.value);
                   }}
