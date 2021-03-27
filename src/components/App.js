@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { createBrowserHistory } from 'history';
 import ReactGA from 'react-ga';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { clearTokenAndCache } from '../apollo';
-import { isIE } from 'react-device-detect';
 
-import IEScreen from '../screens/mobileScreens/IEScreen';
 import HomeScreenM from '../screens/mobileScreens/HomeScreen';
 import StudioInfoScreenM from '../screens/mobileScreens/StudioInfoScreen';
 import StudioListScreenM from '../screens/mobileScreens/StudioListScreen';
@@ -58,9 +56,6 @@ const App = () => {
       clearTokenAndCache();
     },
   });
-  if (isIE) {
-    return <IEScreen />;
-  }
 
   if (loading) {
     return (
