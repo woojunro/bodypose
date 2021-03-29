@@ -1,7 +1,7 @@
 import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
 import { IsString } from 'class-validator';
 import { CoreOutput } from 'src/common/dtos/output.dto';
-import { PasswordReset } from '../entities/password_reset.entity';
+import { PasswordReset } from '../entities/password-reset.entity';
 import { User } from '../entities/user.entity';
 
 @InputType()

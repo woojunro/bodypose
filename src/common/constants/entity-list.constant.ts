@@ -19,12 +19,16 @@ import { UsersClickStudios } from 'src/studios/entities/users-click-studios.enti
 import { UsersHeartStudios } from 'src/studios/entities/users-heart-studios.entity';
 import { UsersReportStudioReviews } from 'src/studios/entities/users-report-studio-reviews.entity';
 import { UsersReviewStudios } from 'src/studios/entities/users-review-studios.entity';
-import { PasswordReset } from 'src/users/entities/password_reset.entity';
+import { PasswordReset } from 'src/users/entities/password-reset.entity';
+import { SocialAccount } from 'src/users/entities/social-account.entity';
+import { UserProfile } from 'src/users/entities/user-profile.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Verification } from 'src/users/entities/verification.entity';
 
 export const ENTITY_LIST = [
   User,
+  UserProfile,
+  SocialAccount,
   Verification,
   Studio,
   Branch,

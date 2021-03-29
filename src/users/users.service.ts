@@ -32,8 +32,8 @@ import {
   UpdateNicknameOutput,
 } from './dtos/update-user.dto';
 import { VerifyUserOutput } from './dtos/verify-user.dto';
-import { PasswordReset } from './entities/password_reset.entity';
-import { LoginMethod, Role, User } from './entities/user.entity';
+import { PasswordReset } from './entities/password-reset.entity';
+import { LoginMethod, UserType, User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
 
 @Injectable()
@@ -101,7 +101,7 @@ export class UsersService {
       // Create and save the user
       const newUser = this.userRepository.create({ email, password, nickname });
       newUser.loginMethod = LoginMethod.EMAIL;
-      newUser.role = Role.USER;
+      newUser.role = UserType.USER;
       newUser.isVerified = false;
       const createdUser = await this.userRepository.save(newUser);
       // Create verification code and send it to the user
