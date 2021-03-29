@@ -21,7 +21,7 @@ registerEnumType(UserGender, { name: 'UserGender' });
 @Entity()
 @ObjectType()
 export class UserProfile extends CoreEntity {
-  @OneToOne(relation => User, user => user.profile)
+  @OneToOne(relation => User, user => user.profile, { onDelete: 'CASCADE' })
   user: User;
 
   @Column({ unique: true, length: 10 })

@@ -15,7 +15,9 @@ registerEnumType(SocialProvider, { name: 'SocialProvider' });
 
 @Entity()
 export class SocialAccount extends CoreEntity {
-  @ManyToOne(relation => User, user => user.socialAccounts)
+  @ManyToOne(relation => User, user => user.socialAccounts, {
+    onDelete: 'CASCADE',
+  })
   user: User;
 
   @Column({ type: 'enum', enum: SocialProvider })

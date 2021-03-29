@@ -1,7 +1,10 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
+import {
+  CommonError,
+  UNEXPECTED_ERROR,
+} from 'src/common/constants/error.constant';
 import { SocialLoginMethod } from 'src/users/dtos/create-user.dto';
 import { LoginMethod } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
@@ -23,36 +26,26 @@ export class AuthService {
   async emailLogin({ email, password }: EmailLoginInput): Promise<LoginOutput> {
     try {
       // Get a user with the inputted email
-      const user = await this.usersService.getUserByEmail(email, {
-        select: ['id', 'loginMethod', 'password'],
-      });
-      if (!user) {
-        return {
-          ok: false,
-          error: 'User not found',
-        };
-      }
-      // Check if the user is registered by email
-      if (user.loginMethod !== LoginMethod.EMAIL) {
-        return {
-          ok: false,
-          error: 'SOCIAL_USER',
-        };
-      }
+      const user = await this.usersService.getUserByEmail(email);
+      if (!user) return CommonError('USER_NOT_FOUND');
+      // Check if the user has social accounts
+      if (user.socialAccounts.length !== 0)
+        return CommonError('SOCIAL_ACCOUNTS_EXIST');
       // Check if the password is correct
       const isPasswordCorrect = await user.checkPassword(password);
-      if (!isPasswordCorrect) {
-        return {
-          ok: false,
-          error: 'Wrong password',
-        };
-      }
+      if (!isPasswordCorrect) return CommonError('WRONG_PASSWORD');
+      // Check if the user is locked
+      if (user.isLocked) return CommonError('USER_LOCKED');
       // Issue an auth token
-      const payload = { id: user.id, loginMethod: user.loginMethod };
+      const payload = { id: user.id };
       const token = this.jwtService.sign(payload);
+      // Update lastLogin
+      this.usersService.updateLastLoginAt(email);
+      // If not verified, notify
       return {
         ok: true,
         token,
+        error: !user.isVerified && 'USER_NOT_VERIFIED',
       };
     } catch (e) {
       console.log(e);

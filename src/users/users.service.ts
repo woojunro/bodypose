@@ -200,14 +200,14 @@ export class UsersService {
     return this.userRepository.findOne({ id }, options);
   }
 
-  async getUserByEmail(
-    email: string,
-    options?: FindOneOptions<User>,
-  ): Promise<User> {
-    return this.userRepository.findOne(
-      { email, loginMethod: LoginMethod.EMAIL },
-      options,
-    );
+  async getUserByEmail(email: string): Promise<User> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
+      .where('user.email = :email', { email })
+      .getOne();
+    return user;
   }
 
   async getUserByNickname(
@@ -222,6 +222,15 @@ export class UsersService {
     socialId: string,
   ): Promise<User> {
     return this.userRepository.findOne({ loginMethod, socialId });
+  }
+
+  async updateLastLoginAt(email: string): Promise<void> {
+    const user = await this.userRepository.findOne(
+      { email },
+      { select: ['id', 'lastLoginAt'] },
+    );
+    user.lastLoginAt = new Date();
+    this.userRepository.save(user);
   }
 
   async getMyProfile(user: User): Promise<GetMyProfileOutput> {

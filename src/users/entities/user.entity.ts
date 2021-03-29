@@ -16,6 +16,7 @@ import {
   Column,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
   OneToOne,
 } from 'typeorm';
@@ -68,6 +69,7 @@ export class User extends CoreEntity {
   deletedAt?: Date;
 
   @OneToOne(relation => UserProfile, profile => profile.user)
+  @JoinColumn()
   profile?: UserProfile;
 
   @OneToMany(relation => SocialAccount, account => account.user)

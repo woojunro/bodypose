@@ -4,8 +4,6 @@ import { Roles } from 'src/auth/roles.decorator';
 import {
   CreateUserWithEmailInput,
   CreateUserWithEmailOutput,
-  CreateOrLoginUserWithOAuthInput,
-  CreateOrLoginUserWithOAuthOutput,
 } from './dtos/create-user.dto';
 import { DeleteUserOutput } from './dtos/delete-user.dto';
 import { GetMyProfileOutput } from './dtos/get-user.dto';
@@ -20,7 +18,7 @@ import {
   UpdateNicknameOutput,
 } from './dtos/update-user.dto';
 import { VerifyUserInput, VerifyUserOutput } from './dtos/verify-user.dto';
-import { Role, User } from './entities/user.entity';
+import { UserType, User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
 @Resolver(of => User)
@@ -28,7 +26,7 @@ export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
   @Query(returns => GetMyProfileOutput)
-  @Roles(Role.USER)
+  @Roles(UserType.USER)
   myProfile(@CurrentUser() user: User): Promise<GetMyProfileOutput> {
     return this.usersService.getMyProfile(user);
   }
@@ -39,14 +37,6 @@ export class UsersResolver {
     @Args('input') input: CreateUserWithEmailInput,
   ): Promise<CreateUserWithEmailOutput> {
     return this.usersService.createUserWithEmail(input);
-  }
-
-  // Public
-  @Mutation(returns => CreateOrLoginUserWithOAuthOutput)
-  createOrLoginUserWithOAuth(
-    @Args('input') input: CreateOrLoginUserWithOAuthInput,
-  ): Promise<CreateOrLoginUserWithOAuthOutput> {
-    return this.usersService.createOrLoginUserWithOAuth(input);
   }
 
   /* TBD
@@ -61,7 +51,7 @@ export class UsersResolver {
   */
 
   @Mutation(returns => DeleteUserOutput)
-  @Roles(Role.USER)
+  @Roles(UserType.USER)
   deleteMyAccount(@CurrentUser() user: User): Promise<DeleteUserOutput> {
     return this.usersService.deleteUserById(user.id);
   }
@@ -89,7 +79,7 @@ export class UsersResolver {
     return this.usersService.updatePassword(input);
   }
 
-  @Roles(Role.USER)
+  @Roles(UserType.USER)
   @Mutation(returns => UpdateNicknameOutput)
   updateNickname(
     @CurrentUser() user: User,
