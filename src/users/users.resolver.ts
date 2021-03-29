@@ -6,7 +6,11 @@ import {
   CreateUserWithEmailOutput,
 } from './dtos/create-user.dto';
 import { DeleteUserOutput } from './dtos/delete-user.dto';
-import { GetMyProfileOutput } from './dtos/get-user.dto';
+import {
+  CreateMyProfileInput,
+  CreateMyProfileOutput,
+  GetMyProfileOutput,
+} from './dtos/user-profile.dto';
 import {
   RequestPasswordResetInput,
   RequestPasswordResetOutput,
@@ -37,6 +41,15 @@ export class UsersResolver {
     @Args('input') input: CreateUserWithEmailInput,
   ): Promise<CreateUserWithEmailOutput> {
     return this.usersService.createUserWithEmail(input);
+  }
+
+  @Mutation(returns => CreateMyProfileOutput)
+  @Roles(UserType.USER)
+  createMyProfile(
+    @CurrentUser() user: User,
+    @Args('input') input: CreateMyProfileInput,
+  ): Promise<CreateMyProfileOutput> {
+    return this.usersService.createMyProfile(user, input);
   }
 
   /* TBD

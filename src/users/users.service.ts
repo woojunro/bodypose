@@ -19,7 +19,11 @@ import {
   CreateUserWithEmailOutput,
 } from './dtos/create-user.dto';
 import { DeleteUserOutput } from './dtos/delete-user.dto';
-import { GetMyProfileOutput } from './dtos/get-user.dto';
+import {
+  CreateMyProfileInput,
+  CreateMyProfileOutput,
+  GetMyProfileOutput,
+} from './dtos/user-profile.dto';
 import {
   RequestPasswordResetInput,
   RequestPasswordResetOutput,
@@ -153,8 +157,8 @@ export class UsersService {
     return user;
   }
 
-  async getUserById(id: number, options?: FindOneOptions<User>): Promise<User> {
-    return this.userRepository.findOne({ id }, options);
+  async getUserById(id: number): Promise<User> {
+    return this.userRepository.findOne({ id });
   }
 
   async getUserByEmail(email: string): Promise<User> {
@@ -190,21 +194,53 @@ export class UsersService {
     this.userRepository.save(user);
   }
 
-  async getMyProfile(user: User): Promise<GetMyProfileOutput> {
-    if (!user) {
+  async createMyProfile(
+    user: User,
+    { nickname, gender }: CreateMyProfileInput,
+  ): Promise<CreateMyProfileOutput> {
+    try {
+      // Check nickname validity
+      const isNicknameValid = this.checkNicknameValidity(nickname);
+      if (!isNicknameValid) return CommonError('INVALID_NICKNAME');
+
+      const { error } = await this.getMyProfile(user);
+      if (error !== 'PROFILE_NOT_FOUND')
+        return CommonError('PROFILE_ALREADY_EXISTS');
+
+      const profile = await this.userProfileRepository.findOne({ nickname });
+      if (profile) return CommonError('DUPLICATE_NICKNAME');
+
+      await this.userProfileRepository.save(
+        this.userProfileRepository.create({
+          nickname,
+          gender,
+          user,
+        }),
+      );
+
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
       return UNEXPECTED_ERROR;
     }
+  }
 
-    return {
-      ok: true,
-      profile: {
-        id: user.id,
-        email: user.email,
-        loginMethod: user.loginMethod,
-        nickname: user.nickname,
-        isVerified: user.isVerified,
-      },
-    };
+  async getMyProfile(user: User): Promise<GetMyProfileOutput> {
+    try {
+      const profile = await this.userProfileRepository
+        .createQueryBuilder('profile')
+        .where('profile.userId = :id', { id: user.id })
+        .getOne();
+
+      return {
+        ok: Boolean(profile),
+        error: !profile && 'PROFILE_NOT_FOUND',
+        profile,
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
   }
 
   updateUser(user: User): Promise<User> {
