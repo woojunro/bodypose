@@ -10,6 +10,8 @@ import {
   CreateMyProfileInput,
   CreateMyProfileOutput,
   GetMyProfileOutput,
+  UpdateMyProfileInput,
+  UpdateMyProfileOutput,
 } from './dtos/user-profile.dto';
 import {
   RequestPasswordResetInput,
@@ -52,16 +54,14 @@ export class UsersResolver {
     return this.usersService.createMyProfile(user, input);
   }
 
-  /* TBD
-  @Mutation(returns => UpdateUserProfileOutput)
-  @Roles(Role.USER)
+  @Mutation(returns => UpdateMyProfileOutput)
+  @Roles(UserType.USER)
   updateMyProfile(
     @CurrentUser() user: User,
-    @Args('input') input: UpdateUserProfileInput,
-  ): Promise<UpdateUserProfileOutput> {
-    return this.usersService.updateUserProfileById(user.id, input);
+    @Args('input') input: UpdateMyProfileInput,
+  ): Promise<UpdateMyProfileOutput> {
+    return this.usersService.updateMyProfile(user, input);
   }
-  */
 
   @Mutation(returns => DeleteUserOutput)
   @Roles(UserType.USER)

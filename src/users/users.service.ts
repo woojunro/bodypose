@@ -23,6 +23,8 @@ import {
   CreateMyProfileInput,
   CreateMyProfileOutput,
   GetMyProfileOutput,
+  UpdateMyProfileInput,
+  UpdateMyProfileOutput,
 } from './dtos/user-profile.dto';
 import {
   RequestPasswordResetInput,
@@ -243,13 +245,39 @@ export class UsersService {
     }
   }
 
+  async updateMyProfile(
+    user: User,
+    profile: UpdateMyProfileInput,
+  ): Promise<UpdateMyProfileOutput> {
+    try {
+      // Check if the profile exists
+      const queryResult = await this.getMyProfile(user);
+      if (!queryResult.ok) return queryResult;
+
+      const profileToUpdate = queryResult.profile;
+
+      if (profile.nickname) {
+        // Check nickname validity
+        const isNicknameValid = this.checkNicknameValidity(profile.nickname);
+        if (!isNicknameValid) return CommonError('INVALID_NICKNAME');
+        // Check duplicate nickname
+        const nicknameProfile = await this.userProfileRepository.findOne({
+          nickname: profile.nickname,
+        });
+        if (nicknameProfile) return CommonError('DUPLICATE_NICKNAME');
+      }
+      // Update
+      await this.userProfileRepository.save({ ...profileToUpdate, ...profile });
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
   updateUser(user: User): Promise<User> {
     return this.userRepository.save(user);
   }
-
-  /* TBD
-  프로필 수정 API
-  */
 
   async deleteUserById(id: number): Promise<DeleteUserOutput> {
     try {
