@@ -11,6 +11,7 @@ const NoticeBox = ({ notices }) => {
   const renderedNotices = Notices.map((notice) => {
     return (
       <div
+        key={notice.id}
         onClick={() => {
           history.push('/notices/' + notice.id);
           window.scrollTo(0, 0);

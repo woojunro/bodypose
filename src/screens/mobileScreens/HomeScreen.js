@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import HeaderM from '../../components/mobileComponents/HeaderM';
-import AdTap from '../../components/mobileComponents/homeScreen/AdTap';
+import AdTapCarousel from '../../components/mobileComponents/homeScreen/AdTabCarousel';
+
 import MainCardScrollView from '../../components/mobileComponents/homeScreen/MainCardScrollView';
 import SeeAll from '../../components/mobileComponents/homeScreen/SeeAll';
 import BottomNavigation from '../../components/mobileComponents/BottomNavigation';
@@ -117,7 +118,7 @@ const HomeScreen = () => {
         <AppErrorScreen />
       ) : (
         <>
-          <AdTap />
+          <AdTapCarousel />
           <MainCardScrollView studios={studioData.allStudios.studios} />
           <SeeAll />
           <FemaleConcepts concepts={femaleData.allStudioPhotos.photos} />
