@@ -12,7 +12,7 @@ class KakaoMap extends React.Component {
       //위도,경도, 줌 정도
       let options = {
         center: new kakao.maps.LatLng(0, 0),
-        level: 5,
+        level: 6,
       };
 
       const map = new window.kakao.maps.Map(container, options);
@@ -21,7 +21,7 @@ class KakaoMap extends React.Component {
       // 주소-좌표 변환 객체를 생성합니다
       var geocoder = new kakao.maps.services.Geocoder();
 
-      currentLocation.forEach(adr => {
+      currentLocation.forEach((adr) => {
         // 주소로 좌표를 검색합니다
         geocoder.addressSearch(adr.address, function (result, status) {
           // 정상적으로 검색이 완료됐으면
