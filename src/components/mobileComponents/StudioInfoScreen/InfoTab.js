@@ -16,13 +16,13 @@ const InfoTab = ({ currentStudio }) => {
       )}
       {currentStudio.reservationInfoDescription && (
         <InfoToggleDiv
-          title="예약 방법"
+          title="예약방법"
           content={currentStudio.reservationInfoDescription}
         />
       )}
       {currentStudio.cancelInfoDescription && (
         <InfoToggleDiv
-          title="예약 변경 및 예약 취소"
+          title="예약변경 및 예약취소"
           content={currentStudio.cancelInfoDescription}
         />
       )}
