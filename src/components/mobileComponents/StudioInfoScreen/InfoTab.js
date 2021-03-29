@@ -22,7 +22,7 @@ const InfoTab = ({ currentStudio }) => {
       )}
       {currentStudio.cancelInfoDescription && (
         <InfoToggleDiv
-          title="날짜 변경 및 예약 취소"
+          title="예약 변경 및 예약 취소"
           content={currentStudio.cancelInfoDescription}
         />
       )}
