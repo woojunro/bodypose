@@ -10,7 +10,7 @@ import { CoreOutput } from 'src/common/dtos/output.dto';
 import { ReviewPhoto } from 'src/photos/entities/review-photo.entity';
 import { PhotosService } from 'src/photos/photos.service';
 import { UploadsService } from 'src/uploads/uploads.service';
-import { Role, User } from 'src/users/entities/user.entity';
+import { UserType, User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import {
@@ -166,7 +166,7 @@ export class StudiosService {
         { slug },
         { relations: ['branches'] },
       );
-      if (!studio.coverPhotoUrl && (!user || user.role !== Role.ADMIN))
+      if (!studio.coverPhotoUrl && (!user || user.role !== UserType.ADMIN))
         studio = null;
       if (!studio) {
         return {
@@ -231,7 +231,7 @@ export class StudiosService {
       }
       const studiosWithIsHearted: StudioWithIsHearted[] = [];
       for (const studio of studios) {
-        if (!studio.coverPhotoUrl && (!user || user.role !== Role.ADMIN))
+        if (!studio.coverPhotoUrl && (!user || user.role !== UserType.ADMIN))
           continue;
         studiosWithIsHearted.push({
           ...studio,
@@ -905,7 +905,7 @@ export class StudiosService {
         .getManyAndCount();
       // Make photos empty if isPhotoForProof is true
       reviews.forEach(review => {
-        if (user?.role !== Role.ADMIN && review.isPhotoForProof) {
+        if (user?.role !== UserType.ADMIN && review.isPhotoForProof) {
           review.photos = [];
         }
       });
@@ -941,7 +941,7 @@ export class StudiosService {
         .take(reviewsPerPage)
         .getManyAndCount();
       reviews.forEach(review => {
-        if (user?.role !== Role.ADMIN && review.isPhotoForProof) {
+        if (user?.role !== UserType.ADMIN && review.isPhotoForProof) {
           review.photos = [];
         }
       });
@@ -1003,7 +1003,7 @@ export class StudiosService {
         };
       }
       // Check if the user is admin or author
-      if (user.role !== Role.ADMIN && user.id !== review.user.id) {
+      if (user.role !== UserType.ADMIN && user.id !== review.user.id) {
         return {
           ok: false,
           error: 'UNAUTHORIZED',

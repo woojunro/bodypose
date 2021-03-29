@@ -9,7 +9,7 @@ import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { StudiosService } from 'src/studios/studios.service';
 import { UploadsService } from 'src/uploads/uploads.service';
-import { Role, User } from 'src/users/entities/user.entity';
+import { UserType, User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { FindOneOptions, IsNull, Not, Repository } from 'typeorm';
 import {
@@ -188,7 +188,7 @@ export class PhotosService {
         .leftJoinAndSelect('photo.studio', 'studio')
         .where({ gender: gender ? gender : Not(IsNull()) })
         .andWhere(
-          user && user.role === Role.ADMIN
+          user && user.role === UserType.ADMIN
             ? '1=1'
             : 'studio.coverPhotoUrl IS NOT NULL',
         )

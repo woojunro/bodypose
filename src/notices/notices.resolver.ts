@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Roles } from 'src/auth/roles.decorator';
-import { Role } from 'src/users/entities/user.entity';
+import { UserType } from 'src/users/entities/user.entity';
 import {
   CreateNoticeInput,
   CreateNoticeOutput,
@@ -38,7 +38,7 @@ export class NoticesResolver {
     return this.noticesService.getNotice(input);
   }
 
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   @Mutation(returns => CreateNoticeOutput)
   createNotice(
     @Args('input') input: CreateNoticeInput,
@@ -46,13 +46,13 @@ export class NoticesResolver {
     return this.noticesService.createNotice(input);
   }
 
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   @Mutation(returns => UpdateNoticeOutput)
   updateNotice(@Args('input') input: UpdateNoticeInput) {
     return this.noticesService.updateNotice(input);
   }
 
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   @Mutation(returns => DeleteNoticeOutput)
   deleteNotice(
     @Args('input') input: DeleteNoticeInput,

@@ -1,7 +1,7 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { Role } from 'src/users/entities/user.entity';
+import { UserType } from 'src/users/entities/user.entity';
 import { REST_ROLES_KEY } from './roles.decorator';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class RestJwtAuthGuard extends AuthGuard('jwt') {
     }
     // Now req.user is set if the token is valid
     try {
-      const requiredRoles = this.reflector.getAllAndOverride<Role[]>(
+      const requiredRoles = this.reflector.getAllAndOverride<UserType[]>(
         REST_ROLES_KEY,
         [context.getHandler(), context.getClass()],
       );

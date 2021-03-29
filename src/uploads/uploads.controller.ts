@@ -15,7 +15,7 @@ import { CurrentRestUser } from 'src/auth/current-user.decorator';
 import { RestJwtAuthGuard } from 'src/auth/rest-jwt-auth.guard';
 import { RestRoles } from 'src/auth/roles.decorator';
 import { CreateStudioReviewOutput } from 'src/studios/dtos/create-studio-review.dto';
-import { Role, User } from 'src/users/entities/user.entity';
+import { UserType, User } from 'src/users/entities/user.entity';
 import {
   UploadPhotoDto,
   UploadStudioReviewDto,
@@ -28,7 +28,7 @@ export class UploadsController {
   constructor(private readonly uploadsService: UploadsService) {}
 
   @Post('studio-review')
-  @RestRoles(Role.USER)
+  @RestRoles(UserType.USER)
   @UseGuards(RestJwtAuthGuard)
   @UseInterceptors(
     FilesInterceptor('photos', 3, {
@@ -48,7 +48,7 @@ export class UploadsController {
   }
 
   @Post('studio-photo')
-  @RestRoles(Role.ADMIN)
+  @RestRoles(UserType.ADMIN)
   @UseGuards(RestJwtAuthGuard)
   @UseInterceptors(
     FileFieldsInterceptor(

@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import { Roles } from 'src/auth/roles.decorator';
-import { Role, User } from 'src/users/entities/user.entity';
+import { UserType, User } from 'src/users/entities/user.entity';
 import {
   CreateBranchInput,
   CreateBranchOutput,
@@ -82,7 +82,7 @@ export class StudiosResolver {
   }
 
   @Mutation(returns => CreateStudioOutput)
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   createStudio(
     @Args('input') input: CreateStudioInput,
   ): Promise<CreateStudioOutput> {
@@ -90,7 +90,7 @@ export class StudiosResolver {
   }
 
   @Mutation(returns => UpdateStudioOutput)
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   updateStudio(
     @Args('input') input: UpdateStudioInput,
   ): Promise<UpdateStudioOutput> {
@@ -98,7 +98,7 @@ export class StudiosResolver {
   }
 
   @Mutation(returns => CreateBranchOutput)
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   createBranches(
     @Args('input') input: CreateBranchInput,
   ): Promise<CreateBranchOutput> {
@@ -106,7 +106,7 @@ export class StudiosResolver {
   }
 
   @Mutation(returns => UpdateBranchOutput)
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   updateBranches(
     @Args('input') input: UpdateBranchInput,
   ): Promise<UpdateBranchOutput> {
@@ -125,7 +125,7 @@ export class ProductResolver {
   }
 
   @Mutation(returns => CreateProductsOutput)
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   createStudioProducts(
     @Args('input') input: CreateStudioProductsInput,
   ): Promise<CreateProductsOutput> {
@@ -133,7 +133,7 @@ export class ProductResolver {
   }
 
   @Mutation(returns => UpdateProductsOutput)
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   updateStudioProducts(
     @Args('input') input: UpdateStudioProductsInput,
   ): Promise<UpdateProductsOutput> {
@@ -141,7 +141,7 @@ export class ProductResolver {
   }
 
   @Mutation(returns => CreateProductsOutput)
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   createAdditionalProducts(
     @Args('input') input: CreateAdditionalProductsInput,
   ): Promise<CreateProductsOutput> {
@@ -149,7 +149,7 @@ export class ProductResolver {
   }
 
   @Mutation(returns => UpdateProductsOutput)
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   updateAdditionalProducts(
     @Args('input') input: UpdateAdditionalProductsInput,
   ): Promise<UpdateProductsOutput> {
@@ -157,7 +157,7 @@ export class ProductResolver {
   }
 
   @Mutation(returns => CreateHairMakeupShopsOutput)
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   createHairMakeupShops(
     @Args('input') input: CreateHairMakeupShopsInput,
   ): Promise<CreateHairMakeupShopsOutput> {
@@ -165,7 +165,7 @@ export class ProductResolver {
   }
 
   @Mutation(returns => UpdateHairMakeupShopsOutput)
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   updateHairMakeupShops(
     @Args('input') input: UpdateHairMakeupShopsInput,
   ): Promise<UpdateHairMakeupShopsOutput> {
@@ -196,7 +196,7 @@ export class StudioReviewResolver {
   }
 
   @Query(returns => GetStudioReviewsOutput)
-  @Roles(Role.USER)
+  @Roles(UserType.USER)
   myStudioReviews(@CurrentUser() user: User): Promise<GetStudioReviewsOutput> {
     return this.studiosService.getMyStudioReviews(user);
   }
@@ -206,7 +206,7 @@ export class StudioReviewResolver {
   */
 
   @Mutation(returns => DeleteStudioReviewOutput)
-  @Roles(Role.USER, Role.ADMIN)
+  @Roles(UserType.USER, UserType.ADMIN)
   deleteStudioReview(
     @CurrentUser() user: User,
     @Args('input') input: DeleteStudioReviewInput,
@@ -229,13 +229,13 @@ export class UsersHeartStudiosResolver {
   constructor(private readonly studiosService: StudiosService) {}
 
   @Query(returns => GetStudiosOutput)
-  @Roles(Role.USER)
+  @Roles(UserType.USER)
   myHeartStudios(@CurrentUser() user: User): Promise<GetStudiosOutput> {
     return this.studiosService.getHeartStudios(user);
   }
 
   @Mutation(returns => HeartStudioOutput)
-  @Roles(Role.USER)
+  @Roles(UserType.USER)
   heartStudio(
     @CurrentUser() user: User,
     @Args('input') input: HeartStudioInput,
@@ -244,7 +244,7 @@ export class UsersHeartStudiosResolver {
   }
 
   @Mutation(returns => HeartStudioOutput)
-  @Roles(Role.USER)
+  @Roles(UserType.USER)
   disheartStudio(
     @CurrentUser() user: User,
     @Args('input') input: HeartStudioInput,

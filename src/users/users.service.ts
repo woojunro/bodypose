@@ -17,9 +17,6 @@ import { FindOneOptions, Repository } from 'typeorm';
 import {
   CreateUserWithEmailInput,
   CreateUserWithEmailOutput,
-  CreateOrLoginUserWithOAuthInput,
-  CreateOrLoginUserWithOAuthOutput,
-  SocialLoginMethod,
 } from './dtos/create-user.dto';
 import { DeleteUserOutput } from './dtos/delete-user.dto';
 import { GetMyProfileOutput } from './dtos/get-user.dto';
@@ -35,6 +32,10 @@ import {
 } from './dtos/update-user.dto';
 import { VerifyUserOutput } from './dtos/verify-user.dto';
 import { PasswordReset } from './entities/password-reset.entity';
+import {
+  SocialAccount,
+  SocialProvider,
+} from './entities/social-account.entity';
 import { UserProfile } from './entities/user-profile.entity';
 import { UserType, User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
@@ -46,6 +47,8 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(UserProfile)
     private readonly userProfileRepository: Repository<UserProfile>,
+    @InjectRepository(SocialAccount)
+    private readonly socialAccountRepository: Repository<SocialAccount>,
     @InjectRepository(Verification)
     private readonly verificationRepository: Repository<Verification>,
     @InjectRepository(PasswordReset)
@@ -119,81 +122,35 @@ export class UsersService {
     }
   }
 
-  async createOrLoginUserWithOAuth({
-    accessToken,
-    createWith,
-  }: CreateOrLoginUserWithOAuthInput): Promise<CreateOrLoginUserWithOAuthOutput> {
-    try {
-      const {
-        ok,
-        error,
-        profile: { socialId, nickname, email, ...profiles },
-      } = await this.authService.getOAuthProfileWithAccessToken(
-        accessToken,
-        createWith,
-      );
-      if (!ok) {
-        return { ok, error };
-      }
-      const user = await this.userRepository.findOne({
-        loginMethod: createWith,
-        socialId,
-      });
-      if (user) {
-        // Issue token
-        return await this.authService.loginWithOAuth(
-          user.loginMethod as SocialLoginMethod,
-          user.socialId,
-        );
-      }
-      // If there is a user with the same email, change its loginMethod
-      if (email) {
-        const userWithEmail = await this.userRepository.findOne({
+  async createSocialAccount(
+    email: string,
+    provider: SocialProvider,
+    socialId: string,
+  ): Promise<User> {
+    let user = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.email = :email', { email })
+      .getOne();
+    if (!user) {
+      user = await this.userRepository.save(
+        this.userRepository.create({
           email,
-          loginMethod: LoginMethod.EMAIL,
-        });
-        if (userWithEmail) {
-          userWithEmail.loginMethod = createWith;
-          userWithEmail.socialId = socialId;
-          // Erase password
-          userWithEmail.password = null;
-          const user = await this.userRepository.save({
-            ...userWithEmail,
-            ...profiles,
-            isVerified: true,
-          });
-          return await this.authService.loginWithOAuth(
-            createWith,
-            user.socialId,
-          );
-        }
-      }
-      // If the user does not exist, create one
-      const newUser = this.userRepository.create({
-        loginMethod: createWith,
-        socialId,
-        email,
-        isVerified: true,
-        ...profiles,
-      });
-      // Get a possible nickname
-      const newNickname = await this.getPossibleNickname(nickname);
-      newUser.nickname = newNickname;
-      const createdUser = await this.userRepository.save(newUser);
-      // Get JWT token
-      const loginResult = await this.authService.loginWithOAuth(
-        createdUser.loginMethod as SocialLoginMethod,
-        createdUser.socialId,
+          isVerified: true,
+          isLocked: false,
+          type: UserType.USER,
+        }),
       );
-      return {
-        ok: loginResult.ok,
-        error: loginResult.error,
-        token: loginResult.token,
-      };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
     }
+
+    await this.socialAccountRepository.save(
+      this.socialAccountRepository.create({
+        user,
+        provider,
+        socialId,
+      }),
+    );
+
+    return user;
   }
 
   async getUserById(id: number, options?: FindOneOptions<User>): Promise<User> {
@@ -210,23 +167,23 @@ export class UsersService {
     return user;
   }
 
-  async getUserByNickname(
-    nickname: string,
-    options?: FindOneOptions<User>,
-  ): Promise<User> {
-    return this.userRepository.findOne({ nickname }, options);
-  }
-
   async getUserBySocialId(
-    loginMethod: SocialLoginMethod,
+    provider: SocialProvider,
     socialId: string,
   ): Promise<User> {
-    return this.userRepository.findOne({ loginMethod, socialId });
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoin('user.socialAccounts', 'socialAccount')
+      .where('socialAccount.provider = :provider', { provider })
+      .andWhere('socialAccount.socialId = :socialId', { socialId })
+      .getOne();
+
+    return user;
   }
 
-  async updateLastLoginAt(email: string): Promise<void> {
+  async updateLastLoginAt(id: number): Promise<void> {
     const user = await this.userRepository.findOne(
-      { email },
+      { id },
       { select: ['id', 'lastLoginAt'] },
     );
     user.lastLoginAt = new Date();

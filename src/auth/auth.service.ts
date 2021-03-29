@@ -5,10 +5,14 @@ import {
   CommonError,
   UNEXPECTED_ERROR,
 } from 'src/common/constants/error.constant';
-import { SocialLoginMethod } from 'src/users/dtos/create-user.dto';
-import { LoginMethod } from 'src/users/entities/user.entity';
+import { SocialProvider } from 'src/users/entities/social-account.entity';
+import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
-import { EmailLoginInput, LoginOutput } from './dtos/login.dto';
+import {
+  EmailLoginInput,
+  LoginOutput,
+  SocialLoginInput,
+} from './dtos/login.dto';
 import { GetOAuthProfileWithAccessTokenOutput } from './dtos/oauth.dto';
 import { getGoogleProfileWithAccessToken } from './utils/googleAuth.util';
 import { getKakaoProfileWithAccessToken } from './utils/kakaoOAuth.util';
@@ -23,6 +27,22 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
+  processLogin(user: User): LoginOutput {
+    // Check if the user is locked
+    if (user.isLocked) return CommonError('USER_LOCKED');
+    // Issue an auth token
+    const payload = { id: user.id };
+    const token = this.jwtService.sign(payload);
+    // Update lastLogin
+    this.usersService.updateLastLoginAt(user.id);
+    // If not verified, notify
+    return {
+      ok: true,
+      token,
+      error: !user.isVerified && 'USER_NOT_VERIFIED',
+    };
+  }
+
   async emailLogin({ email, password }: EmailLoginInput): Promise<LoginOutput> {
     try {
       // Get a user with the inputted email
@@ -34,46 +54,41 @@ export class AuthService {
       // Check if the password is correct
       const isPasswordCorrect = await user.checkPassword(password);
       if (!isPasswordCorrect) return CommonError('WRONG_PASSWORD');
-      // Check if the user is locked
-      if (user.isLocked) return CommonError('USER_LOCKED');
-      // Issue an auth token
-      const payload = { id: user.id };
-      const token = this.jwtService.sign(payload);
-      // Update lastLogin
-      this.usersService.updateLastLoginAt(email);
-      // If not verified, notify
-      return {
-        ok: true,
-        token,
-        error: !user.isVerified && 'USER_NOT_VERIFIED',
-      };
+
+      return this.processLogin(user);
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
     }
   }
 
-  async socialLogin(
-    createdWith: SocialLoginMethod,
-    socialId: string,
-  ): Promise<LoginOutput> {
+  async socialLogin({
+    provider,
+    accessToken,
+  }: SocialLoginInput): Promise<LoginOutput> {
     try {
-      const user = await this.usersService.getUserBySocialId(
-        createdWith,
-        socialId,
-      );
+      // Get OAuth Profile
+      const {
+        ok,
+        error,
+        profile: { socialId, email },
+      } = await this.getOAuthProfileWithAccessToken(accessToken, provider);
+      if (!ok) return { ok, error };
+
+      // TEMPORARY: FOR KAKAO
+      if (!email) return CommonError('EMAIL_NOT_FOUND');
+
+      // Check if the profile is connected to a user
+      let user = await this.usersService.getUserBySocialId(provider, socialId);
       if (!user) {
-        return {
-          ok: false,
-          error: 'User not found',
-        };
+        user = await this.usersService.createSocialAccount(
+          email,
+          provider,
+          socialId,
+        );
       }
-      const payload = { id: user.id, loginMethod: user.loginMethod };
-      const token = this.jwtService.sign(payload);
-      return {
-        ok: true,
-        token,
-      };
+
+      return this.processLogin(user);
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
@@ -82,28 +97,25 @@ export class AuthService {
 
   async getOAuthProfileWithAccessToken(
     accessToken: string,
-    createWith: SocialLoginMethod,
+    provider: SocialProvider,
   ): Promise<GetOAuthProfileWithAccessTokenOutput> {
     try {
       let result: GetOAuthProfileWithAccessTokenOutput;
-      switch (createWith) {
-        case LoginMethod.KAKAO:
+      switch (provider) {
+        case SocialProvider.KAKAO:
           result = await getKakaoProfileWithAccessToken(accessToken);
           break;
-        case LoginMethod.NAVER:
+        case SocialProvider.NAVER:
           result = await getNaverProfileWithAccessToken(accessToken);
           break;
-        case LoginMethod.GOOGLE:
+        case SocialProvider.GOOGLE:
           result = await getGoogleProfileWithAccessToken(
             this.configService.get<string>('GOOGLE_AUTH_CLIENT_ID'),
             accessToken,
           );
           break;
         default:
-          result = {
-            ok: false,
-            error: 'Invalid request',
-          };
+          result = CommonError('INVALID_REQUEST');
           break;
       }
       return result;

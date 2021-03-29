@@ -1,6 +1,10 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
-import { EmailLoginInput, LoginOutput } from './dtos/login.dto';
+import {
+  EmailLoginInput,
+  LoginOutput,
+  SocialLoginInput,
+} from './dtos/login.dto';
 
 @Resolver()
 export class AuthResolver {
@@ -10,5 +14,11 @@ export class AuthResolver {
   @Mutation(returns => LoginOutput)
   emailLogin(@Args('input') input: EmailLoginInput): Promise<LoginOutput> {
     return this.authService.emailLogin(input);
+  }
+
+  // Public
+  @Mutation(returns => LoginOutput)
+  socialLogin(@Args('input') input: SocialLoginInput): Promise<LoginOutput> {
+    return this.authService.socialLogin(input);
   }
 }
