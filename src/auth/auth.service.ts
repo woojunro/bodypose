@@ -5,7 +5,7 @@ import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
 import { SocialLoginMethod } from 'src/users/dtos/create-user.dto';
 import { LoginMethod } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
-import { LoginWithEmailInput, LoginOutput } from './dtos/login.dto';
+import { EmailLoginInput, LoginOutput } from './dtos/login.dto';
 import { GetOAuthProfileWithAccessTokenOutput } from './dtos/oauth.dto';
 import { getGoogleProfileWithAccessToken } from './utils/googleAuth.util';
 import { getKakaoProfileWithAccessToken } from './utils/kakaoOAuth.util';
@@ -20,10 +20,7 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async loginWithEmail({
-    email,
-    password,
-  }: LoginWithEmailInput): Promise<LoginOutput> {
+  async emailLogin({ email, password }: EmailLoginInput): Promise<LoginOutput> {
     try {
       // Get a user with the inputted email
       const user = await this.usersService.getUserByEmail(email, {
@@ -63,7 +60,7 @@ export class AuthService {
     }
   }
 
-  async loginWithOAuth(
+  async socialLogin(
     createdWith: SocialLoginMethod,
     socialId: string,
   ): Promise<LoginOutput> {

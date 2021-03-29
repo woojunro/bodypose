@@ -54,7 +54,7 @@ export class User extends CoreEntity {
   @IsBoolean()
   isVerified: boolean;
 
-  @Column()
+  @Column({ default: false })
   @Field(type => Boolean)
   @IsBoolean()
   isLocked: boolean;

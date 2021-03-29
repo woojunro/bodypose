@@ -8,9 +8,11 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import { unlinkKakaoUser } from 'src/auth/utils/kakaoOAuth.util';
-import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
+import {
+  CommonError,
+  UNEXPECTED_ERROR,
+} from 'src/common/constants/error.constant';
 import { MailService } from 'src/mail/mail.service';
-import { PhotosService } from 'src/photos/photos.service';
 import { FindOneOptions, Repository } from 'typeorm';
 import {
   CreateUserWithEmailInput,
@@ -33,7 +35,8 @@ import {
 } from './dtos/update-user.dto';
 import { VerifyUserOutput } from './dtos/verify-user.dto';
 import { PasswordReset } from './entities/password-reset.entity';
-import { LoginMethod, UserType, User } from './entities/user.entity';
+import { UserProfile } from './entities/user-profile.entity';
+import { UserType, User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
 
 @Injectable()
@@ -41,6 +44,8 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(UserProfile)
+    private readonly userProfileRepository: Repository<UserProfile>,
     @InjectRepository(Verification)
     private readonly verificationRepository: Repository<Verification>,
     @InjectRepository(PasswordReset)
@@ -48,17 +53,24 @@ export class UsersService {
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
     private readonly mailService: MailService,
-    @Inject(forwardRef(() => PhotosService))
-    private readonly photosService: PhotosService,
     private readonly configService: ConfigService,
   ) {}
 
-  checkPasswordSecurity(password: string): boolean {
+  checkPasswordSecurity(password?: string): boolean {
+    if (!password) return false;
     // At least one lowercase
     // At least one number
     // At least eight characters
     const passwordRegex = new RegExp('^(?=.*[0-9])(?=.*[a-z]).{8,}$');
     return passwordRegex.test(password);
+  }
+
+  checkNicknameValidity(nickname: string): boolean {
+    return (
+      /^[0-9a-zA-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]+$/.test(nickname) &&
+      nickname.length >= 2 &&
+      nickname.length <= 10
+    );
   }
 
   async createUserWithEmail({
@@ -69,83 +81,41 @@ export class UsersService {
     try {
       // Check password security
       const isPasswordSecure = this.checkPasswordSecurity(password);
-      if (!isPasswordSecure) {
-        return {
-          ok: false,
-          error: 'INSECURE_PASSWORD',
-        };
-      }
-      // Check nickname length
-      if (nickname.length > 10) {
-        return {
-          ok: false,
-          error: 'INVALID_NICKNAME',
-        };
-      }
+      if (!isPasswordSecure) return CommonError('INSECURE_PASSWORD');
+      // Check nickname validity
+      const isNicknameValid = this.checkNicknameValidity(nickname);
+      if (!isNicknameValid) return CommonError('INVALID_NICKNAME');
       // Check if there exists a user with the inputted email
-      const userByEmail = await this.userRepository.findOne({ email });
-      if (userByEmail) {
-        return {
-          ok: false,
-          error: 'DUPLICATE_EMAIL',
-        };
-      }
+      const emailUser = await this.userRepository.findOne({ email });
+      if (emailUser) return CommonError('DUPLICATE_EMAIL');
       // Check if there exists a user with the inputted nickname
-      const userByNickname = await this.userRepository.findOne({ nickname });
-      if (userByNickname) {
-        return {
-          ok: false,
-          error: 'DUPLICATE_NICKNAME',
-        };
-      }
+      const nicknameProfile = await this.userProfileRepository.findOne({
+        nickname,
+      });
+      if (nicknameProfile) return CommonError('DUPLICATE_NICKNAME');
+
       // Create and save the user
-      const newUser = this.userRepository.create({ email, password, nickname });
-      newUser.loginMethod = LoginMethod.EMAIL;
-      newUser.role = UserType.USER;
+      const newUser = this.userRepository.create({ email, password });
+      newUser.type = UserType.USER;
       newUser.isVerified = false;
       const createdUser = await this.userRepository.save(newUser);
+
+      // Create profile for the user
+      const newProfile = this.userProfileRepository.create({ nickname });
+      newProfile.user = createdUser;
+      await this.userProfileRepository.save(newProfile);
+
       // Create verification code and send it to the user
       const newVerification = this.verificationRepository.create();
       newVerification.user = createdUser;
       const { code } = await this.verificationRepository.save(newVerification);
-      await this.mailService.sendEmailVerification(
-        createdUser.email,
-        createdUser.nickname,
-        code,
-      );
-      // Return a token after login
-      const { ok, error, token } = await this.authService.loginWithEmail({
-        email,
-        password,
-      });
-      return {
-        ok,
-        error,
-        token,
-      };
+      await this.mailService.sendEmailVerification(email, nickname, code);
+
+      // Return tokens after login
+      return await this.authService.emailLogin({ email, password });
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
-    }
-  }
-
-  async getPossibleNickname(nickname?: string): Promise<string> {
-    try {
-      const newNickname = nickname ? nickname : '바프새내기';
-      const userWithNickname = await this.getUserByNickname(newNickname);
-      if (userWithNickname) {
-        for (let i = 1; ; i++) {
-          const userWithNewNickname = await this.getUserByNickname(
-            newNickname + i,
-          );
-          if (!userWithNewNickname) {
-            return newNickname + i;
-          }
-        }
-      }
-      return newNickname;
-    } catch (e) {
-      throw new InternalServerErrorException();
     }
   }
 
