@@ -30,9 +30,7 @@ export class UsersReviewStudios extends CoreEntity {
   @MinLength(12)
   text: string;
 
-  @ManyToOne(relation => User, user => user.reviews, {
-    onDelete: 'SET NULL',
-  })
+  @ManyToOne(relation => User, { onDelete: 'SET NULL' })
   @Field(type => User)
   user: User;
 

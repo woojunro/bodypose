@@ -188,7 +188,7 @@ export class PhotosService {
         .leftJoinAndSelect('photo.studio', 'studio')
         .where({ gender: gender ? gender : Not(IsNull()) })
         .andWhere(
-          user && user.role === UserType.ADMIN
+          user && user.type === UserType.ADMIN
             ? '1=1'
             : 'studio.coverPhotoUrl IS NOT NULL',
         )

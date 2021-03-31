@@ -1,9 +1,4 @@
-import {
-  forwardRef,
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
@@ -13,7 +8,7 @@ import {
   UNEXPECTED_ERROR,
 } from 'src/common/constants/error.constant';
 import { MailService } from 'src/mail/mail.service';
-import { FindOneOptions, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import {
   CreateUserWithEmailInput,
   CreateUserWithEmailOutput,
@@ -32,10 +27,6 @@ import {
   UpdatePasswordInput,
   UpdatePasswordOutput,
 } from './dtos/update-password.dto';
-import {
-  UpdateNicknameInput,
-  UpdateNicknameOutput,
-} from './dtos/update-user.dto';
 import { VerifyUserOutput } from './dtos/verify-user.dto';
 import { PasswordReset } from './entities/password-reset.entity';
 import {
@@ -106,6 +97,7 @@ export class UsersService {
       // Create and save the user
       const newUser = this.userRepository.create({ email, password });
       newUser.type = UserType.USER;
+      newUser.lastLoginAt = new Date();
       newUser.isVerified = false;
       const createdUser = await this.userRepository.save(newUser);
 
@@ -141,6 +133,7 @@ export class UsersService {
       user = await this.userRepository.save(
         this.userRepository.create({
           email,
+          lastLoginAt: new Date(),
           isVerified: true,
           isLocked: false,
           type: UserType.USER,
@@ -156,15 +149,27 @@ export class UsersService {
       }),
     );
 
+    // The user is verified
+    if (!user.isVerified) {
+      user.isVerified = true;
+      await this.userRepository.save(user);
+    }
+
     return user;
   }
 
   async getUserById(id: number): Promise<User> {
-    return this.userRepository.findOne({ id });
+    const user = this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
+      .where('user.id = :id', { id })
+      .getOne();
+    return user;
   }
 
   async getUserByEmail(email: string): Promise<User> {
-    const user = await this.userRepository
+    const user = this.userRepository
       .createQueryBuilder('user')
       .addSelect('user.password')
       .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
@@ -179,7 +184,7 @@ export class UsersService {
   ): Promise<User> {
     const user = await this.userRepository
       .createQueryBuilder('user')
-      .leftJoin('user.socialAccounts', 'socialAccount')
+      .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
       .where('socialAccount.provider = :provider', { provider })
       .andWhere('socialAccount.socialId = :socialId', { socialId })
       .getOne();
@@ -288,28 +293,21 @@ export class UsersService {
           error: 'USER_NOT_FOUND',
         };
       }
-      if (user.loginMethod !== LoginMethod.EMAIL) {
-        switch (user.loginMethod) {
-          case LoginMethod.KAKAO:
+      for (const socialAccount of user.socialAccounts) {
+        switch (socialAccount.provider) {
+          case SocialProvider.KAKAO:
             const adminKey = this.configService.get<string>('KAKAO_ADMIN_KEY');
-            const result = await unlinkKakaoUser(user.socialId, adminKey);
-            if (!result.ok) {
-              return {
-                ok: false,
-                error: result.error,
-              };
-            }
+            const result = await unlinkKakaoUser(
+              socialAccount.socialId,
+              adminKey,
+            );
+            if (!result.ok) return CommonError(result.error);
             break;
-          case LoginMethod.NAVER:
-            break;
-          case LoginMethod.GOOGLE:
-            break;
-          // TODO: Facebook
           default:
-            throw new InternalServerErrorException();
+            break;
         }
       }
-      const result = await this.userRepository.delete({ id: user.id });
+      const result = await this.userRepository.softDelete({ id: user.id });
       return { ok: true };
     } catch (e) {
       console.log(e);
@@ -344,25 +342,16 @@ export class UsersService {
     { email }: RequestPasswordResetInput,
   ): Promise<RequestPasswordResetOutput> {
     try {
-      if (currentUser && currentUser.email !== email) {
-        return {
-          ok: false,
-          error: 'UNAUTHORIZED',
-        };
-      }
-      const user = await this.userRepository.findOne({ email });
-      if (!user) {
-        return {
-          ok: false,
-          error: 'USER_NOT_FOUND',
-        };
-      }
-      if (user.loginMethod !== LoginMethod.EMAIL) {
-        return {
-          ok: false,
-          error: 'INVALID_LOGIN_METHOD',
-        };
-      }
+      if (currentUser && currentUser.email !== email)
+        return CommonError('UNAUTHORIZED');
+      const user = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
+        .leftJoinAndSelect('user.profile', 'profile')
+        .where('user.email = :email', { email })
+        .getOne();
+      if (!user) return CommonError('USER_NOT_FOUND');
+      if (user.socialAccounts.length !== 0) return CommonError('SOCIAL_USER');
       let savedReset: PasswordReset;
       const reset = await this.passwordResetRepository
         .createQueryBuilder('reset')
@@ -379,12 +368,13 @@ export class UsersService {
       }
       const ok = await this.mailService.sendPasswordReset(
         user.email,
-        user.nickname,
+        user.profile ? user.profile.nickname : 'UNKNOWN',
         savedReset.code,
       );
+      // UNKNOWN may be impossible
       return {
         ok,
-        error: ok ? null : 'MAILGUN_API_ERROR',
+        error: !ok && 'MAILGUN_API_ERROR',
       };
     } catch (e) {
       console.log(e);
@@ -429,35 +419,6 @@ export class UsersService {
       // Delete code
       await this.passwordResetRepository.delete({ id: reset.id });
       // return
-      return { ok: true };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
-  }
-
-  async updateNickname(
-    { id }: User,
-    { nickname }: UpdateNicknameInput,
-  ): Promise<UpdateNicknameOutput> {
-    try {
-      // Check nickname length
-      if (nickname.length > 10) {
-        return {
-          ok: false,
-          error: 'INVALID_NICKNAME',
-        };
-      }
-      const userWithNickname = await this.userRepository.findOne({ nickname });
-      if (userWithNickname) {
-        return {
-          ok: false,
-          error: 'DUPLICATE_NICKNAME',
-        };
-      }
-      const user = await this.userRepository.findOne({ id });
-      user.nickname = nickname;
-      await this.userRepository.save(user);
       return { ok: true };
     } catch (e) {
       console.log(e);

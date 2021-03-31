@@ -15,7 +15,10 @@ import {
 } from './dtos/login.dto';
 import { GetOAuthProfileWithAccessTokenOutput } from './dtos/oauth.dto';
 import { getGoogleProfileWithAccessToken } from './utils/googleAuth.util';
-import { getKakaoProfileWithAccessToken } from './utils/kakaoOAuth.util';
+import {
+  getKakaoProfileWithAccessToken,
+  unlinkKakaoUser,
+} from './utils/kakaoOAuth.util';
 import { getNaverProfileWithAccessToken } from './utils/naverLogin.util';
 
 @Injectable()
@@ -39,7 +42,7 @@ export class AuthService {
     return {
       ok: true,
       token,
-      error: !user.isVerified && 'USER_NOT_VERIFIED',
+      error: user.isVerified ? null : 'USER_NOT_VERIFIED',
     };
   }
 
@@ -76,7 +79,14 @@ export class AuthService {
       if (!ok) return { ok, error };
 
       // TEMPORARY: FOR KAKAO
-      if (!email) return CommonError('EMAIL_NOT_FOUND');
+      if (!email) {
+        if (provider === SocialProvider.KAKAO)
+          unlinkKakaoUser(
+            socialId,
+            this.configService.get<string>('KAKAO_ADMIN_KEY'),
+          );
+        return CommonError('EMAIL_NOT_FOUND');
+      }
 
       // Check if the profile is connected to a user
       let user = await this.usersService.getUserBySocialId(provider, socialId);

@@ -1,4 +1,4 @@
-import { registerEnumType } from '@nestjs/graphql';
+import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { IsEnum, IsString, MaxLength } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
@@ -14,6 +14,7 @@ export enum SocialProvider {
 registerEnumType(SocialProvider, { name: 'SocialProvider' });
 
 @Entity()
+@ObjectType()
 export class SocialAccount extends CoreEntity {
   @ManyToOne(relation => User, user => user.socialAccounts, {
     onDelete: 'CASCADE',
@@ -21,6 +22,7 @@ export class SocialAccount extends CoreEntity {
   user: User;
 
   @Column({ type: 'enum', enum: SocialProvider })
+  @Field(type => SocialProvider)
   @IsEnum(SocialProvider)
   provider: SocialProvider;
 
