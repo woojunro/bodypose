@@ -1,5 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { GqlExecutionContext } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
 import {
   CommonError,
@@ -30,7 +31,7 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  processLogin(user: User): LoginOutput {
+  processLogin(user: User, context: any): LoginOutput {
     // Check if the user is locked
     if (user.isLocked) return CommonError('USER_LOCKED');
     // Issue an auth token
@@ -38,6 +39,12 @@ export class AuthService {
     const token = this.jwtService.sign(payload);
     // Update lastLogin
     this.usersService.updateLastLoginAt(user.id);
+    // Set cookie
+    context.res.cookie('authorization', token, {
+      expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
+      httpOnly: true,
+      sameSite: 'lax',
+    });
     // If not verified, notify
     return {
       ok: true,
@@ -46,7 +53,10 @@ export class AuthService {
     };
   }
 
-  async emailLogin({ email, password }: EmailLoginInput): Promise<LoginOutput> {
+  async emailLogin(
+    { email, password }: EmailLoginInput,
+    context: GqlExecutionContext,
+  ): Promise<LoginOutput> {
     try {
       // Get a user with the inputted email
       const user = await this.usersService.getUserByEmail(email);
@@ -58,17 +68,17 @@ export class AuthService {
       const isPasswordCorrect = await user.checkPassword(password);
       if (!isPasswordCorrect) return CommonError('WRONG_PASSWORD');
 
-      return this.processLogin(user);
+      return this.processLogin(user, context);
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
     }
   }
 
-  async socialLogin({
-    provider,
-    accessToken,
-  }: SocialLoginInput): Promise<LoginOutput> {
+  async socialLogin(
+    { provider, accessToken }: SocialLoginInput,
+    context: GqlExecutionContext,
+  ): Promise<LoginOutput> {
     try {
       // Get OAuth Profile
       const {
@@ -98,7 +108,7 @@ export class AuthService {
         );
       }
 
-      return this.processLogin(user);
+      return this.processLogin(user, context);
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;

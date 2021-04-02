@@ -36,6 +36,7 @@ import {
 import { UserProfile } from './entities/user-profile.entity';
 import { UserType, User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
+import { GqlExecutionContext } from '@nestjs/graphql';
 
 @Injectable()
 export class UsersService {
@@ -73,11 +74,10 @@ export class UsersService {
     );
   }
 
-  async createUserWithEmail({
-    email,
-    password,
-    nickname,
-  }: CreateUserWithEmailInput): Promise<CreateUserWithEmailOutput> {
+  async createUserWithEmail(
+    { email, password, nickname }: CreateUserWithEmailInput,
+    context: GqlExecutionContext,
+  ): Promise<CreateUserWithEmailOutput> {
     try {
       // Check password security
       const isPasswordSecure = this.checkPasswordSecurity(password);
@@ -113,7 +113,7 @@ export class UsersService {
       await this.mailService.sendEmailVerification(email, nickname, code);
 
       // Return tokens after login
-      return await this.authService.emailLogin({ email, password });
+      return await this.authService.emailLogin({ email, password }, context);
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;

@@ -92,6 +92,11 @@ import { ENTITY_LIST } from './common/constants/entity-list.constant';
         };
         return graphQLFormattedError;
       },
+      context: ({ req, res }) => ({ req, res }),
+      cors: {
+        credentials: true,
+        origin: true,
+      },
     }),
     AuthModule,
     MailModule,

@@ -1,4 +1,11 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Context,
+  GqlExecutionContext,
+  Mutation,
+  Query,
+  Resolver,
+} from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import { Roles } from 'src/auth/roles.decorator';
 import {
@@ -37,8 +44,9 @@ export class UsersResolver {
   @Mutation(returns => CreateUserWithEmailOutput)
   createUserWithEmail(
     @Args('input') input: CreateUserWithEmailInput,
+    @Context() context: GqlExecutionContext,
   ): Promise<CreateUserWithEmailOutput> {
-    return this.usersService.createUserWithEmail(input);
+    return this.usersService.createUserWithEmail(input, context);
   }
 
   @Mutation(returns => CreateMyProfileOutput)
