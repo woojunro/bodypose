@@ -16,8 +16,8 @@
   cursor: pointer;
 }
 .topNavigatorContainer {
-  margin-top: 15px;
-  margin-bottom: 14px;
+  margin-top: 13px;
+  margin-bottom: 12px;
   display: flex;
   justify-content: space-evenly;
 }
