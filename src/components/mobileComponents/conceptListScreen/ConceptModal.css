@@ -29,8 +29,8 @@
   height: -webkit-calc(100vh - 140px);
   height: calc(100vh - 140px);
   margin: 0 auto;
-  padding-left: 7%;
-  padding-right: 7%;
+  padding-left: 5%;
+  padding-right: 5%;
   position: relative;
   box-sizing: border-box;
   align-items: center;
@@ -64,7 +64,7 @@
 }
 
 .mainPhotoArea img {
-  width: 95%;
+  width: 100%;
   height: auto;
   max-height: -moz-calc(100vh - 140px);
   max-height: -webkit-calc(100vh - 140px);
@@ -83,9 +83,9 @@
   align-items: center;
 }
 .toStudioInfo {
-  width: 75%;
+  width: 70%;
   height: 40px;
-  border-radius: 5px;
+  border-radius: 10px;
   background-color: var(--color-chocolate);
   font-size: 15px;
   font-weight: normal;
@@ -102,7 +102,7 @@
   cursor: pointer;
 
   top: 45%;
-  right: 10%;
+  right: 7%;
   z-index: 100;
 }
 .nextButton {
@@ -114,7 +114,7 @@
   align-items: center;
   position: absolute;
   top: 45%;
-  left: 10%;
+  left: 7%;
   z-index: 100;
   cursor: pointer;
 }
@@ -124,17 +124,17 @@
 }
 
 .conceptFilledHeart {
-  margin-left: 10px;
+  margin-left: 8px;
   color: var(--color-heartColor);
   cursor: pointer;
 
-  font-size: 28px;
-  margin-top: 5px;
+  font-size: 36px;
+  margin-top: 7px;
 }
 .conceptRegHeart {
-  margin-left: 10px;
-  margin-top: 5px;
-  font-size: 28px;
+  margin-left: 8px;
+  margin-top: 7px;
+  font-size: 36px;
   cursor: pointer;
 }
 .whileLoading {

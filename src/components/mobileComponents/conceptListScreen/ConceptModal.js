@@ -1,10 +1,10 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { IoIosClose } from 'react-icons/io';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import './ConceptModal.css';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
-import { FaHeart } from 'react-icons/fa';
-import { FaRegHeart } from 'react-icons/fa';
+import { IoHeart, IoHeartOutline } from 'react-icons/io5';
+
 import LoadingIcon from './LoadingIcon';
 import LoginContext from '../../../contexts/LoginContext';
 import { gql, useMutation } from '@apollo/client';
@@ -130,20 +130,20 @@ const Modal = ({
   if (isHearted) {
     RenderedHeart = (
       <div onClick={ChangeHeart}>
-        <FaHeart className="conceptFilledHeart" />
+        <IoHeart className="conceptFilledHeart" />
       </div>
     );
   } else {
     if (LoggedIn.loggedIn) {
       RenderedHeart = (
         <div onClick={ChangeHeart}>
-          <FaRegHeart className="conceptRegHeart" />
+          <IoHeartOutline className="conceptRegHeart" />
         </div>
       );
     } else {
       RenderedHeart = (
         <div>
-          <FaRegHeart
+          <IoHeartOutline
             className="conceptRegHeart"
             onClick={() => {
               const ok = window.confirm(
