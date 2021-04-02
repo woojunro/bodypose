@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import './StudioCard.css';
-import { IoIosHeartEmpty, IoIosStar, IoIosHeart } from 'react-icons/io';
+import { IoHeart, IoHeartOutline, IoStar } from 'react-icons/io5';
+
 import { useHistory } from 'react-router-dom';
 import LoginContext from '../../../contexts/LoginContext';
 import GetShortAdress from '../../functions/Studio/GetShortAdress';
@@ -126,11 +127,11 @@ const StudioCard = ({
         <div className="cardInfo">
           <div className="upper">
             <div className="firstLine">
-              <span style={{ fontSize: '15px' }}>{title}</span>
+              <span>{title}</span>
             </div>
             <div className="location">{adress}</div>
             <div className="thirdLine">
-              <IoIosStar color="#FFD800" fontSize="18px" />
+              <IoStar color="#FFD800" fontSize="17px" />
               {review === 0 ? (
                 <span className="noReviewSpan">리뷰 없음</span>
               ) : (
@@ -162,13 +163,13 @@ const StudioCard = ({
         </div>
       </div>
       {isHearted ? (
-        <IoIosHeart
+        <IoHeart
           onClick={ChangeHeart}
           className="cardSelectedHeart"
           fontSize="20px"
         />
       ) : (
-        <IoIosHeartEmpty
+        <IoHeartOutline
           onClick={ChangeHeart}
           className="cardHeart"
           fontSize="20px"

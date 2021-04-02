@@ -1,27 +1,30 @@
 .sortByButtomClose {
-  margin-top: 15px;
+  margin-top: 10px;
   margin-right: 10px;
   display: flex;
   background-color: white;
-  border: 1px solid black;
-  border-radius: 5px;
+  border: 1px solid gray;
+  border-radius: 15px;
   padding-top: 3px;
   padding-bottom: 3px;
   padding-left: 10px;
   padding-right: 8px;
   align-items: center;
   cursor: pointer;
+  box-shadow: 1px 1px 1px lightgray;
 }
 
 .sortByButtomOpen {
   margin-right: 10px;
-  margin-top: 15px;
+  margin-top: 10px;
+  margin-bottom: 4px;
   cursor: pointer;
+  box-shadow: 1px 1px 3px lightgray;
 
   background-color: var(--color-chocolate);
   display: flex;
   border: 1px solid var(--color-line);
-  border-radius: 5px;
+  border-radius: 15px;
   padding-top: 3px;
   padding-bottom: 3px;
   padding-left: 10px;
@@ -32,13 +35,17 @@ button:focus {
   outline: 0;
 }
 .textOpen {
-  margin-right: 8px;
+  margin-right: 7px;
+  margin-left: 2px;
   color: white;
+  font-size: 13px;
 }
 .textClose {
-  margin-right: 8px;
+  margin-right: 7px;
+  margin-left: 2px;
 
   color: black;
+  font-size: 13px;
 }
 .arrowUp {
   transform: translateY(-1px);
