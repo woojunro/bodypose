@@ -61,6 +61,7 @@
   justify-content: center;
   overflow: hidden;
   height: auto;
+  align-items: center;
 }
 
 .mainPhotoArea img {
@@ -83,7 +84,7 @@
   align-items: center;
 }
 .toStudioInfo {
-  width: 70%;
+  width: 75%;
   height: 40px;
   border-radius: 10px;
   background-color: var(--color-chocolate);
@@ -98,29 +99,24 @@
   margin-top: 5px;
 }
 .nextArrowContainer {
-  position: absolute;
+  margin-left: -20px;
   cursor: pointer;
 
-  top: 45%;
-  right: 7%;
   z-index: 100;
 }
-.nextButton {
-  transform: scale(1.5, 5);
-  color: rgba(0, 0, 0, 0.2);
-}
 .prevArrowContainer {
-  display: flex;
-  align-items: center;
-  position: absolute;
-  top: 45%;
-  left: 7%;
+  padding-left: 1px;
+  margin-right: -20px;
   z-index: 100;
   cursor: pointer;
 }
+.nextButton {
+  transform: scale(1.2, 5);
+  color: rgba(225, 225, 225, 0.5);
+}
 .prevButton {
-  transform: scale(1.5, 5);
-  color: rgba(0, 0, 0, 0.2);
+  transform: scale(1.2, 5);
+  color: rgba(225, 225, 225, 0.5);
 }
 
 .conceptFilledHeart {

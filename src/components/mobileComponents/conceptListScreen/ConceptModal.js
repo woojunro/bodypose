@@ -176,26 +176,6 @@ const Modal = ({
         <div>
           <div className="conceptmodal">
             <div className="concepttrueModal">
-              {!isFinalPhoto ? (
-                <div className="nextArrowContainer">
-                  <IoIosArrowForward
-                    className="nextButton"
-                    onClick={() => {
-                      setThisPhoto(selectedPhotoNum + 1);
-                    }}
-                  />
-                </div>
-              ) : null}
-              {selectedPhotoNum > 0 ? (
-                <div className="prevArrowContainer">
-                  <IoIosArrowBack
-                    className="prevButton"
-                    onClick={() => {
-                      setThisPhoto(selectedPhotoNum - 1);
-                    }}
-                  />
-                </div>
-              ) : null}
               <div className="topBarContainer">
                 <div style={{ width: '45px' }}></div>
                 <div className="studioTitle">
@@ -216,7 +196,33 @@ const Modal = ({
                       <LoadingIcon />
                     </div>
                   ) : (
-                    <img alt="studioPicture" src={concept.originalUrl} />
+                    <>
+                      <div>
+                        {selectedPhotoNum > 0 ? (
+                          <div className="prevArrowContainer">
+                            <IoIosArrowBack
+                              className="prevButton"
+                              onClick={() => {
+                                setThisPhoto(selectedPhotoNum - 1);
+                              }}
+                            />
+                          </div>
+                        ) : null}
+                      </div>
+                      <img alt="studioPicture" src={concept.originalUrl} />
+                      <div>
+                        {!isFinalPhoto ? (
+                          <div className="nextArrowContainer">
+                            <IoIosArrowForward
+                              className="nextButton"
+                              onClick={() => {
+                                setThisPhoto(selectedPhotoNum + 1);
+                              }}
+                            />
+                          </div>
+                        ) : null}
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
