@@ -32,7 +32,7 @@ export class UserProfile extends CoreEntity {
   nickname: string;
 
   @Column({ type: 'enum', enum: UserGender, nullable: true })
-  @Field(type => UserGender)
+  @Field(type => UserGender, { nullable: true })
   @IsOptional()
   @IsEnum(UserGender)
   gender?: UserGender;

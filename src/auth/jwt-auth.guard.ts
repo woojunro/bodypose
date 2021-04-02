@@ -1,4 +1,4 @@
-import { ExecutionContext, Injectable } from '@nestjs/common';
+import { ContextType, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from '@nestjs/passport';
@@ -12,8 +12,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   getRequest(context: ExecutionContext) {
-    const ctx = GqlExecutionContext.create(context);
-    return ctx.getContext().req;
+    if (context.getType<ContextType | 'graphql'>() === 'graphql')
+      return GqlExecutionContext.create(context).getContext().req;
+    return context.switchToHttp().getRequest();
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -41,7 +42,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
         return false;
       }
       // Valid token, check role
-      const userRole: UserType = this.getRequest(context).user.role;
+      const userRole: UserType = this.getRequest(context).user.type;
       return requiredRoles.includes(userRole);
     } catch (e) {
       console.log(e);

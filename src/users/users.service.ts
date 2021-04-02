@@ -150,22 +150,18 @@ export class UsersService {
     );
 
     // The user is verified
-    if (!user.isVerified) {
-      user.isVerified = true;
-      await this.userRepository.save(user);
-    }
+    user.password = null;
+    user.isVerified = true;
+    await this.userRepository.save(user);
 
     return user;
   }
 
   async getUserById(id: number): Promise<User> {
-    const user = this.userRepository
-      .createQueryBuilder('user')
-      .addSelect('user.password')
-      .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
-      .where('user.id = :id', { id })
-      .getOne();
-    return user;
+    return this.userRepository.findOne(
+      { id },
+      { select: ['id', 'type', 'isVerified', 'isLocked'] },
+    );
   }
 
   async getUserByEmail(email: string): Promise<User> {
@@ -232,12 +228,12 @@ export class UsersService {
     }
   }
 
-  async getMyProfile(user: User): Promise<GetMyProfileOutput> {
+  async getMyProfile({ id }: User): Promise<GetMyProfileOutput> {
     try {
-      const profile = await this.userProfileRepository
-        .createQueryBuilder('profile')
-        .where('profile.userId = :id', { id: user.id })
-        .getOne();
+      const { profile } = await this.userRepository.findOne(
+        { id },
+        { relations: ['profile'] },
+      );
 
       return {
         ok: Boolean(profile),
@@ -286,7 +282,11 @@ export class UsersService {
 
   async deleteUserById(id: number): Promise<DeleteUserOutput> {
     try {
-      const user = await this.getUserById(id);
+      const user = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
+        .where('user.id = :id', { id })
+        .getOne();
       if (!user) {
         return {
           ok: false,
