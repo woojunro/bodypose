@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import './ConceptModal.css';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { IoHeart, IoHeartOutline } from 'react-icons/io5';
+import Swipe from 'react-easy-swipe';
 
 import LoadingIcon from './LoadingIcon';
 import LoginContext from '../../../contexts/LoginContext';
@@ -105,6 +106,20 @@ const Modal = ({
       }
     },
   });
+
+  //오른쪽으로 스와이프 했을 때, 이전 사진 부르기
+  const onSwipeRight = () => {
+    if (selectedPhotoNum > 0) {
+      setThisPhoto(selectedPhotoNum - 1);
+    }
+  };
+
+  //왼쪽으로 스와이프 했을 때, 이후 사진 부르기
+  const onSwipeLeft = () => {
+    if (!isFinalPhoto) {
+      setThisPhoto(selectedPhotoNum + 1);
+    }
+  };
 
   const ChangeHeart = () => {
     if (isHearted) {
@@ -209,7 +224,12 @@ const Modal = ({
                           </div>
                         ) : null}
                       </div>
-                      <img alt="studioPicture" src={concept.originalUrl} />
+                      <Swipe
+                        onSwipeRight={() => onSwipeRight()}
+                        onSwipeLeft={() => onSwipeLeft()}
+                      >
+                        <img alt="studioPicture" src={concept.originalUrl} />
+                      </Swipe>
                       <div>
                         {!isFinalPhoto ? (
                           <div className="nextArrowContainer">
