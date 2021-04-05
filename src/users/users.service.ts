@@ -210,9 +210,6 @@ export class UsersService {
       if (error !== 'PROFILE_NOT_FOUND')
         return CommonError('PROFILE_ALREADY_EXISTS');
 
-      const profile = await this.userProfileRepository.findOne({ nickname });
-      if (profile) return CommonError('DUPLICATE_NICKNAME');
-
       await this.userProfileRepository.save(
         this.userProfileRepository.create({
           nickname,
@@ -223,6 +220,7 @@ export class UsersService {
 
       return { ok: true };
     } catch (e) {
+      if (e.errno === 1062) return CommonError('DUPLICATE_NICKNAME');
       console.log(e);
       return UNEXPECTED_ERROR;
     }
@@ -230,14 +228,16 @@ export class UsersService {
 
   async getMyProfile({ id }: User): Promise<GetMyProfileOutput> {
     try {
-      const { profile } = await this.userRepository.findOne(
-        { id },
-        { relations: ['profile'] },
-      );
+      const { profile } = await this.userRepository
+        .createQueryBuilder('user')
+        .select('user.id')
+        .leftJoinAndSelect('user.profile', 'profile')
+        .where('user.id = :id', { id })
+        .getOne();
 
       return {
         ok: Boolean(profile),
-        error: !profile && 'PROFILE_NOT_FOUND',
+        error: !profile ? 'PROFILE_NOT_FOUND' : null,
         profile,
       };
     } catch (e) {
@@ -252,25 +252,21 @@ export class UsersService {
   ): Promise<UpdateMyProfileOutput> {
     try {
       // Check if the profile exists
-      const queryResult = await this.getMyProfile(user);
-      if (!queryResult.ok) return queryResult;
-
-      const profileToUpdate = queryResult.profile;
+      const { ok, error, profile: profileToUpdate } = await this.getMyProfile(
+        user,
+      );
+      if (!ok) return { ok, error };
 
       if (profile.nickname) {
         // Check nickname validity
         const isNicknameValid = this.checkNicknameValidity(profile.nickname);
         if (!isNicknameValid) return CommonError('INVALID_NICKNAME');
-        // Check duplicate nickname
-        const nicknameProfile = await this.userProfileRepository.findOne({
-          nickname: profile.nickname,
-        });
-        if (nicknameProfile) return CommonError('DUPLICATE_NICKNAME');
       }
       // Update
       await this.userProfileRepository.save({ ...profileToUpdate, ...profile });
       return { ok: true };
     } catch (e) {
+      if (e.errno === 1062) return CommonError('DUPLICATE_NICKNAME');
       console.log(e);
       return UNEXPECTED_ERROR;
     }
