@@ -1,40 +1,20 @@
 import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
-import { IsEmail, IsString } from 'class-validator';
-import { CoreOutput } from 'src/common/dtos/output.dto';
-import { LoginMethod, User } from '../entities/user.entity';
-
-export type SocialLoginMethod = Exclude<LoginMethod, LoginMethod.EMAIL>;
+import { IsString, MaxLength, MinLength } from 'class-validator';
+import { LoginOutput } from 'src/auth/dtos/login.dto';
+import { User } from '../entities/user.entity';
 
 @InputType()
 export class CreateUserWithEmailInput extends PickType(
   User,
-  ['nickname'],
+  ['email', 'password'],
   InputType,
 ) {
-  // Mandatory fields로 재작성
-  @Field(type => String)
-  @IsEmail()
-  email: string;
-
   @Field(type => String)
   @IsString()
-  password: string;
+  @MinLength(2)
+  @MaxLength(10)
+  nickname: string;
 }
 
 @ObjectType()
-export class CreateUserWithEmailOutput extends CoreOutput {
-  @Field(type => String, { nullable: true })
-  token?: string;
-}
-
-@InputType()
-export class CreateOrLoginUserWithOAuthInput {
-  @Field(type => String)
-  accessToken: string;
-
-  @Field(type => LoginMethod)
-  createWith: SocialLoginMethod;
-}
-
-@ObjectType()
-export class CreateOrLoginUserWithOAuthOutput extends CreateUserWithEmailOutput {}
+export class CreateUserWithEmailOutput extends LoginOutput {}

@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import { Roles } from 'src/auth/roles.decorator';
-import { Role, User } from 'src/users/entities/user.entity';
+import { UserType, User } from 'src/users/entities/user.entity';
 import {
   ClickStudioPhotoInput,
   ClickStudioPhotoOutput,
@@ -75,7 +75,7 @@ export class PhotosResolver {
   }
 
   @Mutation(returns => CreateStudioPhotoOutput)
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   createStudioPhoto(
     @Args('input') input: CreateStudioPhotoInput,
   ): Promise<CreateStudioPhotoOutput> {
@@ -83,7 +83,7 @@ export class PhotosResolver {
   }
 
   @Mutation(returns => UpdateStudioPhotoOutput)
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   updateStudioPhoto(
     @Args('input') input: UpdateStudioPhotoInput,
   ): Promise<UpdateStudioPhotoOutput> {
@@ -91,7 +91,7 @@ export class PhotosResolver {
   }
 
   @Mutation(returns => DeleteStudioPhotoOutput)
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   deleteStudioPhoto(
     @Args('input') input: DeleteStudioPhotoInput,
   ): Promise<DeleteStudioPhotoOutput> {
@@ -99,7 +99,7 @@ export class PhotosResolver {
   }
 
   @Mutation(returns => CreatePhotoConceptOutput)
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   createPhotoConcept(
     @Args('input') input: CreatePhotoConceptInput,
   ): Promise<CreatePhotoConceptOutput> {
@@ -107,7 +107,7 @@ export class PhotosResolver {
   }
 
   @Mutation(returns => UpdatePhotoConceptOutput)
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   updatePhotoConcept(
     @Args('input') input: UpdatePhotoConceptInput,
   ): Promise<UpdatePhotoConceptOutput> {
@@ -115,7 +115,7 @@ export class PhotosResolver {
   }
 
   @Mutation(returns => DeletePhotoConceptOutput)
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   deletePhotoConcept(
     @Args('input') input: DeletePhotoConceptInput,
   ): Promise<DeletePhotoConceptOutput> {
@@ -137,7 +137,7 @@ export class UsersHeartStudioPhotosResolver {
   constructor(private readonly photosService: PhotosService) {}
 
   @Query(returns => GetStudioPhotosOutput)
-  @Roles(Role.USER)
+  @Roles(UserType.USER)
   myHeartStudioPhotos(
     @CurrentUser() user: User,
     @Args('input') input: GetMyHeartStudioPhotosInput,
@@ -146,7 +146,7 @@ export class UsersHeartStudioPhotosResolver {
   }
 
   @Mutation(returns => HeartStudioPhotoOutput)
-  @Roles(Role.USER)
+  @Roles(UserType.USER)
   heartStudioPhoto(
     @CurrentUser() user: User,
     @Args('input') input: HeartStudioPhotoInput,
@@ -155,7 +155,7 @@ export class UsersHeartStudioPhotosResolver {
   }
 
   @Mutation(returns => HeartStudioPhotoOutput)
-  @Roles(Role.USER)
+  @Roles(UserType.USER)
   disheartStudioPhoto(
     @CurrentUser() user: User,
     @Args('input') input: HeartStudioPhotoInput,

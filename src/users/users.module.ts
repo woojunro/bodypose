@@ -7,11 +7,19 @@ import { AuthModule } from 'src/auth/auth.module';
 import { Verification } from './entities/verification.entity';
 import { MailModule } from 'src/mail/mail.module';
 import { PhotosModule } from 'src/photos/photos.module';
-import { PasswordReset } from './entities/password_reset.entity';
+import { PasswordReset } from './entities/password-reset.entity';
+import { UserProfile } from './entities/user-profile.entity';
+import { SocialAccount } from './entities/social-account.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Verification, PasswordReset]),
+    TypeOrmModule.forFeature([
+      User,
+      Verification,
+      PasswordReset,
+      UserProfile,
+      SocialAccount,
+    ]),
     forwardRef(() => AuthModule),
     MailModule,
     forwardRef(() => PhotosModule),

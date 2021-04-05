@@ -1,6 +1,16 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Context,
+  GqlExecutionContext,
+  Mutation,
+  Resolver,
+} from '@nestjs/graphql';
 import { AuthService } from './auth.service';
-import { LoginWithEmailInput, LoginOutput } from './dtos/login.dto';
+import {
+  EmailLoginInput,
+  LoginOutput,
+  SocialLoginInput,
+} from './dtos/login.dto';
 
 @Resolver()
 export class AuthResolver {
@@ -8,9 +18,19 @@ export class AuthResolver {
 
   // Public
   @Mutation(returns => LoginOutput)
-  loginWithEmail(
-    @Args('input') input: LoginWithEmailInput,
+  emailLogin(
+    @Args('input') input: EmailLoginInput,
+    @Context() context: GqlExecutionContext,
   ): Promise<LoginOutput> {
-    return this.authService.loginWithEmail(input);
+    return this.authService.emailLogin(input, context);
+  }
+
+  // Public
+  @Mutation(returns => LoginOutput)
+  socialLogin(
+    @Args('input') input: SocialLoginInput,
+    @Context() context: GqlExecutionContext,
+  ): Promise<LoginOutput> {
+    return this.authService.socialLogin(input, context);
   }
 }

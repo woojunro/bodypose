@@ -1,46 +1,52 @@
-import {
-  forwardRef,
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import { unlinkKakaoUser } from 'src/auth/utils/kakaoOAuth.util';
-import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
+import {
+  CommonError,
+  UNEXPECTED_ERROR,
+} from 'src/common/constants/error.constant';
 import { MailService } from 'src/mail/mail.service';
-import { PhotosService } from 'src/photos/photos.service';
-import { FindOneOptions, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import {
   CreateUserWithEmailInput,
   CreateUserWithEmailOutput,
-  CreateOrLoginUserWithOAuthInput,
-  CreateOrLoginUserWithOAuthOutput,
-  SocialLoginMethod,
 } from './dtos/create-user.dto';
 import { DeleteUserOutput } from './dtos/delete-user.dto';
-import { GetMyProfileOutput } from './dtos/get-user.dto';
+import {
+  CreateMyProfileInput,
+  CreateMyProfileOutput,
+  GetMyProfileOutput,
+  UpdateMyProfileInput,
+  UpdateMyProfileOutput,
+} from './dtos/user-profile.dto';
 import {
   RequestPasswordResetInput,
   RequestPasswordResetOutput,
   UpdatePasswordInput,
   UpdatePasswordOutput,
 } from './dtos/update-password.dto';
-import {
-  UpdateNicknameInput,
-  UpdateNicknameOutput,
-} from './dtos/update-user.dto';
 import { VerifyUserOutput } from './dtos/verify-user.dto';
-import { PasswordReset } from './entities/password_reset.entity';
-import { LoginMethod, Role, User } from './entities/user.entity';
+import { PasswordReset } from './entities/password-reset.entity';
+import {
+  SocialAccount,
+  SocialProvider,
+} from './entities/social-account.entity';
+import { UserProfile } from './entities/user-profile.entity';
+import { UserType, User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
+import { GqlExecutionContext } from '@nestjs/graphql';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(UserProfile)
+    private readonly userProfileRepository: Repository<UserProfile>,
+    @InjectRepository(SocialAccount)
+    private readonly socialAccountRepository: Repository<SocialAccount>,
     @InjectRepository(Verification)
     private readonly verificationRepository: Repository<Verification>,
     @InjectRepository(PasswordReset)
@@ -48,12 +54,11 @@ export class UsersService {
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
     private readonly mailService: MailService,
-    @Inject(forwardRef(() => PhotosService))
-    private readonly photosService: PhotosService,
     private readonly configService: ConfigService,
   ) {}
 
-  checkPasswordSecurity(password: string): boolean {
+  checkPasswordSecurity(password?: string): boolean {
+    if (!password) return false;
     // At least one lowercase
     // At least one number
     // At least eight characters
@@ -61,255 +66,248 @@ export class UsersService {
     return passwordRegex.test(password);
   }
 
-  async createUserWithEmail({
-    email,
-    password,
-    nickname,
-  }: CreateUserWithEmailInput): Promise<CreateUserWithEmailOutput> {
+  checkNicknameValidity(nickname: string): boolean {
+    return (
+      /^[0-9a-zA-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]+$/.test(nickname) &&
+      nickname.length >= 2 &&
+      nickname.length <= 10
+    );
+  }
+
+  async createUserWithEmail(
+    { email, password, nickname }: CreateUserWithEmailInput,
+    context: GqlExecutionContext,
+  ): Promise<CreateUserWithEmailOutput> {
     try {
       // Check password security
       const isPasswordSecure = this.checkPasswordSecurity(password);
-      if (!isPasswordSecure) {
-        return {
-          ok: false,
-          error: 'INSECURE_PASSWORD',
-        };
-      }
-      // Check nickname length
-      if (nickname.length > 10) {
-        return {
-          ok: false,
-          error: 'INVALID_NICKNAME',
-        };
-      }
+      if (!isPasswordSecure) return CommonError('INSECURE_PASSWORD');
+      // Check nickname validity
+      const isNicknameValid = this.checkNicknameValidity(nickname);
+      if (!isNicknameValid) return CommonError('INVALID_NICKNAME');
       // Check if there exists a user with the inputted email
-      const userByEmail = await this.userRepository.findOne({ email });
-      if (userByEmail) {
-        return {
-          ok: false,
-          error: 'DUPLICATE_EMAIL',
-        };
-      }
+      const emailUser = await this.userRepository.findOne({ email });
+      if (emailUser) return CommonError('DUPLICATE_EMAIL');
       // Check if there exists a user with the inputted nickname
-      const userByNickname = await this.userRepository.findOne({ nickname });
-      if (userByNickname) {
-        return {
-          ok: false,
-          error: 'DUPLICATE_NICKNAME',
-        };
-      }
+      const nicknameProfile = await this.userProfileRepository.findOne({
+        nickname,
+      });
+      if (nicknameProfile) return CommonError('DUPLICATE_NICKNAME');
+
       // Create and save the user
-      const newUser = this.userRepository.create({ email, password, nickname });
-      newUser.loginMethod = LoginMethod.EMAIL;
-      newUser.role = Role.USER;
+      const newUser = this.userRepository.create({ email, password });
+      newUser.type = UserType.USER;
+      newUser.lastLoginAt = new Date();
       newUser.isVerified = false;
       const createdUser = await this.userRepository.save(newUser);
+
+      // Create profile for the user
+      const newProfile = this.userProfileRepository.create({ nickname });
+      newProfile.user = createdUser;
+      await this.userProfileRepository.save(newProfile);
+
       // Create verification code and send it to the user
       const newVerification = this.verificationRepository.create();
       newVerification.user = createdUser;
       const { code } = await this.verificationRepository.save(newVerification);
-      await this.mailService.sendEmailVerification(
-        createdUser.email,
-        createdUser.nickname,
-        code,
-      );
-      // Return a token after login
-      const { ok, error, token } = await this.authService.loginWithEmail({
-        email,
-        password,
-      });
-      return {
-        ok,
-        error,
-        token,
-      };
+      await this.mailService.sendEmailVerification(email, nickname, code);
+
+      // Return tokens after login
+      return await this.authService.emailLogin({ email, password }, context);
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
     }
   }
 
-  async getPossibleNickname(nickname?: string): Promise<string> {
-    try {
-      const newNickname = nickname ? nickname : '바프새내기';
-      const userWithNickname = await this.getUserByNickname(newNickname);
-      if (userWithNickname) {
-        for (let i = 1; ; i++) {
-          const userWithNewNickname = await this.getUserByNickname(
-            newNickname + i,
-          );
-          if (!userWithNewNickname) {
-            return newNickname + i;
-          }
-        }
-      }
-      return newNickname;
-    } catch (e) {
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async createOrLoginUserWithOAuth({
-    accessToken,
-    createWith,
-  }: CreateOrLoginUserWithOAuthInput): Promise<CreateOrLoginUserWithOAuthOutput> {
-    try {
-      const {
-        ok,
-        error,
-        profile: { socialId, nickname, email, ...profiles },
-      } = await this.authService.getOAuthProfileWithAccessToken(
-        accessToken,
-        createWith,
-      );
-      if (!ok) {
-        return { ok, error };
-      }
-      const user = await this.userRepository.findOne({
-        loginMethod: createWith,
-        socialId,
-      });
-      if (user) {
-        // Issue token
-        return await this.authService.loginWithOAuth(
-          user.loginMethod as SocialLoginMethod,
-          user.socialId,
-        );
-      }
-      // If there is a user with the same email, change its loginMethod
-      if (email) {
-        const userWithEmail = await this.userRepository.findOne({
-          email,
-          loginMethod: LoginMethod.EMAIL,
-        });
-        if (userWithEmail) {
-          userWithEmail.loginMethod = createWith;
-          userWithEmail.socialId = socialId;
-          // Erase password
-          userWithEmail.password = null;
-          const user = await this.userRepository.save({
-            ...userWithEmail,
-            ...profiles,
-            isVerified: true,
-          });
-          return await this.authService.loginWithOAuth(
-            createWith,
-            user.socialId,
-          );
-        }
-      }
-      // If the user does not exist, create one
-      const newUser = this.userRepository.create({
-        loginMethod: createWith,
-        socialId,
-        email,
-        isVerified: true,
-        ...profiles,
-      });
-      // Get a possible nickname
-      const newNickname = await this.getPossibleNickname(nickname);
-      newUser.nickname = newNickname;
-      const createdUser = await this.userRepository.save(newUser);
-      // Get JWT token
-      const loginResult = await this.authService.loginWithOAuth(
-        createdUser.loginMethod as SocialLoginMethod,
-        createdUser.socialId,
-      );
-      return {
-        ok: loginResult.ok,
-        error: loginResult.error,
-        token: loginResult.token,
-      };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
-  }
-
-  async getUserById(id: number, options?: FindOneOptions<User>): Promise<User> {
-    return this.userRepository.findOne({ id }, options);
-  }
-
-  async getUserByEmail(
+  async createSocialAccount(
     email: string,
-    options?: FindOneOptions<User>,
+    provider: SocialProvider,
+    socialId: string,
   ): Promise<User> {
+    let user = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.email = :email', { email })
+      .getOne();
+    if (!user) {
+      user = await this.userRepository.save(
+        this.userRepository.create({
+          email,
+          lastLoginAt: new Date(),
+          isVerified: true,
+          isLocked: false,
+          type: UserType.USER,
+        }),
+      );
+    }
+
+    await this.socialAccountRepository.save(
+      this.socialAccountRepository.create({
+        user,
+        provider,
+        socialId,
+      }),
+    );
+
+    // The user is verified
+    user.password = null;
+    user.isVerified = true;
+    await this.userRepository.save(user);
+
+    return user;
+  }
+
+  async getUserById(id: number): Promise<User> {
     return this.userRepository.findOne(
-      { email, loginMethod: LoginMethod.EMAIL },
-      options,
+      { id },
+      { select: ['id', 'type', 'isVerified', 'isLocked'] },
     );
   }
 
-  async getUserByNickname(
-    nickname: string,
-    options?: FindOneOptions<User>,
-  ): Promise<User> {
-    return this.userRepository.findOne({ nickname }, options);
+  async getUserByEmail(email: string): Promise<User> {
+    const user = this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
+      .where('user.email = :email', { email })
+      .getOne();
+    return user;
   }
 
   async getUserBySocialId(
-    loginMethod: SocialLoginMethod,
+    provider: SocialProvider,
     socialId: string,
   ): Promise<User> {
-    return this.userRepository.findOne({ loginMethod, socialId });
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
+      .where('socialAccount.provider = :provider', { provider })
+      .andWhere('socialAccount.socialId = :socialId', { socialId })
+      .getOne();
+
+    return user;
   }
 
-  async getMyProfile(user: User): Promise<GetMyProfileOutput> {
-    if (!user) {
+  async updateLastLoginAt(id: number): Promise<void> {
+    const user = await this.userRepository.findOne(
+      { id },
+      { select: ['id', 'lastLoginAt'] },
+    );
+    user.lastLoginAt = new Date();
+    this.userRepository.save(user);
+  }
+
+  async createMyProfile(
+    user: User,
+    { nickname, gender }: CreateMyProfileInput,
+  ): Promise<CreateMyProfileOutput> {
+    try {
+      // Check nickname validity
+      const isNicknameValid = this.checkNicknameValidity(nickname);
+      if (!isNicknameValid) return CommonError('INVALID_NICKNAME');
+
+      const { error } = await this.getMyProfile(user);
+      if (error !== 'PROFILE_NOT_FOUND')
+        return CommonError('PROFILE_ALREADY_EXISTS');
+
+      const profile = await this.userProfileRepository.findOne({ nickname });
+      if (profile) return CommonError('DUPLICATE_NICKNAME');
+
+      await this.userProfileRepository.save(
+        this.userProfileRepository.create({
+          nickname,
+          gender,
+          user,
+        }),
+      );
+
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
       return UNEXPECTED_ERROR;
     }
+  }
 
-    return {
-      ok: true,
-      profile: {
-        id: user.id,
-        email: user.email,
-        loginMethod: user.loginMethod,
-        nickname: user.nickname,
-        isVerified: user.isVerified,
-      },
-    };
+  async getMyProfile({ id }: User): Promise<GetMyProfileOutput> {
+    try {
+      const { profile } = await this.userRepository.findOne(
+        { id },
+        { relations: ['profile'] },
+      );
+
+      return {
+        ok: Boolean(profile),
+        error: !profile && 'PROFILE_NOT_FOUND',
+        profile,
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async updateMyProfile(
+    user: User,
+    profile: UpdateMyProfileInput,
+  ): Promise<UpdateMyProfileOutput> {
+    try {
+      // Check if the profile exists
+      const queryResult = await this.getMyProfile(user);
+      if (!queryResult.ok) return queryResult;
+
+      const profileToUpdate = queryResult.profile;
+
+      if (profile.nickname) {
+        // Check nickname validity
+        const isNicknameValid = this.checkNicknameValidity(profile.nickname);
+        if (!isNicknameValid) return CommonError('INVALID_NICKNAME');
+        // Check duplicate nickname
+        const nicknameProfile = await this.userProfileRepository.findOne({
+          nickname: profile.nickname,
+        });
+        if (nicknameProfile) return CommonError('DUPLICATE_NICKNAME');
+      }
+      // Update
+      await this.userProfileRepository.save({ ...profileToUpdate, ...profile });
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
   }
 
   updateUser(user: User): Promise<User> {
     return this.userRepository.save(user);
   }
 
-  /* TBD
-  프로필 수정 API
-  */
-
   async deleteUserById(id: number): Promise<DeleteUserOutput> {
     try {
-      const user = await this.getUserById(id);
+      const user = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
+        .where('user.id = :id', { id })
+        .getOne();
       if (!user) {
         return {
           ok: false,
           error: 'USER_NOT_FOUND',
         };
       }
-      if (user.loginMethod !== LoginMethod.EMAIL) {
-        switch (user.loginMethod) {
-          case LoginMethod.KAKAO:
+      for (const socialAccount of user.socialAccounts) {
+        switch (socialAccount.provider) {
+          case SocialProvider.KAKAO:
             const adminKey = this.configService.get<string>('KAKAO_ADMIN_KEY');
-            const result = await unlinkKakaoUser(user.socialId, adminKey);
-            if (!result.ok) {
-              return {
-                ok: false,
-                error: result.error,
-              };
-            }
+            const result = await unlinkKakaoUser(
+              socialAccount.socialId,
+              adminKey,
+            );
+            if (!result.ok) return CommonError(result.error);
             break;
-          case LoginMethod.NAVER:
-            break;
-          case LoginMethod.GOOGLE:
-            break;
-          // TODO: Facebook
           default:
-            throw new InternalServerErrorException();
+            break;
         }
       }
-      const result = await this.userRepository.delete({ id: user.id });
+      const result = await this.userRepository.softDelete({ id: user.id });
       return { ok: true };
     } catch (e) {
       console.log(e);
@@ -344,25 +342,16 @@ export class UsersService {
     { email }: RequestPasswordResetInput,
   ): Promise<RequestPasswordResetOutput> {
     try {
-      if (currentUser && currentUser.email !== email) {
-        return {
-          ok: false,
-          error: 'UNAUTHORIZED',
-        };
-      }
-      const user = await this.userRepository.findOne({ email });
-      if (!user) {
-        return {
-          ok: false,
-          error: 'USER_NOT_FOUND',
-        };
-      }
-      if (user.loginMethod !== LoginMethod.EMAIL) {
-        return {
-          ok: false,
-          error: 'INVALID_LOGIN_METHOD',
-        };
-      }
+      if (currentUser && currentUser.email !== email)
+        return CommonError('UNAUTHORIZED');
+      const user = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
+        .leftJoinAndSelect('user.profile', 'profile')
+        .where('user.email = :email', { email })
+        .getOne();
+      if (!user) return CommonError('USER_NOT_FOUND');
+      if (user.socialAccounts.length !== 0) return CommonError('SOCIAL_USER');
       let savedReset: PasswordReset;
       const reset = await this.passwordResetRepository
         .createQueryBuilder('reset')
@@ -379,12 +368,13 @@ export class UsersService {
       }
       const ok = await this.mailService.sendPasswordReset(
         user.email,
-        user.nickname,
+        user.profile ? user.profile.nickname : 'UNKNOWN',
         savedReset.code,
       );
+      // UNKNOWN may be impossible
       return {
         ok,
-        error: ok ? null : 'MAILGUN_API_ERROR',
+        error: !ok && 'MAILGUN_API_ERROR',
       };
     } catch (e) {
       console.log(e);
@@ -429,35 +419,6 @@ export class UsersService {
       // Delete code
       await this.passwordResetRepository.delete({ id: reset.id });
       // return
-      return { ok: true };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
-  }
-
-  async updateNickname(
-    { id }: User,
-    { nickname }: UpdateNicknameInput,
-  ): Promise<UpdateNicknameOutput> {
-    try {
-      // Check nickname length
-      if (nickname.length > 10) {
-        return {
-          ok: false,
-          error: 'INVALID_NICKNAME',
-        };
-      }
-      const userWithNickname = await this.userRepository.findOne({ nickname });
-      if (userWithNickname) {
-        return {
-          ok: false,
-          error: 'DUPLICATE_NICKNAME',
-        };
-      }
-      const user = await this.userRepository.findOne({ id });
-      user.nickname = nickname;
-      await this.userRepository.save(user);
       return { ok: true };
     } catch (e) {
       console.log(e);

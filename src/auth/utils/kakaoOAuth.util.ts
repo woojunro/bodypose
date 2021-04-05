@@ -15,7 +15,7 @@ export const getKakaoProfileWithAccessToken = async (
     if (!id) {
       return {
         ok: false,
-        error: 'Invalid Token',
+        error: 'INVALID_TOKEN',
       };
     }
     return {
@@ -23,9 +23,6 @@ export const getKakaoProfileWithAccessToken = async (
       profile: {
         socialId: id.toString(),
         email: kakao_account.email,
-        gender: kakao_account.gender,
-        nickname: kakao_account.profile.nickname,
-        profileImageUrl: kakao_account.profile.profile_image,
       },
     };
   } catch (e) {
