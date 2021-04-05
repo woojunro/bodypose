@@ -15,11 +15,12 @@ import {
 } from './dtos/create-user.dto';
 import { DeleteUserOutput } from './dtos/delete-user.dto';
 import {
-  CreateMyProfileInput,
-  CreateMyProfileOutput,
-  GetMyProfileOutput,
-  UpdateMyProfileInput,
-  UpdateMyProfileOutput,
+  AdminUpdateProfileInput,
+  CreateProfileInput,
+  CreateProfileOutput,
+  GetProfileOutput,
+  UpdateProfileInput,
+  UpdateProfileOutput,
 } from './dtos/user-profile.dto';
 import {
   RequestPasswordResetInput,
@@ -37,6 +38,7 @@ import { UserProfile } from './entities/user-profile.entity';
 import { UserType, User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { profile } from 'console';
 
 @Injectable()
 export class UsersService {
@@ -199,8 +201,8 @@ export class UsersService {
 
   async createMyProfile(
     user: User,
-    { nickname, gender }: CreateMyProfileInput,
-  ): Promise<CreateMyProfileOutput> {
+    { nickname, gender }: CreateProfileInput,
+  ): Promise<CreateProfileOutput> {
     try {
       // Check nickname validity
       const isNicknameValid = this.checkNicknameValidity(nickname);
@@ -226,7 +228,7 @@ export class UsersService {
     }
   }
 
-  async getMyProfile({ id }: User): Promise<GetMyProfileOutput> {
+  async getMyProfile({ id }: User): Promise<GetProfileOutput> {
     try {
       const { profile } = await this.userRepository
         .createQueryBuilder('user')
@@ -246,10 +248,35 @@ export class UsersService {
     }
   }
 
+  async updateProfile({
+    userId,
+    ...profile
+  }: AdminUpdateProfileInput): Promise<UpdateProfileOutput> {
+    try {
+      const {
+        profile: profileToUpdate,
+      } = await this.userRepository
+        .createQueryBuilder('user')
+        .select('user.id')
+        .leftJoinAndSelect('user.profile', 'profile')
+        .where('user.id = :userId', { userId })
+        .getOne();
+      if (!profileToUpdate) return CommonError('PROFILE_NOT_FOUND');
+
+      await this.userProfileRepository.save({ ...profileToUpdate, ...profile });
+
+      return { ok: true };
+    } catch (e) {
+      if (e.errno === 1062) return CommonError('DUPLICATE_NICKNAME');
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
   async updateMyProfile(
     user: User,
-    profile: UpdateMyProfileInput,
-  ): Promise<UpdateMyProfileOutput> {
+    profile: UpdateProfileInput,
+  ): Promise<UpdateProfileOutput> {
     try {
       // Check if the profile exists
       const { ok, error, profile: profileToUpdate } = await this.getMyProfile(
@@ -270,10 +297,6 @@ export class UsersService {
       console.log(e);
       return UNEXPECTED_ERROR;
     }
-  }
-
-  updateUser(user: User): Promise<User> {
-    return this.userRepository.save(user);
   }
 
   async deleteUserById(id: number): Promise<DeleteUserOutput> {

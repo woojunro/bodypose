@@ -18,6 +18,11 @@ import {
 import { StudiosService } from 'src/studios/studios.service';
 import { CreateStudioReviewOutput } from 'src/studios/dtos/create-studio-review.dto';
 import { User } from 'src/users/entities/user.entity';
+import { UploadFileOutput } from './dtos/upload-file.dto';
+import {
+  CommonError,
+  UNEXPECTED_ERROR,
+} from 'src/common/constants/error.constant';
 
 @Injectable()
 export class UploadsService {
@@ -33,26 +38,53 @@ export class UploadsService {
     this.bucket = storage.bucket(bucket_name);
   }
 
+  async uploadFile(filePath: string, file: File): Promise<UploadFileOutput> {
+    try {
+      const blob = this.bucket.file(filePath);
+      const promise: Promise<string> = new Promise((resolve, reject) => {
+        const blobStream = blob.createWriteStream();
+        blobStream.on('error', err => {
+          reject(err.message);
+        });
+        blobStream.on('finish', () => {
+          const publicUrl = format(
+            `https://storage.googleapis.com/${this.bucket.name}/${blob.name}`,
+          );
+          resolve(publicUrl);
+        });
+        blobStream.end(file.buffer);
+      });
+
+      return promise
+        .then(url => {
+          return { ok: true, url };
+        })
+        .catch(err => {
+          return CommonError(err);
+        });
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
   async uploadStudioReview(
     photos: File[],
     body: UploadStudioReviewDto,
     user: User,
   ): Promise<CreateStudioReviewOutput> {
-    if (photos.length < 1) {
-      throw new BadRequestException('NO_PHOTOS');
-    }
-    if (photos.length > 3) {
-      throw new BadRequestException('TOO_MANY_PHOTOS');
+    if (
+      photos.length < 1 ||
+      photos.length > 3 ||
+      body.rating < 1 ||
+      body.rating > 5 ||
+      body.thumbnailIndex < 0 ||
+      body.thumbnailIndex >= photos.length
+    ) {
+      throw new BadRequestException('INVALID_PAYLOAD');
     }
     if (!body.studioSlug) {
       throw new BadRequestException('NO_STUDIO_SLUG');
-    }
-
-    if (body.rating < 1 || body.rating > 5) {
-      throw new BadRequestException('INVALID_PAYLOAD');
-    }
-    if (body.thumbnailIndex < 0 || body.thumbnailIndex >= photos.length) {
-      throw new BadRequestException('INVALID_PAYLOAD');
     }
 
     const studio = await this.studiosService.checkIfStudioExists(
@@ -65,40 +97,25 @@ export class UploadsService {
       });
     }
 
-    const urlPromises = [];
+    const photoUrls: string[] = [];
     for (const photo of photos) {
-      const blob = this.bucket.file(
+      const { url, error } = await this.uploadFile(
         `review-photos/${body.studioSlug}/${randomFileName(photo)}`,
+        photo,
       );
-      const promise = new Promise((resolve, reject) => {
-        const blobStream = blob.createWriteStream();
-        blobStream
-          .on('error', err => {
-            console.log(err);
-            reject(new InternalServerErrorException('GOOGLE_SERVER_ERROR'));
-          })
-          .on('finish', () => {
-            const publicUrl = format(
-              `https://storage.googleapis.com/${this.bucket.name}/${blob.name}`,
-            );
-            resolve(publicUrl);
-          })
-          .end(photo.buffer);
-      });
-      urlPromises.push(promise);
+      if (error) throw new InternalServerErrorException();
+      photoUrls.push(url);
     }
 
-    return Promise.all(urlPromises).then(promises => {
-      return this.studiosService.createStudioReview(user, {
-        studioSlug: body.studioSlug,
-        payload: {
-          rating: Number(body.rating),
-          text: body.text,
-          isPhotoForProof: Boolean(body.isPhotoForProof),
-          photoUrls: [...promises],
-          thumbnailIndex: Number(body.thumbnailIndex),
-        },
-      });
+    return this.studiosService.createStudioReview(user, {
+      studioSlug: body.studioSlug,
+      payload: {
+        rating: body.rating,
+        text: body.text,
+        isPhotoForProof: body.isPhotoForProof,
+        photoUrls,
+        thumbnailIndex: body.thumbnailIndex,
+      },
     });
   }
 
@@ -183,7 +200,7 @@ export class UploadsService {
     });
   }
 
-  async deleteFile(filename: string): Promise<void> {
-    await this.bucket.file(filename).delete();
+  async deleteFile(filePath: string): Promise<void> {
+    await this.bucket.file(filePath).delete();
   }
 }
