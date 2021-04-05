@@ -20,7 +20,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     let isTokenValid: boolean;
     try {
-      isTokenValid = (await super.canActivate(context)) ? true : false;
+      isTokenValid = (await super.canActivate(context)) as boolean;
     } catch (e) {
       // super.canActivate throws an error
       // if authorization header does not exist

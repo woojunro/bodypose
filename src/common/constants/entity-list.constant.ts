@@ -1,3 +1,4 @@
+import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 import { Notice } from 'src/notices/entity/notice.entity';
 import {
   BackgroundConcept,
@@ -27,6 +28,7 @@ import { Verification } from 'src/users/entities/verification.entity';
 
 export const ENTITY_LIST = [
   User,
+  RefreshToken,
   UserProfile,
   SocialAccount,
   Verification,

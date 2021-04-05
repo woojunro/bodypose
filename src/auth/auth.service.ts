@@ -1,20 +1,36 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { v4 } from 'uuid';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Request, Response } from 'express';
 import {
   CommonError,
   UNEXPECTED_ERROR,
 } from 'src/common/constants/error.constant';
+import {
+  ACCESS_TOKEN_COOKIE_OPTIONS,
+  REFRESH_TOKEN_COOKIE_OPTIONS,
+} from 'src/common/constants/token-cookie.constant';
 import { SocialProvider } from 'src/users/entities/social-account.entity';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
+import { Repository } from 'typeorm';
 import {
   EmailLoginInput,
   LoginOutput,
   SocialLoginInput,
 } from './dtos/login.dto';
 import { GetOAuthProfileWithAccessTokenOutput } from './dtos/oauth.dto';
+import { RefreshTokenOutput } from './dtos/refresh-token.dto';
+import { RefreshToken } from './entities/refresh-token.entity';
 import { getGoogleProfileWithAccessToken } from './utils/googleAuth.util';
 import {
   getKakaoProfileWithAccessToken,
@@ -29,28 +45,111 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    @InjectRepository(RefreshToken)
+    private readonly refreshTokenRepository: Repository<RefreshToken>,
   ) {}
 
-  processLogin(user: User, context: any): LoginOutput {
-    // Check if the user is locked
-    if (user.isLocked) return CommonError('USER_LOCKED');
-    // Issue an auth token
-    const payload = { id: user.id };
-    const token = this.jwtService.sign(payload);
-    // Update lastLogin
-    this.usersService.updateLastLoginAt(user.id);
-    // Set cookie
-    context.res.cookie('authorization', token, {
-      expires: new Date(Date.now() + 2 * 60 * 60 * 1000),
-      httpOnly: true,
-      sameSite: 'lax',
-    });
-    // If not verified, notify
-    return {
-      ok: true,
-      token,
-      error: user.isVerified ? null : 'USER_NOT_VERIFIED',
-    };
+  async processLogin(user: User, context: any): Promise<LoginOutput> {
+    try {
+      // Check if the user is locked
+      if (user.isLocked) return CommonError('USER_LOCKED');
+      // Issue an auth token
+      const payload = { id: user.id };
+      const token = this.jwtService.sign(payload);
+      // Update lastLogin
+      this.usersService.updateLastLoginAt(user.id);
+      // Set cookie
+      const refresh = await this.issueRefreshToken(user.id);
+      context.res.cookie('refresh', refresh, REFRESH_TOKEN_COOKIE_OPTIONS);
+      context.res.cookie('authorization', token, ACCESS_TOKEN_COOKIE_OPTIONS);
+      // If not verified, notify
+      return {
+        ok: true,
+        token,
+        refresh,
+        error: user.isVerified ? null : 'USER_NOT_VERIFIED',
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async issueRefreshToken(id: number): Promise<string> {
+    try {
+      const token = v4();
+      await this.refreshTokenRepository.save(
+        this.refreshTokenRepository.create({
+          token,
+          user: { id },
+        }),
+      );
+      const payload = { id, token };
+      return this.jwtService.sign(payload, {
+        secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+        expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRE'),
+      });
+    } catch (e) {
+      console.log(e);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async refreshAccessToken(
+    { cookies, body }: Request,
+    res: Response,
+  ): Promise<RefreshTokenOutput> {
+    try {
+      let { refresh } = cookies;
+      if (!refresh) refresh = body.refresh;
+      if (!refresh) throw new Error();
+      const payload = this.jwtService.verify(refresh, {
+        secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+      });
+      // If the token is expired, verify() will throw an error
+      const {
+        token,
+        user,
+      } = await this.refreshTokenRepository
+        .createQueryBuilder('refresh')
+        .innerJoin('refresh.user', 'user')
+        .addSelect('user.id')
+        .addSelect('user.isLocked')
+        .where('userId = :id', { id: payload.id })
+        .getOne();
+      if (token !== payload.token || user.isLocked) throw new Error();
+
+      // Issue tokens
+      const accessToken = this.jwtService.sign({ id: user.id });
+      // Sliding refresh token exp
+      const thirtyDaysInSeconds = 60 * 60 * 24 * 30;
+      if (
+        Number(payload.exp) - thirtyDaysInSeconds <
+        Math.floor(Date.now() / 1000)
+      )
+        refresh = this.jwtService.sign(
+          { id: user.id, token },
+          {
+            secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+            expiresIn: this.configService.get<string>(
+              'JWT_REFRESH_TOKEN_EXPIRE',
+            ),
+          },
+        );
+
+      // Set cookies
+      res.cookie('refresh', refresh, REFRESH_TOKEN_COOKIE_OPTIONS);
+      res.cookie('authorization', accessToken, ACCESS_TOKEN_COOKIE_OPTIONS);
+
+      return {
+        ok: true,
+        token: accessToken,
+        refresh,
+      };
+    } catch (e) {
+      console.log(e);
+      throw new UnauthorizedException();
+    }
   }
 
   async emailLogin(
@@ -68,7 +167,7 @@ export class AuthService {
       const isPasswordCorrect = await user.checkPassword(password);
       if (!isPasswordCorrect) return CommonError('WRONG_PASSWORD');
 
-      return this.processLogin(user, context);
+      return await this.processLogin(user, context);
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
@@ -108,7 +207,7 @@ export class AuthService {
         );
       }
 
-      return this.processLogin(user, context);
+      return await this.processLogin(user, context);
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
