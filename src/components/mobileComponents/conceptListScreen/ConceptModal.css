@@ -25,9 +25,9 @@
   flex-direction: column;
 }
 .conceptModalContents {
-  height: -moz-calc(100vh - 140px);
-  height: -webkit-calc(100vh - 140px);
-  height: calc(100vh - 140px);
+  height: -moz-calc(100vh - 100px);
+  height: -webkit-calc(100vh - 100px);
+  height: calc(100vh - 100px);
   margin: 0 auto;
   padding-left: 5%;
   padding-right: 5%;
@@ -67,9 +67,9 @@
 .mainPhotoArea img {
   width: 100%;
   height: auto;
-  max-height: -moz-calc(100vh - 140px);
-  max-height: -webkit-calc(100vh - 140px);
-  max-height: calc(100vh - 140px);
+  max-height: -moz-calc(100vh - 120px);
+  max-height: -webkit-calc(100vh - 120px);
+  max-height: calc(100vh - 120px);
   object-fit: contain;
 }
 
