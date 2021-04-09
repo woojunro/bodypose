@@ -30,7 +30,7 @@ import {
   UpdatePasswordInput,
   UpdatePasswordOutput,
 } from './dtos/update-password.dto';
-import { VerifyUserOutput } from './dtos/verify-user.dto';
+import { VerifyUserInput, VerifyUserOutput } from './dtos/verify-user.dto';
 import { PasswordReset } from './entities/password-reset.entity';
 import {
   SocialAccount,
@@ -41,6 +41,7 @@ import { UserType, User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { UploadsService } from 'src/uploads/uploads.service';
+import { CoreOutput } from 'src/common/dtos/output.dto';
 
 @Injectable()
 export class UsersService {
@@ -125,7 +126,12 @@ export class UsersService {
       const newVerification = this.verificationRepository.create();
       newVerification.user = createdUser;
       const { code } = await this.verificationRepository.save(newVerification);
-      this.mailService.sendEmailVerification(email, nickname, code);
+      this.mailService.sendEmailVerification(
+        email,
+        nickname,
+        createdUser.id,
+        code,
+      );
 
       // Return tokens after login
       return await this.authService.emailLogin({ email, password }, context);
@@ -176,7 +182,7 @@ export class UsersService {
   async getUserById(id: number): Promise<User> {
     return this.userRepository.findOne(
       { id },
-      { select: ['id', 'type', 'isVerified', 'isLocked'] },
+      { select: ['id', 'type', 'isVerified', 'isLocked', 'email'] },
     );
   }
 
@@ -425,16 +431,20 @@ export class UsersService {
     }
   }
 
-  async verifyUser(code: string): Promise<VerifyUserOutput> {
+  async verifyUser({
+    userId,
+    code,
+  }: VerifyUserInput): Promise<VerifyUserOutput> {
     try {
-      const verification = await this.verificationRepository.findOne(
-        { code },
-        { relations: ['user'] },
-      );
-      if (!verification) {
+      const verification = await this.verificationRepository
+        .createQueryBuilder('verification')
+        .innerJoinAndSelect('verification.user', 'user')
+        .where('user.id = :userId', { userId })
+        .getOne();
+      if (!verification || verification.code !== code) {
         return {
           ok: false,
-          error: 'VERIFICATION_NOT_FOUND',
+          error: 'INVALID_REQUEST',
         };
       }
       verification.user.isVerified = true;
@@ -444,6 +454,40 @@ export class UsersService {
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
+    }
+  }
+
+  async resendVerificationMail(user: User): Promise<CoreOutput> {
+    try {
+      if (user.isVerified) return CommonError('ALREADY_VERIFIED');
+      let verification = await this.verificationRepository
+        .createQueryBuilder('verification')
+        .where('verification.userId = :id', { id: user.id })
+        .getOne();
+      if (!verification) {
+        verification = await this.verificationRepository.save(
+          this.verificationRepository.create({
+            user: { id: user.id },
+          }),
+        );
+      }
+
+      const { nickname } = await this.userProfileRepository
+        .createQueryBuilder('profile')
+        .select('profile.nickname')
+        .where('profile.userId = :id', { id: user.id })
+        .getOne();
+
+      await this.mailService.sendEmailVerification(
+        user.email,
+        nickname,
+        user.id,
+        verification.code,
+      );
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return CommonError('COULD_NOT_SEND_MAIL');
     }
   }
 
@@ -479,6 +523,7 @@ export class UsersService {
       const ok = await this.mailService.sendPasswordReset(
         user.email,
         user.profile ? user.profile.nickname : 'UNKNOWN',
+        user.id,
         savedReset.code,
       );
       // UNKNOWN may be impossible
@@ -494,18 +539,27 @@ export class UsersService {
 
   async updatePassword({
     code,
+    userId,
     newPassword,
   }: UpdatePasswordInput): Promise<UpdatePasswordOutput> {
     try {
-      // Find user with code
-      const reset = await this.passwordResetRepository.findOne(
-        { code },
-        { relations: ['user'] },
-      );
-      if (!reset) {
+      // Check security
+      if (!this.checkPasswordSecurity(newPassword)) {
         return {
           ok: false,
-          error: 'CODE_NOT_FOUND',
+          error: 'INSECURE_PASSWORD',
+        };
+      }
+      // Find user with code
+      const reset = await this.passwordResetRepository
+        .createQueryBuilder('reset')
+        .innerJoinAndSelect('reset.user', 'user')
+        .where('user.id = :userId', { userId })
+        .getOne();
+      if (!reset || reset.code !== code) {
+        return {
+          ok: false,
+          error: 'INVALID_REQUEST',
         };
       }
       // Check code expire (1 hour)
@@ -513,13 +567,6 @@ export class UsersService {
         return {
           ok: false,
           error: 'CODE_EXPIRED',
-        };
-      }
-      // Check security
-      if (!this.checkPasswordSecurity(newPassword)) {
-        return {
-          ok: false,
-          error: 'INSECURE_PASSWORD',
         };
       }
       // Update

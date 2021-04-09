@@ -31,6 +31,7 @@ import {
 import { VerifyUserInput, VerifyUserOutput } from './dtos/verify-user.dto';
 import { UserType, User } from './entities/user.entity';
 import { UsersService } from './users.service';
+import { CoreOutput } from 'src/common/dtos/output.dto';
 
 @Resolver(of => User)
 export class UsersResolver {
@@ -95,7 +96,12 @@ export class UsersResolver {
   // Public
   @Mutation(returns => VerifyUserOutput)
   verifyUser(@Args('input') input: VerifyUserInput): Promise<VerifyUserOutput> {
-    return this.usersService.verifyUser(input.code);
+    return this.usersService.verifyUser(input);
+  }
+
+  @Mutation(returns => CoreOutput)
+  resendVerificationMail(@CurrentUser() user: User): Promise<CoreOutput> {
+    return this.usersService.resendVerificationMail(user);
   }
 
   // Public
