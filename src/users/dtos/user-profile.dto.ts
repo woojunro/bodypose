@@ -36,3 +36,16 @@ export class AdminUpdateProfileInput extends UpdateProfileInput {
   @Field(type => Int)
   userId: number;
 }
+
+@InputType()
+export class UpdateProfileImageInput extends PickType(
+  UserProfile,
+  ['profileImageUrl'],
+  InputType,
+) {}
+
+@InputType()
+export class DeleteProfileImageInput {
+  @Field(type => Int, { nullable: true })
+  userId?: number;
+}

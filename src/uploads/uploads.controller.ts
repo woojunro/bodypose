@@ -2,11 +2,13 @@ import {
   Body,
   Controller,
   Post,
+  UploadedFile,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import {
   FileFieldsInterceptor,
+  FileInterceptor,
   FilesInterceptor,
 } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
@@ -66,5 +68,23 @@ export class UploadsController {
     @Body() body: UploadPhotoDto,
   ) {
     return this.uploadsService.uploadStudioPhoto(photos, body);
+  }
+
+  @Post('profile-image')
+  @Roles(UserType.USER, UserType.STUDIO)
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: memoryStorage(),
+      limits: {
+        fileSize: 1 * 1024 * 1024,
+      },
+      fileFilter: imageFileFilter,
+    }),
+  )
+  async uploadProfileImage(
+    @CurrentUser() user: User,
+    @UploadedFile() profileImage: Express.Multer.File,
+  ) {
+    return this.uploadsService.uploadProfileImage(user, profileImage);
   }
 }

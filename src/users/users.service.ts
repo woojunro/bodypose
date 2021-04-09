@@ -18,7 +18,9 @@ import {
   AdminUpdateProfileInput,
   CreateProfileInput,
   CreateProfileOutput,
+  DeleteProfileImageInput,
   GetProfileOutput,
+  UpdateProfileImageInput,
   UpdateProfileInput,
   UpdateProfileOutput,
 } from './dtos/user-profile.dto';
@@ -38,6 +40,7 @@ import { UserProfile } from './entities/user-profile.entity';
 import { UserType, User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { UploadsService } from 'src/uploads/uploads.service';
 
 @Injectable()
 export class UsersService {
@@ -56,6 +59,8 @@ export class UsersService {
     private readonly authService: AuthService,
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
+    @Inject(forwardRef(() => UploadsService))
+    private readonly uploadsService: UploadsService,
   ) {}
 
   checkPasswordSecurity(password?: string): boolean {
@@ -313,6 +318,73 @@ export class UsersService {
       return { ok: true };
     } catch (e) {
       if (e.errno === 1062) return CommonError('DUPLICATE_NICKNAME');
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async updateProfileImage(
+    user: User,
+    { profileImageUrl }: UpdateProfileImageInput,
+  ): Promise<UpdateProfileOutput> {
+    try {
+      // Check if the profile exists
+      const { ok, error, profile: profileToUpdate } = await this.getMyProfile(
+        user,
+      );
+      if (!ok) return { ok, error };
+
+      // Delete existing profile image
+      if (profileToUpdate.profileImageUrl) {
+        const path = profileToUpdate.profileImageUrl.substring(
+          profileToUpdate.profileImageUrl.indexOf('profile-images'),
+        );
+        await this.uploadsService.deleteFile(path);
+      }
+
+      profileToUpdate.profileImageUrl = profileImageUrl;
+      await this.userProfileRepository.save(profileToUpdate);
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async deleteProfileImage(
+    user: User,
+    input: DeleteProfileImageInput,
+  ): Promise<UpdateProfileOutput> {
+    try {
+      let profileToUpdate: UserProfile;
+      if (user.type === UserType.ADMIN) {
+        if (!input.userId) return CommonError('USER_ID_REQUIRED');
+        profileToUpdate = await this.userProfileRepository
+          .createQueryBuilder('profile')
+          .where('profile.userId = :userId', { userId: input.userId })
+          .getOne();
+        if (!profileToUpdate) return CommonError('PROFILE_NOT_FOUND');
+      } else {
+        // Check if the profile exists
+        const { ok, error, profile } = await this.getMyProfile(user);
+        if (!ok) return { ok, error };
+        profileToUpdate = profile;
+      }
+
+      // Delete existing profile image
+      if (profileToUpdate.profileImageUrl) {
+        const path = profileToUpdate.profileImageUrl.substring(
+          profileToUpdate.profileImageUrl.indexOf('profile-images'),
+        );
+        await this.uploadsService.deleteFile(path);
+      } else {
+        return CommonError('PROFILE_IMAGE_DOES_NOT_EXIST');
+      }
+
+      profileToUpdate.profileImageUrl = null;
+      await this.userProfileRepository.save(profileToUpdate);
+      return { ok: true };
+    } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
     }

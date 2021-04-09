@@ -17,6 +17,7 @@ import {
   AdminUpdateProfileInput,
   CreateProfileInput,
   CreateProfileOutput,
+  DeleteProfileImageInput,
   GetProfileOutput,
   UpdateProfileInput,
   UpdateProfileOutput,
@@ -74,6 +75,15 @@ export class UsersResolver {
     @Args('input') input: AdminUpdateProfileInput,
   ): Promise<UpdateProfileOutput> {
     return this.usersService.updateProfile(input);
+  }
+
+  @Mutation(returns => UpdateProfileOutput)
+  @Roles(UserType.USER, UserType.ADMIN)
+  deleteProfileImage(
+    @CurrentUser() user: User,
+    @Args('input') input: DeleteProfileImageInput,
+  ) {
+    return this.usersService.deleteProfileImage(user, input);
   }
 
   @Mutation(returns => DeleteUserOutput)

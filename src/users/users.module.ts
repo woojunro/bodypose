@@ -10,6 +10,7 @@ import { PhotosModule } from 'src/photos/photos.module';
 import { PasswordReset } from './entities/password-reset.entity';
 import { UserProfile } from './entities/user-profile.entity';
 import { SocialAccount } from './entities/social-account.entity';
+import { UploadsModule } from 'src/uploads/uploads.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { SocialAccount } from './entities/social-account.entity';
     forwardRef(() => AuthModule),
     MailModule,
     forwardRef(() => PhotosModule),
+    forwardRef(() => UploadsModule),
   ],
   providers: [UsersService, UsersResolver],
   exports: [UsersService],

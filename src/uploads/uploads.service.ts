@@ -23,6 +23,7 @@ import {
   CommonError,
   UNEXPECTED_ERROR,
 } from 'src/common/constants/error.constant';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class UploadsService {
@@ -32,6 +33,8 @@ export class UploadsService {
     private readonly configService: ConfigService,
     @Inject(forwardRef(() => StudiosService))
     private readonly studiosService: StudiosService,
+    @Inject(forwardRef(() => UsersService))
+    private readonly usersService: UsersService,
   ) {
     const storage = new Storage();
     const bucket_name = configService.get<string>('GCLOUD_STORAGE_BUCKET');
@@ -117,6 +120,16 @@ export class UploadsService {
         thumbnailIndex: body.thumbnailIndex,
       },
     });
+  }
+
+  async uploadProfileImage(user: User, profileImage: File) {
+    const { url: profileImageUrl, error } = await this.uploadFile(
+      `profile-images/${randomFileName(profileImage)}`,
+      profileImage,
+    );
+    if (error) throw new InternalServerErrorException();
+
+    return this.usersService.updateProfileImage(user, { profileImageUrl });
   }
 
   async uploadStudioPhoto(photos, body: UploadPhotoDto) {
