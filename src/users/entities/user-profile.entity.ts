@@ -8,7 +8,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { Column, Entity, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { User } from './user.entity';
 
 export enum UserGender {
@@ -22,6 +22,7 @@ registerEnumType(UserGender, { name: 'UserGender' });
 @ObjectType()
 export class UserProfile extends CoreEntity {
   @OneToOne(relation => User, user => user.profile, { onDelete: 'CASCADE' })
+  @JoinColumn()
   user: User;
 
   @Column({ unique: true, length: 10 })

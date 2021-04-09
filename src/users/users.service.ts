@@ -15,11 +15,14 @@ import {
 } from './dtos/create-user.dto';
 import { DeleteUserOutput } from './dtos/delete-user.dto';
 import {
-  CreateMyProfileInput,
-  CreateMyProfileOutput,
-  GetMyProfileOutput,
-  UpdateMyProfileInput,
-  UpdateMyProfileOutput,
+  AdminUpdateProfileInput,
+  CreateProfileInput,
+  CreateProfileOutput,
+  DeleteProfileImageInput,
+  GetProfileOutput,
+  UpdateProfileImageInput,
+  UpdateProfileInput,
+  UpdateProfileOutput,
 } from './dtos/user-profile.dto';
 import {
   RequestPasswordResetInput,
@@ -37,6 +40,7 @@ import { UserProfile } from './entities/user-profile.entity';
 import { UserType, User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { UploadsService } from 'src/uploads/uploads.service';
 
 @Injectable()
 export class UsersService {
@@ -55,6 +59,8 @@ export class UsersService {
     private readonly authService: AuthService,
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
+    @Inject(forwardRef(() => UploadsService))
+    private readonly uploadsService: UploadsService,
   ) {}
 
   checkPasswordSecurity(password?: string): boolean {
@@ -86,19 +92,28 @@ export class UsersService {
       const isNicknameValid = this.checkNicknameValidity(nickname);
       if (!isNicknameValid) return CommonError('INVALID_NICKNAME');
       // Check if there exists a user with the inputted email
-      const emailUser = await this.userRepository.findOne({ email });
+      const emailUser = await this.userRepository
+        .createQueryBuilder('user')
+        .select('user.id')
+        .where('user.email = :email', { email })
+        .withDeleted()
+        .getOne();
       if (emailUser) return CommonError('DUPLICATE_EMAIL');
       // Check if there exists a user with the inputted nickname
-      const nicknameProfile = await this.userProfileRepository.findOne({
-        nickname,
-      });
+      const nicknameProfile = await this.userProfileRepository.findOne(
+        { nickname },
+        { select: ['id'] },
+      );
       if (nicknameProfile) return CommonError('DUPLICATE_NICKNAME');
 
       // Create and save the user
-      const newUser = this.userRepository.create({ email, password });
-      newUser.type = UserType.USER;
-      newUser.lastLoginAt = new Date();
-      newUser.isVerified = false;
+      const newUser = this.userRepository.create({
+        email,
+        password,
+        type: UserType.USER,
+        lastLoginAt: new Date(),
+        isVerified: false,
+      });
       const createdUser = await this.userRepository.save(newUser);
 
       // Create profile for the user
@@ -110,7 +125,7 @@ export class UsersService {
       const newVerification = this.verificationRepository.create();
       newVerification.user = createdUser;
       const { code } = await this.verificationRepository.save(newVerification);
-      await this.mailService.sendEmailVerification(email, nickname, code);
+      this.mailService.sendEmailVerification(email, nickname, code);
 
       // Return tokens after login
       return await this.authService.emailLogin({ email, password }, context);
@@ -128,6 +143,7 @@ export class UsersService {
     let user = await this.userRepository
       .createQueryBuilder('user')
       .where('user.email = :email', { email })
+      .withDeleted()
       .getOne();
     if (!user) {
       user = await this.userRepository.save(
@@ -152,7 +168,7 @@ export class UsersService {
     // The user is verified
     user.password = null;
     user.isVerified = true;
-    await this.userRepository.save(user);
+    user = await this.userRepository.save(user);
 
     return user;
   }
@@ -170,6 +186,7 @@ export class UsersService {
       .addSelect('user.password')
       .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
       .where('user.email = :email', { email })
+      .withDeleted()
       .getOne();
     return user;
   }
@@ -183,6 +200,7 @@ export class UsersService {
       .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
       .where('socialAccount.provider = :provider', { provider })
       .andWhere('socialAccount.socialId = :socialId', { socialId })
+      .withDeleted()
       .getOne();
 
     return user;
@@ -191,29 +209,37 @@ export class UsersService {
   async updateLastLoginAt(id: number): Promise<void> {
     const user = await this.userRepository.findOne(
       { id },
-      { select: ['id', 'lastLoginAt'] },
+      { select: ['id', 'lastLoginAt', 'deletedAt'], withDeleted: true },
     );
     user.lastLoginAt = new Date();
+    user.deletedAt = null;
     this.userRepository.save(user);
   }
 
   async createMyProfile(
     user: User,
-    { nickname, gender }: CreateMyProfileInput,
-  ): Promise<CreateMyProfileOutput> {
+    { nickname, gender }: CreateProfileInput,
+  ): Promise<CreateProfileOutput> {
     try {
       // Check nickname validity
       const isNicknameValid = this.checkNicknameValidity(nickname);
       if (!isNicknameValid) return CommonError('INVALID_NICKNAME');
 
-      const { error } = await this.getMyProfile(user);
-      if (error !== 'PROFILE_NOT_FOUND')
-        return CommonError('PROFILE_ALREADY_EXISTS');
+      const isProfileAlreadyExists = await this.userProfileRepository
+        .createQueryBuilder('profile')
+        .select('profile.id')
+        .where('profile.userId = :id', { id: user.id })
+        .getOne();
+      if (isProfileAlreadyExists) return CommonError('PROFILE_ALREADY_EXISTS');
 
-      const profile = await this.userProfileRepository.findOne({ nickname });
-      if (profile) return CommonError('DUPLICATE_NICKNAME');
+      // Check if there exists a user with the inputted nickname
+      const duplicateNickname = await this.userProfileRepository.findOne(
+        { nickname },
+        { select: ['id'] },
+      );
+      if (duplicateNickname) return CommonError('DUPLICATE_NICKNAME');
 
-      await this.userProfileRepository.save(
+      await this.userProfileRepository.insert(
         this.userProfileRepository.create({
           nickname,
           gender,
@@ -228,16 +254,16 @@ export class UsersService {
     }
   }
 
-  async getMyProfile({ id }: User): Promise<GetMyProfileOutput> {
+  async getMyProfile({ id }: User): Promise<GetProfileOutput> {
     try {
-      const { profile } = await this.userRepository.findOne(
-        { id },
-        { relations: ['profile'] },
-      );
+      const profile = await this.userProfileRepository
+        .createQueryBuilder('profile')
+        .where('profile.userId = :id', { id })
+        .getOne();
 
       return {
         ok: Boolean(profile),
-        error: !profile && 'PROFILE_NOT_FOUND',
+        error: !profile ? 'PROFILE_NOT_FOUND' : null,
         profile,
       };
     } catch (e) {
@@ -246,29 +272,78 @@ export class UsersService {
     }
   }
 
+  async updateProfile({
+    userId,
+    ...profile
+  }: AdminUpdateProfileInput): Promise<UpdateProfileOutput> {
+    try {
+      const profileToUpdate = await this.userProfileRepository
+        .createQueryBuilder('profile')
+        .where('profile.userId = :userId', { userId })
+        .getOne();
+      if (!profileToUpdate) return CommonError('PROFILE_NOT_FOUND');
+
+      await this.userProfileRepository.save({ ...profileToUpdate, ...profile });
+
+      return { ok: true };
+    } catch (e) {
+      if (e.errno === 1062) return CommonError('DUPLICATE_NICKNAME');
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
   async updateMyProfile(
     user: User,
-    profile: UpdateMyProfileInput,
-  ): Promise<UpdateMyProfileOutput> {
+    profile: UpdateProfileInput,
+  ): Promise<UpdateProfileOutput> {
     try {
-      // Check if the profile exists
-      const queryResult = await this.getMyProfile(user);
-      if (!queryResult.ok) return queryResult;
-
-      const profileToUpdate = queryResult.profile;
-
       if (profile.nickname) {
         // Check nickname validity
         const isNicknameValid = this.checkNicknameValidity(profile.nickname);
         if (!isNicknameValid) return CommonError('INVALID_NICKNAME');
-        // Check duplicate nickname
-        const nicknameProfile = await this.userProfileRepository.findOne({
-          nickname: profile.nickname,
-        });
-        if (nicknameProfile) return CommonError('DUPLICATE_NICKNAME');
       }
+
+      // Check if the profile exists
+      const { ok, error, profile: profileToUpdate } = await this.getMyProfile(
+        user,
+      );
+      if (!ok) return { ok, error };
+
       // Update
-      await this.userProfileRepository.save({ ...profileToUpdate, ...profile });
+      await this.userProfileRepository.save({
+        ...profileToUpdate,
+        ...profile,
+      });
+      return { ok: true };
+    } catch (e) {
+      if (e.errno === 1062) return CommonError('DUPLICATE_NICKNAME');
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async updateProfileImage(
+    user: User,
+    { profileImageUrl }: UpdateProfileImageInput,
+  ): Promise<UpdateProfileOutput> {
+    try {
+      // Check if the profile exists
+      const { ok, error, profile: profileToUpdate } = await this.getMyProfile(
+        user,
+      );
+      if (!ok) return { ok, error };
+
+      // Delete existing profile image
+      if (profileToUpdate.profileImageUrl) {
+        const path = profileToUpdate.profileImageUrl.substring(
+          profileToUpdate.profileImageUrl.indexOf('profile-images'),
+        );
+        await this.uploadsService.deleteFile(path);
+      }
+
+      profileToUpdate.profileImageUrl = profileImageUrl;
+      await this.userProfileRepository.save(profileToUpdate);
       return { ok: true };
     } catch (e) {
       console.log(e);
@@ -276,8 +351,43 @@ export class UsersService {
     }
   }
 
-  updateUser(user: User): Promise<User> {
-    return this.userRepository.save(user);
+  async deleteProfileImage(
+    user: User,
+    input: DeleteProfileImageInput,
+  ): Promise<UpdateProfileOutput> {
+    try {
+      let profileToUpdate: UserProfile;
+      if (user.type === UserType.ADMIN) {
+        if (!input.userId) return CommonError('USER_ID_REQUIRED');
+        profileToUpdate = await this.userProfileRepository
+          .createQueryBuilder('profile')
+          .where('profile.userId = :userId', { userId: input.userId })
+          .getOne();
+        if (!profileToUpdate) return CommonError('PROFILE_NOT_FOUND');
+      } else {
+        // Check if the profile exists
+        const { ok, error, profile } = await this.getMyProfile(user);
+        if (!ok) return { ok, error };
+        profileToUpdate = profile;
+      }
+
+      // Delete existing profile image
+      if (profileToUpdate.profileImageUrl) {
+        const path = profileToUpdate.profileImageUrl.substring(
+          profileToUpdate.profileImageUrl.indexOf('profile-images'),
+        );
+        await this.uploadsService.deleteFile(path);
+      } else {
+        return CommonError('PROFILE_IMAGE_DOES_NOT_EXIST');
+      }
+
+      profileToUpdate.profileImageUrl = null;
+      await this.userProfileRepository.save(profileToUpdate);
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
   }
 
   async deleteUserById(id: number): Promise<DeleteUserOutput> {

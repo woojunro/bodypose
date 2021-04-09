@@ -1,6 +1,7 @@
 import {
   Field,
   InputType,
+  Int,
   ObjectType,
   PartialType,
   PickType,
@@ -9,23 +10,42 @@ import { CoreOutput } from 'src/common/dtos/output.dto';
 import { UserProfile } from '../entities/user-profile.entity';
 
 @InputType()
-export class CreateMyProfileInput extends PickType(
+export class CreateProfileInput extends PickType(
   UserProfile,
   ['nickname', 'gender'],
   InputType,
 ) {}
 
 @ObjectType()
-export class CreateMyProfileOutput extends CoreOutput {}
+export class CreateProfileOutput extends CoreOutput {}
 
 @ObjectType()
-export class GetMyProfileOutput extends CoreOutput {
+export class GetProfileOutput extends CoreOutput {
   @Field(type => UserProfile, { nullable: true })
   profile?: UserProfile;
 }
 
 @InputType()
-export class UpdateMyProfileInput extends PartialType(CreateMyProfileInput) {}
+export class UpdateProfileInput extends PartialType(CreateProfileInput) {}
 
 @ObjectType()
-export class UpdateMyProfileOutput extends CoreOutput {}
+export class UpdateProfileOutput extends CoreOutput {}
+
+@InputType()
+export class AdminUpdateProfileInput extends UpdateProfileInput {
+  @Field(type => Int)
+  userId: number;
+}
+
+@InputType()
+export class UpdateProfileImageInput extends PickType(
+  UserProfile,
+  ['profileImageUrl'],
+  InputType,
+) {}
+
+@InputType()
+export class DeleteProfileImageInput {
+  @Field(type => Int, { nullable: true })
+  userId?: number;
+}

@@ -805,25 +805,6 @@ export class StudiosService {
         photoUrls,
         thumbnailIndex,
       } = payload;
-      const INVALID_PAYLOAD: CoreOutput = {
-        ok: false,
-        error: 'INVALID_PAYLOAD',
-      };
-      if (rating < 1 || rating > 5) {
-        return INVALID_PAYLOAD;
-      }
-      if (!Number.isInteger(rating)) {
-        return INVALID_PAYLOAD;
-      }
-      if (text.length < 12) {
-        return INVALID_PAYLOAD;
-      }
-      if (photoUrls.length < 1 || photoUrls.length > 3) {
-        return INVALID_PAYLOAD;
-      }
-      if (thumbnailIndex < 0 || thumbnailIndex >= photoUrls.length) {
-        return INVALID_PAYLOAD;
-      }
       // Find studio
       const studio = await this.studioRepository.findOne({ slug: studioSlug });
       if (!studio) {

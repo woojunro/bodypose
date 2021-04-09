@@ -68,6 +68,7 @@ import { ENTITY_LIST } from './common/constants/entity-list.constant';
             socketPath: `/cloudsql/${process.env.CLOUD_SQL_CONNECTION_NAME}`,
           },
           synchronize: false,
+          logging: false,
           entities: ENTITY_LIST,
           charset: 'utf8mb4',
         })

@@ -14,11 +14,13 @@ import {
 } from './dtos/create-user.dto';
 import { DeleteUserOutput } from './dtos/delete-user.dto';
 import {
-  CreateMyProfileInput,
-  CreateMyProfileOutput,
-  GetMyProfileOutput,
-  UpdateMyProfileInput,
-  UpdateMyProfileOutput,
+  AdminUpdateProfileInput,
+  CreateProfileInput,
+  CreateProfileOutput,
+  DeleteProfileImageInput,
+  GetProfileOutput,
+  UpdateProfileInput,
+  UpdateProfileOutput,
 } from './dtos/user-profile.dto';
 import {
   RequestPasswordResetInput,
@@ -34,9 +36,9 @@ import { UsersService } from './users.service';
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
-  @Query(returns => GetMyProfileOutput)
+  @Query(returns => GetProfileOutput)
   @Roles(UserType.USER)
-  myProfile(@CurrentUser() user: User): Promise<GetMyProfileOutput> {
+  myProfile(@CurrentUser() user: User): Promise<GetProfileOutput> {
     return this.usersService.getMyProfile(user);
   }
 
@@ -49,22 +51,39 @@ export class UsersResolver {
     return this.usersService.createUserWithEmail(input, context);
   }
 
-  @Mutation(returns => CreateMyProfileOutput)
+  @Mutation(returns => CreateProfileOutput)
   @Roles(UserType.USER)
   createMyProfile(
     @CurrentUser() user: User,
-    @Args('input') input: CreateMyProfileInput,
-  ): Promise<CreateMyProfileOutput> {
+    @Args('input') input: CreateProfileInput,
+  ): Promise<CreateProfileOutput> {
     return this.usersService.createMyProfile(user, input);
   }
 
-  @Mutation(returns => UpdateMyProfileOutput)
+  @Mutation(returns => UpdateProfileOutput)
   @Roles(UserType.USER)
   updateMyProfile(
     @CurrentUser() user: User,
-    @Args('input') input: UpdateMyProfileInput,
-  ): Promise<UpdateMyProfileOutput> {
+    @Args('input') input: UpdateProfileInput,
+  ): Promise<UpdateProfileOutput> {
     return this.usersService.updateMyProfile(user, input);
+  }
+
+  @Mutation(returns => UpdateProfileOutput)
+  @Roles(UserType.ADMIN)
+  updateProfile(
+    @Args('input') input: AdminUpdateProfileInput,
+  ): Promise<UpdateProfileOutput> {
+    return this.usersService.updateProfile(input);
+  }
+
+  @Mutation(returns => UpdateProfileOutput)
+  @Roles(UserType.USER, UserType.ADMIN)
+  deleteProfileImage(
+    @CurrentUser() user: User,
+    @Args('input') input: DeleteProfileImageInput,
+  ) {
+    return this.usersService.deleteProfileImage(user, input);
   }
 
   @Mutation(returns => DeleteUserOutput)
