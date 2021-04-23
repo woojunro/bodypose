@@ -86,8 +86,8 @@
 .toStudioInfo {
   width: 75%;
   height: 40px;
-  border-radius: 10px;
-  background-color: var(--color-chocolate);
+  border-radius: 2px;
+  background: var(--color-chocolate);
   font-size: 15px;
   font-weight: normal;
   color: white;
