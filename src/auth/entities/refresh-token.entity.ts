@@ -16,6 +16,6 @@ export class RefreshToken {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column({ length: 36 })
-  token: string;
+  @Column({ length: 36, nullable: true })
+  token?: string;
 }

@@ -26,6 +26,7 @@ export class MailService {
       form.append('to', to);
       form.append('subject', subject);
       form.append('template', template);
+      form.append('t:version', 'v2');
       emailVars.forEach(emailVar => {
         form.append(`v:${emailVar.key}`, emailVar.value);
       });
@@ -53,6 +54,7 @@ export class MailService {
   async sendEmailVerification(
     email: string,
     nickname: string,
+    userId: number,
     code: string,
   ): Promise<boolean> {
     try {
@@ -62,6 +64,7 @@ export class MailService {
         'bodypose-email-verification',
         [
           { key: 'nickname', value: nickname },
+          { key: 'userId', value: String(userId) },
           { key: 'code', value: code },
         ],
       );
@@ -75,6 +78,7 @@ export class MailService {
   async sendPasswordReset(
     email: string,
     nickname: string,
+    userId: number,
     code: string,
   ): Promise<boolean> {
     try {
@@ -84,6 +88,7 @@ export class MailService {
         'bodypose-password-reset',
         [
           { key: 'nickname', value: nickname },
+          { key: 'userId', value: String(userId) },
           { key: 'code', value: code },
         ],
       );
