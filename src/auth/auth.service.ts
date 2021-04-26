@@ -37,6 +37,7 @@ import {
   unlinkKakaoUser,
 } from './utils/kakaoOAuth.util';
 import { getNaverProfileWithAccessToken } from './utils/naverLogin.util';
+import { LogoutInput, LogoutOutput } from './dtos/logout.dto';
 
 @Injectable()
 export class AuthService {
@@ -77,14 +78,19 @@ export class AuthService {
 
   async issueRefreshToken(id: number): Promise<string> {
     try {
-      const token = v4();
-      await this.refreshTokenRepository.save(
-        this.refreshTokenRepository.create({
-          token,
-          user: { id },
-        }),
-      );
-      const payload = { id, token };
+      let refreshToken = await this.refreshTokenRepository.findOne({
+        user: { id },
+      });
+      if (!refreshToken?.token) {
+        const token = v4();
+        refreshToken = await this.refreshTokenRepository.save(
+          this.refreshTokenRepository.create({
+            token,
+            user: { id },
+          }),
+        );
+      }
+      const payload = { id, token: refreshToken.token };
       return this.jwtService.sign(payload, {
         secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
         expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRE'),
@@ -238,6 +244,32 @@ export class AuthService {
           break;
       }
       return result;
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async logout(
+    user: User,
+    { fromAllDevices }: LogoutInput,
+    context: any,
+  ): Promise<LogoutOutput> {
+    try {
+      if (fromAllDevices) {
+        await this.refreshTokenRepository.save(
+          this.refreshTokenRepository.create({
+            user: { id: user.id },
+            token: null,
+          }),
+        );
+      }
+      // Clear cookies
+      context.res.clearCookie('authorization');
+      context.res.clearCookie('refresh', {
+        path: REFRESH_TOKEN_COOKIE_OPTIONS.path,
+      });
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
