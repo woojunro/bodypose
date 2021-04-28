@@ -2,6 +2,7 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { User } from 'src/users/entities/user.entity';
+import { ContactStudioInput } from './dtos/contact-studio.dto';
 import { ExposeOriginalStudioPhotoInput } from './dtos/expose-original-studio-photo.dto';
 import { ViewStudioInfoInput } from './dtos/view-studio-info.dto';
 import { InsightsService } from './insights.service';
@@ -26,5 +27,14 @@ export class InsightsResolver {
     @Args('input') input: ViewStudioInfoInput,
   ): Promise<CoreOutput> {
     return this.insightsService.viewStudioInfo(user, input);
+  }
+
+  // 스튜디오 문의, 예약 버튼 클릭
+  @Mutation(returns => CoreOutput)
+  contactStudio(
+    @CurrentUser() user: User,
+    @Args('input') input: ContactStudioInput,
+  ): Promise<CoreOutput> {
+    return this.insightsService.contactStudio(user, input);
   }
 }

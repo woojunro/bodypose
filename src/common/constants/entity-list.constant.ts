@@ -1,6 +1,8 @@
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 import { LogOriginalStudioPhotoExposure } from 'src/insights/entities/log-original-studio-photo-exposure.entity';
+import { LogStudioContact } from 'src/insights/entities/log-studio-contact.entity';
 import { LogStudioInfoView } from 'src/insights/entities/log-studio-info-view.entity';
+import { LogStudioReservation } from 'src/insights/entities/log-studio-reservation.entity';
 import { Notice } from 'src/notices/entity/notice.entity';
 import {
   BackgroundConcept,
@@ -26,7 +28,12 @@ import { UserProfile } from 'src/users/entities/user-profile.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Verification } from 'src/users/entities/verification.entity';
 
-export const LOG_ENTITIES = [LogOriginalStudioPhotoExposure, LogStudioInfoView];
+export const LOG_ENTITIES = [
+  LogOriginalStudioPhotoExposure,
+  LogStudioInfoView,
+  LogStudioContact,
+  LogStudioReservation,
+];
 
 export const ENTITY_LIST = [
   User,
