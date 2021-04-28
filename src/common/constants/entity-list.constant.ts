@@ -1,5 +1,6 @@
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
 import { LogOriginalStudioPhotoExposure } from 'src/insights/entities/log-original-studio-photo-exposure.entity';
+import { LogStudioInfoView } from 'src/insights/entities/log-studio-info-view.entity';
 import { Notice } from 'src/notices/entity/notice.entity';
 import {
   BackgroundConcept,
@@ -25,7 +26,7 @@ import { UserProfile } from 'src/users/entities/user-profile.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Verification } from 'src/users/entities/verification.entity';
 
-const LOG_ENTITIES = [LogOriginalStudioPhotoExposure];
+export const LOG_ENTITIES = [LogOriginalStudioPhotoExposure, LogStudioInfoView];
 
 export const ENTITY_LIST = [
   User,

@@ -114,6 +114,11 @@ export class StudiosService {
     );
   }
 
+  async checkIfStudioExistsById(id: number): Promise<boolean> {
+    const studio = await this.studioRepository.findOne(id, { select: ['id'] });
+    return studio ? true : false;
+  }
+
   checkIfStudioExists(slug: string): Promise<Studio> {
     return this.studioRepository.findOne(
       { slug },

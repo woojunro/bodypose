@@ -3,6 +3,7 @@ import { CurrentUser } from 'src/auth/current-user.decorator';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { User } from 'src/users/entities/user.entity';
 import { ExposeOriginalStudioPhotoInput } from './dtos/expose-original-studio-photo.dto';
+import { ViewStudioInfoInput } from './dtos/view-studio-info.dto';
 import { InsightsService } from './insights.service';
 
 @Resolver()
@@ -16,5 +17,14 @@ export class InsightsResolver {
     @Args('input') input: ExposeOriginalStudioPhotoInput,
   ): Promise<CoreOutput> {
     return this.insightsService.exposeOriginalStudioPhoto(user, input);
+  }
+
+  // 스튜디오 정보 창 접속
+  @Mutation(returns => CoreOutput)
+  viewStudioInfo(
+    @CurrentUser() user: User,
+    @Args('input') input: ViewStudioInfoInput,
+  ): Promise<CoreOutput> {
+    return this.insightsService.viewStudioInfo(user, input);
   }
 }

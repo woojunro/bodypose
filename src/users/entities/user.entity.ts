@@ -16,7 +16,6 @@ import {
   Column,
   DeleteDateColumn,
   Entity,
-  JoinColumn,
   OneToMany,
   OneToOne,
 } from 'typeorm';
