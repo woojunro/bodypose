@@ -53,7 +53,9 @@ const LoginScreen = () => {
   };
 
   useEffect(() => {
-    initializeNaverLogin();
+    if (!LoggedIn.loggedIn) {
+      initializeNaverLogin();
+    }
   }, []);
 
   const loginWithKakao = () => {

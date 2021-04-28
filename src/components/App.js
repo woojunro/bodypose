@@ -43,6 +43,7 @@ history.listen((location) => {
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [isAppLoading, setIsAppLoading] = useState(true);
   const loggedInValue = { loggedIn, setLoggedIn };
 
   const { loading } = useQuery(MY_PROFILE_QUERY, {
@@ -50,14 +51,16 @@ const App = () => {
     onCompleted: (data) => {
       if (data.myProfile.ok) {
         setLoggedIn(true);
+        setIsAppLoading(false);
       }
     },
     onError: (err) => {
       clearTokenAndCache();
+      setIsAppLoading(false);
     },
   });
 
-  if (loading) {
+  if (isAppLoading || loading) {
     return (
       <div className="appFullScreen">
         <AppLoadingScreen big />
