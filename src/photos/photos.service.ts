@@ -81,6 +81,13 @@ export class PhotosService {
     private readonly uploadsService: UploadsService,
   ) {}
 
+  async checkIfStudioPhotoExists(id: number): Promise<boolean> {
+    const studioPhoto = await this.studioPhotoRepository.findOne(id, {
+      select: ['id'],
+    });
+    return studioPhoto ? true : false;
+  }
+
   async getAllStudioPhotos(
     user: User,
     input: GetAllStudioPhotosInput,

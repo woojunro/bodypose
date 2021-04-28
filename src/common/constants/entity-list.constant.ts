@@ -1,4 +1,5 @@
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
+import { LogOriginalStudioPhotoExposure } from 'src/insights/entities/log-original-studio-photo-exposure.entity';
 import { Notice } from 'src/notices/entity/notice.entity';
 import {
   BackgroundConcept,
@@ -24,6 +25,8 @@ import { UserProfile } from 'src/users/entities/user-profile.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Verification } from 'src/users/entities/verification.entity';
 
+const LOG_ENTITIES = [LogOriginalStudioPhotoExposure];
+
 export const ENTITY_LIST = [
   User,
   RefreshToken,
@@ -48,4 +51,5 @@ export const ENTITY_LIST = [
   UsersHeartStudios,
   UsersHeartStudioPhotos,
   UsersReportStudioReviews,
+  ...LOG_ENTITIES,
 ];
