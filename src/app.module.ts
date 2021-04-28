@@ -15,6 +15,7 @@ import { UploadsModule } from './uploads/uploads.module';
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import { NoticesModule } from './notices/notices.module';
 import { ENTITY_LIST } from './common/constants/entity-list.constant';
+import { InsightsModule } from './insights/insights.module';
 
 @Module({
   imports: [
@@ -109,6 +110,7 @@ import { ENTITY_LIST } from './common/constants/entity-list.constant';
     PhotosModule,
     UploadsModule,
     NoticesModule,
+    InsightsModule,
   ],
   controllers: [],
   providers: [

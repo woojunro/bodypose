@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
-import { CoreOutput } from 'src/common/dtos/output.dto';
 import { ReviewPhoto } from 'src/photos/entities/review-photo.entity';
 import { PhotosService } from 'src/photos/photos.service';
 import { UploadsService } from 'src/uploads/uploads.service';
@@ -75,7 +74,6 @@ import { HairMakeupProduct } from './entities/hair-makeup-product.entity';
 import { HairMakeupShop } from './entities/hair-makeup-shop.entity';
 import { StudioProduct } from './entities/studio-product.entity';
 import { Studio } from './entities/studio.entity';
-import { UsersClickStudios } from './entities/users-click-studios.entity';
 import { UsersHeartStudios } from './entities/users-heart-studios.entity';
 import { UsersReportStudioReviews } from './entities/users-report-studio-reviews.entity';
 import { UsersReviewStudios } from './entities/users-review-studios.entity';
@@ -97,8 +95,6 @@ export class StudiosService {
     private readonly additionalProductRepository: Repository<AdditionalProduct>,
     @InjectRepository(UsersReviewStudios)
     private readonly studioReviewRepository: Repository<UsersReviewStudios>,
-    @InjectRepository(UsersClickStudios)
-    private readonly usersClickStudiosRepository: Repository<UsersClickStudios>,
     @InjectRepository(UsersHeartStudios)
     private readonly usersHeartStudiosRepository: Repository<UsersHeartStudios>,
     @InjectRepository(UsersReportStudioReviews)
@@ -184,12 +180,6 @@ export class StudiosService {
           },
         });
       }
-      // Click
-      const newClick = this.usersClickStudiosRepository.create({
-        studio,
-        user: user ? user : null,
-      });
-      this.usersClickStudiosRepository.save(newClick);
       // Return
       return {
         ok: true,

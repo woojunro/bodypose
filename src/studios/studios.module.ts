@@ -2,7 +2,6 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Catchphrase } from './entities/catchphrase.entity';
 import { Studio } from './entities/studio.entity';
-import { UsersClickStudios } from './entities/users-click-studios.entity';
 import { StudiosService } from './studios.service';
 import {
   ProductResolver,
@@ -29,7 +28,6 @@ import { UploadsModule } from 'src/uploads/uploads.module';
       Studio,
       Catchphrase,
       Branch,
-      UsersClickStudios,
       StudioProduct,
       HairMakeupShop,
       HairMakeupProduct,
