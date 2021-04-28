@@ -3,10 +3,6 @@ import { CurrentUser } from 'src/auth/current-user.decorator';
 import { Roles } from 'src/auth/roles.decorator';
 import { UserType, User } from 'src/users/entities/user.entity';
 import {
-  ClickStudioPhotoInput,
-  ClickStudioPhotoOutput,
-} from './dtos/click-studio-photo.dto';
-import {
   CreatePhotoConceptInput,
   CreatePhotoConceptOutput,
 } from './dtos/create-photo-concept.dto';
@@ -120,15 +116,6 @@ export class PhotosResolver {
     @Args('input') input: DeletePhotoConceptInput,
   ): Promise<DeletePhotoConceptOutput> {
     return this.photosService.deletePhotoConcept(input);
-  }
-
-  // Public
-  @Mutation(returns => ClickStudioPhotoOutput)
-  clickStudioPhoto(
-    @CurrentUser() user: User,
-    @Args('input') input: ClickStudioPhotoInput,
-  ): Promise<ClickStudioPhotoOutput> {
-    return this.photosService.clickStudioPhoto(input, user);
   }
 }
 

@@ -14,10 +14,6 @@ import {
   CreateHairMakeupShopsOutput,
 } from './dtos/create-product.dto';
 import {
-  CreateStudioReviewInput,
-  CreateStudioReviewOutput,
-} from './dtos/create-studio-review.dto';
-import {
   CreateStudioInput,
   CreateStudioOutput,
 } from './dtos/create-studio.dto';

@@ -6,7 +6,6 @@ import {
   ObjectConcept,
 } from './entities/photo-concept.entity';
 import { StudioPhoto } from './entities/studio-photo.entity';
-import { UsersClickStudioPhotos } from './entities/users-click-studio-photos.entity';
 import { PhotosService } from './photos.service';
 import {
   PhotosResolver,
@@ -25,7 +24,6 @@ import { UploadsModule } from 'src/uploads/uploads.module';
       BackgroundConcept,
       CostumeConcept,
       ObjectConcept,
-      UsersClickStudioPhotos,
       ReviewPhoto,
       UsersHeartStudioPhotos,
     ]),

@@ -13,10 +13,6 @@ import { UserType, User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { FindOneOptions, IsNull, Not, Repository } from 'typeorm';
 import {
-  ClickStudioPhotoInput,
-  ClickStudioPhotoOutput,
-} from './dtos/click-studio-photo.dto';
-import {
   CreatePhotoConceptInput,
   CreatePhotoConceptOutput,
 } from './dtos/create-photo-concept.dto';
@@ -60,7 +56,6 @@ import {
 } from './entities/photo-concept.entity';
 import { ReviewPhoto } from './entities/review-photo.entity';
 import { StudioPhoto } from './entities/studio-photo.entity';
-import { UsersClickStudioPhotos } from './entities/users-click-studio-photos.entity';
 import { UsersHeartStudioPhotos } from './entities/users-heart-studio-photos.entity';
 
 @Injectable()
@@ -74,8 +69,6 @@ export class PhotosService {
     private readonly costumeConceptRepository: Repository<CostumeConcept>,
     @InjectRepository(ObjectConcept)
     private readonly objectConceptRepository: Repository<ObjectConcept>,
-    @InjectRepository(UsersClickStudioPhotos)
-    private readonly usersClickStudioPhotosRepository: Repository<UsersClickStudioPhotos>,
     @InjectRepository(ReviewPhoto)
     private readonly reviewPhotoRepository: Repository<ReviewPhoto>,
     @InjectRepository(UsersHeartStudioPhotos)
@@ -87,6 +80,13 @@ export class PhotosService {
     @Inject(forwardRef(() => UploadsService))
     private readonly uploadsService: UploadsService,
   ) {}
+
+  async checkIfStudioPhotoExists(id: number): Promise<boolean> {
+    const studioPhoto = await this.studioPhotoRepository.findOne(id, {
+      select: ['id'],
+    });
+    return studioPhoto ? true : false;
+  }
 
   async getAllStudioPhotos(
     user: User,
@@ -639,33 +639,6 @@ export class PhotosService {
       );
       await this.uploadsService.deleteFile(thumbnailPhoto);
       await this.uploadsService.deleteFile(originalPhoto);
-      return { ok: true };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
-  }
-
-  async clickStudioPhoto(
-    { id }: ClickStudioPhotoInput,
-    user: User,
-  ): Promise<ClickStudioPhotoOutput> {
-    try {
-      const photo = await this.studioPhotoRepository.findOne(
-        { id },
-        { select: ['id'] },
-      );
-      if (!photo) {
-        return {
-          ok: false,
-          error: 'PHOTO_NOT_FOUND',
-        };
-      }
-      // Create and Save UsersClickStudioPhotos
-      const newClick = this.usersClickStudioPhotosRepository.create();
-      newClick.studioPhoto = photo;
-      newClick.user = user ? user : null;
-      this.usersClickStudioPhotosRepository.save(newClick);
       return { ok: true };
     } catch (e) {
       console.log(e);
