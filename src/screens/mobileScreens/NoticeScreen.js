@@ -41,7 +41,25 @@ const NoticeScreen = () => {
           <div className="fullNoticeDate">
             {String(data.notice.notice.updatedAt).substr(0, 10)}
           </div>
-          <div className="fullNoticeText">{data.notice.notice.content}</div>
+          <div className="fullNoticeText">
+            {data.notice.notice.content.split('\n').map((text, idx) => (
+              <div key={`notice-${noticeId}-${idx}`}>
+                {text.length === 0 ? (
+                  ' '
+                ) : text.startsWith('img::') ? (
+                  <div>
+                    <img
+                      className="fullNoticeImg"
+                      src={text.substring(5)}
+                      alt="공지사항 이미지"
+                    />
+                  </div>
+                ) : (
+                  text
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
