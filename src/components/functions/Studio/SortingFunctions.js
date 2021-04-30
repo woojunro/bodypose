@@ -48,7 +48,8 @@ export const SortByRating = studios => {
   copiedStudios.sort(function (a, b) {
     const a_rating = a.reviewCount === 0 ? 0 : a.totalRating / a.reviewCount;
     const b_rating = b.reviewCount === 0 ? 0 : b.totalRating / b.reviewCount;
-    return a_rating > b_rating ? -1 : a_rating < b_rating ? 1 : 0;
+    // 평점 우선, 리뷰 갯수도 정렬
+    return b_rating - a_rating || b.reviewCount - a.reviewCount;
   });
   return copiedStudios;
 };
