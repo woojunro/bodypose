@@ -58,13 +58,17 @@ const BottomNavigation = ({ pageName }) => {
     },
   ];
 
-  const renderedTabs = tabs.map((tab) => {
+  const renderedTabs = tabs.map(tab => {
     return (
       <li key={tab.name}>
         <div
           className="tabContainer"
           onClick={() => {
-            history.push(tab.pageTo);
+            if (pageName === tab.name) {
+              window.scrollTo(0, 0);
+            } else {
+              history.push(tab.pageTo);
+            }
           }}
         >
           <img
