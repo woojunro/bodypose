@@ -15,7 +15,6 @@ const TopNavigator = ({ navigator, setNavigator, reviews = 0 }) => {
         return (
           <div key={item.title} className="selectedItem">
             <span>{item.title}</span>
-            <span className="reviewCount">{reviews}</span>
           </div>
         );
       } else {
