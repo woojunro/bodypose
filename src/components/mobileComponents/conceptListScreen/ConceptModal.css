@@ -25,14 +25,10 @@
   flex-direction: column;
 }
 .conceptModalContents {
-  height: -moz-calc(100vh - 100px);
-  height: -webkit-calc(100vh - 100px);
-  height: calc(100vh - 100px);
+  height: 80vh;
   margin: 0 auto;
   padding-left: 5%;
   padding-right: 5%;
-  position: relative;
-  box-sizing: border-box;
   align-items: center;
   display: flex;
   flex-direction: column;
@@ -40,16 +36,15 @@
 }
 
 .topBarContainer {
-  margin-bottom: -10px;
-  padding-top: 5px;
-
+  height: 8vh;
   padding-right: 5px;
   padding-left: 5px;
   display: flex;
   font-size: 45px;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 }
+
 .studioTitle {
   font-size: 18px;
   font-weight: bold;
@@ -67,26 +62,26 @@
 .mainPhotoArea img {
   width: 100%;
   height: auto;
-  max-height: -moz-calc(100vh - 120px);
-  max-height: -webkit-calc(100vh - 120px);
-  max-height: calc(100vh - 120px);
+  max-height: 80vh;
+  max-width: 90vw;
   object-fit: contain;
 }
 
 .toStudioInfoContainer {
-  position: fixed;
   width: 100%;
+  height: 10vh;
   max-width: 470px;
-  bottom: 0;
   display: flex;
   justify-content: center;
-  padding-bottom: 20px;
+  padding-bottom: 2vh;
   align-items: center;
 }
+
 .toStudioInfo {
   width: 75%;
-  height: 40px;
-  border-radius: 2px;
+  height: 70%;
+  max-height: 40px;
+  border-radius: 5px;
   background: var(--color-chocolate);
   font-size: 15px;
   font-weight: normal;
@@ -147,6 +142,11 @@
 
 .conceptModalClose {
   cursor: pointer;
+  position: absolute;
+  width: 35px;
+  height: 35px;
+  right: 3vw;
+  top: 1vh;
 }
 
 .transparentModal {

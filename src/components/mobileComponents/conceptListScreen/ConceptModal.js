@@ -88,7 +88,7 @@ const Modal = ({
 
   const [heartStudioPhoto] = useMutation(HEART_STUDIO_PHOTO_MUTATION, {
     onError: () => {},
-    onCompleted: (data) => {
+    onCompleted: data => {
       if (data.heartStudioPhoto.ok) {
         changeIsHearted(data.heartStudioPhoto.id, true);
       }
@@ -97,7 +97,7 @@ const Modal = ({
 
   const [disheartStudioPhoto] = useMutation(DISHEART_STUDIO_PHOTO_MUTATION, {
     onError: () => close(),
-    onCompleted: (data) => {
+    onCompleted: data => {
       if (data.disheartStudioPhoto.ok) {
         changeIsHearted(data.disheartStudioPhoto.id, false);
         if (isForHeart) {
@@ -192,18 +192,17 @@ const Modal = ({
           <div className="conceptmodal">
             <div className="concepttrueModal">
               <div className="topBarContainer">
-                <div style={{ width: '45px' }}></div>
                 <div className="studioTitle">
                   {studioName ? studioName : concept.studio.name}
                 </div>
-                <IoIosClose
-                  className="conceptModalClose"
-                  onClick={() => {
-                    close();
-                    history.goBack();
-                  }}
-                />
               </div>
+              <IoIosClose
+                className="conceptModalClose"
+                onClick={() => {
+                  close();
+                  history.goBack();
+                }}
+              />
               <div className="conceptModalContents">
                 <div className="mainPhotoArea">
                   {whileFetching ? (
