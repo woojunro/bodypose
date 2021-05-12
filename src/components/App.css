@@ -7,16 +7,21 @@
   --color-loginGray: #afafaf;
   --color-heartColor: #ff5858;
 }
+
 html {
   margin: 0 auto;
   max-width: 470px;
+  height: -webkit-fill-available;
 }
+
 body {
-  height: 100%;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
   -ms-overflow-style: none;
   scrollbar-width: thin;
   scrollbar-color: lightgray transparent;
 }
+
 [role='navigation'] {
   overflow: auto !important;
 }
