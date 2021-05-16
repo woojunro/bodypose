@@ -41,7 +41,7 @@ const PhotoItem = ({
                 <div className="itemUpper">
                   {item.conceptCount === 0
                     ? peopleCountStr.includes(126)
-                      ? `$${minmaxPeopleCount}인촬영`
+                      ? `${minmaxPeopleCount}인촬영`
                       : `${item.peopleCount}인촬영 `
                     : peopleCountStr.includes(126)
                     ? `${minmaxPeopleCount}인촬영 - ${item.conceptCount}컨셉`
