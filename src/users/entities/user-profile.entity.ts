@@ -7,7 +7,7 @@ import { User } from './user.entity';
 @Entity()
 @ObjectType()
 export class UserProfile extends CoreEntity {
-  @OneToOne(relation => User, user => user.profile, { onDelete: 'SET NULL' })
+  @OneToOne(relation => User, user => user.profile)
   user: User;
 
   @Column({ length: 10, unique: true })

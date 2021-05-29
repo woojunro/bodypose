@@ -47,7 +47,9 @@ export class User extends CoreEntity {
   @DeleteDateColumn()
   deletedAt: Date;
 
-  @OneToOne(relation => UserProfile, profile => profile.user)
+  @OneToOne(relation => UserProfile, profile => profile.user, {
+    onDelete: 'SET NULL',
+  })
   @Field(type => UserProfile, { nullable: true })
   @JoinColumn()
   profile?: UserProfile;

@@ -1,3 +1,4 @@
+import { hash } from 'bcrypt';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -35,10 +36,10 @@ import { UserOauth, OAuthProvider } from './entities/user-oauth.entity';
 import { UserProfile } from './entities/user-profile.entity';
 import { UserType, User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
-import { GqlExecutionContext } from '@nestjs/graphql';
 import { UploadsService } from 'src/uploads/uploads.service';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { AuthService } from 'src/auth/auth.service';
+import { PASSWORD_HASH_ROUNDS } from 'src/common/constants/common.constant';
 
 @Injectable()
 export class UsersService {
@@ -48,7 +49,7 @@ export class UsersService {
     @InjectRepository(UserProfile)
     private readonly userProfileRepository: Repository<UserProfile>,
     @InjectRepository(UserOauth)
-    private readonly socialAccountRepository: Repository<UserOauth>,
+    private readonly userOAuthRepository: Repository<UserOauth>,
     @InjectRepository(Verification)
     private readonly verificationRepository: Repository<Verification>,
     @InjectRepository(PasswordReset)
@@ -77,10 +78,11 @@ export class UsersService {
     );
   }
 
-  async createUserWithEmail(
-    { email, password, nickname }: CreateUserWithEmailInput,
-    context: GqlExecutionContext,
-  ): Promise<CreateUserWithEmailOutput> {
+  async createUserWithEmail({
+    email,
+    password,
+    nickname,
+  }: CreateUserWithEmailInput): Promise<CreateUserWithEmailOutput> {
     try {
       // Check password security
       const isPasswordSecure = this.checkPasswordSecurity(password);
@@ -103,12 +105,15 @@ export class UsersService {
       );
       if (nicknameProfile) return CommonError('DUPLICATE_NICKNAME');
 
+      // Hash the password
+      const hashedPassword = await hash(password, PASSWORD_HASH_ROUNDS);
+
       // Create and save the user
       const newUser = this.userRepository.create({
         email,
-        password,
+        password: hashedPassword,
         type: UserType.USER,
-        lastLoginAt: new Date(),
+        isLocked: false,
         isVerified: false,
       });
       const createdUser = await this.userRepository.save(newUser);
@@ -129,8 +134,7 @@ export class UsersService {
         code,
       );
 
-      // Return tokens after login
-      return await this.authService.emailLogin({ email, password }, context);
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
@@ -159,8 +163,8 @@ export class UsersService {
       );
     }
 
-    await this.socialAccountRepository.save(
-      this.socialAccountRepository.create({
+    await this.userOAuthRepository.save(
+      this.userOAuthRepository.create({
         user,
         provider,
         socialId,
