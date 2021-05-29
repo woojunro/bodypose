@@ -7,7 +7,7 @@ import {
 
 @ObjectType()
 export abstract class CoreEntity {
-  @PrimaryGeneratedColumn({ type: 'bigint' })
+  @PrimaryGeneratedColumn({ type: 'int' })
   @Field(type => Int)
   id: number;
 

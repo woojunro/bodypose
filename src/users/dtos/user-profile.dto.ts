@@ -12,7 +12,7 @@ import { UserProfile } from '../entities/user-profile.entity';
 @InputType()
 export class CreateProfileInput extends PickType(
   UserProfile,
-  ['nickname', 'gender'],
+  ['nickname', 'isMale'],
   InputType,
 ) {}
 

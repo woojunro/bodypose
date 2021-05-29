@@ -1,46 +1,28 @@
-import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
-import {
-  IsEnum,
-  IsOptional,
-  IsString,
-  IsUrl,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { Field, ObjectType } from '@nestjs/graphql';
+import { IsBoolean, IsOptional, IsString, Length } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity, OneToOne } from 'typeorm';
 import { User } from './user.entity';
-
-export enum UserGender {
-  MALE = 'MALE',
-  FEMALE = 'FEMALE',
-}
-
-registerEnumType(UserGender, { name: 'UserGender' });
 
 @Entity()
 @ObjectType()
 export class UserProfile extends CoreEntity {
-  @OneToOne(relation => User, user => user.profile, { onDelete: 'CASCADE' })
-  @JoinColumn()
+  @OneToOne(relation => User, user => user.profile, { onDelete: 'SET NULL' })
   user: User;
 
-  @Column({ unique: true, length: 10 })
+  @Column({ length: 10, unique: true })
   @Field(type => String)
   @IsString()
-  @MinLength(2)
-  @MaxLength(10)
+  @Length(1, 10)
   nickname: string;
 
-  @Column({ type: 'enum', enum: UserGender, nullable: true })
-  @Field(type => UserGender, { nullable: true })
+  @Column({ type: 'bit', nullable: true })
+  @Field(type => Boolean, { nullable: true })
   @IsOptional()
-  @IsEnum(UserGender)
-  gender?: UserGender;
+  @IsBoolean()
+  isMale?: boolean;
 
-  @Column({ nullable: true })
+  @Column({ length: 255, nullable: true })
   @Field(type => String, { nullable: true })
-  @IsOptional()
-  @IsUrl()
   profileImageUrl?: string;
 }

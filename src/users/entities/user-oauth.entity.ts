@@ -1,33 +1,33 @@
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { IsEnum, IsString, MaxLength } from 'class-validator';
+import { IsEnum, IsString, Length } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { User } from './user.entity';
 
-export enum SocialProvider {
+export enum OAuthProvider {
   KAKAO = 'KAKAO',
   NAVER = 'NAVER',
   GOOGLE = 'GOOGLE',
   APPLE = 'APPLE',
 }
 
-registerEnumType(SocialProvider, { name: 'SocialProvider' });
+registerEnumType(OAuthProvider, { name: 'OAuthProvider' });
 
 @Entity()
 @ObjectType()
-export class SocialAccount extends CoreEntity {
-  @ManyToOne(relation => User, user => user.socialAccounts, {
+export class UserOauth extends CoreEntity {
+  @ManyToOne(relation => User, user => user.oauthList, {
     onDelete: 'CASCADE',
   })
   user: User;
 
-  @Column({ type: 'enum', enum: SocialProvider })
-  @Field(type => SocialProvider)
-  @IsEnum(SocialProvider)
-  provider: SocialProvider;
+  @Column({ length: 10 })
+  @Field(type => OAuthProvider)
+  @IsEnum(OAuthProvider)
+  provider: OAuthProvider;
 
   @Column({ length: 100 })
   @IsString()
-  @MaxLength(100)
+  @Length(1, 100)
   socialId: string;
 }

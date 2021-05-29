@@ -84,6 +84,7 @@ import { InsightsModule } from './insights/insights.module';
           logging: true,
           entities: ENTITY_LIST,
           charset: 'utf8mb4',
+          // dropSchema: true,
         }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,

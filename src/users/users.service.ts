@@ -1,7 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AuthService } from 'src/auth/auth.service';
 import { unlinkKakaoUser } from 'src/auth/utils/kakaoOAuth.util';
 import {
   CommonError,
@@ -32,16 +31,14 @@ import {
 } from './dtos/update-password.dto';
 import { VerifyUserInput, VerifyUserOutput } from './dtos/verify-user.dto';
 import { PasswordReset } from './entities/password-reset.entity';
-import {
-  SocialAccount,
-  SocialProvider,
-} from './entities/social-account.entity';
+import { UserOauth, OAuthProvider } from './entities/user-oauth.entity';
 import { UserProfile } from './entities/user-profile.entity';
 import { UserType, User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { UploadsService } from 'src/uploads/uploads.service';
 import { CoreOutput } from 'src/common/dtos/output.dto';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class UsersService {
@@ -50,22 +47,21 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(UserProfile)
     private readonly userProfileRepository: Repository<UserProfile>,
-    @InjectRepository(SocialAccount)
-    private readonly socialAccountRepository: Repository<SocialAccount>,
+    @InjectRepository(UserOauth)
+    private readonly socialAccountRepository: Repository<UserOauth>,
     @InjectRepository(Verification)
     private readonly verificationRepository: Repository<Verification>,
     @InjectRepository(PasswordReset)
     private readonly passwordResetRepository: Repository<PasswordReset>,
-    @Inject(forwardRef(() => AuthService))
-    private readonly authService: AuthService,
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
     @Inject(forwardRef(() => UploadsService))
     private readonly uploadsService: UploadsService,
   ) {}
 
-  checkPasswordSecurity(password?: string): boolean {
-    if (!password) return false;
+  checkPasswordSecurity(password: string): boolean {
     // At least one lowercase
     // At least one number
     // At least eight characters
@@ -143,7 +139,7 @@ export class UsersService {
 
   async createSocialAccount(
     email: string,
-    provider: SocialProvider,
+    provider: OAuthProvider,
     socialId: string,
   ): Promise<User> {
     let user = await this.userRepository
@@ -198,7 +194,7 @@ export class UsersService {
   }
 
   async getUserBySocialId(
-    provider: SocialProvider,
+    provider: OAuthProvider,
     socialId: string,
   ): Promise<User> {
     const user = await this.userRepository
@@ -224,7 +220,7 @@ export class UsersService {
 
   async createMyProfile(
     user: User,
-    { nickname, gender }: CreateProfileInput,
+    { nickname, isMale }: CreateProfileInput,
   ): Promise<CreateProfileOutput> {
     try {
       // Check nickname validity
@@ -248,7 +244,7 @@ export class UsersService {
       await this.userProfileRepository.insert(
         this.userProfileRepository.create({
           nickname,
-          gender,
+          isMale,
           user,
         }),
       );
@@ -409,9 +405,9 @@ export class UsersService {
           error: 'USER_NOT_FOUND',
         };
       }
-      for (const socialAccount of user.socialAccounts) {
+      for (const socialAccount of []) {
         switch (socialAccount.provider) {
-          case SocialProvider.KAKAO:
+          case OAuthProvider.KAKAO:
             const adminKey = this.configService.get<string>('KAKAO_ADMIN_KEY');
             const result = await unlinkKakaoUser(
               socialAccount.socialId,
@@ -505,7 +501,7 @@ export class UsersService {
         .where('user.email = :email', { email })
         .getOne();
       if (!user) return CommonError('USER_NOT_FOUND');
-      if (user.socialAccounts.length !== 0) return CommonError('SOCIAL_USER');
+      if ([].length !== 0) return CommonError('SOCIAL_USER');
       let savedReset: PasswordReset;
       const reset = await this.passwordResetRepository
         .createQueryBuilder('reset')

@@ -1,6 +1,6 @@
 import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
-import { SocialAccount } from 'src/users/entities/social-account.entity';
+import { UserOauth } from 'src/users/entities/user-oauth.entity';
 import { User } from 'src/users/entities/user.entity';
 
 @InputType()
@@ -12,7 +12,7 @@ export class EmailLoginInput extends PickType(
 
 @InputType()
 export class SocialLoginInput extends PickType(
-  SocialAccount,
+  UserOauth,
   ['provider'],
   InputType,
 ) {

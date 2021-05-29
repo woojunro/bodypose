@@ -3,14 +3,14 @@ import { UsersService } from './users.service';
 import { UsersResolver } from './users.resolver';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { AuthModule } from 'src/auth/auth.module';
 import { Verification } from './entities/verification.entity';
 import { MailModule } from 'src/mail/mail.module';
 import { PhotosModule } from 'src/photos/photos.module';
 import { PasswordReset } from './entities/password-reset.entity';
 import { UserProfile } from './entities/user-profile.entity';
-import { SocialAccount } from './entities/social-account.entity';
+import { UserOauth } from './entities/user-oauth.entity';
 import { UploadsModule } from 'src/uploads/uploads.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
@@ -19,10 +19,10 @@ import { UploadsModule } from 'src/uploads/uploads.module';
       Verification,
       PasswordReset,
       UserProfile,
-      SocialAccount,
+      UserOauth,
     ]),
-    forwardRef(() => AuthModule),
     MailModule,
+    forwardRef(() => AuthModule),
     forwardRef(() => PhotosModule),
     forwardRef(() => UploadsModule),
   ],

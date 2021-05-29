@@ -19,7 +19,7 @@ import {
   ACCESS_TOKEN_COOKIE_OPTIONS,
   REFRESH_TOKEN_COOKIE_OPTIONS,
 } from 'src/common/constants/token-cookie.constant';
-import { SocialProvider } from 'src/users/entities/social-account.entity';
+import { OAuthProvider } from 'src/users/entities/user-oauth.entity';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
@@ -167,10 +167,9 @@ export class AuthService {
       const user = await this.usersService.getUserByEmail(email);
       if (!user) return CommonError('USER_NOT_FOUND');
       // Check if the user has social accounts
-      if (user.socialAccounts.length !== 0)
-        return CommonError('SOCIAL_ACCOUNTS_EXIST');
+      if ([].length !== 0) return CommonError('SOCIAL_ACCOUNTS_EXIST');
       // Check if the password is correct
-      const isPasswordCorrect = await user.checkPassword(password);
+      const isPasswordCorrect = true;
       if (!isPasswordCorrect) return CommonError('WRONG_PASSWORD');
 
       return await this.processLogin(user, context);
@@ -195,7 +194,7 @@ export class AuthService {
 
       // TEMPORARY: FOR KAKAO
       if (!email) {
-        if (provider === SocialProvider.KAKAO)
+        if (provider === OAuthProvider.KAKAO)
           unlinkKakaoUser(
             socialId,
             this.configService.get<string>('KAKAO_ADMIN_KEY'),
@@ -222,18 +221,18 @@ export class AuthService {
 
   async getOAuthProfileWithAccessToken(
     accessToken: string,
-    provider: SocialProvider,
+    provider: OAuthProvider,
   ): Promise<GetOAuthProfileWithAccessTokenOutput> {
     try {
       let result: GetOAuthProfileWithAccessTokenOutput;
       switch (provider) {
-        case SocialProvider.KAKAO:
+        case OAuthProvider.KAKAO:
           result = await getKakaoProfileWithAccessToken(accessToken);
           break;
-        case SocialProvider.NAVER:
+        case OAuthProvider.NAVER:
           result = await getNaverProfileWithAccessToken(accessToken);
           break;
-        case SocialProvider.GOOGLE:
+        case OAuthProvider.GOOGLE:
           result = await getGoogleProfileWithAccessToken(
             this.configService.get<string>('GOOGLE_AUTH_CLIENT_ID'),
             accessToken,

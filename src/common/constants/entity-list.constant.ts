@@ -23,7 +23,7 @@ import { UsersHeartStudios } from 'src/studios/entities/users-heart-studios.enti
 import { UsersReportStudioReviews } from 'src/studios/entities/users-report-studio-reviews.entity';
 import { UsersReviewStudios } from 'src/studios/entities/users-review-studios.entity';
 import { PasswordReset } from 'src/users/entities/password-reset.entity';
-import { SocialAccount } from 'src/users/entities/social-account.entity';
+import { UserOauth } from 'src/users/entities/user-oauth.entity';
 import { UserProfile } from 'src/users/entities/user-profile.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Verification } from 'src/users/entities/verification.entity';
@@ -39,7 +39,7 @@ export const ENTITY_LIST = [
   User,
   RefreshToken,
   UserProfile,
-  SocialAccount,
+  UserOauth,
   Verification,
   Studio,
   Branch,
