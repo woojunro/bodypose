@@ -49,7 +49,7 @@ export class UsersResolver {
     @Args('input') input: CreateUserWithEmailInput,
     @Context() context: GqlExecutionContext,
   ): Promise<CreateUserWithEmailOutput> {
-    return this.usersService.createUserWithEmail(input, context);
+    return this.usersService.createUserWithEmail(input);
   }
 
   @Mutation(returns => CreateProfileOutput)
