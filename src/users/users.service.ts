@@ -188,10 +188,10 @@ export class UsersService {
 
   async getUserByEmail(email: string): Promise<User> {
     const user = this.userRepository
-      .createQueryBuilder('user')
-      .addSelect('user.password')
-      .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
-      .where('user.email = :email', { email })
+      .createQueryBuilder('u')
+      .select(['u.id', 'u.password', 'u.isLocked'])
+      .leftJoinAndSelect('u.oauthList', 'oauth')
+      .where('u.email = :email', { email })
       .withDeleted()
       .getOne();
     return user;

@@ -41,8 +41,6 @@ import { InsightsModule } from './insights/insights.module';
         DB_PASSWORD: Joi.string().required(),
         DB_NAME: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
-        JWT_REFRESH_TOKEN_SECRET: Joi.string().required(),
-        JWT_REFRESH_TOKEN_EXPIRE: Joi.string().required(),
         MAILGUN_API_KEY: Joi.string().required(),
         MAILGUN_DOMAIN_NAME: Joi.string().required(),
         GOOGLE_CLOUD_PROJECT: Joi.string().required(),

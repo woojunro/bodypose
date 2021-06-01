@@ -1,13 +1,15 @@
+import { compare } from 'bcrypt';
 import { v4 } from 'uuid';
 import {
+  BadRequestException,
+  ForbiddenException,
   forwardRef,
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { GqlExecutionContext } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Request, Response } from 'express';
@@ -15,10 +17,6 @@ import {
   CommonError,
   UNEXPECTED_ERROR,
 } from 'src/common/constants/error.constant';
-import {
-  ACCESS_TOKEN_COOKIE_OPTIONS,
-  REFRESH_TOKEN_COOKIE_OPTIONS,
-} from 'src/common/constants/token-cookie.constant';
 import { OAuthProvider } from 'src/users/entities/user-oauth.entity';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
@@ -38,6 +36,11 @@ import {
 } from './utils/kakaoOAuth.util';
 import { getNaverProfileWithAccessToken } from './utils/naverLogin.util';
 import { LogoutInput, LogoutOutput } from './dtos/logout.dto';
+import { ConfigService } from '@nestjs/config';
+import {
+  NINETY_DAYS_IN_MS,
+  TWO_HOURS_IN_MS,
+} from 'src/common/constants/common.constant';
 
 @Injectable()
 export class AuthService {
@@ -50,30 +53,32 @@ export class AuthService {
     private readonly refreshTokenRepository: Repository<RefreshToken>,
   ) {}
 
-  async processLogin(user: User, context: any): Promise<LoginOutput> {
-    try {
-      // Check if the user is locked
-      if (user.isLocked) return CommonError('USER_LOCKED');
-      // Issue an auth token
-      const payload = { id: user.id };
-      const token = this.jwtService.sign(payload);
-      // Update lastLogin
-      this.usersService.updateLastLoginAt(user.id);
-      // Set cookie
-      const refresh = await this.issueRefreshToken(user.id);
-      context.res.cookie('refresh', refresh, REFRESH_TOKEN_COOKIE_OPTIONS);
-      context.res.cookie('authorization', token, ACCESS_TOKEN_COOKIE_OPTIONS);
-      // If not verified, notify
-      return {
-        ok: true,
-        token,
-        refresh,
-        error: user.isVerified ? null : 'USER_NOT_VERIFIED',
-      };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
+  async processLogin(user: User, res: Response): Promise<LoginOutput> {
+    // Check if the user is locked
+    if (!user.isLocked) throw new ForbiddenException('USER_LOCKED');
+    // Issue an auth token
+    const payload = { id: user.id };
+    const token = this.jwtService.sign(payload, { expiresIn: '2h' });
+    // Set cookies
+    const refresh = await this.issueRefreshToken(user.id);
+    res.cookie('refresh', refresh, {
+      expires: new Date(Date.now() + NINETY_DAYS_IN_MS),
+      httpOnly: true,
+      path: '/auth/refresh',
+      sameSite: 'lax',
+    });
+    res.cookie('authorization', token, {
+      expires: new Date(Date.now() + TWO_HOURS_IN_MS),
+      httpOnly: true,
+      sameSite: 'lax',
+    });
+    // Update lastLogin
+    this.usersService.updateLastLoginAt(user.id);
+    // return
+    return {
+      access: token,
+      refresh,
+    };
   }
 
   async issueRefreshToken(id: number): Promise<string> {
@@ -91,10 +96,7 @@ export class AuthService {
         );
       }
       const payload = { id, token: refreshToken.token };
-      return this.jwtService.sign(payload, {
-        secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
-        expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRE'),
-      });
+      return this.jwtService.sign(payload, { expiresIn: '90d' });
     } catch (e) {
       console.log(e);
       throw new InternalServerErrorException();
@@ -133,19 +135,11 @@ export class AuthService {
         Number(payload.exp) - thirtyDaysInSeconds <
         Math.floor(Date.now() / 1000)
       )
-        refresh = this.jwtService.sign(
-          { id: user.id, token },
-          {
-            secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
-            expiresIn: this.configService.get<string>(
-              'JWT_REFRESH_TOKEN_EXPIRE',
-            ),
-          },
-        );
+        refresh = await this.issueRefreshToken(user.id);
 
       // Set cookies
-      res.cookie('refresh', refresh, REFRESH_TOKEN_COOKIE_OPTIONS);
-      res.cookie('authorization', accessToken, ACCESS_TOKEN_COOKIE_OPTIONS);
+      res.cookie('refresh', refresh);
+      res.cookie('authorization', accessToken);
 
       return {
         ok: true,
@@ -160,29 +154,26 @@ export class AuthService {
 
   async emailLogin(
     { email, password }: EmailLoginInput,
-    context: GqlExecutionContext,
+    res: Response,
   ): Promise<LoginOutput> {
-    try {
-      // Get a user with the inputted email
-      const user = await this.usersService.getUserByEmail(email);
-      if (!user) return CommonError('USER_NOT_FOUND');
-      // Check if the user has social accounts
-      if ([].length !== 0) return CommonError('SOCIAL_ACCOUNTS_EXIST');
-      // Check if the password is correct
-      const isPasswordCorrect = true;
-      if (!isPasswordCorrect) return CommonError('WRONG_PASSWORD');
-
-      return await this.processLogin(user, context);
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
+    // Get a user with the inputted email
+    const user = await this.usersService.getUserByEmail(email);
+    if (!user) throw new NotFoundException('USER_NOT_FOUND');
+    // Check if the user is created with social oauth
+    if (user.oauthList.length !== 0) {
+      throw new BadRequestException('SOCIAL_USER');
     }
-  }
+    // Check if the password is correct
+    const isPasswordCorrect = await compare(password, user.password);
+    if (!isPasswordCorrect) throw new UnauthorizedException('WRONG_PASSWORD');
 
+    return await this.processLogin(user, res);
+  }
+  /*
   async socialLogin(
     { provider, accessToken }: SocialLoginInput,
     context: GqlExecutionContext,
-  ): Promise<LoginOutput> {
+  ): Promise<LoginOutputDeprecated> {
     try {
       // Get OAuth Profile
       const {
@@ -218,7 +209,7 @@ export class AuthService {
       return UNEXPECTED_ERROR;
     }
   }
-
+  */
   async getOAuthProfileWithAccessToken(
     accessToken: string,
     provider: OAuthProvider,
@@ -266,7 +257,7 @@ export class AuthService {
       // Clear cookies
       context.res.clearCookie('authorization');
       context.res.clearCookie('refresh', {
-        path: REFRESH_TOKEN_COOKIE_OPTIONS.path,
+        path: '/auth/refresh',
       });
       return { ok: true };
     } catch (e) {
