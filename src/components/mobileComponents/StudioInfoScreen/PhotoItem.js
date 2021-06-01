@@ -66,9 +66,7 @@ const PhotoItem = ({
                   </div>
                 ) : (
                   <div className="itemUnder">
-                    {item.cutCount === 0
-                      ? '보정본'
-                      : `보정본 ${item.cutCount}컷`}
+                    {item.cutCount === 0 ? null : `보정본 ${item.cutCount}컷`}
                     {item.minuteCount && (
                       <span>
                         {item.minuteCount % 60 === 0
