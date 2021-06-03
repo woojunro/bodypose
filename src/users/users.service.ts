@@ -1,5 +1,10 @@
 import { hash } from 'bcrypt';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { unlinkKakaoUser } from 'src/auth/utils/kakaoOAuth.util';
@@ -145,38 +150,40 @@ export class UsersService {
     email: string,
     provider: OAuthProvider,
     socialId: string,
+    isVerified: boolean,
   ): Promise<User> {
-    let user = await this.userRepository
-      .createQueryBuilder('user')
-      .where('user.email = :email', { email })
-      .withDeleted()
-      .getOne();
-    if (!user) {
-      user = await this.userRepository.save(
+    try {
+      const user = await this.userRepository.save(
         this.userRepository.create({
           email,
-          lastLoginAt: new Date(),
-          isVerified: true,
+          isVerified,
           isLocked: false,
           type: UserType.USER,
         }),
       );
+      await this.userOAuthRepository.save(
+        this.userOAuthRepository.create({
+          user,
+          provider,
+          socialId,
+        }),
+      );
+
+      if (!isVerified) {
+        // Create verification code and send it to the user
+        const newVerification = this.verificationRepository.create();
+        newVerification.user = user;
+        const { code } = await this.verificationRepository.save(
+          newVerification,
+        );
+        this.mailService.sendEmailVerification(email, '회원', user.id, code);
+      }
+
+      return user;
+    } catch (e) {
+      console.log(e);
+      throw new InternalServerErrorException();
     }
-
-    await this.userOAuthRepository.save(
-      this.userOAuthRepository.create({
-        user,
-        provider,
-        socialId,
-      }),
-    );
-
-    // The user is verified
-    user.password = null;
-    user.isVerified = true;
-    user = await this.userRepository.save(user);
-
-    return user;
   }
 
   async getUserById(id: number): Promise<User> {
@@ -186,10 +193,14 @@ export class UsersService {
     );
   }
 
-  async getUserByEmail(email: string): Promise<User> {
-    const user = this.userRepository
+  async getUserByEmail(email: string, needPassword = true): Promise<User> {
+    let query = this.userRepository
       .createQueryBuilder('u')
-      .select(['u.id', 'u.password', 'u.isLocked'])
+      .select(['u.id', 'u.isLocked']);
+    if (needPassword) {
+      query = query.addSelect('u.password');
+    }
+    const user = query
       .leftJoinAndSelect('u.oauthList', 'oauth')
       .where('u.email = :email', { email })
       .withDeleted()
@@ -202,13 +213,14 @@ export class UsersService {
     socialId: string,
   ): Promise<User> {
     const user = await this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
-      .where('socialAccount.provider = :provider', { provider })
-      .andWhere('socialAccount.socialId = :socialId', { socialId })
+      .createQueryBuilder('u')
+      .select(['u.id', 'u.isLocked'])
+      .leftJoinAndSelect('u.oauthList', 'oauth')
+      .where('oauth.provider = :provider', { provider })
+      .andWhere('oauth.socialId = :socialId', { socialId })
       .withDeleted()
       .getOne();
-
+    console.log(user);
     return user;
   }
 

@@ -16,7 +16,7 @@ export class UserProfile extends CoreEntity {
   @Length(1, 10)
   nickname: string;
 
-  @Column({ type: 'bit', nullable: true })
+  @Column({ nullable: true })
   @Field(type => Boolean, { nullable: true })
   @IsOptional()
   @IsBoolean()

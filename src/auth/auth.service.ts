@@ -2,6 +2,7 @@ import { compare } from 'bcrypt';
 import { v4 } from 'uuid';
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   forwardRef,
   Inject,
@@ -30,10 +31,7 @@ import { GetOAuthProfileWithAccessTokenOutput } from './dtos/oauth.dto';
 import { RefreshTokenOutput } from './dtos/refresh-token.dto';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { getGoogleProfileWithAccessToken } from './utils/googleAuth.util';
-import {
-  getKakaoProfileWithAccessToken,
-  unlinkKakaoUser,
-} from './utils/kakaoOAuth.util';
+import { getKakaoProfileWithAccessToken } from './utils/kakaoOAuth.util';
 import { getNaverProfileWithAccessToken } from './utils/naverLogin.util';
 import { LogoutInput, LogoutOutput } from './dtos/logout.dto';
 import { ConfigService } from '@nestjs/config';
@@ -55,7 +53,8 @@ export class AuthService {
 
   async processLogin(user: User, res: Response): Promise<LoginOutput> {
     // Check if the user is locked
-    if (!user.isLocked) throw new ForbiddenException('USER_LOCKED');
+    console.log(user.isLocked);
+    if (user.isLocked) throw new ForbiddenException('USER_LOCKED');
     // Issue an auth token
     const payload = { id: user.id };
     const token = this.jwtService.sign(payload, { expiresIn: '2h' });
@@ -111,9 +110,7 @@ export class AuthService {
       let { refresh } = cookies;
       if (!refresh) refresh = body.refresh;
       if (!refresh) throw new Error();
-      const payload = this.jwtService.verify(refresh, {
-        secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
-      });
+      const payload = this.jwtService.verify(refresh);
       // If the token is expired, verify() will throw an error
       const {
         token,
@@ -134,16 +131,26 @@ export class AuthService {
       if (
         Number(payload.exp) - thirtyDaysInSeconds <
         Math.floor(Date.now() / 1000)
-      )
+      ) {
+        // Set refresh
         refresh = await this.issueRefreshToken(user.id);
+        res.cookie('refresh', refresh, {
+          expires: new Date(Date.now() + NINETY_DAYS_IN_MS),
+          httpOnly: true,
+          path: '/auth/refresh',
+          sameSite: 'lax',
+        });
+      }
 
-      // Set cookies
-      res.cookie('refresh', refresh);
-      res.cookie('authorization', accessToken);
+      // Set access
+      res.cookie('authorization', accessToken, {
+        expires: new Date(Date.now() + TWO_HOURS_IN_MS),
+        httpOnly: true,
+        sameSite: 'lax',
+      });
 
       return {
-        ok: true,
-        token: accessToken,
+        access: accessToken,
         refresh,
       };
     } catch (e) {
@@ -169,47 +176,41 @@ export class AuthService {
 
     return await this.processLogin(user, res);
   }
-  /*
+
   async socialLogin(
-    { provider, accessToken }: SocialLoginInput,
-    context: GqlExecutionContext,
-  ): Promise<LoginOutputDeprecated> {
-    try {
-      // Get OAuth Profile
-      const {
-        ok,
-        error,
-        profile: { socialId, email },
-      } = await this.getOAuthProfileWithAccessToken(accessToken, provider);
-      if (!ok) return { ok, error };
+    { provider, accessToken, email: emailInput }: SocialLoginInput,
+    res: Response,
+  ): Promise<LoginOutput> {
+    // Get OAuth Profile
+    const {
+      ok,
+      error,
+      profile: { socialId, email },
+    } = await this.getOAuthProfileWithAccessToken(accessToken, provider);
+    if (!ok) throw new InternalServerErrorException(error);
 
-      // TEMPORARY: FOR KAKAO
-      if (!email) {
-        if (provider === OAuthProvider.KAKAO)
-          unlinkKakaoUser(
-            socialId,
-            this.configService.get<string>('KAKAO_ADMIN_KEY'),
-          );
-        return CommonError('EMAIL_NOT_FOUND');
+    // Check if the profile is connected to a user
+    let user = await this.usersService.getUserBySocialId(provider, socialId);
+    if (!user) {
+      if (!(email || emailInput)) {
+        throw new BadRequestException('EMAIL_NOT_FOUND');
       }
-
-      // Check if the profile is connected to a user
-      let user = await this.usersService.getUserBySocialId(provider, socialId);
-      if (!user) {
-        user = await this.usersService.createSocialAccount(
-          email,
-          provider,
-          socialId,
-        );
-      }
-
-      return await this.processLogin(user, context);
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
+      const existingUser = await this.usersService.getUserByEmail(
+        email || emailInput,
+        false,
+      );
+      if (existingUser) throw new ConflictException('DUPLICATE_EMAIL');
+      user = await this.usersService.createSocialAccount(
+        email || emailInput,
+        provider,
+        socialId,
+        Boolean(email),
+      );
     }
+
+    return await this.processLogin(user, res);
   }
-  */
+
   async getOAuthProfileWithAccessToken(
     accessToken: string,
     provider: OAuthProvider,

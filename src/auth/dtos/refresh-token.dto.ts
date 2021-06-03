@@ -1,3 +1,3 @@
-import { LoginOutputDeprecated } from './login.dto';
+import { LoginOutput } from './login.dto';
 
-export class RefreshTokenOutput extends LoginOutputDeprecated {}
+export class RefreshTokenOutput extends LoginOutput {}

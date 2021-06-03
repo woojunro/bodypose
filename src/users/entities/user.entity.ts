@@ -33,11 +33,11 @@ export class User extends CoreEntity {
   @Column({ length: 100, nullable: true })
   password?: string;
 
-  @Column({ type: 'bit' })
+  @Column()
   @Field(type => Boolean)
   isVerified: boolean;
 
-  @Column({ type: 'bit' })
+  @Column()
   isLocked: boolean;
 
   @Column({ type: 'datetime', nullable: true })

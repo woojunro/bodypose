@@ -7,7 +7,11 @@ import {
   Response,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { EmailLoginInput, LoginOutput } from './dtos/login.dto';
+import {
+  EmailLoginInput,
+  LoginOutput,
+  SocialLoginInput,
+} from './dtos/login.dto';
 import { RefreshTokenOutput } from './dtos/refresh-token.dto';
 
 @Controller('auth')
@@ -23,7 +27,17 @@ export class AuthController {
     return this.authService.emailLogin(input, res);
   }
 
+  @Post('login/oauth')
+  @HttpCode(200)
+  socialLogin(
+    @Body() input: SocialLoginInput,
+    @Response({ passthrough: true }) res,
+  ): Promise<LoginOutput> {
+    return this.authService.socialLogin(input, res);
+  }
+
   @Post('refresh')
+  @HttpCode(200)
   refreshToken(
     @Request() req,
     @Response({ passthrough: true }) res,

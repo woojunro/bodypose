@@ -1,7 +1,12 @@
-import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
-import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
-import { CoreOutput } from 'src/common/dtos/output.dto';
-import { UserOauth } from 'src/users/entities/user-oauth.entity';
+import {
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
+import { OAuthProvider } from 'src/users/entities/user-oauth.entity';
 
 export class EmailLoginInput {
   @IsEmail()
@@ -13,23 +18,17 @@ export class EmailLoginInput {
   password: string;
 }
 
-@InputType()
-export class SocialLoginInput extends PickType(
-  UserOauth,
-  ['provider'],
-  InputType,
-) {
-  @Field(type => String)
+export class SocialLoginInput {
+  @IsEnum(OAuthProvider)
+  provider: OAuthProvider;
+
+  @IsString()
   accessToken: string;
-}
 
-@ObjectType()
-export class LoginOutputDeprecated extends CoreOutput {
-  @Field(type => String, { nullable: true })
-  token?: string;
-
-  @Field(type => String, { nullable: true })
-  refresh?: string;
+  @IsOptional()
+  @IsEmail()
+  @MaxLength(190)
+  email?: string;
 }
 
 export class LoginOutput {
