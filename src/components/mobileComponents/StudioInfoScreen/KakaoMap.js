@@ -12,7 +12,7 @@ class KakaoMap extends React.Component {
       //위도,경도, 줌 정도
       let options = {
         center: new kakao.maps.LatLng(0, 0),
-        level: 6,
+        level: 3,
       };
 
       const map = new window.kakao.maps.Map(container, options);
@@ -34,13 +34,8 @@ class KakaoMap extends React.Component {
               position: coords,
             });
 
-            // 인포윈도우로 장소에 대한 설명을 표시합니다
-            if (adr.title) {
-              var infowindow = new kakao.maps.InfoWindow({
-                content: `<div style="width:150px;text-align:center;padding:2px 0;">${adr.title}</div>`,
-              });
-              infowindow.open(map, marker);
-            }
+            marker.setMap(map);
+
             bounds.extend(coords);
             map.setBounds(bounds);
           }

@@ -14,7 +14,7 @@ const StudioMap = ({ currentStudio }) => {
       <IoMdArrowDropdown fontSize="17px" />
     );
   };
-  const renderedTitle = address.map(adr => {
+  const renderedTitle = address.map((adr) => {
     return (
       <div key={`kakaomap-${adr.name}`} className="studioAdress">
         <span className="adressTitle">{adr.name}</span>
