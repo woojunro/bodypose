@@ -244,7 +244,7 @@ export class AuthService {
   async logout(
     user: User,
     { fromAllDevices }: LogoutInput,
-    context: any,
+    res: Response,
   ): Promise<LogoutOutput> {
     try {
       if (fromAllDevices) {
@@ -256,14 +256,14 @@ export class AuthService {
         );
       }
       // Clear cookies
-      context.res.clearCookie('authorization');
-      context.res.clearCookie('refresh', {
+      res.clearCookie('authorization');
+      res.clearCookie('refresh', {
         path: '/auth/refresh',
       });
       return { ok: true };
     } catch (e) {
       console.log(e);
-      return UNEXPECTED_ERROR;
+      throw new InternalServerErrorException();
     }
   }
 }

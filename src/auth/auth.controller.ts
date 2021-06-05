@@ -6,13 +6,17 @@ import {
   Request,
   Response,
 } from '@nestjs/common';
+import { User, UserType } from 'src/users/entities/user.entity';
 import { AuthService } from './auth.service';
+import { CurrentUser } from './current-user.decorator';
 import {
   EmailLoginInput,
   LoginOutput,
   SocialLoginInput,
 } from './dtos/login.dto';
+import { LogoutInput, LogoutOutput } from './dtos/logout.dto';
 import { RefreshTokenOutput } from './dtos/refresh-token.dto';
+import { Roles } from './roles.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -36,6 +40,7 @@ export class AuthController {
     return this.authService.socialLogin(input, res);
   }
 
+  @Roles(UserType.USER, UserType.STUDIO, UserType.ADMIN)
   @Post('refresh')
   @HttpCode(200)
   refreshToken(
@@ -43,5 +48,16 @@ export class AuthController {
     @Response({ passthrough: true }) res,
   ): Promise<RefreshTokenOutput> {
     return this.authService.refreshAccessToken(req, res);
+  }
+
+  @Roles(UserType.USER, UserType.STUDIO, UserType.ADMIN)
+  @Post('logout')
+  @HttpCode(200)
+  logout(
+    @CurrentUser() user: User,
+    @Body() input: LogoutInput,
+    @Response({ passthrough: true }) res,
+  ): Promise<LogoutOutput> {
+    return this.authService.logout(user, input, res);
   }
 }
