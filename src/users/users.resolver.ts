@@ -32,6 +32,7 @@ import { VerifyUserInput, VerifyUserOutput } from './dtos/verify-user.dto';
 import { UserType, User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { CoreOutput } from 'src/common/dtos/output.dto';
+import { LockUserInput, LockUserOutput } from './dtos/lock-user.dto';
 
 @Resolver(of => User)
 export class UsersResolver {
@@ -119,5 +120,11 @@ export class UsersResolver {
     @Args('input') input: UpdatePasswordInput,
   ): Promise<UpdatePasswordOutput> {
     return this.usersService.updatePassword(input);
+  }
+
+  @Mutation(returns => LockUserOutput)
+  @Roles(UserType.ADMIN)
+  lockUser(@Args('input') input: LockUserInput): Promise<LockUserOutput> {
+    return this.usersService.lockUser(input);
   }
 }

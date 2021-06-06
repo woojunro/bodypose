@@ -40,7 +40,6 @@ export class AuthController {
     return this.authService.socialLogin(input, res);
   }
 
-  @Roles(UserType.USER, UserType.STUDIO, UserType.ADMIN)
   @Post('refresh')
   @HttpCode(200)
   refreshToken(

@@ -45,6 +45,7 @@ import { UploadsService } from 'src/uploads/uploads.service';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { PASSWORD_HASH_ROUNDS } from 'src/common/constants/common.constant';
+import { LockUserInput, LockUserOutput } from './dtos/lock-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -589,6 +590,22 @@ export class UsersService {
       await this.passwordResetRepository.delete({ id: reset.id });
       // return
       return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async lockUser({ id }: LockUserInput): Promise<LockUserOutput> {
+    try {
+      const user = await this.getUserById(id);
+      if (!user) return CommonError('USER_NOT_FOUND');
+      user.isLocked = !user.isLocked;
+      const { isLocked } = await this.userRepository.save(user);
+      return {
+        ok: true,
+        isLocked,
+      };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
