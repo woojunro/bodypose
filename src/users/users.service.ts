@@ -451,18 +451,22 @@ export class UsersService {
     try {
       const verification = await this.verificationRepository
         .createQueryBuilder('verification')
-        .innerJoinAndSelect('verification.user', 'user')
+        .innerJoin('verification.user', 'user')
+        .addSelect(['user.id', 'user.isVerified'])
         .where('user.id = :userId', { userId })
         .getOne();
-      if (!verification || verification.code !== code) {
-        return {
-          ok: false,
-          error: 'INVALID_REQUEST',
-        };
+      const isValid =
+        verification &&
+        verification.updatedAt >= new Date(Date.now() - 3600 * 1000 * 24) &&
+        verification.code === code;
+      if (!isValid) return CommonError('INVALID_REQUEST');
+      if (verification.user.isVerified) {
+        await this.verificationRepository.delete(verification.id);
+        return CommonError('ALREADY_VERIFIED');
       }
       verification.user.isVerified = true;
       await this.userRepository.save(verification.user);
-      await this.verificationRepository.delete({ id: verification.id });
+      await this.verificationRepository.delete(verification.id);
       return { ok: true };
     } catch (e) {
       console.log(e);
