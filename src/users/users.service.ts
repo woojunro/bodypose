@@ -482,22 +482,28 @@ export class UsersService {
         .where('verification.userId = :id', { id: user.id })
         .getOne();
       if (!verification) {
+        // Create one
         verification = await this.verificationRepository.save(
           this.verificationRepository.create({
             user: { id: user.id },
           }),
         );
+      } else {
+        // Update code
+        verification.createCode();
+        verification = await this.verificationRepository.save(verification);
       }
 
-      const { nickname } = await this.userProfileRepository
-        .createQueryBuilder('profile')
-        .select('profile.nickname')
-        .where('profile.userId = :id', { id: user.id })
+      const { profile } = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoin('user.profile', 'profile')
+        .select(['user.id', 'profile.nickname'])
+        .where('user.id = :id', { id: user.id })
         .getOne();
 
       await this.mailService.sendEmailVerification(
         user.email,
-        nickname,
+        profile?.nickname || '회원',
         user.id,
         verification.code,
       );

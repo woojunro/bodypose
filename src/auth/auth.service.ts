@@ -53,7 +53,6 @@ export class AuthService {
 
   async processLogin(user: User, res: Response): Promise<LoginOutput> {
     // Check if the user is locked
-    console.log(user.isLocked);
     if (user.isLocked) throw new ForbiddenException('USER_LOCKED');
     // Issue an auth token
     const payload = { id: user.id };
