@@ -46,6 +46,7 @@ import { CoreOutput } from 'src/common/dtos/output.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { PASSWORD_HASH_ROUNDS } from 'src/common/constants/common.constant';
 import { LockUserInput, LockUserOutput } from './dtos/lock-user.dto';
+import { UpdateEmailInput, UpdateEmailOutput } from './dtos/update-email.dto';
 
 @Injectable()
 export class UsersService {
@@ -82,6 +83,10 @@ export class UsersService {
       nickname.length >= 2 &&
       nickname.length <= 10
     );
+  }
+
+  isMineOrAdmin(user: User, id: number): boolean {
+    return user.type === UserType.ADMIN || user.id === id;
   }
 
   async createUserWithEmail({
@@ -438,6 +443,44 @@ export class UsersService {
       }
       const result = await this.userRepository.softDelete({ id: user.id });
       return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async updateEmail(
+    { userId, email }: UpdateEmailInput,
+    user: User,
+  ): Promise<UpdateEmailOutput> {
+    try {
+      if (!this.isMineOrAdmin(user, userId)) {
+        return CommonError('INVALID_REQUEST');
+      }
+      const doesUserExist = await this.getUserById(userId);
+      if (!doesUserExist) return CommonError('USER_NOT_FOUND');
+      // Check duplicate email
+      const isEmailDuplicate = await this.userRepository
+        .createQueryBuilder('u')
+        .select('u.id')
+        .where('u.email = :email', { email })
+        .withDeleted()
+        .getOne();
+      if (isEmailDuplicate) return CommonError('DUPLICATE_EMAIL');
+      // Update email and set isVerified to false
+      const payload = this.userRepository.create({
+        id: userId,
+        email,
+        isVerified: false,
+      });
+      const updatedUser = await this.userRepository.save(payload);
+      // Send email verification mail
+      const { error } = await this.resendVerificationMail(updatedUser);
+      return {
+        ok: true,
+        error,
+        email: updatedUser.email,
+      };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;

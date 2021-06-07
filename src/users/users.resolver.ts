@@ -33,6 +33,7 @@ import { UserType, User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { LockUserInput, LockUserOutput } from './dtos/lock-user.dto';
+import { UpdateEmailInput, UpdateEmailOutput } from './dtos/update-email.dto';
 
 @Resolver(of => User)
 export class UsersResolver {
@@ -92,6 +93,15 @@ export class UsersResolver {
   @Roles(UserType.USER)
   deleteMyAccount(@CurrentUser() user: User): Promise<DeleteUserOutput> {
     return this.usersService.deleteUserById(user.id);
+  }
+
+  @Roles(UserType.USER, UserType.ADMIN, UserType.STUDIO)
+  @Mutation(returns => UpdateEmailOutput)
+  updateEmail(
+    @Args('input') input: UpdateEmailInput,
+    @CurrentUser() user: User,
+  ): Promise<UpdateEmailOutput> {
+    return this.usersService.updateEmail(input, user);
   }
 
   // Public
