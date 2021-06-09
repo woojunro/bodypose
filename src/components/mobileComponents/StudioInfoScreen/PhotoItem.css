@@ -17,7 +17,7 @@
 .whichDay {
   margin-right: 9px;
   display: flex;
-  width: 76px;
+  width: 77px;
   justify-content: space-between;
   font-size: 11px;
   color: var(--color-footer);
@@ -78,7 +78,7 @@
 .photoItemPrice {
   margin-left: 5px;
   display: flex;
-  width: 52px;
+  width: 53px;
   justify-content: flex-end;
 }
 
