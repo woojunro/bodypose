@@ -35,7 +35,6 @@ const Footer = () => {
         <div className="footerText">|</div>
         <div
           className="footerText"
-          style={{ color: 'black' }}
           onClick={() => openInNewTab('https://pf.kakao.com/_xbxoHEs')}
         >
           고객센터
@@ -44,7 +43,6 @@ const Footer = () => {
 
         <div
           className="footerText"
-          style={{ color: 'black' }}
           onClick={() => openInNewTab('https://pf.kakao.com/_xbxoHEs')}
         >
           입점문의
