@@ -7,13 +7,32 @@
 }
 
 .footerText {
+  display: flex;
   padding-right: 5px;
   padding-left: 5px;
   color: var(--color-footer);
   cursor: pointer;
+  align-items: center;
+}
+
+.footerLargerText {
+  display: flex;
+  padding-right: 5px;
+  padding-left: 5px;
+  color: var(--color-footer);
+  cursor: pointer;
+  align-items: center;
 }
 
 .footerMailToAnchor {
   text-decoration: none;
   color: white;
+}
+
+.footerFirstLine {
+  display: flex;
+}
+.askKakao {
+  width: 23px;
+  margin-left: 6px;
 }
