@@ -566,12 +566,13 @@ export class UsersService {
         return CommonError('UNAUTHORIZED');
       const user = await this.userRepository
         .createQueryBuilder('user')
-        .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
-        .leftJoinAndSelect('user.profile', 'profile')
+        .leftJoinAndSelect('user.oauthList', 'o')
+        .leftJoin('user.profile', 'profile')
+        .addSelect('profile.nickname')
         .where('user.email = :email', { email })
         .getOne();
       if (!user) return CommonError('USER_NOT_FOUND');
-      if ([].length !== 0) return CommonError('SOCIAL_USER');
+      if (user.oauthList.length !== 0) return CommonError('SOCIAL_USER');
       let savedReset: PasswordReset;
       const reset = await this.passwordResetRepository
         .createQueryBuilder('reset')
@@ -595,7 +596,7 @@ export class UsersService {
       // UNKNOWN may be impossible
       return {
         ok,
-        error: !ok && 'MAILGUN_API_ERROR',
+        error: ok ? null : 'MAILGUN_API_ERROR',
       };
     } catch (e) {
       console.log(e);
@@ -611,33 +612,26 @@ export class UsersService {
     try {
       // Check security
       if (!this.checkPasswordSecurity(newPassword)) {
-        return {
-          ok: false,
-          error: 'INSECURE_PASSWORD',
-        };
+        return CommonError('INSECURE_PASSWORD');
       }
       // Find user with code
       const reset = await this.passwordResetRepository
         .createQueryBuilder('reset')
-        .innerJoinAndSelect('reset.user', 'user')
-        .where('user.id = :userId', { userId })
+        .innerJoin('reset.user', 'user')
+        .addSelect(['user.id', 'user.password'])
+        .where('reset.userId = :userId', { userId })
         .getOne();
       if (!reset || reset.code !== code) {
-        return {
-          ok: false,
-          error: 'INVALID_REQUEST',
-        };
+        return CommonError('INVALID_REQUEST');
       }
       // Check code expire (1 hour)
       if (Date.now() - reset.updatedAt.valueOf() > 1000 * 3600) {
-        return {
-          ok: false,
-          error: 'CODE_EXPIRED',
-        };
+        return CommonError('CODE_EXPIRED');
       }
       // Update
       const { user } = reset;
-      user.password = newPassword;
+      const hashedPassword = await hash(newPassword, PASSWORD_HASH_ROUNDS);
+      user.password = hashedPassword;
       await this.userRepository.save(user);
       // Delete code
       await this.passwordResetRepository.delete({ id: reset.id });
