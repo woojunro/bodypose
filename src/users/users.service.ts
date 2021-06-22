@@ -47,6 +47,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { PASSWORD_HASH_ROUNDS } from 'src/common/constants/common.constant';
 import { LockUserInput, LockUserOutput } from './dtos/lock-user.dto';
 import { UpdateEmailInput, UpdateEmailOutput } from './dtos/update-email.dto';
+import { GetUserInfoInput, GetUserInfoOutput } from './dtos/get-user-info.dto';
 
 @Injectable()
 export class UsersService {
@@ -268,6 +269,41 @@ export class UsersService {
     user.lastLoginAt = new Date();
     user.deletedAt = null;
     this.userRepository.save(user);
+  }
+
+  async getUserInfo(
+    user: User,
+    { id }: GetUserInfoInput,
+  ): Promise<GetUserInfoOutput> {
+    if (id) {
+      if (!this.isMineOrAdmin(user, id)) {
+        return CommonError('UNAUTHORIZED');
+      }
+    }
+
+    const queryId = id || user.id;
+    const userInfo = await this.userRepository
+      .createQueryBuilder('u')
+      .select([
+        'u.id',
+        'u.createdAt',
+        'u.type',
+        'u.email',
+        'u.lastLoginAt',
+        'u.isVerified',
+        'u.deletedAt',
+      ])
+      .leftJoinAndSelect('u.oauthList', 'o')
+      .leftJoinAndSelect('u.profile', 'p')
+      .where('u.id = :queryId', { queryId })
+      .withDeleted()
+      .getOne();
+
+    if (!userInfo) return CommonError('USER_NOT_FOUND');
+    return {
+      ok: true,
+      userInfo,
+    };
   }
 
   async createMyProfile(

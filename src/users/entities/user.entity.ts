@@ -41,11 +41,12 @@ export class User extends CoreEntity {
   isLocked: boolean;
 
   @Column({ type: 'datetime', nullable: true })
-  @Field(type => Date)
+  @Field(type => Date, { nullable: true })
   lastLoginAt: Date;
 
   @DeleteDateColumn()
-  deletedAt: Date;
+  @Field(type => Date, { nullable: true })
+  deletedAt?: Date;
 
   @OneToOne(relation => UserProfile, profile => profile.user, {
     onDelete: 'SET NULL',

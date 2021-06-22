@@ -34,6 +34,7 @@ import { UsersService } from './users.service';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { LockUserInput, LockUserOutput } from './dtos/lock-user.dto';
 import { UpdateEmailInput, UpdateEmailOutput } from './dtos/update-email.dto';
+import { GetUserInfoInput, GetUserInfoOutput } from './dtos/get-user-info.dto';
 
 @Resolver(of => User)
 export class UsersResolver {
@@ -43,6 +44,15 @@ export class UsersResolver {
   @Roles(UserType.USER)
   myProfile(@CurrentUser() user: User): Promise<GetProfileOutput> {
     return this.usersService.getMyProfile(user);
+  }
+
+  @Query(returns => GetUserInfoOutput)
+  @Roles(UserType.USER, UserType.ADMIN)
+  userInfo(
+    @CurrentUser() user: User,
+    @Args('input') input: GetUserInfoInput,
+  ): Promise<GetUserInfoOutput> {
+    return this.usersService.getUserInfo(user, input);
   }
 
   // Public
