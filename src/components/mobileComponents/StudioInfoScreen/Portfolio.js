@@ -15,7 +15,7 @@ const Portfolio = ({ studioSlug, studioName }) => {
 
   const { data, loading, fetchMore, refetch } = useQuery(STUDIO_PHOTOS_QUERY, {
     variables: { page: 1, studioSlug },
-    onCompleted: data => {
+    onCompleted: (data) => {
       if (!data.studioPhotos.ok || data.studioPhotos.totalPages <= 1) {
         setHasMore(false);
       }
@@ -61,6 +61,16 @@ const Portfolio = ({ studioSlug, studioName }) => {
     refetch();
   }, []);
 
+  useEffect(() => {
+    if (!data || !data.studioPhotos || !data.studioPhotos.photos) {
+      return;
+    }
+
+    if (selectedPhotoNum >= data.studioPhotos.photos.length - 3) {
+      fetchMoreData();
+    }
+  }, [selectedPhotoNum]);
+
   return (
     <div className="portfolio">
       <InfiniteScroll
@@ -94,20 +104,19 @@ const Portfolio = ({ studioSlug, studioName }) => {
             ? null
             : data.studioPhotos.photos.length % 3 === 0
             ? null
-            : [
-                ...Array(3 - (data.studioPhotos.photos.length % 3)),
-              ].map((_, idx) => (
-                <div
-                  key={`concept-blank-${idx}`}
-                  className="concepListCardContainer"
-                />
-              ))}
+            : [...Array(3 - (data.studioPhotos.photos.length % 3))].map(
+                (_, idx) => (
+                  <div
+                    key={`concept-blank-${idx}`}
+                    className="concepListCardContainer"
+                  />
+                )
+              )}
         </div>
       </InfiniteScroll>
       {isModalOpen && selectedPhotoNum < data.studioPhotos.photos.length ? (
         <ConceptModal
           close={() => setIsModalOpen(false)}
-          open={() => setIsModalOpen(true)}
           id={data.studioPhotos.photos[selectedPhotoNum].id}
           setThisPhoto={setSelectedPhotoNum}
           selectedPhotoNum={selectedPhotoNum}
