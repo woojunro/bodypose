@@ -194,17 +194,41 @@ export class AuthService {
       if (!(email || emailInput)) {
         throw new BadRequestException('EMAIL_NOT_FOUND');
       }
-      const existingUser = await this.usersService.getUserByEmail(
-        email || emailInput,
-        false,
-      );
-      if (existingUser) throw new ConflictException('DUPLICATE_EMAIL');
-      user = await this.usersService.createSocialAccount(
-        email || emailInput,
-        provider,
-        socialId,
-        Boolean(email),
-      );
+
+      if (email) {
+        const existingUser = await this.usersService.getUserByEmail(
+          email,
+          false,
+        );
+        if (existingUser) {
+          const { error } = await this.usersService.createUserOAuth(
+            existingUser.id,
+            provider,
+            socialId,
+          );
+          if (error) throw new InternalServerErrorException(error);
+          user = existingUser;
+        } else {
+          user = await this.usersService.createSocialAccount(
+            email,
+            provider,
+            socialId,
+            true,
+          );
+        }
+      } else {
+        const existingUser = await this.usersService.getUserByEmail(
+          emailInput,
+          false,
+        );
+        if (existingUser) throw new ConflictException('DUPLICATE_EMAIL');
+        user = await this.usersService.createSocialAccount(
+          emailInput,
+          provider,
+          socialId,
+          false,
+        );
+      }
     }
 
     return await this.processLogin(user, res);

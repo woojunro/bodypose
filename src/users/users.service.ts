@@ -192,6 +192,36 @@ export class UsersService {
     }
   }
 
+  async createUserOAuth(
+    id: number,
+    provider: OAuthProvider,
+    socialId: string,
+  ): Promise<CoreOutput> {
+    try {
+      const user = await this.userRepository.findOne(id, {
+        select: ['id', 'isVerified', 'password'],
+      });
+      const oauth = await this.userOAuthRepository.findOne({
+        provider,
+        socialId,
+      });
+      if (oauth) return CommonError('DUPLICATE_OAUTH');
+      const newOAuth = this.userOAuthRepository.create({
+        user: { id },
+        provider,
+        socialId,
+      });
+      await this.userOAuthRepository.save(newOAuth);
+      user.isVerified = true;
+      user.password = null;
+      await this.userRepository.save(user);
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
   async getUserById(id: number): Promise<User> {
     return this.userRepository.findOne(
       { id },

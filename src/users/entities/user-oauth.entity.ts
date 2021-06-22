@@ -1,7 +1,7 @@
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { IsEnum, IsString, Length } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { User } from './user.entity';
 
 export enum OAuthProvider {
@@ -15,6 +15,7 @@ registerEnumType(OAuthProvider, { name: 'OAuthProvider' });
 
 @Entity()
 @ObjectType()
+@Index(['provider', 'socialId'], { unique: true })
 export class UserOauth extends CoreEntity {
   @ManyToOne(relation => User, user => user.oauthList, {
     onDelete: 'CASCADE',
