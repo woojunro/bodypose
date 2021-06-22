@@ -37,7 +37,11 @@ const NoticeScreen = () => {
         <Redirect to="/error" />
       ) : (
         <div className="noticeBodyPart">
-          <div className="fullNoticeTitle">{data.notice.notice.title}</div>
+          <div className="noticeTitlePart">
+            <div className="noticeType">공지</div>
+            <div>|</div>
+            <div className="fullNoticeTitle">{data.notice.notice.title}</div>
+          </div>
           <div className="fullNoticeDate">
             {String(data.notice.notice.updatedAt).substr(0, 10)}
           </div>
