@@ -24,6 +24,7 @@ import {
   CreateProfileInput,
   CreateProfileOutput,
   DeleteProfileImageInput,
+  GetProfileInput,
   GetProfileOutput,
   UpdateProfileImageInput,
   UpdateProfileInput,
@@ -344,12 +345,20 @@ export class UsersService {
     }
   }
 
-  async getMyProfile({ id }: User): Promise<GetProfileOutput> {
+  async getProfile(
+    user: User,
+    { id }: GetProfileInput,
+  ): Promise<GetProfileOutput> {
     try {
-      const profile = await this.userProfileRepository
-        .createQueryBuilder('profile')
-        .where('profile.userId = :id', { id })
+      const queryId = id || user.id;
+      const queryUser = await this.userRepository
+        .createQueryBuilder('u')
+        .select('u.id')
+        .leftJoinAndSelect('u.profile', 'p')
+        .where('u.id = :queryId', { queryId })
+        .withDeleted()
         .getOne();
+      const profile = queryUser?.profile;
 
       return {
         ok: Boolean(profile),
@@ -395,8 +404,9 @@ export class UsersService {
       }
 
       // Check if the profile exists
-      const { ok, error, profile: profileToUpdate } = await this.getMyProfile(
+      const { ok, error, profile: profileToUpdate } = await this.getProfile(
         user,
+        {},
       );
       if (!ok) return { ok, error };
 
@@ -419,8 +429,9 @@ export class UsersService {
   ): Promise<UpdateProfileOutput> {
     try {
       // Check if the profile exists
-      const { ok, error, profile: profileToUpdate } = await this.getMyProfile(
+      const { ok, error, profile: profileToUpdate } = await this.getProfile(
         user,
+        {},
       );
       if (!ok) return { ok, error };
 
@@ -456,7 +467,7 @@ export class UsersService {
         if (!profileToUpdate) return CommonError('PROFILE_NOT_FOUND');
       } else {
         // Check if the profile exists
-        const { ok, error, profile } = await this.getMyProfile(user);
+        const { ok, error, profile } = await this.getProfile(user, {});
         if (!ok) return { ok, error };
         profileToUpdate = profile;
       }

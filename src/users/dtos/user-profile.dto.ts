@@ -6,6 +6,7 @@ import {
   PartialType,
   PickType,
 } from '@nestjs/graphql';
+import { IsInt, IsOptional, Min } from 'class-validator';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { UserProfile } from '../entities/user-profile.entity';
 
@@ -18,6 +19,15 @@ export class CreateProfileInput extends PickType(
 
 @ObjectType()
 export class CreateProfileOutput extends CoreOutput {}
+
+@InputType()
+export class GetProfileInput {
+  @Field(type => Int, { nullable: true })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  id?: number;
+}
 
 @ObjectType()
 export class GetProfileOutput extends CoreOutput {

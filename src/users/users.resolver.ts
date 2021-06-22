@@ -18,6 +18,7 @@ import {
   CreateProfileInput,
   CreateProfileOutput,
   DeleteProfileImageInput,
+  GetProfileInput,
   GetProfileOutput,
   UpdateProfileInput,
   UpdateProfileOutput,
@@ -41,9 +42,12 @@ export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
   @Query(returns => GetProfileOutput)
-  @Roles(UserType.USER)
-  myProfile(@CurrentUser() user: User): Promise<GetProfileOutput> {
-    return this.usersService.getMyProfile(user);
+  @Roles(UserType.USER, UserType.STUDIO, UserType.ADMIN)
+  userProfile(
+    @CurrentUser() user: User,
+    @Args('input') input: GetProfileInput,
+  ): Promise<GetProfileOutput> {
+    return this.usersService.getProfile(user, input);
   }
 
   @Query(returns => GetUserInfoOutput)
