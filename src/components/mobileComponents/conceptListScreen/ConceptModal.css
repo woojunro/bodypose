@@ -1,8 +1,7 @@
 .conceptmodal {
   z-index: 50;
   width: 100vw;
-  height: 100vh;
-
+  height: 100%;
   position: fixed;
   left: 0;
   top: 0;
@@ -11,10 +10,11 @@
   display: flex;
   justify-content: center;
 }
+
 .concepttrueModal {
   width: 100vw;
   max-width: 470px;
-  height: 100vh;
+  height: 100%;
   background-color: white;
   position: relative;
   box-sizing: border-box;
@@ -23,26 +23,29 @@
   background: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
+
 .conceptModalContents {
+  height: 80%;
   margin: 0 auto;
-  padding-left: 7%;
-  padding-right: 7%;
-  position: relative;
-  box-sizing: border-box;
+  padding-left: 5%;
+  padding-right: 5%;
   align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .topBarContainer {
-  padding-top: 10px;
+  height: 8%;
   padding-right: 5px;
   padding-left: 5px;
   display: flex;
   font-size: 45px;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 }
+
 .studioTitle {
   font-size: 18px;
   font-weight: bold;
@@ -50,30 +53,37 @@
 
 .mainPhotoArea {
   width: 100%;
+  display: flex;
+  justify-content: center;
   overflow: hidden;
   height: auto;
+  align-items: center;
 }
 
 .mainPhotoArea img {
   width: 100%;
   height: auto;
-  max-height: -moz-calc(100vh - 115px);
-  max-height: -webkit-calc(100vh - 115px);
-  max-height: calc(100vh - 115px);
+  max-height: 70%;
+  max-width: 90vw;
   object-fit: contain;
 }
 
 .toStudioInfoContainer {
+  width: 100%;
+  height: 10%;
+  max-width: 470px;
   display: flex;
   justify-content: center;
-  padding-bottom: 20px;
+  padding-bottom: 2%;
   align-items: center;
 }
+
 .toStudioInfo {
   width: 75%;
-  height: 40px;
+  height: 70%;
+  max-height: 40px;
   border-radius: 5px;
-  background-color: var(--color-chocolate);
+  background: var(--color-chocolate);
   font-size: 15px;
   font-weight: normal;
   color: white;
@@ -82,48 +92,41 @@
   align-items: center;
   text-decoration: none;
   cursor: pointer;
+  margin-top: 5px;
 }
 .nextArrowContainer {
-  position: absolute;
+  margin-left: -20px;
   cursor: pointer;
 
-  top: 50%;
-  right: 10%;
-  transform: translateY(-43%);
   z-index: 100;
 }
-.nextButton {
-  transform: scale(1.5, 5);
-  color: rgba(0, 0, 0, 0.2);
-}
 .prevArrowContainer {
-  display: flex;
-  align-items: center;
-  position: absolute;
-  top: 50%;
-  left: 10%;
-  transform: translateY(-57%);
+  padding-left: 4px;
+  margin-right: -20px;
   z-index: 100;
   cursor: pointer;
 }
+.nextButton {
+  transform: scale(1.2, 5);
+  color: rgba(225, 225, 225, 0.5);
+}
 .prevButton {
-  transform: scale(1.5, 5);
-  color: rgba(0, 0, 0, 0.2);
+  transform: scale(1.2, 5);
+  color: rgba(225, 225, 225, 0.5);
 }
 
 .conceptFilledHeart {
-  margin-left: 10px;
-  margin-top: 3px;
-
+  margin-left: 8px;
   color: var(--color-heartColor);
   cursor: pointer;
 
-  font-size: 28px;
+  font-size: 36px;
+  margin-top: 7px;
 }
 .conceptRegHeart {
-  margin-left: 10px;
-  margin-top: 3px;
-  font-size: 28px;
+  margin-left: 8px;
+  margin-top: 7px;
+  font-size: 36px;
   cursor: pointer;
 }
 .whileLoading {
@@ -140,8 +143,9 @@
 
 .conceptModalClose {
   cursor: pointer;
-}
-
-.transparentModal {
-  background-color: none;
+  position: absolute;
+  width: 35px;
+  height: 35px;
+  right: 3vw;
+  top: 1vh;
 }

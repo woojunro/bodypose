@@ -1,4 +1,5 @@
 .reviewCardContainer {
+  cursor: pointer;
   color: black;
   margin-top: 20px;
   margin-bottom: 5px;
@@ -61,13 +62,13 @@
 }
 .reviewText {
   margin-left: 10px;
-  height: 100px;
-  width: 95%;
   font-size: 13px;
-  overflow: hidden;
-  position: relative;
-  line-height: 1.3em;
-  max-height: 6.1em;
   text-align: justify;
   white-space: pre-wrap;
+
+  font-size: 13px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
 }

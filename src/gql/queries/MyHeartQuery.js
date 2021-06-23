@@ -9,10 +9,7 @@ export const MY_HEART_STUDIOS_QUERY = gql`
         id
         name
         slug
-        coverPhoto {
-          id
-          originalUrl
-        }
+        coverPhotoUrl
         branches {
           name
           address

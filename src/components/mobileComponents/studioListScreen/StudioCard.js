@@ -1,7 +1,8 @@
 import React, { useState, useContext } from 'react';
 import './StudioCard.css';
-import { IoIosHeartEmpty, IoIosStar, IoIosHeart } from 'react-icons/io';
-import { Link, useHistory } from 'react-router-dom';
+import { IoHeart, IoHeartOutline, IoStar } from 'react-icons/io5';
+
+import { useHistory } from 'react-router-dom';
 import LoginContext from '../../../contexts/LoginContext';
 import GetShortAdress from '../../functions/Studio/GetShortAdress';
 import { client } from '../../../apollo';
@@ -61,7 +62,7 @@ const StudioCard = ({
 
   const [heartStudioPhoto] = useMutation(HEART_STUDIO_MUTATION, {
     onError: () => alert('오류가 발생하였습니다. 다시 시도해주세요.'),
-    onCompleted: data => {
+    onCompleted: (data) => {
       if (data.heartStudio.ok) {
         heart();
       }
@@ -70,7 +71,7 @@ const StudioCard = ({
 
   const [disheartStudioPhoto] = useMutation(DISHEART_STUDIO_MUTATION, {
     onError: () => alert('오류가 발생하였습니다. 다시 시도해주세요.'),
-    onCompleted: data => {
+    onCompleted: (data) => {
       if (data.disheartStudio.ok) {
         disheart();
       }
@@ -89,6 +90,7 @@ const StudioCard = ({
         pathname: '/login',
         state: { previousPath: '/studios' },
       });
+      return;
     }
 
     if (isHearted) {
@@ -109,65 +111,65 @@ const StudioCard = ({
 
   return (
     <div className="totalContainer">
-      <Link
-        onClick={() => window.scrollTo(0, 0)}
-        to={{
-          pathname: `/studios/${name}`,
-          state: { previousPath: history.location.pathname },
+      <div
+        className="studioCardContainer"
+        onClick={() => {
+          history.push({
+            pathname: `/studios/${name}`,
+            state: { previousPath: history.location.pathname },
+          });
+          window.scrollTo(0, 0);
         }}
-        style={{ TextDecoder: 'none', color: 'white' }}
       >
-        <div className="studioCardContainer">
-          <div className="studioImg">
-            <img src={mainPhoto} alt={title} />
-          </div>
-          <div className="cardInfo">
-            <div className="upper">
-              <div className="firstLine">
-                <span style={{ fontSize: '15px' }}>{title}</span>
-              </div>
-              <div className="location">{adress}</div>
-              <div className="thirdLine">
-                <IoIosStar color="#FFD800" fontSize="18px" />
-                {review === 0 ? (
-                  <span className="noReviewSpan">리뷰 없음</span>
-                ) : (
-                  <>
-                    <span className="rating">{rating.toFixed(1)}</span>
-                    <span className="review">{`(${review}개)`}</span>
-                  </>
-                )}
-              </div>
+        <div className="studioImg">
+          <img src={mainPhoto} alt={title} />
+        </div>
+        <div className="cardInfo">
+          <div className="upper">
+            <div className="firstLine">
+              <span>{title}</span>
             </div>
-            <div className="lower">
-              <div className="eventLine">
-                {isEvent ? (
-                  <span>
-                    <span className="percent">{percent}</span>
-                    <span className="originalPrice">{originalPrice}</span>
-                  </span>
-                ) : null}
-              </div>
-              <div className="lastLine">
-                <span className="per">최저 가격</span>
-                {!price || price === 0 ? (
-                  <span className="price">문의 바람</span>
-                ) : (
-                  <span className="price">{`${price.toLocaleString()}원~`}</span>
-                )}
-              </div>
+            <div className="location">{adress}</div>
+            <div className="thirdLine">
+              <IoStar color="#FFD800" fontSize="17px" />
+              {review === 0 ? (
+                <span className="noReviewSpan">리뷰 없음</span>
+              ) : (
+                <>
+                  <span className="rating">{rating.toFixed(1)}</span>
+                  <span className="review">{`(${review}개)`}</span>
+                </>
+              )}
+            </div>
+          </div>
+          <div className="lower">
+            <div className="eventLine">
+              {isEvent ? (
+                <span>
+                  <span className="percent">{percent}</span>
+                  <span className="originalPrice">{originalPrice}</span>
+                </span>
+              ) : null}
+            </div>
+            <div className="lastLine">
+              <span className="per">최저 가격</span>
+              {!price || price === 0 ? (
+                <span className="price">문의 바람</span>
+              ) : (
+                <span className="price">{`${price.toLocaleString()}원~`}</span>
+              )}
             </div>
           </div>
         </div>
-      </Link>
+      </div>
       {isHearted ? (
-        <IoIosHeart
+        <IoHeart
           onClick={ChangeHeart}
           className="cardSelectedHeart"
           fontSize="20px"
         />
       ) : (
-        <IoIosHeartEmpty
+        <IoHeartOutline
           onClick={ChangeHeart}
           className="cardHeart"
           fontSize="20px"

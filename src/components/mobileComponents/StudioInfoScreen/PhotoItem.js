@@ -8,8 +8,8 @@ const PhotoItem = ({
   isPhotoItemOpen,
   setIsPhotoItemOpen,
 }) => {
-  const indoor = products.filter(product => product.type === 'STUDIO');
-  const outdoor = products.filter(product => product.type === 'OUTDOOR');
+  const indoor = products.filter((product) => product.type === 'STUDIO');
+  const outdoor = products.filter((product) => product.type === 'OUTDOOR');
   const indoorNotice = currentStudio.studioProductListDescription;
   const outdoorNotice = currentStudio.outdoorProductListDescription;
   const renderedArrow = () => {
@@ -20,8 +20,18 @@ const PhotoItem = ({
     );
   };
 
-  const renderedItem = itemList =>
-    itemList.map(item => {
+  const splitMinMaxPeopleCount = (stringToSplit) => {
+    var arrayOfMinMax = stringToSplit.split('126');
+    return `${arrayOfMinMax[0]}~${arrayOfMinMax[1]}`;
+  };
+
+  const renderedItem = (itemList) =>
+    itemList.map((item) => {
+      const peopleCountStr = String(item.peopleCount);
+      var minmaxPeopleCount = 0;
+      if (peopleCountStr.includes(126)) {
+        minmaxPeopleCount = splitMinMaxPeopleCount(peopleCountStr);
+      }
       return (
         <div key={`studioProduct-${item.id}`} className="photoItemContainer">
           <div className="photoItemTitle">{item.title}</div>
@@ -29,31 +39,43 @@ const PhotoItem = ({
             <div className="photoItemTopPart">
               <div className="photoItemleftPart">
                 <div className="itemUpper">
-                  {item.peopleCount}인촬영 - {item.conceptCount}컨셉
+                  {item.conceptCount === 0
+                    ? peopleCountStr.includes(126)
+                      ? `${minmaxPeopleCount}인촬영`
+                      : `${item.peopleCount}인촬영 `
+                    : peopleCountStr.includes(126)
+                    ? `${minmaxPeopleCount}인촬영 - ${item.conceptCount}컨셉`
+                    : `${item.peopleCount}인촬영 - ${item.conceptCount}컨셉`}
                 </div>
                 {currentStudio.isOriginalPhotoProvided ? (
                   <div className="itemUnder">
-                    원본+최종본 {item.cutCount}컷
+                    {item.cutCount === 0
+                      ? `보정본+원본`
+                      : `보정본 ${item.cutCount}컷+원본`}
                     {item.minuteCount && (
                       <span>
                         {item.minuteCount % 60 === 0
-                          ? ` | ${item.minuteCount / 60}시간`
+                          ? ` | ${item.minuteCount / 60}시간 내외`
+                          : item.minuteCount < 60
+                          ? ` | ${item.minuteCount}분 내외`
                           : ` | ${Math.floor(item.minuteCount / 60)}시간 ${
                               item.minuteCount % 60
-                            }분`}
+                            }분 내외`}
                       </span>
                     )}
                   </div>
                 ) : (
                   <div className="itemUnder">
-                    최종본 {item.cutCount}컷
+                    {item.cutCount === 0 ? null : `보정본 ${item.cutCount}컷`}
                     {item.minuteCount && (
                       <span>
                         {item.minuteCount % 60 === 0
-                          ? ` | ${item.minuteCount / 60}시간`
+                          ? ` | ${item.minuteCount / 60}시간 내외`
+                          : item.minuteCount < 60
+                          ? ` | ${item.minuteCount}분 내외`
                           : ` | ${Math.floor(item.minuteCount / 60)}시간 ${
                               item.minuteCount % 60
-                            }분`}
+                            }분 내외`}
                       </span>
                     )}
                   </div>
@@ -78,7 +100,7 @@ const PhotoItem = ({
 
   const renderedIndoorNotice =
     indoorNotice &&
-    indoorNotice.split('\n').map(notice => {
+    indoorNotice.split('\n').map((notice) => {
       return (
         <div key={notice} className="itemNotice">
           * {notice}
@@ -88,7 +110,7 @@ const PhotoItem = ({
 
   const renderedOutdoorNotice =
     outdoorNotice &&
-    outdoorNotice.split('\n').map(notice => {
+    outdoorNotice.split('\n').map((notice) => {
       return (
         <div key={notice} className="itemNotice">
           * {notice}
@@ -106,20 +128,22 @@ const PhotoItem = ({
       </div>
       {isPhotoItemOpen ? (
         <>
-          <div className="placeText">
-            <div>스튜디오 상품</div>
-            <div className="dayContainer">
-              <div className="whichDay">
-                <div>{currentStudio.weekdayPriceTag}</div>
-                <div>{currentStudio.weekendPriceTag}</div>
+          {indoor.length !== 0 && (
+            <>
+              <div className="placeText">
+                <div>스튜디오 상품</div>
+                <div className="dayContainer">
+                  <div className="whichDay">
+                    <div>{currentStudio.weekdayPriceTag}</div>
+                    <div>{currentStudio.weekendPriceTag}</div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-
-          <div>{renderedItem(indoor)}</div>
-          <div>{renderedIndoorNotice}</div>
-
-          {outdoor.length !== 0 ? (
+              <div>{renderedItem(indoor)}</div>
+              <div>{renderedIndoorNotice}</div>
+            </>
+          )}
+          {outdoor.length !== 0 && (
             <>
               <div className="placeText">
                 <div>아웃도어 상품</div>
@@ -131,7 +155,7 @@ const PhotoItem = ({
               <div>{renderedItem(outdoor)}</div>
               <div>{renderedOutdoorNotice}</div>
             </>
-          ) : null}
+          )}
         </>
       ) : null}
     </div>

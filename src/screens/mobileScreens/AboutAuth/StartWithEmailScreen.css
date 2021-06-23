@@ -29,6 +29,8 @@
 
 .linkText {
   margin-left: 5px;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .startButtonPart {

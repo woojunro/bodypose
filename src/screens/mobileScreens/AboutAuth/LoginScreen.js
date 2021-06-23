@@ -12,6 +12,10 @@ import { useMutation } from '@apollo/client';
 import { SOCIAL_LOGIN_MUTATION } from '../../../gql/mutations/LoginMutation';
 import GoogleLogin from 'react-google-login';
 import AppLoadingScreen from '../../../components/mobileComponents/AppLoadingScreen';
+import {
+  PRIVACY_NOTICE_ID,
+  TEMRS_NOTICE_ID,
+} from '../../../constants/noticeIds';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -22,7 +26,7 @@ const LoginScreen = () => {
 
   const [socialLogin, { loading }] = useMutation(SOCIAL_LOGIN_MUTATION, {
     fetchPolicy: 'no-cache',
-    onCompleted: data => {
+    onCompleted: (data) => {
       if (data.createOrLoginUserWithOAuth.ok) {
         const { token } = data.createOrLoginUserWithOAuth;
         localStorage.setItem('jwt', token);
@@ -37,7 +41,7 @@ const LoginScreen = () => {
     const { naver } = window;
     const naverLogin = new naver.LoginWithNaverId({
       clientId: process.env.REACT_APP_NAVER_CLIENT_ID,
-      callbackUrl: process.env.REACT_APP_NAVER_LOGIN_CALLBACK_URL,
+      callbackUrl: `https://${window.location.hostname}${process.env.REACT_APP_NAVER_LOGIN_CALLBACK_URL}`,
       isPopup: false,
       loginButton: {
         color: 'green',
@@ -49,7 +53,9 @@ const LoginScreen = () => {
   };
 
   useEffect(() => {
-    initializeNaverLogin();
+    if (!LoggedIn.loggedIn) {
+      initializeNaverLogin();
+    }
   }, []);
 
   const loginWithKakao = () => {
@@ -70,7 +76,7 @@ const LoginScreen = () => {
     });
   };
 
-  const loginWithGoogle = token => {
+  const loginWithGoogle = (token) => {
     if (!token) {
       alert('오류가 발생하였습니다. 다시 시도해주세요.');
       return;
@@ -149,15 +155,15 @@ const LoginScreen = () => {
                   setValidInfo={setValidInfo}
                 />
                 <div className="forgotPasswordContainer">
-                  <Link
-                    onClick={() => window.scrollTo(0, 0)}
-                    to="/changePassword"
-                    style={{ TextDecoder: 'none', color: 'white' }}
+                  <div
+                    className="forgotPassword"
+                    onClick={() => {
+                      history.push('/changePassword');
+                      window.scrollTo(0, 0);
+                    }}
                   >
-                    <div className="forgotPassword">
-                      비밀번호가 기억나지 않아요
-                    </div>
-                  </Link>
+                    비밀번호가 기억나지 않아요
+                  </div>
                 </div>
                 <div className="snsLoginContainerContainer">
                   <div className="snsLoginContainer">
@@ -172,7 +178,7 @@ const LoginScreen = () => {
                     </div>
                     <GoogleLogin
                       clientId={process.env.REACT_APP_GOOGLE_AUTH_CLIENT_ID}
-                      render={renderProps => (
+                      render={(renderProps) => (
                         <img
                           className="snsLogin"
                           onClick={renderProps.onClick}
@@ -181,7 +187,9 @@ const LoginScreen = () => {
                         />
                       )}
                       buttonText=""
-                      onSuccess={response => loginWithGoogle(response.tokenId)}
+                      onSuccess={(response) =>
+                        loginWithGoogle(response.tokenId)
+                      }
                       onFailure={() =>
                         alert('오류가 발생하였습니다. 다시 시도해주세요.')
                       }
@@ -189,15 +197,40 @@ const LoginScreen = () => {
                   </div>
                 </div>
               </div>
+              <div className="autoAgreeContainer">
+                <span>소셜 로그인 시</span>
+
+                <span
+                  onClick={() => {
+                    history.push(`/notices/${TEMRS_NOTICE_ID}`);
+                  }}
+                  className="linkText"
+                >
+                  이용약관
+                </span>
+                <span>,</span>
+
+                <span
+                  onClick={() => {
+                    history.push(`/notices/${PRIVACY_NOTICE_ID}`);
+                  }}
+                  className="linkText"
+                >
+                  개인정보처리방침
+                </span>
+                <span>에 동의한 것으로 간주합니다.</span>
+              </div>
               <div className="noIdContainer">
                 <div className="noIdText">계정이 없으신가요?</div>
-                <Link
-                  to="/startWithEmail"
-                  style={{ color: 'gray' }}
-                  onClick={() => window.scrollTo(0, 0)}
+                <div
+                  className="startWithEmailText"
+                  onClick={() => {
+                    history.push('/startWithEmail');
+                    window.scrollTo(0, 0);
+                  }}
                 >
-                  <div className="startWithEmailText">이메일로 시작하기</div>
-                </Link>
+                  이메일로 시작하기
+                </div>
               </div>
             </div>
           </div>

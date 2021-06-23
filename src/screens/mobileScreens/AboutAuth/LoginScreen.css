@@ -2,16 +2,16 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
 .loginBackArrow {
+  cursor: pointer;
   font-size: 25px;
   margin-left: 18px;
   margin-top: 25px;
 }
 .loginTitle {
-  margin-top: 15px;
+  margin-top: 13px;
   margin-left: 8%;
   font-size: 22px;
   font-weight: bold;
@@ -19,21 +19,23 @@
 
 .loginEmailText {
   font-size: 12px;
-  margin-top: 25px;
+  margin-top: 20px;
   margin-left: 11%;
   color: var(--color-loginGray);
   margin-bottom: 10px;
 }
 .forgotPassword {
-  width: 100%;
   font-size: 11px;
   margin-top: 10px;
   color: gray;
+text-decoration: underline grey;
+cursor: pointer;
 }
 .forgotPasswordContainer {
   width: 90%;
   display: flex;
   justify-content: flex-end;
+
 }
 .snsLoginContainerContainer {
   width: 100%;
@@ -60,6 +62,10 @@
   justify-content: center;
   overflow: hidden;
 }
+.naverIdLoginButtonContainer img {
+  margin-top: 4px;
+  margin-left: 1px;
+}
 .noIdText {
   width: 100%;
   display: flex;
@@ -74,11 +80,16 @@
   color: gray;
   display: flex;
   justify-content: center;
+  text-decoration: underline grey;
+  cursor: pointer;
+
 }
 .noIdContainer {
+  position: fixed;
+  bottom: 0;
   width: 100%;
-  padding-top: 10%;
-  margin-bottom: 15%;
+  max-width: 470px;
+  margin-bottom: 5vh;
 }
 
 .unvalidInfoText {
@@ -86,4 +97,13 @@
   padding-left: 11%;
   color: red;
   margin-bottom: -14px;
+}
+
+.autoAgreeContainer {
+  font-size: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  
 }

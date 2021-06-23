@@ -3,10 +3,11 @@
   flex: 0 0 auto;
   min-width: 320px;
   display: block;
+  cursor: pointer;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 .studioCardContainer {
-  margin-top: 15px;
-  margin-bottom: 10px;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -14,14 +15,13 @@
 }
 .studioImg {
   margin-left: 5px;
-  margin-right: 5px;
   display: flex;
   position: relative;
   overflow: hidden;
   width: 136px;
   height: 170px;
   border-radius: 10px;
-  box-shadow: 2px 4px 6px grey;
+  box-shadow: 1px 3px 6px gray;
   flex: 0 0 auto;
 }
 
@@ -31,20 +31,18 @@
   height: 170px;
 }
 .cardInfo {
-  margin-left: 5px;
   margin-right: 5px;
   display: flex;
-  margin-right: 10px;
   height: 150px;
-  width: 50%;
+  width: 47%;
   flex-direction: column;
   justify-content: space-between;
 }
 .cardHeart {
   font-size: 23px;
   position: absolute;
-  top: 4.5%;
-  left: 89%;
+  top: 9%;
+  left: 88%;
   cursor: pointer;
 }
 .cardSelectedHeart {
@@ -52,8 +50,8 @@
 
   font-size: 23px;
   position: absolute;
-  top: 4.5%;
-  left: 89%;
+  top: 9%;
+  left: 88%;
   color: var(--color-heartColor);
 }
 
@@ -62,6 +60,7 @@
   align-items: center;
   justify-content: space-between;
   font-weight: bold;
+  font-size: 15px;
 }
 
 .location {

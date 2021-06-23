@@ -29,8 +29,8 @@ const SortingStudioFunction = (sortBy, locationBy, searchTerm, allStudios) => {
       returnStudio = SortByRating(sortedStudio);
     }
   } else {
-    returnStudio = allStudios.filter(studio =>
-      studio.name.includes(searchTerm)
+    returnStudio = allStudios.filter((studio) =>
+      studio.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     if (locationBy.name === 'default') {

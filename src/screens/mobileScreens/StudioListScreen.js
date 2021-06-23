@@ -13,10 +13,15 @@ import StudioListView from '../../components/mobileComponents/studioListScreen/S
 import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import './StudioListScreen.css';
+import ReactGA from 'react-ga';
 
 const StudioListScreen = () => {
+  useEffect(() => {
+    window.postMessage(data, '*');
+    ReactGA.pageview(window.location.pathname);
+  }, []);
   const { data, loading, error } = useQuery(ALL_STUDIOS_QUERY, {
-    onCompleted: data => {
+    onCompleted: (data) => {
       if (!data || !data.allStudios.studios) {
         return;
       }

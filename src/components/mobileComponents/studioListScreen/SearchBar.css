@@ -1,7 +1,8 @@
 .searchField {
   display: flex;
   align-items: center;
-  margin-right: 15px;
+  margin-right: 25px;
+  margin-top: 5px;
 }
 .searchInput {
   border-top-style: hidden;
@@ -20,12 +21,12 @@ select:focus {
 }
 
 .searchIcon {
-  font-size: 23px;
+  font-size: 25px;
   cursor: pointer;
 }
 
 .closeIcon {
   font-size: 14px;
-  transform: translate(-8px);
+  transform: translate(-8px, -1px);
   color: grey;
 }

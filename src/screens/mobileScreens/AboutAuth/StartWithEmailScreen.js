@@ -9,6 +9,10 @@ import {
   CheckValidUserName,
 } from '../../../components/functions/Login/LoginFunctions';
 import './StartWithEmailScreen.css';
+import {
+  PRIVACY_NOTICE_ID,
+  TEMRS_NOTICE_ID,
+} from '../../../constants/noticeIds';
 
 const EmailJoin = () => {
   const history = useHistory();
@@ -125,22 +129,25 @@ const EmailJoin = () => {
               }}
             />
             <span className="mustText">[필수] </span>
-            <Link
-              to="/notices/3"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'black' }}
+
+            <span
+              onClick={() => {
+                history.push(`/notices/${TEMRS_NOTICE_ID}`);
+                window.scrollTo(0, 0);
+              }}
+              className="linkText"
             >
-              <span className="linkText"> 서비스 이용약관,</span>
-            </Link>
-            <Link
-              to="/notices/2"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'black' }}
+              서비스 이용약관,
+            </span>
+            <span
+              onClick={() => {
+                history.push(`/notices/${PRIVACY_NOTICE_ID}`);
+                window.scrollTo(0, 0);
+              }}
+              className="linkText"
             >
-              <span className="linkText">개인정보 처리방침</span>
-            </Link>
+              개인정보 처리방침
+            </span>
             <span>에 동의합니다.</span>
           </div>
           <div className="startButtonContainer">

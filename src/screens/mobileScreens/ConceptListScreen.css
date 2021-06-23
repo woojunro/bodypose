@@ -25,4 +25,10 @@
   z-index: 35;
   right: 20px;
   top: 17px;
+  align-items: center;
+}
+.sortIconText {
+  padding-top: 1px;
+  padding-right: 5px;
+  font-size: 12px;
 }

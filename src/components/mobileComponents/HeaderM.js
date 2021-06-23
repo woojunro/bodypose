@@ -1,19 +1,25 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import './HeaderM.css';
 
 import logoAndsymbol from '../../materials/로고+심볼.png';
 
 const Header = ({ pageName }) => {
+  const history = useHistory();
   //홈페이지 헤더.
   if (pageName === 'home') {
     return (
       <div>
         <div className="header">
           <div className="headerLogo">
-            <Link to="/" onClick={() => window.scrollTo(0, 0)}>
-              <img src={logoAndsymbol} alt="BodyPose" />
-            </Link>
+            <img
+              src={logoAndsymbol}
+              alt="BodyPose"
+              onClick={() => {
+                history.push('/');
+                window.scrollTo(0, 0);
+              }}
+            />
           </div>
         </div>
         <div style={{ height: '50px' }} />

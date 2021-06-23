@@ -1,10 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { IoIosClose } from 'react-icons/io';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import './ConceptModal.css';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
-import { FaHeart } from 'react-icons/fa';
-import { FaRegHeart } from 'react-icons/fa';
+import { IoHeart, IoHeartOutline } from 'react-icons/io5';
+import Swipe from 'react-easy-swipe';
+
 import LoadingIcon from './LoadingIcon';
 import LoginContext from '../../../contexts/LoginContext';
 import { gql, useMutation } from '@apollo/client';
@@ -13,10 +14,10 @@ import {
   HEART_STUDIO_PHOTO_MUTATION,
 } from '../../../gql/mutations/HeartStudioPhotoMutation';
 import { client } from '../../../apollo';
+import $ from 'jquery';
 
 const Modal = ({
   close,
-  open,
   id,
   whileFetching,
   setThisPhoto,
@@ -48,9 +49,25 @@ const Modal = ({
   const [isHearted, setIsHearted] = useState(concept.isHearted);
 
   const [disheartLoading, setDisHeartLoading] = useState(false);
-
   const history = useHistory();
 
+  //뒤로가기 기능.
+  window.addEventListener('popstate', function (e) {
+    close();
+  });
+  //사파리 뒤로가기 기능.
+  $(window).on('load', function () {
+    function fire_popstate() {
+      $(this).trigger('popstate'); // fire it when the page first loads
+    }
+    var lasthash = window.location.hash;
+    setInterval(function () {
+      var currenthash = window.location.hash;
+      if (lasthash !== currenthash) {
+        fire_popstate();
+      }
+    }, 500); //check every half second if the url has changed
+  });
   useEffect(() => {
     setIsHearted(concept.isHearted);
   }, [concept]);
@@ -90,6 +107,20 @@ const Modal = ({
     },
   });
 
+  //오른쪽으로 스와이프 했을 때, 이전 사진 부르기
+  const onSwipeRight = () => {
+    if (selectedPhotoNum > 0) {
+      setThisPhoto(selectedPhotoNum - 1);
+    }
+  };
+
+  //왼쪽으로 스와이프 했을 때, 이후 사진 부르기
+  const onSwipeLeft = () => {
+    if (!isFinalPhoto) {
+      setThisPhoto(selectedPhotoNum + 1);
+    }
+  };
+
   const ChangeHeart = () => {
     if (isHearted) {
       disheartStudioPhoto({
@@ -114,20 +145,20 @@ const Modal = ({
   if (isHearted) {
     RenderedHeart = (
       <div onClick={ChangeHeart}>
-        <FaHeart className="conceptFilledHeart" />
+        <IoHeart className="conceptFilledHeart" />
       </div>
     );
   } else {
     if (LoggedIn.loggedIn) {
       RenderedHeart = (
         <div onClick={ChangeHeart}>
-          <FaRegHeart className="conceptRegHeart" />
+          <IoHeartOutline className="conceptRegHeart" />
         </div>
       );
     } else {
       RenderedHeart = (
         <div>
-          <FaRegHeart
+          <IoHeartOutline
             className="conceptRegHeart"
             onClick={() => {
               const ok = window.confirm(
@@ -160,38 +191,18 @@ const Modal = ({
         <div>
           <div className="conceptmodal">
             <div className="concepttrueModal">
-              {!isFinalPhoto ? (
-                <div className="nextArrowContainer">
-                  <IoIosArrowForward
-                    className="nextButton"
-                    onClick={() => {
-                      setThisPhoto(selectedPhotoNum + 1);
-                    }}
-                  />
-                </div>
-              ) : null}
-              {selectedPhotoNum > 0 ? (
-                <div className="prevArrowContainer">
-                  <IoIosArrowBack
-                    className="prevButton"
-                    onClick={() => {
-                      setThisPhoto(selectedPhotoNum - 1);
-                    }}
-                  />
-                </div>
-              ) : null}
               <div className="topBarContainer">
-                <div style={{ width: '45px' }}></div>
                 <div className="studioTitle">
                   {studioName ? studioName : concept.studio.name}
                 </div>
-                <IoIosClose
-                  className="conceptModalClose"
-                  onClick={() => {
-                    close();
-                  }}
-                />
               </div>
+              <IoIosClose
+                className="conceptModalClose"
+                onClick={() => {
+                  close();
+                  history.goBack();
+                }}
+              />
               <div className="conceptModalContents">
                 <div className="mainPhotoArea">
                   {whileFetching ? (
@@ -199,7 +210,38 @@ const Modal = ({
                       <LoadingIcon />
                     </div>
                   ) : (
-                    <img alt="studioPicture" src={concept.originalUrl} />
+                    <>
+                      <div>
+                        {selectedPhotoNum > 0 ? (
+                          <div className="prevArrowContainer">
+                            <IoIosArrowBack
+                              className="prevButton"
+                              onClick={() => {
+                                setThisPhoto(selectedPhotoNum - 1);
+                              }}
+                            />
+                          </div>
+                        ) : null}
+                      </div>
+                      <Swipe
+                        onSwipeRight={() => onSwipeRight()}
+                        onSwipeLeft={() => onSwipeLeft()}
+                      >
+                        <img alt="studioPicture" src={concept.originalUrl} />
+                      </Swipe>
+                      <div>
+                        {!isFinalPhoto ? (
+                          <div className="nextArrowContainer">
+                            <IoIosArrowForward
+                              className="nextButton"
+                              onClick={() => {
+                                setThisPhoto(selectedPhotoNum + 1);
+                              }}
+                            />
+                          </div>
+                        ) : null}
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
@@ -210,16 +252,20 @@ const Modal = ({
                     <div>스튜디오 정보 보기</div>
                   </div>
                 ) : (
-                  <Link
-                    to={{
-                      pathname: `/studios/${studioSlug || concept.studio.slug}`,
-                      state: { previousPath: history.location.pathname },
-                    }}
+                  <div
                     className="toStudioInfo"
-                    onClick={() => window.scrollTo(0, 0)}
+                    onClick={() => {
+                      history.push({
+                        pathname: `/studios/${
+                          studioSlug || concept.studio.slug
+                        }`,
+                        state: { previousPath: history.location.pathname },
+                      });
+                      window.scrollTo(0, 0);
+                    }}
                   >
-                    <div>스튜디오 정보 보기</div>
-                  </Link>
+                    스튜디오 정보 보기
+                  </div>
                 )}
 
                 {RenderedHeart}

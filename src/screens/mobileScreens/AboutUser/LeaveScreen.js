@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 import { Redirect, useHistory } from 'react-router-dom';
 import LoginContext from '../../../contexts/LoginContext';
-import { Leave } from '../../../components/functions/WithDb/Auth';
 import BottomNavigation from '../../../components/mobileComponents/BottomNavigation';
 import LeaveButton from '../../../components/mobileComponents/Login/LeaveButton';
 import './LeaveScreen.css';
@@ -47,7 +46,6 @@ const LeaveScreen = () => {
       setTimeout(() => {
         history.push('/');
         LoggedIn.setLoggedIn(false);
-        Leave();
       }, 2000);
     }
     return null;

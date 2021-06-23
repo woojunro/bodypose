@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import ReactGA from 'react-ga';
 
 const ErrorScreen = () => {
   const history = useHistory();
 
   useEffect(() => {
+    ReactGA.pageview(window.location.pathname);
     setTimeout(() => {
       history.push('/');
     }, 3000);

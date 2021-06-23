@@ -1,18 +1,22 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import './SemiTitle.css';
 
 const SemiTitle = ({ title, pageTo }) => {
+  const history = useHistory();
   return (
     <div className="titleContainer">
       <span className="title">{title}</span>
-      <Link
-        to={pageTo}
-        style={{ TextDecoder: 'none', color: 'white' }}
-        onClick={() => window.scrollTo(0, 0)}
+
+      <span
+        className="showMore"
+        onClick={() => {
+          history.push(pageTo);
+          window.scrollTo(0, 0);
+        }}
       >
-        <span className="showMore"> 더보기</span>
-      </Link>
+        더보기
+      </span>
     </div>
   );
 };

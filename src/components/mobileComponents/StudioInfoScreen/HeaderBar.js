@@ -82,6 +82,7 @@ const HeaderBar = ({ currentStudio, copyTextToClipboard, setIsAlertOpen }) => {
         pathname: '/login',
         state: { previousPath: '/studios' },
       });
+      return;
     }
 
     if (isHearted) {

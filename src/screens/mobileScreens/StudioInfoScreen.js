@@ -16,8 +16,12 @@ import { STUDIO_QUERY } from '../../gql/queries/StudioQuery';
 import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import ScrollToTopButton from '../../components/mobileComponents/ScrollToTopButton';
+import ReactGA from 'react-ga';
 
 const StudioInfoScreen = () => {
+  useEffect(() => {
+    ReactGA.pageview(window.location.pathname);
+  }, []);
   const { slug } = useParams();
   const { data, loading, refetch } = useQuery(STUDIO_QUERY, {
     variables: { slug },
@@ -42,6 +46,10 @@ const StudioInfoScreen = () => {
     document.execCommand('copy');
     document.body.removeChild(dummy);
   };
+
+  useEffect(() => {
+    setNavigator('portfolio');
+  }, [slug]);
 
   useEffect(() => {
     window.onscroll = () => {
@@ -78,6 +86,8 @@ const StudioInfoScreen = () => {
 
   return (
     <div>
+      {offsetY > 200 && <ScrollToTopButton />}
+
       <BottomAlertDialog
         isOpen={isAlertOpen}
         setIsOpen={setIsAlertOpen}
@@ -100,7 +110,6 @@ const StudioInfoScreen = () => {
         currentStudioName={studio.name}
         studioList={studioData.allStudios.studios}
       />
-      {offsetY > 200 && <ScrollToTopButton />}
     </div>
   );
 };

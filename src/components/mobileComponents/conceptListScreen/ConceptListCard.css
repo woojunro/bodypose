@@ -1,11 +1,16 @@
-.conceptListCard {
-  display: block;
-  width: 100%;
-  margin-bottom: 1px;
-  cursor: pointer;
-  object-fit: cover;
-}
-
 .concepListCardContainer {
   width: 33%;
+  position: relative;
+  padding-bottom: 37.95%;
+  margin-bottom: 1px;
+}
+
+.conceptListCard {
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  object-fit: cover;
 }

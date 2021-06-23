@@ -1,13 +1,9 @@
 .writeReview {
-  position: fixed;
-  z-index: 100;
+  position: absolute;
   top: 0;
-  right: 0;
   left: 0;
-  bottom: 0;
+  z-index: 100;
   width: 100vw;
-  height: 100vh;
-
   background-color: white;
 }
 .reviewContainer {
@@ -50,6 +46,7 @@
   margin-top: 10px;
   padding-left: 25px;
   padding-right: 25px;
+  background-color: white;
 }
 .addReviewPicButton {
   cursor: pointer;
@@ -140,9 +137,7 @@
   margin-top: 5px;
 }
 .reviewBottomNoticeContainer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
+  margin-top: 10px;
   font-size: 10px;
   width: 100%;
   color: gray;

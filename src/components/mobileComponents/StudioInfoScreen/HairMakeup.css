@@ -8,8 +8,7 @@
 .hairMakeupContainer {
   padding-left: 3px;
   padding-right: 3px;
-  margin-top: 10px;
-  border-bottom: 1px solid lightgray;
+  margin-top: 20px;
 }
 
 .hairTitleContainer {
@@ -26,10 +25,20 @@
   margin-top: 5px;
   font-size: 11px;
 }
+.hairshopLink {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.harishopArrow {
+  margin-top: 2px;
+  margin-left: 2px;
+}
 
 .hairshopAdress {
-  margin-top: 2px;
-  font-size: 11px;
+  margin-top: 5px;
+  font-size: 12px;
 }
 .hairItemContainer {
   margin-left: 3px;
@@ -67,4 +76,6 @@
   margin-bottom: 10px;
   font-size: 11px;
   white-space: pre-wrap;
+  line-height: 1.5em;
+  font-size: 10px;
 }

@@ -248,7 +248,7 @@ const WriteReview = ({
                 <textarea
                   className="reviewTextArea"
                   value={reviewText}
-                  placeholder="솔직한 리뷰는 많은 분들꼐 도움이 됩니다. (12자 이상)"
+                  placeholder="솔직한 리뷰는 많은 분들께 도움이 됩니다. (12자 이상)"
                   onChange={e => {
                     setReviewText(e.target.value);
                   }}
@@ -270,10 +270,10 @@ const WriteReview = ({
 
             <div className="reviewBottomNoticeContainer">
               <div className="reviewBottomNotice">
-                솔직하게 작성하신 리뷰는 주문을 괸하는 분들께 큰 도움이 됩니다.
-                하지만 허위 리뷰나 명예훼손, 욕설, 비방글 등 선량한 업주나
-                제3자의 권리를 침해하는 게시물은 서비스 이용약관이나 관련 법률에
-                따라 제재를 받을 수 있습니다. 에프먼스는 위와 같은 게시물
+                솔직하게 작성하신 리뷰는 예약을 고민하는 분들께 큰 도움이
+                됩니다. 하지만 허위 리뷰나 명예훼손, 욕설, 비방글 등 선량한
+                업주나 제3자의 권리를 침해하는 게시물은 서비스 이용약관이나 관련
+                법률에 따라 제재를 받을 수 있습니다. 에프먼스는 위와 같은 게시물
                 작성자에게 경고, 주의 등의 조치를 취할 수 있고, 해당 게시물을
                 삭제할 수 있습니다. 게시에 따른 책임은 작성자에게 있으며,
                 에프먼스는 이에 대한 법적 책임을 지지 않습니다.

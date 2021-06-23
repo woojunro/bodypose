@@ -6,6 +6,8 @@ const ConceptListCard = ({ src, setThisPhoto, openModal }) => {
     <div className="concepListCardContainer">
       <div
         onClick={() => {
+          window.history.pushState(null, document.title, window.location.href);
+
           setThisPhoto();
           openModal();
         }}

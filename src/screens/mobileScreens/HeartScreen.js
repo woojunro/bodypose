@@ -8,8 +8,12 @@ import HeartConcepts from '../../components/mobileComponents/HeartsScreen/HeartC
 
 import { MakingPickContainer } from '../../components/functions/Heart/PickFunctions';
 import './HeartScreen.css';
+import ReactGA from 'react-ga';
 
 const HeartScreen = () => {
+  React.useEffect(() => {
+    ReactGA.pageview(window.location.pathname);
+  }, []);
   const LoggedIn = useContext(LoginContext);
   const history = useHistory();
 

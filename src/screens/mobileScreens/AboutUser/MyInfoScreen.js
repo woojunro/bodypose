@@ -47,25 +47,31 @@ const MyInfoScreen = () => {
             <div className="userInfoSemiTitle">이름</div>
             <div className="userInfoPassword">
               <div>{data.myProfile.profile.nickname}</div>
-              <Link
-                onClick={() => window.scrollTo(0, 0)}
-                to="/changeName"
-                style={{ Decoder: 'none', color: 'white' }}
+
+              <div
+                onClick={() => {
+                  history.push('/changeName');
+                  window.scrollTo(0, 0);
+                }}
+                className="userInfoChange"
               >
-                <div className="userInfoChange">수정하기</div>
-              </Link>
+                수정하기
+              </div>
             </div>
             <div className="userInfoSemiTitle">비밀번호</div>
             {data.myProfile.profile.loginMethod === 'EMAIL' ? (
               <div className="userInfoPassword">
                 <div>********</div>
-                <Link
-                  onClick={() => window.scrollTo(0, 0)}
-                  to="/changePassword"
-                  style={{ Decoder: 'none', color: 'white' }}
+
+                <div
+                  onClick={() => {
+                    history.push('/changePassword');
+                    window.scrollTo(0, 0);
+                  }}
+                  className="userInfoChange"
                 >
-                  <div className="userInfoChange">수정하기</div>
-                </Link>
+                  수정하기
+                </div>
               </div>
             ) : (
               <div className="userInfoPassword">소셜 회원입니다.</div>

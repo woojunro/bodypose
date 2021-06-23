@@ -5,9 +5,17 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
+    <meta name="description" content="예쁜 바디프로필이 찍고 싶을 때, 바디포즈" />
+    <meta name="og:site_name" content="바디포즈 | 바디프로필의 모든 정보" />
+    <meta name="og:url" content="bodypose.co.kr" />
+    <meta name="og:image" content ="https://storage.googleapis.com/bodypose-storage/ads/open%20graph%20img.png"/>
+    <meta property="og:title" content="바디포즈 | 바디프로필의 모든 정보" />
+    <meta property="og:description" content="예쁜 바디프로필이 찍고 싶을 때, 바디포즈" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
     <meta
-      name="description"
-      content="Web site created using create-react-app"
+      name="naver-site-verification"
+      content="2f1e7a787c31f6608ae0af8d863d79a710f5692e"
     />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <script
@@ -20,31 +28,27 @@
       src="https://static.nid.naver.com/js/naveridlogin_js_sdk_2.0.2.js"
       charset="utf-8"
     ></script>
-    <!-- <script type="text/javascript">
+    <script type="text/javascript">
       // F12 버튼 방지
-      $(document).ready(function(){
-          $(document).bind('keydown',function(e){
-              if ( e.keyCode == 123 /* F12 */) {
-                  e.preventDefault();
-                  e.returnValue = false;
-              }
-          });
-      });
-      
-      // 우측 클릭 방지
-      document.onmousedown=disableclick;
-      status="Right click is not available.";
-      
-      function disableclick(event){
-          if (event.button==2) {
-              alert(status);
-              return false;
+      $(document).ready(function () {
+        $(document).bind('keydown', function (e) {
+          if (e.keyCode == 123 /* F12 */) {
+            e.preventDefault();
+            e.returnValue = false;
           }
+        });
+      });
+      // 우측 클릭 방지
+      document.onmousedown = disableclick;
+      function disableclick(event) {
+        if (event.button == 2) {
+          return false;
+        }
       }
-  </script>-->
-    <title>바디포즈</title>
+    </script>
+    <title>바디포즈 | 바디프로필의 모든 정보</title>
   </head>
-  <body ondragstart="return false" onselectstart="return false">
+  <body oncontextmenu="return false" ondragstart="return false">
     <div id="root"></div>
   </body>
 </html>

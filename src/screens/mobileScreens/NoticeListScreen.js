@@ -1,13 +1,17 @@
 import { useQuery } from '@apollo/client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 import { Link, useHistory } from 'react-router-dom';
 import LoadingComponent from '../../components/mobileComponents/LoadingComponent';
 import { NOTICES_QUERY } from '../../gql/queries/NoticeQuery';
+import ReactGA from 'react-ga';
 
 import './NoticeListScreen.css';
 
 const NoticeListScreen = () => {
+  useEffect(() => {
+    ReactGA.pageview(window.location.pathname);
+  }, []);
   const history = useHistory();
   const [page, setPage] = useState(1);
 
@@ -70,19 +74,19 @@ const NoticeListScreen = () => {
       </div>
       <div className="noticeList">
         {data?.notices &&
-          data.notices.notices.map(notice => (
-            <Link
-              to={`/notices/${notice.id}`}
-              key={notice.id}
-              style={{ decoder: 'none', color: 'white' }}
+          data.notices.notices.map((notice) => (
+            <div
+              onClick={() => {
+                history.push(`/notices/${notice.id}`);
+                window.scrollTo(0, 0);
+              }}
+              className="noticeCard"
             >
-              <div className="noticeCard">
-                <div className="noticeCardTitle">{notice.title}</div>
-                <div className="noticeDate">
-                  {String(notice.updatedAt).substr(0, 10)}
-                </div>
+              <div className="noticeCardTitle">{notice.title}</div>
+              <div className="noticeDate">
+                {String(notice.updatedAt).substr(0, 10)}
               </div>
-            </Link>
+            </div>
           ))}
       </div>
       {loading ? (

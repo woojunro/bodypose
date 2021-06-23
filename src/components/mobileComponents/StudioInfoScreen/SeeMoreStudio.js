@@ -24,7 +24,7 @@ const SeeMoreStudio = ({ currentStudioName, studioList }) => {
       <li key={`seeMore-${studio.slug}`}>
         <StudioCard
           studioName={studio.slug}
-          pic={studio.coverPhoto && studio.coverPhoto.originalUrl}
+          pic={studio.coverPhotoUrl}
           price={studio.lowestPrice}
           title={studio.name}
         />

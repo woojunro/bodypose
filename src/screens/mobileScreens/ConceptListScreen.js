@@ -12,11 +12,16 @@ import { useQuery } from '@apollo/client';
 import { ALL_STUDIO_PHOTOS_QUERY } from '../../gql/queries/StudioPhotoQuery';
 import { randomPage } from '../../components/functions/Concept/randomPages';
 import shuffle from '../../components/functions/Shuffle';
-
+import ReactGA from 'react-ga';
 const genderOptions = [null, 'MALE', 'FEMALE', 'COUPLE'];
 
 const ConceptListScreen = () => {
-  const [pageList, setPageList] = useState([1]);
+  React.useEffect(() => {
+    ReactGA.pageview(window.location.pathname);
+  }, []);
+  const [initialPage, setInitialPage] = useState(1);
+  const [isPageInitialized, setIsPageInitialized] = useState(false);
+  const [pageList, setPageList] = useState([]);
   const [selectedGender, setSelectedGender] = useState(genderOptions[0]);
   const [selectedConcepts, setSelectedConcepts] = useState({
     bgConcept: [],
@@ -26,20 +31,28 @@ const ConceptListScreen = () => {
   const [hasMore, setHasMore] = useState(true);
 
   const { data, loading, fetchMore } = useQuery(ALL_STUDIO_PHOTOS_QUERY, {
+    fetchPolicy: 'network-only',
     notifyOnNetworkStatusChange: true,
     variables: {
-      page: 1,
+      page: initialPage,
       gender: selectedGender,
       backgroundConceptSlugs: selectedConcepts.bgConcept,
       costumeConceptSlugs: selectedConcepts.costumeConcept,
       objectConceptSlugs: selectedConcepts.objectConcept,
     },
-    onCompleted: data => {
+    onCompleted: (data) => {
       if (!data.allStudioPhotos.ok) {
         setHasMore(false);
       } else {
         if (data.allStudioPhotos.totalPages <= 1) {
           setHasMore(false);
+        } else {
+          if (!isPageInitialized) {
+            const newPage = randomPage(data.allStudioPhotos.totalPages - 1);
+            setInitialPage(newPage);
+            setPageList([newPage]);
+            setIsPageInitialized(true);
+          }
         }
       }
     },
@@ -58,11 +71,11 @@ const ConceptListScreen = () => {
     setIsModalOpen(true);
   };
 
-  const handlePhotoNum = num => {
+  const handlePhotoNum = (num) => {
     setSelectedPhotoNum(num);
   };
 
-  const handleConcepts = object => {
+  const handleConcepts = (object) => {
     setSelectedConcepts(object);
   };
 
@@ -71,10 +84,16 @@ const ConceptListScreen = () => {
       isSelectionOpen || isModalOpen ? 'hidden' : 'auto';
   }, [isSelectionOpen, isModalOpen]);
 
+  useEffect(() => {
+    setInitialPage(1);
+    setIsPageInitialized(false);
+  }, [selectedConcepts, selectedGender]);
+
   const fetchMoreData = () => {
     if (!data || !hasMore) {
       return;
     }
+    if (!data.allStudioPhotos) return;
 
     if (pageList.length >= data.allStudioPhotos.totalPages) {
       setHasMore(false);
@@ -129,10 +148,14 @@ const ConceptListScreen = () => {
         <div>
           <div className="header">
             <span className="headerTitle">컨셉북</span>
-            <FaSlidersH
+            <span
               className="sortIcon"
               onClick={() => setIsSelectionOpen(!isSelectionOpen)}
-            />
+            >
+              <span className="sortIconText">필터</span>
+
+              <FaSlidersH />
+            </span>
           </div>
           <div style={{ height: '50px' }} />
         </div>
@@ -156,13 +179,7 @@ const ConceptListScreen = () => {
           setHasMore={setHasMore}
         />
         <InfiniteScroll
-          dataLength={
-            data === undefined
-              ? 0
-              : data.allStudioPhotos.photos === null
-              ? 0
-              : data.allStudioPhotos.photos.length
-          }
+          dataLength={data?.allStudioPhotos?.photos?.length || 0}
           next={fetchMoreData}
           hasMore={hasMore}
           loader={<LoadingIcon />}
@@ -173,7 +190,7 @@ const ConceptListScreen = () => {
           }
         >
           <div className="totalConcept">
-            {(data?.allStudioPhotos.photos || []).map((concept, idx) => (
+            {(data?.allStudioPhotos?.photos || []).map((concept, idx) => (
               <ConceptListCard
                 key={`concept-list-${concept.id}-${idx}`}
                 conceptNum={idx}
@@ -182,7 +199,7 @@ const ConceptListScreen = () => {
                 openModal={openModal}
               />
             ))}
-            {!data?.allStudioPhotos.photos
+            {!data?.allStudioPhotos?.photos
               ? null
               : data.allStudioPhotos.photos.length % 3 === 0
               ? null
@@ -196,10 +213,9 @@ const ConceptListScreen = () => {
                 ))}
           </div>
         </InfiniteScroll>
-        {isModalOpen && (
+        {isModalOpen ? (
           <ConceptModal
             close={closeModal}
-            open={openModal}
             id={data.allStudioPhotos.photos[selectedPhotoNum].id}
             setThisPhoto={handlePhotoNum}
             selectedPhotoNum={selectedPhotoNum}
@@ -208,7 +224,7 @@ const ConceptListScreen = () => {
             }
             whileFetching={loading}
           />
-        )}
+        ) : null}
         <BottomNavigation pageName="concepts" />
       </div>
     </div>
