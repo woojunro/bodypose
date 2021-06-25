@@ -91,7 +91,7 @@ import { InsightsModule } from './insights/insights.module';
           return error;
         }
         const graphQLFormattedError: GraphQLFormattedError = {
-          message: error.name,
+          message: error.message,
         };
         return graphQLFormattedError;
       },

@@ -59,17 +59,14 @@ export class AuthService {
     const token = this.jwtService.sign(payload, { expiresIn: '2h' });
     // Set cookies
     const refresh = await this.issueRefreshToken(user.id);
+    const now = Date.now();
     res.cookie('refresh', refresh, {
-      expires: new Date(Date.now() + NINETY_DAYS_IN_MS),
+      expires: new Date(now + NINETY_DAYS_IN_MS),
       httpOnly: true,
       path: '/auth/refresh',
       sameSite: 'lax',
     });
-    res.cookie('authorization', token, {
-      expires: new Date(Date.now() + TWO_HOURS_IN_MS),
-      httpOnly: true,
-      sameSite: 'lax',
-    });
+    this.setAccessTokenCookies(res, token, now);
     // Update lastLogin
     this.usersService.updateLastLoginAt(user.id);
     // return
@@ -77,6 +74,21 @@ export class AuthService {
       access: token,
       refresh,
     };
+  }
+
+  setAccessTokenCookies(res: Response, token: string, now: number): void {
+    // HttpOnly
+    res.cookie('authorization', token, {
+      expires: new Date(now + TWO_HOURS_IN_MS),
+      httpOnly: true,
+      sameSite: 'lax',
+    });
+    // For checking if the access token exists
+    res.cookie('access', 'access', {
+      expires: new Date(now + TWO_HOURS_IN_MS),
+      httpOnly: false,
+      sameSite: 'lax',
+    });
   }
 
   async issueRefreshToken(id: number): Promise<string> {
@@ -111,42 +123,37 @@ export class AuthService {
       if (!refresh) throw new Error();
       const payload = this.jwtService.verify(refresh);
       // If the token is expired, verify() will throw an error
-      const {
-        token,
-        user,
-      } = await this.refreshTokenRepository
+      const refreshToken = await this.refreshTokenRepository
         .createQueryBuilder('refresh')
         .innerJoin('refresh.user', 'user')
         .addSelect('user.id')
         .addSelect('user.isLocked')
         .where('userId = :id', { id: payload.id })
         .getOne();
+      if (!refreshToken) throw new Error();
+      const { token, user } = refreshToken;
       if (token !== payload.token || user.isLocked) throw new Error();
 
+      const now = Date.now();
       // Issue tokens
-      const accessToken = this.jwtService.sign({ id: user.id });
+      const accessToken = this.jwtService.sign(
+        { id: user.id },
+        { expiresIn: '2h' },
+      );
       // Sliding refresh token exp
       const thirtyDaysInSeconds = 60 * 60 * 24 * 30;
-      if (
-        Number(payload.exp) - thirtyDaysInSeconds <
-        Math.floor(Date.now() / 1000)
-      ) {
+      if (Number(payload.exp) - thirtyDaysInSeconds < Math.floor(now / 1000)) {
         // Set refresh
         refresh = await this.issueRefreshToken(user.id);
         res.cookie('refresh', refresh, {
-          expires: new Date(Date.now() + NINETY_DAYS_IN_MS),
+          expires: new Date(now + NINETY_DAYS_IN_MS),
           httpOnly: true,
           path: '/auth/refresh',
           sameSite: 'lax',
         });
       }
-
       // Set access
-      res.cookie('authorization', accessToken, {
-        expires: new Date(Date.now() + TWO_HOURS_IN_MS),
-        httpOnly: true,
-        sameSite: 'lax',
-      });
+      this.setAccessTokenCookies(res, accessToken, now);
 
       return {
         access: accessToken,
@@ -154,6 +161,12 @@ export class AuthService {
       };
     } catch (e) {
       console.log(e);
+      // Clear cookies
+      res.clearCookie('authorization');
+      res.clearCookie('access');
+      res.clearCookie('refresh', {
+        path: '/auth/refresh',
+      });
       throw new UnauthorizedException();
     }
   }
@@ -280,6 +293,7 @@ export class AuthService {
       }
       // Clear cookies
       res.clearCookie('authorization');
+      res.clearCookie('access');
       res.clearCookie('refresh', {
         path: '/auth/refresh',
       });

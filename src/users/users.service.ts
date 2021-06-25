@@ -127,7 +127,7 @@ export class UsersService {
       const { code } = await this.verificationRepository.save(newVerification);
       this.mailService.sendEmailVerification(
         email,
-        '회원',
+        '바프새내기',
         createdUser.id,
         code,
       );
