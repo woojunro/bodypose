@@ -3,7 +3,7 @@ import { createBrowserHistory } from 'history';
 import ReactGA from 'react-ga';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
-import { clearTokenAndCache } from '../apollo';
+import { clearTokenAndCache, IsLoggedInVar } from '../apollo';
 
 import HomeScreenM from '../screens/mobileScreens/HomeScreen';
 import StudioInfoScreenM from '../screens/mobileScreens/StudioInfoScreen';
@@ -31,14 +31,14 @@ import NaverLoginCallbackScreenM from '../screens/mobileScreens/AboutAuth/NaverL
 import ChangeNameScreenM from '../screens/mobileScreens/AboutUser/ChangeNameScreen';
 
 import LoginContext from '../contexts/LoginContext';
-import { MY_PROFILE_QUERY } from '../gql/queries/MyProfileQuery';
 
 import './App.css';
 import AppLoadingScreen from './mobileComponents/AppLoadingScreen';
+import { MY_USER_INFO_QUERY } from '../gql/queries/MyUserInfoQuery';
 
 ReactGA.initialize('UA-190823210-1');
 const history = createBrowserHistory();
-history.listen((location) => {
+history.listen(location => {
   ReactGA.set({ page: location.pathname });
   ReactGA.pageview(location.pathname);
 });
@@ -48,16 +48,17 @@ const App = () => {
   const [isAppLoading, setIsAppLoading] = useState(true);
   const loggedInValue = { loggedIn, setLoggedIn };
 
-  const { loading } = useQuery(MY_PROFILE_QUERY, {
-    fetchPolicy: 'network-only',
-    onCompleted: (data) => {
-      if (data.myProfile.ok) {
-        setLoggedIn(true);
+  const { loading } = useQuery(MY_USER_INFO_QUERY, {
+    onCompleted: data => {
+      if (data.userInfo?.userInfo?.type === 'USER') {
+        IsLoggedInVar(true);
         setIsAppLoading(false);
+      } else {
+        clearTokenAndCache();
+        window.location.reload();
       }
     },
-    onError: (err) => {
-      clearTokenAndCache();
+    onError: err => {
       setIsAppLoading(false);
     },
   });
@@ -77,7 +78,6 @@ const App = () => {
           <Route exact path="/" component={HomeScreenM} />
           <Route exact path="/studios" component={StudioListScreenM} />
           <Route exact path="/concepts" component={ConceptListScreenM} />
-
           <Route exact path="/reviews" component={ReviewListScreenM} />
           <Route exact path="/studios/:slug" component={StudioInfoScreenM} />
           <Route exact path="/users" component={UserScreenM} />
@@ -85,7 +85,6 @@ const App = () => {
           <Route exact path="/notices" component={NoticeListScreenM} />
           <Route path="/notices/:noticeId" component={NoticeScreenM} />
           <Route path="/newPassword/:authCode" component={NewPasswordScreenM} />
-
           <Route exact path="/login" component={LoginScreenM} />
           <Route
             path="/login/naver/callback"
@@ -109,12 +108,10 @@ const App = () => {
           />
           <Route exact path="/users/myInfo" component={MyInfoScreenM} />
           <Route exact path="/users/myReview" component={MyReviewScreenM} />
-
           <Route exact path="/users/leave" component={LeaveScreenM} />
           <Route exact path="/error" component={ErrorScreenM} />
           <Route path="/kakaoLink/:kakaoID" component={KakaoLinkScreenM} />
           <Route path="/kakaoPhone/:kakaoID" component={KakaoPhoneScreenM} />
-
           <Route path="*" component={ErrorScreenM} />
         </Switch>
       </Router>

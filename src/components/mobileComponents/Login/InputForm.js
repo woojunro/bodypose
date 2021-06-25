@@ -7,10 +7,12 @@ const InputForm = ({ onInputSubmit, placeholder, type, initialValue = '' }) => {
 
   useEffect(() => {
     if (initialValue.length > 0) setTerm(initialValue);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     onInputSubmit(term);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [term]);
 
   return (

@@ -1,23 +1,33 @@
-import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';
-import { setContext } from '@apollo/client/link/context';
+import {
+  ApolloClient,
+  createHttpLink,
+  InMemoryCache,
+  makeVar,
+  from,
+} from '@apollo/client';
+import { onError } from '@apollo/client/link/error';
 import { BASE_URL } from './constants/urls';
+
+export const IsLoggedInVar = makeVar(false);
 
 const httpLink = createHttpLink({
   uri: `${BASE_URL}/graphql`,
+  credentials: 'include',
 });
 
-const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem('jwt');
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? `Bearer ${token}` : '',
-    },
-  };
-});
+const errorLink = onError(
+  ({ graphQLErrors, networkError, operation, forward }) => {
+    if (graphQLErrors) {
+      graphQLErrors.forEach(({ message }) =>
+        console.log(`GraphQL: ${message}`)
+      );
+    }
+    if (networkError) console.log(`[GraphQL Network error]: ${networkError}`);
+  }
+);
 
 export const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: from([errorLink, httpLink]),
   cache: new InMemoryCache(),
 });
 

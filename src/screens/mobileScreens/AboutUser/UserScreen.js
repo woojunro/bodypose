@@ -1,41 +1,33 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import BottomNavigation from '../../../components/mobileComponents/BottomNavigation';
 import Header from '../../../components/mobileComponents/HeaderM';
-import LoginContext from '../../../contexts/LoginContext';
-import { Redirect, useHistory, Link } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
 import { IoIosArrowForward } from 'react-icons/io/';
 import Gmail from '../../../materials/gmail.png';
 import AppLoadingScreen from '../../../components/mobileComponents/AppLoadingScreen';
 
 import './UserScreen.css';
-import { useQuery } from '@apollo/client';
-import { clearTokenAndCache } from '../../../apollo';
-import { MY_PROFILE_QUERY } from '../../../gql/queries/MyProfileQuery';
+import { useQuery, useReactiveVar } from '@apollo/client';
+import { clearTokenAndCache, IsLoggedInVar } from '../../../apollo';
+import { MY_USER_INFO_QUERY } from '../../../gql/queries/MyUserInfoQuery';
 
 const UserScreen = () => {
-  const LoggedIn = useContext(LoginContext);
+  const isLoggedIn = useReactiveVar(IsLoggedInVar);
   const history = useHistory();
 
-  const { data, loading } = useQuery(MY_PROFILE_QUERY, {
+  const { data, loading } = useQuery(MY_USER_INFO_QUERY, {
     onError: () => {
-      LoggedIn.setLoggedIn(false);
+      IsLoggedInVar(false);
     },
   });
 
-  if (!LoggedIn.loggedIn) {
-    return (
-      <Redirect
-        to={{
-          pathname: '/login',
-          state: { previousPath: history.location.pathname },
-        }}
-      />
-    );
+  if (!isLoggedIn) {
+    return <Redirect to={{ pathname: '/login' }} />;
   }
 
   const LogoutFunction = () => {
     clearTokenAndCache();
-    LoggedIn.setLoggedIn(false);
+    IsLoggedInVar(false);
     history.push('/');
   };
 
@@ -51,7 +43,9 @@ const UserScreen = () => {
     <div>
       <Header pageName="users" />
       <div className="welcome">
-        <div className="nickNamePart">{data.myProfile.profile.nickname}</div>
+        <div className="nickNamePart">
+          {data.userInfo.userInfo.profile.nickname}
+        </div>
         <div className="welcomePart">님 환영합니다.</div>
       </div>
       <div className="userSemiTitle">계정</div>
