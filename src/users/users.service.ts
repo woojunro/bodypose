@@ -94,15 +94,11 @@ export class UsersService {
   async createUserWithEmail({
     email,
     password,
-    nickname,
   }: CreateUserWithEmailInput): Promise<CreateUserWithEmailOutput> {
     try {
       // Check password security
       const isPasswordSecure = this.checkPasswordSecurity(password);
       if (!isPasswordSecure) return CommonError('INSECURE_PASSWORD');
-      // Check nickname validity
-      const isNicknameValid = this.checkNicknameValidity(nickname);
-      if (!isNicknameValid) return CommonError('INVALID_NICKNAME');
       // Check if there exists a user with the inputted email
       const emailUser = await this.userRepository
         .createQueryBuilder('user')
@@ -111,12 +107,6 @@ export class UsersService {
         .withDeleted()
         .getOne();
       if (emailUser) return CommonError('DUPLICATE_EMAIL');
-      // Check if there exists a user with the inputted nickname
-      const nicknameProfile = await this.userProfileRepository.findOne(
-        { nickname },
-        { select: ['id'] },
-      );
-      if (nicknameProfile) return CommonError('DUPLICATE_NICKNAME');
 
       // Hash the password
       const hashedPassword = await hash(password, PASSWORD_HASH_ROUNDS);
@@ -131,18 +121,13 @@ export class UsersService {
       });
       const createdUser = await this.userRepository.save(newUser);
 
-      // Create profile for the user
-      const newProfile = this.userProfileRepository.create({ nickname });
-      newProfile.user = createdUser;
-      await this.userProfileRepository.save(newProfile);
-
       // Create verification code and send it to the user
       const newVerification = this.verificationRepository.create();
       newVerification.user = createdUser;
       const { code } = await this.verificationRepository.save(newVerification);
       this.mailService.sendEmailVerification(
         email,
-        nickname,
+        '회원',
         createdUser.id,
         code,
       );

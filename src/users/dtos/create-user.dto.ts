@@ -1,11 +1,5 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
-import {
-  IsEmail,
-  IsString,
-  Length,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 
 @InputType()
@@ -19,11 +13,6 @@ export class CreateUserWithEmailInput {
   @IsString()
   @MinLength(8)
   password: string;
-
-  @Field(type => String)
-  @IsString()
-  @Length(2, 10)
-  nickname: string;
 }
 
 @ObjectType()
