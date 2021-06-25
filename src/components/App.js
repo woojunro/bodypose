@@ -35,6 +35,7 @@ import LoginContext from '../contexts/LoginContext';
 import './App.css';
 import AppLoadingScreen from './mobileComponents/AppLoadingScreen';
 import { MY_USER_INFO_QUERY } from '../gql/queries/MyUserInfoQuery';
+import { logout } from './functions/Login/Logout';
 
 ReactGA.initialize('UA-190823210-1');
 const history = createBrowserHistory();
@@ -49,13 +50,14 @@ const App = () => {
   const loggedInValue = { loggedIn, setLoggedIn };
 
   const { loading } = useQuery(MY_USER_INFO_QUERY, {
+    fetchPolicy: 'network-only',
     onCompleted: data => {
       if (data.userInfo?.userInfo?.type === 'USER') {
         IsLoggedInVar(true);
         setIsAppLoading(false);
       } else {
-        clearTokenAndCache();
-        window.location.reload();
+        logout();
+        window.close();
       }
     },
     onError: err => {

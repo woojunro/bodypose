@@ -186,7 +186,7 @@ const LoginScreen = () => {
                     buttonText=""
                     onSuccess={response => loginWithGoogle(response.tokenId)}
                     onFailure={response => {
-                      alert(response.error);
+                      console.error(response.error);
                     }}
                   />
                 </div>

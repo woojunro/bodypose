@@ -1,46 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
-import { Link, useHistory } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
 import InputForm from '../../../components/mobileComponents/Login/InputForm';
 import { StartButton } from '../../../components/mobileComponents/Login/StartButton';
 import {
   CheckValidEmail,
   CheckValidPassword,
-  CheckValidUserName,
 } from '../../../components/functions/Login/LoginFunctions';
 import './StartWithEmailScreen.css';
 import {
   PRIVACY_NOTICE_ID,
   TEMRS_NOTICE_ID,
 } from '../../../constants/noticeIds';
+import { useReactiveVar } from '@apollo/client';
+import { IsLoggedInVar } from '../../../apollo';
 
 const EmailJoin = () => {
+  const isLoggedIn = useReactiveVar(IsLoggedInVar);
   const history = useHistory();
   const [email, setEmail] = useState('');
-  const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [checked, setChecked] = useState(false);
   const [checkPassword, setCheckPassword] = useState('');
   const [someError, setSomeError] = useState(true);
-
   const [isEmailAlreadyUsed, setIsEmailAlreadyUsed] = useState(false);
-  const [isNameAlreadyUsed, setIsNameAlreadyUsed] = useState(false);
 
   useEffect(() => {
     if (
       CheckValidEmail(email) &&
       CheckValidPassword(password) &&
       password === checkPassword &&
-      CheckValidUserName(userName) &&
       checked
     ) {
       setSomeError(false);
     } else {
       setSomeError(true);
     }
-  }, [email, password, checkPassword, userName, checked]);
+    setIsEmailAlreadyUsed(false);
+  }, [email, password, checkPassword, checked]);
 
-  return (
+  return isLoggedIn ? (
+    <Redirect to={{ pathname: '/error' }} />
+  ) : (
     <div>
       <div className="joinContainer">
         <div className="joinPart">
@@ -50,7 +51,7 @@ const EmailJoin = () => {
             }}
             className="loginBackArrow"
           />
-          <div className="loginTitle">필수 정보 입력</div>
+          <div className="loginTitle">이메일로 시작하기</div>
           <div className="joinEmailText">이메일</div>
           <InputForm
             className="joinInput"
@@ -98,27 +99,6 @@ const EmailJoin = () => {
               <div>비밀번호가 다릅니다.</div>
             </div>
           )}
-          <div className="joinEmailText">이름 (10자 이하)</div>
-          <InputForm
-            className="joinInput"
-            onInputSubmit={setUserName}
-            placeholder="사용할 이름(한글/영어/숫자)"
-            type="text"
-          />
-          {/^[0-9a-zA-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]+$/.test(userName) ||
-          userName === '' ? null : (
-            <div className="passwordWarning">
-              이름은 한글/영어/숫자만 포함할 수 있습니다.
-            </div>
-          )}
-          {userName.length < 11 ? null : (
-            <div className="passwordWarning">
-              이름은 10글자까지 설정할 수 있습니다.
-            </div>
-          )}
-          {!isNameAlreadyUsed ? null : (
-            <div className="passwordWarning">이미 사용중인 이름입니다.</div>
-          )}
         </div>
         <div className="startButtonPart">
           <div className="agreeContainer">
@@ -154,10 +134,8 @@ const EmailJoin = () => {
             <StartButton
               email={email}
               password={password}
-              userName={userName}
               someError={someError}
               setIsEmailAlreadyUsed={setIsEmailAlreadyUsed}
-              setIsNameAlreadyUsed={setIsNameAlreadyUsed}
             />
           </div>
         </div>

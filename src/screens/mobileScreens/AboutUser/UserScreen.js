@@ -10,6 +10,7 @@ import './UserScreen.css';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { clearTokenAndCache, IsLoggedInVar } from '../../../apollo';
 import { MY_USER_INFO_QUERY } from '../../../gql/queries/MyUserInfoQuery';
+import { logout } from '../../../components/functions/Login/Logout';
 
 const UserScreen = () => {
   const isLoggedIn = useReactiveVar(IsLoggedInVar);
@@ -25,10 +26,11 @@ const UserScreen = () => {
     return <Redirect to={{ pathname: '/login' }} />;
   }
 
-  const LogoutFunction = () => {
+  const LogoutFunction = async () => {
+    await logout();
+    history.push('/');
     clearTokenAndCache();
     IsLoggedInVar(false);
-    history.push('/');
   };
 
   return loading ? (
@@ -44,7 +46,7 @@ const UserScreen = () => {
       <Header pageName="users" />
       <div className="welcome">
         <div className="nickNamePart">
-          {data.userInfo.userInfo.profile.nickname}
+          {data.userInfo.userInfo.profile?.nickname || '바프새내기'}
         </div>
         <div className="welcomePart">님 환영합니다.</div>
       </div>
@@ -99,7 +101,7 @@ const UserScreen = () => {
         <IoIosArrowForward className="userArrow" />
       </div>
 
-      <div className="userTap" onClick={() => LogoutFunction()}>
+      <div className="userTap" onClick={LogoutFunction}>
         <div className="userTapName">로그아웃</div>
         <IoIosArrowForward className="userArrow" />
       </div>
