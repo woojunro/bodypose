@@ -25,6 +25,8 @@ import LeaveScreenM from '../screens/mobileScreens/AboutUser/LeaveScreen';
 import NewPasswordScreenM from '../screens/mobileScreens/AboutAuth/NewPasswordScreen';
 import ConfirmEmailScreenM from '../screens/mobileScreens/AboutAuth/ConfirmEmailScreen';
 import KakaoLinkScreenM from '../screens/mobileScreens/KakaoLinkScreen';
+import KakaoPhoneScreenM from '../screens/mobileScreens/KakaoPhoneScreen';
+
 import NaverLoginCallbackScreenM from '../screens/mobileScreens/AboutAuth/NaverLoginCallbackScreen';
 import ChangeNameScreenM from '../screens/mobileScreens/AboutUser/ChangeNameScreen';
 
@@ -111,6 +113,7 @@ const App = () => {
           <Route exact path="/users/leave" component={LeaveScreenM} />
           <Route exact path="/error" component={ErrorScreenM} />
           <Route path="/kakaoLink/:kakaoID" component={KakaoLinkScreenM} />
+          <Route path="/kakaoPhone/:kakaoID" component={KakaoPhoneScreenM} />
 
           <Route path="*" component={ErrorScreenM} />
         </Switch>
