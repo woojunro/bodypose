@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { CheckValidEmail } from '../../../components/functions/Login/LoginFunctions';
-
 import InputForm from '../../../components/mobileComponents/Login/InputForm';
 import { FiArrowLeft } from 'react-icons/fi';
 import ChangePasswordButton from '../../../components/mobileComponents/Login/ChangePasswordButton';
-
 import './ChangePasswordScreen.css';
 import { useHistory } from 'react-router-dom';
-import { useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { REQUEST_PASSWORD_CHANGE_MUTATION } from '../../../gql/mutations/ChangePasswordMutation';
+import { MY_USER_INFO_QUERY } from '../../../gql/queries/MyUserInfoQuery';
+import { alertError } from '../../../components/functions/Common/alertError';
 
 const ChangePasswordScreen = () => {
   const history = useHistory();
@@ -17,9 +17,10 @@ const ChangePasswordScreen = () => {
   const [correctEmail, setCorrectEmail] = useState(true);
   const [isEmailSent, setIsEmailSent] = useState(false);
   const [isSocialAccount, setIsSocialAccount] = useState(false);
-  const [isMyOwnEmail, setIsMyOwnEmail] = useState(true);
 
-  const [requestPasswordChange, { loading }] = useMutation(
+  const { data, loading: queryLoading } = useQuery(MY_USER_INFO_QUERY);
+
+  const [requestPasswordChange, { loading: mutationLoading }] = useMutation(
     REQUEST_PASSWORD_CHANGE_MUTATION,
     {
       onCompleted: data => {
@@ -27,33 +28,36 @@ const ChangePasswordScreen = () => {
           setIsEmailSent(true);
         } else {
           const { error } = data.requestPasswordReset;
-          if (error === 'UNAUTHORIZED') {
-            setIsMyOwnEmail(false);
-          } else if (error === 'USER_NOT_FOUND') {
+          if (error === 'USER_NOT_FOUND') {
             setCorrectEmail(false);
-          } else if (error === 'INVALID_LOGIN_METHOD') {
+          } else if (error === 'SOCIAL_USER') {
             setIsSocialAccount(true);
           } else {
-            alert('오류가 발생하였습니다. 다시 시도해주세요.');
+            alertError();
           }
         }
       },
-      onError: () => alert('오류가 발생하였습니다. 다시 시도해주세요.'),
+      onError: alertError,
     }
   );
 
+  const loading = queryLoading || mutationLoading;
+
   const mailingFunction = () => {
+    const myEmail = data?.userInfo?.userInfo?.email;
+    if (myEmail && myEmail !== email) {
+      alert('본인의 이메일을 입력해주시기 바랍니다.');
+      return;
+    }
     requestPasswordChange({ variables: { email } });
   };
 
   useEffect(() => {
     if (email === '') {
-      setIsMyOwnEmail(true);
       setIsSocialAccount(false);
       setCorrectEmail(true);
       setValidEmail(true);
     } else {
-      setIsMyOwnEmail(true);
       setIsSocialAccount(false);
       setCorrectEmail(true);
       setValidEmail(CheckValidEmail(email));
@@ -109,11 +113,6 @@ const ChangePasswordScreen = () => {
               {!isSocialAccount ? null : (
                 <div className="noValidEmailText">
                   소셜 가입 회원은 비밀번호 변경이 불가합니다.
-                </div>
-              )}
-              {isMyOwnEmail ? null : (
-                <div className="noValidEmailText">
-                  본인의 이메일만 요청 가능합니다.
                 </div>
               )}
             </div>

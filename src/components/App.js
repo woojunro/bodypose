@@ -85,7 +85,6 @@ const App = () => {
           <Route exact path="/hearts" component={HeartScreenM} />
           <Route exact path="/notices" component={NoticeListScreenM} />
           <Route path="/notices/:noticeId" component={NoticeScreenM} />
-          <Route path="/newPassword/:authCode" component={NewPasswordScreenM} />
           <Route exact path="/login" component={LoginScreenM} />
           <Route
             path="/login/:provider/callback"
@@ -96,6 +95,7 @@ const App = () => {
             path="/changePassword"
             component={ChangePasswordScreenM}
           />
+          <Route path="/newPassword" component={NewPasswordScreenM} />
           <Route exact path="/changeName" component={ChangeNameScreenM} />
           <Route
             exact
@@ -109,7 +109,7 @@ const App = () => {
           <Route exact path="/error" component={ErrorScreenM} />
           <Route path="/kakaoLink/:kakaoID" component={KakaoLinkScreenM} />
           <Route path="/kakaoPhone/:kakaoID" component={KakaoPhoneScreenM} />
-          <Route path="*" component={ErrorScreenM} />
+          <Route component={ErrorScreenM} />
         </Switch>
       </Router>
     </LoginContext.Provider>

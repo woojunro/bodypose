@@ -10,8 +10,14 @@ export const REQUEST_PASSWORD_CHANGE_MUTATION = gql`
 `;
 
 export const CHANGE_PASSWORD_MUTATION = gql`
-  mutation ChangePassword($code: String!, $newPassword: String!) {
-    updatePassword(input: { code: $code, newPassword: $newPassword }) {
+  mutation ChangePassword(
+    $userId: Int!
+    $code: String!
+    $newPassword: String!
+  ) {
+    updatePassword(
+      input: { userId: $userId, code: $code, newPassword: $newPassword }
+    ) {
       ok
       error
     }

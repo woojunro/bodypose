@@ -53,7 +53,7 @@ const MyInfoScreen = () => {
             history.goBack();
           }}
         />
-        <div className="leaveTitle">내 정보 관리</div>
+        <div className="leaveTitle">계정</div>
         <div className="myInfoSave">저장</div>
       </div>
       {loading ? (

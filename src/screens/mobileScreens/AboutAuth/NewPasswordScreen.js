@@ -1,14 +1,18 @@
 import { useMutation } from '@apollo/client';
 import React, { useEffect, useState } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import { alertError } from '../../../components/functions/Common/alertError';
 import { CheckValidPassword } from '../../../components/functions/Login/LoginFunctions';
 import InputForm from '../../../components/mobileComponents/Login/InputForm';
 import { CHANGE_PASSWORD_MUTATION } from '../../../gql/mutations/ChangePasswordMutation';
 import './NewPasswordScreen.css';
 
 const NewPasswordScreen = () => {
-  const { authCode } = useParams();
+  const url = new URL(window.location.href);
+  const params = new URLSearchParams(url.search);
+  const userId = Number(params.get('userId'));
+  const code = params.get('code');
   const history = useHistory();
   const [password, setPassword] = useState('');
   const [checkPassword, setCheckPassword] = useState('');
@@ -20,18 +24,18 @@ const NewPasswordScreen = () => {
         setIsPasswordChanged(true);
       } else {
         const { error } = data.updatePassword;
-        if (error === 'CODE_NOT_FOUND') {
+        if (error === 'INVALID_REQUEST') {
           alert('비인가 접근입니다. 홈페이지로 이동합니다.');
           history.push('/');
         } else if (error === 'CODE_EXPIRED') {
-          alert('링크 유효기간이 만료되었습니다. 홈페이지로 이동합니다.');
+          alert('링크의 유효기간이 만료되었습니다. 홈페이지로 이동합니다.');
           history.push('/');
         } else {
-          alert('오류가 발생하였습니다. 다시 시도해주세요.');
+          alertError();
         }
       }
     },
-    onError: () => alert('오류가 발생하였습니다. 다시 시도해주세요.'),
+    onError: alertError,
   });
 
   useEffect(() => {
@@ -40,12 +44,14 @@ const NewPasswordScreen = () => {
         history.push('/');
       }, 3000);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPasswordChanged]);
 
   const confirmChange = () => {
     changePassword({
       variables: {
-        code: authCode,
+        userId,
+        code,
         newPassword: password,
       },
     });
@@ -126,4 +132,5 @@ const NewPasswordScreen = () => {
     </div>
   );
 };
+
 export default NewPasswordScreen;

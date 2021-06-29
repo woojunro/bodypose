@@ -58,7 +58,7 @@ const UserScreen = () => {
         }}
         className="userTap"
       >
-        <div className="userTapName">계정 정보</div>
+        <div className="userTapName">계정</div>
         <IoIosArrowForward className="userArrow" />
       </div>
       <div
