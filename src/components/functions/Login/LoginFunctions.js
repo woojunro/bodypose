@@ -22,7 +22,8 @@ export const CheckValidUserName = userName => {
 
   if (
     /^[0-9a-zA-Z|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]+$/.test(userName) &&
-    userName.length < 11
+    userName.length >= 2 &&
+    userName.length <= 10
   ) {
     check = true;
   } else check = false;

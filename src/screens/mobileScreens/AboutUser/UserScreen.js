@@ -63,7 +63,7 @@ const UserScreen = () => {
       </div>
       <div
         onClick={() => {
-          history.push('asdfsadf');
+          history.push('/users/profile');
           window.scrollTo(0, 0);
         }}
         className="userTap"

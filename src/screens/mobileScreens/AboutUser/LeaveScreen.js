@@ -37,6 +37,7 @@ const LeaveScreen = () => {
   useEffect(() => {
     if (isLeaved) {
       setTimeout(() => {
+        clearTokenAndCache();
         history.push('/');
         IsLoggedInVar(false);
       }, 2000);
