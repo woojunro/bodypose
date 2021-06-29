@@ -13,7 +13,7 @@ export class UserProfile extends CoreEntity {
   @Column({ length: 10, unique: true })
   @Field(type => String)
   @IsString()
-  @Length(1, 10)
+  @Length(2, 10)
   nickname: string;
 
   @Column({ nullable: true })

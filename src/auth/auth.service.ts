@@ -19,7 +19,7 @@ import {
   UNEXPECTED_ERROR,
 } from 'src/common/constants/error.constant';
 import { OAuthProvider } from 'src/users/entities/user-oauth.entity';
-import { User } from 'src/users/entities/user.entity';
+import { User, UserType } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import {
@@ -178,6 +178,9 @@ export class AuthService {
     // Get a user with the inputted email
     const user = await this.usersService.getUserByEmail(email);
     if (!user) throw new NotFoundException('USER_NOT_FOUND');
+    if (user.type === UserType.STUDIO) {
+      throw new ForbiddenException('FORBIDDEN_LOGIN_METHOD');
+    }
     // Check if the user is created with social oauth
     if (user.oauthList.length !== 0) {
       throw new BadRequestException('SOCIAL_USER');
@@ -214,6 +217,9 @@ export class AuthService {
           false,
         );
         if (existingUser) {
+          if (existingUser.type !== UserType.USER) {
+            throw new ForbiddenException('FORBIDDEN_LOGIN_METHOD');
+          }
           const { error } = await this.usersService.createUserOAuth(
             existingUser.id,
             provider,

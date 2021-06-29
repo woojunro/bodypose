@@ -871,6 +871,7 @@ export class StudiosService {
         .createQueryBuilder('review')
         .leftJoin('review.studio', 'studio')
         .leftJoin('review.user', 'user')
+        .withDeleted()
         .leftJoinAndSelect('user.profile', 'profile')
         .leftJoinAndSelect('review.photos', 'photo')
         .where('studio.slug = :studioSlug', { studioSlug })
@@ -909,6 +910,7 @@ export class StudiosService {
         .addSelect('studio.name')
         .addSelect('studio.slug')
         .leftJoin('review.user', 'user')
+        .withDeleted()
         .leftJoinAndSelect('user.profile', 'profile')
         .leftJoinAndSelect('review.photos', 'photo')
         .where('studio.coverPhotoUrl IS NOT NULL')
@@ -938,6 +940,7 @@ export class StudiosService {
       const studioReviews = await this.studioReviewRepository
         .createQueryBuilder('review')
         .leftJoin('review.user', 'user')
+        .withDeleted()
         .leftJoinAndSelect('user.profile', 'profile')
         .leftJoin('review.studio', 'studio')
         .addSelect('studio.name')

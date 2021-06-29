@@ -132,10 +132,9 @@ export class UsersResolver {
   // Public
   @Mutation(returns => RequestPasswordResetOutput)
   requestPasswordReset(
-    @CurrentUser() user: User,
     @Args('input') input: RequestPasswordResetInput,
   ): Promise<RequestPasswordResetOutput> {
-    return this.usersService.requestPasswordReset(user, input);
+    return this.usersService.requestPasswordReset(input);
   }
 
   // Public

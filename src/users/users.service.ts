@@ -45,7 +45,10 @@ import { Verification } from './entities/verification.entity';
 import { UploadsService } from 'src/uploads/uploads.service';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { AuthService } from 'src/auth/auth.service';
-import { PASSWORD_HASH_ROUNDS } from 'src/common/constants/common.constant';
+import {
+  NO_PROFILE_NICKNAME,
+  PASSWORD_HASH_ROUNDS,
+} from 'src/common/constants/common.constant';
 import { LockUserInput, LockUserOutput } from './dtos/lock-user.dto';
 import { UpdateEmailInput, UpdateEmailOutput } from './dtos/update-email.dto';
 import { GetUserInfoInput, GetUserInfoOutput } from './dtos/get-user-info.dto';
@@ -127,7 +130,7 @@ export class UsersService {
       const { code } = await this.verificationRepository.save(newVerification);
       this.mailService.sendEmailVerification(
         email,
-        '바프새내기',
+        NO_PROFILE_NICKNAME,
         createdUser.id,
         code,
       );
@@ -169,7 +172,12 @@ export class UsersService {
         const { code } = await this.verificationRepository.save(
           newVerification,
         );
-        this.mailService.sendEmailVerification(email, '회원', user.id, code);
+        this.mailService.sendEmailVerification(
+          email,
+          NO_PROFILE_NICKNAME,
+          user.id,
+          code,
+        );
       }
 
       return user;
@@ -219,7 +227,7 @@ export class UsersService {
   async getUserByEmail(email: string, needPassword = true): Promise<User> {
     let query = this.userRepository
       .createQueryBuilder('u')
-      .select(['u.id', 'u.isLocked']);
+      .select(['u.id', 'u.type', 'u.isLocked']);
     if (needPassword) {
       query = query.addSelect('u.password');
     }
@@ -608,7 +616,7 @@ export class UsersService {
 
       await this.mailService.sendEmailVerification(
         user.email,
-        profile?.nickname || '회원',
+        profile?.nickname || NO_PROFILE_NICKNAME,
         user.id,
         verification.code,
       );
@@ -619,13 +627,10 @@ export class UsersService {
     }
   }
 
-  async requestPasswordReset(
-    currentUser: User,
-    { email }: RequestPasswordResetInput,
-  ): Promise<RequestPasswordResetOutput> {
+  async requestPasswordReset({
+    email,
+  }: RequestPasswordResetInput): Promise<RequestPasswordResetOutput> {
     try {
-      if (currentUser && currentUser.email !== email)
-        return CommonError('UNAUTHORIZED');
       const user = await this.userRepository
         .createQueryBuilder('user')
         .leftJoinAndSelect('user.oauthList', 'o')
@@ -651,11 +656,10 @@ export class UsersService {
       }
       const ok = await this.mailService.sendPasswordReset(
         user.email,
-        user.profile ? user.profile.nickname : 'UNKNOWN',
+        user.profile?.nickname || NO_PROFILE_NICKNAME,
         user.id,
         savedReset.code,
       );
-      // UNKNOWN may be impossible
       return {
         ok,
         error: ok ? null : 'MAILGUN_API_ERROR',
