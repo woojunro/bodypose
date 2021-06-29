@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { client } from '../../../apollo';
 import { IoIosClose } from 'react-icons/io';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { FaHeart } from 'react-icons/fa';
 import { FaRegHeart } from 'react-icons/fa';
 import LoginContext from '../../../contexts/LoginContext';
@@ -29,7 +29,7 @@ const Modal = ({ isOpen, close, concept }) => {
 
   const [heartStudioPhoto] = useMutation(HEART_STUDIO_PHOTO_MUTATION, {
     onError: () => alert('오류가 발생하였습니다. 다시 시도해주세요.'),
-    onCompleted: (data) => {
+    onCompleted: data => {
       if (data.heartStudioPhoto.ok) {
         changeIsHearted();
       }
@@ -38,7 +38,7 @@ const Modal = ({ isOpen, close, concept }) => {
 
   const [disheartStudioPhoto] = useMutation(DISHEART_STUDIO_PHOTO_MUTATION, {
     onError: () => alert('오류가 발생하였습니다. 다시 시도해주세요.'),
-    onCompleted: (data) => {
+    onCompleted: data => {
       if (data.disheartStudioPhoto.ok) {
         changeIsHearted();
       }

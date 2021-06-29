@@ -3,7 +3,7 @@ import { createBrowserHistory } from 'history';
 import ReactGA from 'react-ga';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
-import { clearTokenAndCache, IsLoggedInVar } from '../apollo';
+import { IsLoggedInVar } from '../apollo';
 
 import HomeScreenM from '../screens/mobileScreens/HomeScreen';
 import StudioInfoScreenM from '../screens/mobileScreens/StudioInfoScreen';
@@ -27,7 +27,7 @@ import ConfirmEmailScreenM from '../screens/mobileScreens/AboutAuth/ConfirmEmail
 import KakaoLinkScreenM from '../screens/mobileScreens/KakaoLinkScreen';
 import KakaoPhoneScreenM from '../screens/mobileScreens/KakaoPhoneScreen';
 
-import NaverLoginCallbackScreenM from '../screens/mobileScreens/AboutAuth/NaverLoginCallbackScreen';
+import SocialLoginCallbackScreenM from '../screens/mobileScreens/AboutAuth/SocialLoginCallbackScreen';
 import ChangeNameScreenM from '../screens/mobileScreens/AboutUser/ChangeNameScreen';
 
 import LoginContext from '../contexts/LoginContext';
@@ -89,8 +89,8 @@ const App = () => {
           <Route path="/newPassword/:authCode" component={NewPasswordScreenM} />
           <Route exact path="/login" component={LoginScreenM} />
           <Route
-            path="/login/naver/callback"
-            component={NaverLoginCallbackScreenM}
+            path="/login/:provider/callback"
+            component={SocialLoginCallbackScreenM}
           />
           <Route
             exact

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import './HeaderM.css';
 
 import logoAndsymbol from '../../materials/로고+심볼.png';

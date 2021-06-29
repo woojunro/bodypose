@@ -1,5 +1,4 @@
 import './MyInfoScreen.css';
-import { Link } from 'react-router-dom';
 import React, { useContext } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 import { Redirect, useHistory } from 'react-router-dom';
