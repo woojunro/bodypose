@@ -35,10 +35,12 @@ const errorLink = onError(
                 };
                 forward(operation).subscribe(subscriber);
               } else {
+                IsLoggedInVar(false);
                 throw new Error('Token refresh failed.');
               }
             })
             .catch(error => {
+              IsLoggedInVar(false);
               observer.error(error);
             });
         });

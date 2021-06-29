@@ -51,7 +51,6 @@ const UserScreen = () => {
         <div className="welcomePart">님 환영합니다.</div>
       </div>
       <div className="userSemiTitle">계정</div>
-
       <div
         onClick={() => {
           history.push('/users/myInfo');
@@ -59,10 +58,19 @@ const UserScreen = () => {
         }}
         className="userTap"
       >
-        <div className="userTapName">내 정보 관리</div>
+        <div className="userTapName">계정 정보</div>
         <IoIosArrowForward className="userArrow" />
       </div>
-
+      <div
+        onClick={() => {
+          history.push('asdfsadf');
+          window.scrollTo(0, 0);
+        }}
+        className="userTap"
+      >
+        <div className="userTapName">프로필</div>
+        <IoIosArrowForward className="userArrow" />
+      </div>
       <div
         onClick={() => {
           history.push('/users/myReview');
@@ -73,7 +81,6 @@ const UserScreen = () => {
         <div className="userTapName">내가 쓴 리뷰</div>
         <IoIosArrowForward className="userArrow" />
       </div>
-
       <div className="userLineContainer">
         <div className="userLine"></div>
       </div>

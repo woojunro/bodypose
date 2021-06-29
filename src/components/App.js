@@ -35,7 +35,6 @@ import LoginContext from '../contexts/LoginContext';
 import './App.css';
 import AppLoadingScreen from './mobileComponents/AppLoadingScreen';
 import { MY_USER_INFO_QUERY } from '../gql/queries/MyUserInfoQuery';
-import { logout } from './functions/Login/Logout';
 
 ReactGA.initialize('UA-190823210-1');
 const history = createBrowserHistory();
@@ -52,15 +51,15 @@ const App = () => {
   const { loading } = useQuery(MY_USER_INFO_QUERY, {
     fetchPolicy: 'network-only',
     onCompleted: data => {
-      if (data.userInfo?.userInfo?.type === 'USER') {
-        IsLoggedInVar(true);
-        setIsAppLoading(false);
-      } else {
-        logout();
-        window.close();
+      IsLoggedInVar(true);
+      if (!data.userInfo?.userInfo?.profile) {
+        // 프로필 설정 창으로...
+        console.log('NO_PROFILE');
       }
+      setIsAppLoading(false);
     },
     onError: err => {
+      IsLoggedInVar(false);
       setIsAppLoading(false);
     },
   });
@@ -103,11 +102,7 @@ const App = () => {
             path="/startWithEmail"
             component={StartWithEmailScreenM}
           />
-          <Route
-            exact
-            path="/confirmEmail/:code"
-            component={ConfirmEmailScreenM}
-          />
+          <Route path="/confirmEmail" component={ConfirmEmailScreenM} />
           <Route exact path="/users/myInfo" component={MyInfoScreenM} />
           <Route exact path="/users/myReview" component={MyReviewScreenM} />
           <Route exact path="/users/leave" component={LeaveScreenM} />

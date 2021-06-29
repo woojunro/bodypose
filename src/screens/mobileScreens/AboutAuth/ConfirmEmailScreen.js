@@ -1,48 +1,53 @@
 import { useMutation } from '@apollo/client';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import AppLoadingScreen from '../../../components/mobileComponents/AppLoadingScreen';
 import { CONFIRM_EMAIL_MUTATION } from '../../../gql/mutations/ConfirmEmailMutation';
 
 import './ConfirmEmailScreen.css';
 
 const ConfirmEmailScreen = () => {
-  const { code } = useParams();
   const history = useHistory();
-
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+
+  const onError = () => {
+    setIsLoading(false);
+    setIsError(true);
+    setTimeout(() => {
+      history.replace('/');
+      window.location.reload();
+    }, 3000);
+  };
 
   const [confirmEmail] = useMutation(CONFIRM_EMAIL_MUTATION, {
     onCompleted: data => {
       if (data.verifyUser.ok) {
         setIsLoading(false);
+        setTimeout(() => {
+          history.replace('/');
+          window.location.reload();
+        }, 3000);
       } else {
-        setIsLoading(false);
-        setIsError(true);
+        onError();
       }
     },
-    onError: () => {
-      setIsLoading(false);
-      setIsError(true);
-    },
+    onError,
   });
 
   useEffect(() => {
+    const url = new URL(window.location.href);
+    const params = new URLSearchParams(url.search);
+    const userId = Number(params.get('userId'));
+    const code = params.get('code');
     confirmEmail({
       variables: {
+        userId,
         code,
       },
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (!isLoading) {
-      setTimeout(() => {
-        history.push('/');
-      }, 3000);
-    }
-  }, [isLoading]);
 
   if (isLoading) {
     return (
