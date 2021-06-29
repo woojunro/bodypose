@@ -1,12 +1,11 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import './StudioCard.css';
 import { IoHeart, IoHeartOutline, IoStar } from 'react-icons/io5';
 
 import { useHistory } from 'react-router-dom';
-import LoginContext from '../../../contexts/LoginContext';
 import GetShortAdress from '../../functions/Studio/GetShortAdress';
-import { client } from '../../../apollo';
-import { gql, useMutation } from '@apollo/client';
+import { client, IsLoggedInVar } from '../../../apollo';
+import { gql, useMutation, useReactiveVar } from '@apollo/client';
 import {
   DISHEART_STUDIO_MUTATION,
   HEART_STUDIO_MUTATION,
@@ -26,7 +25,7 @@ const StudioCard = ({
   percent,
   originalPrice,
 }) => {
-  const LoggedIn = useContext(LoginContext);
+  const isLoggedIn = useReactiveVar(IsLoggedInVar);
   const history = useHistory();
   const adress = GetShortAdress(location || '주소 없음');
 
@@ -62,7 +61,7 @@ const StudioCard = ({
 
   const [heartStudioPhoto] = useMutation(HEART_STUDIO_MUTATION, {
     onError: () => alert('오류가 발생하였습니다. 다시 시도해주세요.'),
-    onCompleted: (data) => {
+    onCompleted: data => {
       if (data.heartStudio.ok) {
         heart();
       }
@@ -71,7 +70,7 @@ const StudioCard = ({
 
   const [disheartStudioPhoto] = useMutation(DISHEART_STUDIO_MUTATION, {
     onError: () => alert('오류가 발생하였습니다. 다시 시도해주세요.'),
-    onCompleted: (data) => {
+    onCompleted: data => {
       if (data.disheartStudio.ok) {
         disheart();
       }
@@ -79,20 +78,17 @@ const StudioCard = ({
   });
 
   const ChangeHeart = () => {
-    if (!LoggedIn.loggedIn) {
+    if (!isLoggedIn) {
       const ok = window.confirm(
         '로그인이 필요한 기능입니다. 로그인 하시겠습니까?'
       );
-      if (!ok) {
-        return;
-      }
+      if (!ok) return;
       history.push({
         pathname: '/login',
         state: { previousPath: '/studios' },
       });
       return;
     }
-
     if (isHearted) {
       disheartStudioPhoto({
         variables: {

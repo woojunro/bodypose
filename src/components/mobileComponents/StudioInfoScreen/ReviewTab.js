@@ -1,35 +1,28 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ReviewTab.css';
 import SortButton from '../../mobileComponents/ReviewList/SortButton';
 import { REVIEW_SORTING_OPTIONS } from '../../mobileComponents/ReviewList/SortOptions';
 import ReviewScrollView from '../../mobileComponents/ReviewList/ReviewScrollView';
-import LoginContext from '../../../contexts/LoginContext';
 import { useHistory } from 'react-router-dom';
 import Modal from '../ReviewList/SortbyModal';
-import { useQuery } from '@apollo/client';
+import { useQuery, useReactiveVar } from '@apollo/client';
 import { STUDIO_REVIEWS_QUERY } from '../../../gql/queries/StudioReviewQuery';
 import { MY_PROFILE_QUERY } from '../../../gql/queries/MyProfileQuery';
 import LoadingIcon from '../conceptListScreen/LoadingIcon';
-import { clearTokenAndCache } from '../../../apollo';
+import { IsLoggedInVar } from '../../../apollo';
 import WriteReview from '../ReviewList/WriteReview';
 import FullReviewScreen from '../../../screens/mobileScreens/FullReviewScreen';
+import { MY_USER_INFO_QUERY } from '../../../gql/queries/MyUserInfoQuery';
 
 const ReviewTab = ({ currentStudio, refetchStudio }) => {
-  const LoggedIn = useContext(LoginContext);
+  const isLoggedIn = useReactiveVar(IsLoggedInVar);
   const history = useHistory();
 
-  const { data: profileData, loading: profileLoading } = useQuery(
-    MY_PROFILE_QUERY,
-    {
-      onError: () => {
-        if (LoggedIn.loggedIn) {
-          clearTokenAndCache();
-          LoggedIn.setLoggedIn(false);
-          window.location.reload();
-        }
-      },
-    }
-  );
+  const { data: userInfoData, loading: userInfoLoading } =
+    useQuery(MY_USER_INFO_QUERY);
+
+  const { data: profileData, loading: profileLoading } =
+    useQuery(MY_PROFILE_QUERY);
 
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState(REVIEW_SORTING_OPTIONS[0]);
@@ -137,11 +130,9 @@ const ReviewTab = ({ currentStudio, refetchStudio }) => {
             <div
               className="writeReviewButton"
               onClick={() => {
-                if (LoggedIn.loggedIn) {
-                  if (!profileData?.myProfile?.profile.isVerified) {
-                    alert(
-                      '이메일 가입 회원은 이메일 인증 후 후기 작성이 가능합니다.'
-                    );
+                if (isLoggedIn) {
+                  if (!userInfoData?.userInfo?.userInfo?.isVerified) {
+                    alert('이메일 인증 완료 후 후기 작성이 가능합니다.');
                     return;
                   }
                   setIsWriteReviewOpen(true);
@@ -176,7 +167,10 @@ const ReviewTab = ({ currentStudio, refetchStudio }) => {
                 openReviewDetail={openReviewDetail}
               />
             )}
-            {loading || profileLoading || fetchMoreLoading ? (
+            {loading ||
+            profileLoading ||
+            userInfoLoading ||
+            fetchMoreLoading ? (
               <div className="seeMoreReviewContainer">
                 <LoadingIcon />
               </div>
@@ -197,4 +191,5 @@ const ReviewTab = ({ currentStudio, refetchStudio }) => {
     </div>
   );
 };
+
 export default ReviewTab;

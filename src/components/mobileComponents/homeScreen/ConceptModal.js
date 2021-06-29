@@ -1,11 +1,10 @@
-import React, { useState, useContext } from 'react';
-import { client } from '../../../apollo';
+import React, { useState } from 'react';
+import { client, IsLoggedInVar } from '../../../apollo';
 import { IoIosClose } from 'react-icons/io';
 import { useHistory } from 'react-router-dom';
 import { FaHeart } from 'react-icons/fa';
 import { FaRegHeart } from 'react-icons/fa';
-import LoginContext from '../../../contexts/LoginContext';
-import { useMutation } from '@apollo/client';
+import { useMutation, useReactiveVar } from '@apollo/client';
 import {
   DISHEART_STUDIO_PHOTO_MUTATION,
   HEART_STUDIO_PHOTO_MUTATION,
@@ -13,7 +12,7 @@ import {
 
 const Modal = ({ isOpen, close, concept }) => {
   const [isHearted, setIsHearted] = useState(concept.isHearted);
-  const LoggedIn = useContext(LoginContext);
+  const isLoggedIn = useReactiveVar(IsLoggedInVar);
   const history = useHistory();
 
   const changeIsHearted = () => {
@@ -74,7 +73,7 @@ const Modal = ({ isOpen, close, concept }) => {
       </div>
     );
   } else {
-    if (LoggedIn.loggedIn) {
+    if (isLoggedIn) {
       RenderedHeart = (
         <div
           onClick={() => {
@@ -93,9 +92,7 @@ const Modal = ({ isOpen, close, concept }) => {
               const ok = window.confirm(
                 '로그인이 필요한 기능입니다. 로그인 하시겠습니까?'
               );
-              if (!ok) {
-                return;
-              }
+              if (!ok) return;
               history.push({
                 pathname: '/login',
                 state: { previousPath: history.location.pathname },

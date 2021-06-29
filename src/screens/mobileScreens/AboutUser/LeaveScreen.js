@@ -1,29 +1,22 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 import { Redirect, useHistory } from 'react-router-dom';
-import LoginContext from '../../../contexts/LoginContext';
 import BottomNavigation from '../../../components/mobileComponents/BottomNavigation';
 import LeaveButton from '../../../components/mobileComponents/Login/LeaveButton';
 import './LeaveScreen.css';
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { MY_PROFILE_QUERY } from '../../../gql/queries/MyProfileQuery';
-import { clearTokenAndCache } from '../../../apollo';
+import { clearTokenAndCache, IsLoggedInVar } from '../../../apollo';
 import AppLoadingScreen from '../../../components/mobileComponents/AppLoadingScreen';
 import { LEAVE_BODYPOSE_MUTATION } from '../../../gql/mutations/LeaveMutation';
 
 const LeaveScreen = () => {
-  const LoggedIn = useContext(LoginContext);
+  const isLoggedIn = useReactiveVar(IsLoggedInVar);
   const history = useHistory();
   const [checked, setChecked] = useState(false);
   const [isLeaved, setIsLeaved] = useState(false);
 
-  const { loading: profileLoading } = useQuery(MY_PROFILE_QUERY, {
-    fetchPolicy: 'network-only',
-    onError: () => {
-      clearTokenAndCache();
-      LoggedIn.setLoggedIn(false);
-    },
-  });
+  const { loading: profileLoading } = useQuery(MY_PROFILE_QUERY);
 
   const [unregister, { loading }] = useMutation(LEAVE_BODYPOSE_MUTATION, {
     onCompleted: data => {
@@ -45,13 +38,13 @@ const LeaveScreen = () => {
     if (isLeaved) {
       setTimeout(() => {
         history.push('/');
-        LoggedIn.setLoggedIn(false);
+        IsLoggedInVar(false);
       }, 2000);
     }
     return null;
   }, [isLeaved]);
 
-  if (!LoggedIn.loggedIn) {
+  if (!isLoggedIn) {
     return <Redirect to={'/error'} />;
   } else {
     if (isLeaved) {
@@ -94,7 +87,6 @@ const LeaveScreen = () => {
               내가 찜한 스튜디오, 내가 찜한 컨셉 등의 모든 서비스 이용 기록이
               삭제되며, 삭제된 데이터는 복구되지 않습니다.
             </div>
-
             <div className="leaveSemiTitle">
               게시판형 서비스 등록 게시물 유지
             </div>
@@ -111,7 +103,6 @@ const LeaveScreen = () => {
                 방법이 없어, 게시글을 임의로 삭제해드릴 수 없습니다.
               </div>
             </div>
-
             <div className="leaveAgreeContainer">
               <input
                 type="checkBox"
@@ -133,7 +124,6 @@ const LeaveScreen = () => {
             )}
           </div>
         )}
-
         <BottomNavigation pageName="users" />
       </div>
     );

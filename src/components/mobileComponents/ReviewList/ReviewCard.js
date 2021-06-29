@@ -51,7 +51,9 @@ const ReviewCard = ({
     >
       <div className="reviewCardContainer">
         <div className="reviewTopPart">
-          <div className="reviewUserName">{reviewContent.user.nickname}</div>
+          <div className="reviewUserName">
+            {reviewContent.user.profile.nickname}
+          </div>
           <div className="reviewInfo">
             <div className="ratingAndStudio">
               <div className="reviewrating">

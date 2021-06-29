@@ -4,7 +4,6 @@ import ReactGA from 'react-ga';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { IsLoggedInVar } from '../apollo';
-
 import HomeScreenM from '../screens/mobileScreens/HomeScreen';
 import StudioInfoScreenM from '../screens/mobileScreens/StudioInfoScreen';
 import StudioListScreenM from '../screens/mobileScreens/StudioListScreen';
@@ -15,7 +14,6 @@ import HeartScreenM from '../screens/mobileScreens/HeartScreen';
 import NoticeListScreenM from '../screens/mobileScreens/NoticeListScreen';
 import NoticeScreenM from '../screens/mobileScreens/NoticeScreen';
 import ErrorScreenM from '../screens/mobileScreens/ErrorScreen';
-
 import LoginScreenM from '../screens/mobileScreens/AboutAuth/LoginScreen';
 import ChangePasswordScreenM from '../screens/mobileScreens/AboutAuth/ChangePasswordScreen';
 import StartWithEmailScreenM from '../screens/mobileScreens/AboutAuth/StartWithEmailScreen';
@@ -26,12 +24,8 @@ import NewPasswordScreenM from '../screens/mobileScreens/AboutAuth/NewPasswordSc
 import ConfirmEmailScreenM from '../screens/mobileScreens/AboutAuth/ConfirmEmailScreen';
 import KakaoLinkScreenM from '../screens/mobileScreens/KakaoLinkScreen';
 import KakaoPhoneScreenM from '../screens/mobileScreens/KakaoPhoneScreen';
-
 import SocialLoginCallbackScreenM from '../screens/mobileScreens/AboutAuth/SocialLoginCallbackScreen';
 import ChangeNameScreenM from '../screens/mobileScreens/AboutUser/ChangeNameScreen';
-
-import LoginContext from '../contexts/LoginContext';
-
 import './App.css';
 import AppLoadingScreen from './mobileComponents/AppLoadingScreen';
 import { MY_USER_INFO_QUERY } from '../gql/queries/MyUserInfoQuery';
@@ -44,9 +38,7 @@ history.listen(location => {
 });
 
 const App = () => {
-  const [loggedIn, setLoggedIn] = useState(false);
   const [isAppLoading, setIsAppLoading] = useState(true);
-  const loggedInValue = { loggedIn, setLoggedIn };
 
   const { loading } = useQuery(MY_USER_INFO_QUERY, {
     fetchPolicy: 'network-only',
@@ -73,46 +65,36 @@ const App = () => {
   }
 
   return (
-    <LoginContext.Provider value={loggedInValue}>
-      <Router history={history}>
-        <Switch className="app">
-          <Route exact path="/" component={HomeScreenM} />
-          <Route exact path="/studios" component={StudioListScreenM} />
-          <Route exact path="/concepts" component={ConceptListScreenM} />
-          <Route exact path="/reviews" component={ReviewListScreenM} />
-          <Route exact path="/studios/:slug" component={StudioInfoScreenM} />
-          <Route exact path="/users" component={UserScreenM} />
-          <Route exact path="/hearts" component={HeartScreenM} />
-          <Route exact path="/notices" component={NoticeListScreenM} />
-          <Route path="/notices/:noticeId" component={NoticeScreenM} />
-          <Route exact path="/login" component={LoginScreenM} />
-          <Route
-            path="/login/:provider/callback"
-            component={SocialLoginCallbackScreenM}
-          />
-          <Route
-            exact
-            path="/changePassword"
-            component={ChangePasswordScreenM}
-          />
-          <Route path="/newPassword" component={NewPasswordScreenM} />
-          <Route exact path="/changeName" component={ChangeNameScreenM} />
-          <Route
-            exact
-            path="/startWithEmail"
-            component={StartWithEmailScreenM}
-          />
-          <Route path="/confirmEmail" component={ConfirmEmailScreenM} />
-          <Route exact path="/users/myInfo" component={MyInfoScreenM} />
-          <Route exact path="/users/myReview" component={MyReviewScreenM} />
-          <Route exact path="/users/leave" component={LeaveScreenM} />
-          <Route exact path="/error" component={ErrorScreenM} />
-          <Route path="/kakaoLink/:kakaoID" component={KakaoLinkScreenM} />
-          <Route path="/kakaoPhone/:kakaoID" component={KakaoPhoneScreenM} />
-          <Route component={ErrorScreenM} />
-        </Switch>
-      </Router>
-    </LoginContext.Provider>
+    <Router history={history}>
+      <Switch className="app">
+        <Route exact path="/" component={HomeScreenM} />
+        <Route exact path="/studios" component={StudioListScreenM} />
+        <Route exact path="/concepts" component={ConceptListScreenM} />
+        <Route exact path="/reviews" component={ReviewListScreenM} />
+        <Route exact path="/studios/:slug" component={StudioInfoScreenM} />
+        <Route exact path="/users" component={UserScreenM} />
+        <Route exact path="/hearts" component={HeartScreenM} />
+        <Route exact path="/notices" component={NoticeListScreenM} />
+        <Route path="/notices/:noticeId" component={NoticeScreenM} />
+        <Route exact path="/login" component={LoginScreenM} />
+        <Route
+          path="/login/:provider/callback"
+          component={SocialLoginCallbackScreenM}
+        />
+        <Route exact path="/changePassword" component={ChangePasswordScreenM} />
+        <Route path="/newPassword" component={NewPasswordScreenM} />
+        <Route exact path="/changeName" component={ChangeNameScreenM} />
+        <Route exact path="/startWithEmail" component={StartWithEmailScreenM} />
+        <Route path="/confirmEmail" component={ConfirmEmailScreenM} />
+        <Route exact path="/users/myInfo" component={MyInfoScreenM} />
+        <Route exact path="/users/myReview" component={MyReviewScreenM} />
+        <Route exact path="/users/leave" component={LeaveScreenM} />
+        <Route exact path="/error" component={ErrorScreenM} />
+        <Route path="/kakaoLink/:kakaoID" component={KakaoLinkScreenM} />
+        <Route path="/kakaoPhone/:kakaoID" component={KakaoPhoneScreenM} />
+        <Route component={ErrorScreenM} />
+      </Switch>
+    </Router>
   );
 };
 

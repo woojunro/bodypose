@@ -1,11 +1,11 @@
-import { useMutation, useQuery } from '@apollo/client';
-import React, { useContext, useState } from 'react';
+import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
+import React, { useState } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 import { Redirect, useHistory } from 'react-router-dom';
+import { IsLoggedInVar } from '../../../apollo';
 import { CheckValidUserName } from '../../../components/functions/Login/LoginFunctions';
 import AppLoadingScreen from '../../../components/mobileComponents/AppLoadingScreen';
 import InputForm from '../../../components/mobileComponents/Login/InputForm';
-import LoginContext from '../../../contexts/LoginContext';
 import { CHANGE_NICKNAME_MUTATION } from '../../../gql/mutations/ChangeNicknameMutation';
 import { MY_PROFILE_QUERY } from '../../../gql/queries/MyProfileQuery';
 
@@ -13,16 +13,11 @@ import './ChangeNameScreen.css';
 
 const ChangeNameScreen = () => {
   const history = useHistory();
-  const LoggedIn = useContext(LoginContext);
+  const isLoggedIn = useReactiveVar(IsLoggedInVar);
   const [name, setName] = useState('');
   const [isNameAlreadyUsed, setIsNameAlreadyUsed] = useState(false);
 
-  const { data, loading, refetch } = useQuery(MY_PROFILE_QUERY, {
-    fetchPolicy: 'network-only',
-    onError: () => {
-      LoggedIn.setLoggedIn(false);
-    },
-  });
+  const { data, loading, refetch } = useQuery(MY_PROFILE_QUERY);
 
   const [updateNickname, { loading: updateLoading }] = useMutation(
     CHANGE_NICKNAME_MUTATION,
@@ -48,7 +43,7 @@ const ChangeNameScreen = () => {
     updateNickname({ variables: { nickname: name } });
   };
 
-  if (!LoggedIn.loggedIn) return <Redirect to="/error" />;
+  if (!isLoggedIn) return <Redirect to="/error" />;
 
   return (
     <>

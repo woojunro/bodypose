@@ -1,19 +1,18 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 import { useHistory, Redirect } from 'react-router-dom';
-import LoginContext from '../../../contexts/LoginContext';
 import ReviewScrollView from '../../../components/mobileComponents/ReviewList/ReviewScrollView';
-import { useQuery } from '@apollo/client';
+import { useQuery, useReactiveVar } from '@apollo/client';
 import { MY_STUDIO_REVIEWS_QUERY } from '../../../gql/queries/StudioReviewQuery';
 import AppLoadingScreen from '../../../components/mobileComponents/AppLoadingScreen';
 import FullReviewScreen from '../FullReviewScreen';
 import { MY_PROFILE_QUERY } from '../../../gql/queries/MyProfileQuery';
-import { clearTokenAndCache } from '../../../apollo';
 
 import './MyReviewScreen.css';
+import { IsLoggedInVar } from '../../../apollo';
 
 const MyReviewScreen = () => {
-  const LoggedIn = useContext(LoginContext);
+  const isLoggedIn = useReactiveVar(IsLoggedInVar);
   const history = useHistory();
 
   const [isReviewDetailOpen, setIsReviewDetailOpen] = useState(false);
@@ -23,18 +22,8 @@ const MyReviewScreen = () => {
     fetchPolicy: 'network-only',
   });
 
-  const { data: profileData, loading: profileLoading } = useQuery(
-    MY_PROFILE_QUERY,
-    {
-      onError: () => {
-        if (LoggedIn.loggedIn) {
-          clearTokenAndCache();
-          LoggedIn.setLoggedIn(false);
-          history.push('/error');
-        }
-      },
-    }
-  );
+  const { data: profileData, loading: profileLoading } =
+    useQuery(MY_PROFILE_QUERY);
 
   const openReviewDetail = id => {
     setReviewDetailId(id);
@@ -52,7 +41,7 @@ const MyReviewScreen = () => {
     setReviewDetailId(-1);
   };
 
-  if (!LoggedIn.loggedIn) {
+  if (!isLoggedIn) {
     return <Redirect to={'/error'} />;
   }
   return (
@@ -62,7 +51,7 @@ const MyReviewScreen = () => {
         isReviewDetailOpen && (
           <FullReviewScreen
             id={reviewDetailId}
-            nickname={profileData?.myProfile?.profile.nickname}
+            nickname={profileData?.userProfile?.profile?.nickname}
             close={closeReviewDetail}
             refetchReviews={refetchReviews}
           />
