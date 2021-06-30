@@ -17,6 +17,11 @@ const UserScreen = () => {
   const history = useHistory();
 
   const { data, loading } = useQuery(MY_USER_INFO_QUERY, {
+    onCompleted: data => {
+      if (!data.userInfo?.userInfo?.profile) {
+        history.push('/createProfile');
+      }
+    },
     onError: () => {
       IsLoggedInVar(false);
     },
@@ -29,7 +34,7 @@ const UserScreen = () => {
   const LogoutFunction = async () => {
     await logout();
     history.push('/');
-    clearTokenAndCache();
+    await clearTokenAndCache();
     IsLoggedInVar(false);
   };
 

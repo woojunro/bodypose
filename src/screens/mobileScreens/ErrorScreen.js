@@ -7,9 +7,12 @@ const ErrorScreen = () => {
 
   useEffect(() => {
     ReactGA.pageview(window.location.pathname);
-    setTimeout(() => {
+    const goToHome = setTimeout(() => {
       history.replace('/');
     }, 3000);
+    return () => {
+      clearTimeout(goToHome);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

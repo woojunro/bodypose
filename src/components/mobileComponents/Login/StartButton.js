@@ -27,9 +27,9 @@ export const StartButton = ({
           try {
             const res = await axios.post(url, payload);
             if (res.data.access && res.data.refresh) {
-              clearTokenAndCache();
+              await clearTokenAndCache();
               IsLoggedInVar(true);
-              history.push('/');
+              history.push('/createProfile');
             } else {
               alertError();
             }

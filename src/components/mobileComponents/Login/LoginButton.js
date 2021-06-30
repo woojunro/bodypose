@@ -25,7 +25,7 @@ const LoginButton = ({ email, password, setValidInfo, setErrorMessage }) => {
       axios.defaults.withCredentials = true;
       const res = await axios.post(url, payload);
       if (res.data.access && res.data.refresh) {
-        clearTokenAndCache();
+        await clearTokenAndCache();
         IsLoggedInVar(true);
       }
     } catch (e) {

@@ -25,8 +25,8 @@ import ConfirmEmailScreenM from '../screens/mobileScreens/AboutAuth/ConfirmEmail
 import KakaoLinkScreenM from '../screens/mobileScreens/KakaoLinkScreen';
 import KakaoPhoneScreenM from '../screens/mobileScreens/KakaoPhoneScreen';
 import SocialLoginCallbackScreenM from '../screens/mobileScreens/AboutAuth/SocialLoginCallbackScreen';
-import ChangeNameScreenM from '../screens/mobileScreens/AboutUser/ChangeNameScreen';
 import MyProfileScreenM from '../screens/mobileScreens/AboutUser/MyProfileScreen';
+import CreateProfileScreenM from '../screens/mobileScreens/AboutUser/CreateProfileScreen';
 import './App.css';
 import AppLoadingScreen from './mobileComponents/AppLoadingScreen';
 import { MY_USER_INFO_QUERY } from '../gql/queries/MyUserInfoQuery';
@@ -46,8 +46,7 @@ const App = () => {
     onCompleted: data => {
       IsLoggedInVar(true);
       if (!data.userInfo?.userInfo?.profile) {
-        // 프로필 설정 창으로...
-        console.log('NO_PROFILE');
+        history.push('/createProfile');
       }
       setIsAppLoading(false);
     },
@@ -82,6 +81,7 @@ const App = () => {
           path="/login/:provider/callback"
           component={SocialLoginCallbackScreenM}
         />
+        <Route exact path="/createProfile" component={CreateProfileScreenM} />
         <Route exact path="/changePassword" component={ChangePasswordScreenM} />
         <Route path="/newPassword" component={NewPasswordScreenM} />
         <Route exact path="/startWithEmail" component={StartWithEmailScreenM} />
@@ -90,7 +90,6 @@ const App = () => {
         <Route exact path="/users/myReview" component={MyReviewScreenM} />
         <Route exact path="/users/leave" component={LeaveScreenM} />
         <Route exact path="/users/profile" component={MyProfileScreenM} />
-        <Route exact path="/changeName" component={ChangeNameScreenM} />
         <Route exact path="/error" component={ErrorScreenM} />
         <Route path="/kakaoLink/:kakaoID" component={KakaoLinkScreenM} />
         <Route path="/kakaoPhone/:kakaoID" component={KakaoPhoneScreenM} />

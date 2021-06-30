@@ -17,6 +17,8 @@ import { Redirect } from 'react-router-dom';
 import { UPDATE_MY_PROFILE_MUTATION } from '../../../gql/mutations/ProfileMutation';
 import { alertError } from '../../../components/functions/Common/alertError';
 import { CheckValidUserName } from '../../../components/functions/Login/LoginFunctions';
+import { GENDER_OPTIONS } from '../../../constants/genderOptions';
+import { extractGenderLabel } from '../../../components/functions/Common/extractGenderLabel';
 
 const MyProfileScreen = () => {
   const isLoggedIn = useReactiveVar(IsLoggedInVar);
@@ -26,15 +28,6 @@ const MyProfileScreen = () => {
   const [isMale, setIsMale] = useState(false);
   const [isNicknameDuplicate, setIsNicknameDuplicate] = useState(false);
 
-  const genderOptions = [
-    { value: true, label: '남성' },
-    { value: false, label: '여성' },
-    { value: null, label: '선택 안함' },
-  ];
-
-  const extractGenderLabel = isMale =>
-    isMale ? '남성' : isMale === false ? '여성' : '선택 안함';
-
   const { data, loading, refetch, networkStatus } = useQuery(MY_PROFILE_QUERY, {
     notifyOnNetworkStatusChange: true,
     onCompleted: data => {
@@ -43,8 +36,7 @@ const MyProfileScreen = () => {
         initializeProfileData(data);
       } else {
         if (error === 'PROFILE_NOT_FOUND') {
-          // 프로필 생성 창으로
-          console.log('NO_PROFILE');
+          history.push('/createProfile');
         }
       }
     },
@@ -144,7 +136,7 @@ const MyProfileScreen = () => {
           {isEditing ? (
             <Select
               className="myProfileGenderSelect"
-              options={genderOptions}
+              options={GENDER_OPTIONS}
               onChange={selectedOption => setIsMale(selectedOption.value)}
               value={{ value: isMale, label: extractGenderLabel(isMale) }}
             />

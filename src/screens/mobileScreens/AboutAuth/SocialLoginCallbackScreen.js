@@ -3,7 +3,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 import { Redirect, useHistory, useLocation, useParams } from 'react-router-dom';
-import { clearTokenAndCache, IsLoggedInVar } from '../../../apollo';
+import { IsLoggedInVar } from '../../../apollo';
 import { CheckValidEmail } from '../../../components/functions/Login/LoginFunctions';
 import InputForm from '../../../components/mobileComponents/Login/InputForm';
 import { BASE_URL } from '../../../constants/urls';
@@ -34,8 +34,7 @@ const SocialLoginCallbackScreen = () => {
       axios.defaults.withCredentials = true;
       const res = await axios.post(url, payload);
       if (res.data.access && res.data.refresh) {
-        clearTokenAndCache();
-        IsLoggedInVar(true);
+        window.location.reload();
       }
     } catch (e) {
       const errorMessage = e.response?.data?.message;

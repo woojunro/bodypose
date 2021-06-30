@@ -19,9 +19,9 @@ const LeaveScreen = () => {
   const { loading: profileLoading } = useQuery(MY_PROFILE_QUERY);
 
   const [unregister, { loading }] = useMutation(LEAVE_BODYPOSE_MUTATION, {
-    onCompleted: data => {
+    onCompleted: async data => {
       if (data.deleteMyAccount.ok) {
-        clearTokenAndCache();
+        await clearTokenAndCache();
         setIsLeaved(true);
       } else {
         alert('오류가 발생하였습니다. 다시 시도해주세요.');
@@ -37,12 +37,12 @@ const LeaveScreen = () => {
   useEffect(() => {
     if (isLeaved) {
       setTimeout(() => {
-        clearTokenAndCache();
         history.push('/');
         IsLoggedInVar(false);
       }, 2000);
     }
     return null;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLeaved]);
 
   if (!isLoggedIn) {
