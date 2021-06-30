@@ -28,9 +28,14 @@ const PhotoItem = ({
   const renderedItem = (itemList) =>
     itemList.map((item) => {
       const peopleCountStr = String(item.peopleCount);
+      const conceptCountStr = String(item.conceptCount);
       var minmaxPeopleCount = 0;
+      var minmaxConceptCount = 0;
       if (peopleCountStr.includes(126)) {
         minmaxPeopleCount = splitMinMaxPeopleCount(peopleCountStr);
+      }
+      if (conceptCountStr.includes(126)) {
+        minmaxConceptCount = splitMinMaxPeopleCount(conceptCountStr);
       }
       return (
         <div key={`studioProduct-${item.id}`} className="photoItemContainer">
@@ -44,7 +49,11 @@ const PhotoItem = ({
                       ? `${minmaxPeopleCount}인촬영`
                       : `${item.peopleCount}인촬영 `
                     : peopleCountStr.includes(126)
-                    ? `${minmaxPeopleCount}인촬영 - ${item.conceptCount}컨셉`
+                    ? conceptCountStr.includes(126)
+                      ? `${minmaxPeopleCount}인촬영 - ${minmaxConceptCount}컨셉`
+                      : `${minmaxPeopleCount}인촬영 - ${item.conceptCount}컨셉`
+                    : conceptCountStr.includes(126)
+                    ? `${item.peopleCount}인촬영 - ${minmaxConceptCount}컨셉`
                     : `${item.peopleCount}인촬영 - ${item.conceptCount}컨셉`}
                 </div>
                 {currentStudio.isOriginalPhotoProvided ? (

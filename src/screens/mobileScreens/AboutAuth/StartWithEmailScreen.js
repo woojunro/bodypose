@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import InputForm from '../../../components/mobileComponents/Login/InputForm';
 import { StartButton } from '../../../components/mobileComponents/Login/StartButton';
 import {
