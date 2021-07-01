@@ -11,6 +11,7 @@ import { useQuery, useReactiveVar } from '@apollo/client';
 import { clearTokenAndCache, IsLoggedInVar } from '../../../apollo';
 import { MY_USER_INFO_QUERY } from '../../../gql/queries/MyUserInfoQuery';
 import { logout } from '../../../components/functions/Login/Logout';
+import { shouldUpdateEmail } from '../../../constants/shouldUpdateEmail';
 
 const UserScreen = () => {
   const isLoggedIn = useReactiveVar(IsLoggedInVar);
@@ -18,7 +19,10 @@ const UserScreen = () => {
 
   const { data, loading } = useQuery(MY_USER_INFO_QUERY, {
     onCompleted: data => {
-      if (!data.userInfo?.userInfo?.profile) {
+      const email = data.userInfo?.userInfo?.email;
+      if (!email || shouldUpdateEmail(email)) {
+        history.push('/updateEmail');
+      } else if (!data.userInfo?.userInfo?.profile) {
         history.push('/createProfile');
       }
     },

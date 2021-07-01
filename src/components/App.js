@@ -27,9 +27,11 @@ import KakaoPhoneScreenM from '../screens/mobileScreens/KakaoPhoneScreen';
 import SocialLoginCallbackScreenM from '../screens/mobileScreens/AboutAuth/SocialLoginCallbackScreen';
 import MyProfileScreenM from '../screens/mobileScreens/AboutUser/MyProfileScreen';
 import CreateProfileScreenM from '../screens/mobileScreens/AboutUser/CreateProfileScreen';
+import UpdateEmailScreenM from '../screens/mobileScreens/AboutUser/UpdateEmailScreen';
 import './App.css';
 import AppLoadingScreen from './mobileComponents/AppLoadingScreen';
 import { MY_USER_INFO_QUERY } from '../gql/queries/MyUserInfoQuery';
+import { shouldUpdateEmail } from '../constants/shouldUpdateEmail';
 
 ReactGA.initialize('UA-190823210-1');
 const history = createBrowserHistory();
@@ -45,7 +47,10 @@ const App = () => {
     fetchPolicy: 'network-only',
     onCompleted: data => {
       IsLoggedInVar(true);
-      if (!data.userInfo?.userInfo?.profile) {
+      const email = data.userInfo?.userInfo?.email;
+      if (!email || shouldUpdateEmail(email)) {
+        history.push('/updateEmail');
+      } else if (!data.userInfo?.userInfo?.profile) {
         history.push('/createProfile');
       }
       setIsAppLoading(false);
@@ -82,6 +87,7 @@ const App = () => {
           component={SocialLoginCallbackScreenM}
         />
         <Route exact path="/createProfile" component={CreateProfileScreenM} />
+        <Route exact path="/updateEmail" component={UpdateEmailScreenM} />
         <Route exact path="/changePassword" component={ChangePasswordScreenM} />
         <Route path="/newPassword" component={NewPasswordScreenM} />
         <Route exact path="/startWithEmail" component={StartWithEmailScreenM} />
