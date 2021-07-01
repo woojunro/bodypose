@@ -35,29 +35,45 @@ export const LOG_ENTITIES = [
   LogStudioReservation,
 ];
 
-export const ENTITY_LIST = [
+export const USERS_SERVICE_ENTITIES = [
   User,
-  RefreshToken,
-  UserProfile,
   UserOauth,
+  UserProfile,
   Verification,
+  PasswordReset,
+];
+
+export const AUTH_SERVICE_ENTITIES = [RefreshToken];
+
+export const STUDIOS_SERVICE_ENTITIES = [
   Studio,
   Branch,
   Catchphrase,
-  StudioPhoto,
-  BackgroundConcept,
-  CostumeConcept,
-  ObjectConcept,
   StudioProduct,
   HairMakeupShop,
   HairMakeupProduct,
   AdditionalProduct,
-  UsersReviewStudios,
-  ReviewPhoto,
-  PasswordReset,
-  Notice,
   UsersHeartStudios,
-  UsersHeartStudioPhotos,
+  UsersReviewStudios,
   UsersReportStudioReviews,
+];
+
+export const PHOTOS_SERVICE_ENTITIES = [
+  StudioPhoto,
+  BackgroundConcept,
+  CostumeConcept,
+  ObjectConcept,
+  ReviewPhoto,
+  UsersHeartStudioPhotos,
+];
+
+export const NOTICES_SERVICE_ENTITIES = [Notice];
+
+export const ENTITY_LIST = [
+  ...USERS_SERVICE_ENTITIES,
+  ...AUTH_SERVICE_ENTITIES,
+  ...STUDIOS_SERVICE_ENTITIES,
+  ...PHOTOS_SERVICE_ENTITIES,
+  ...NOTICES_SERVICE_ENTITIES,
   ...LOG_ENTITIES,
 ];
