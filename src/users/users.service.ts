@@ -309,12 +309,8 @@ export class UsersService {
       const isNicknameValid = this.checkNicknameValidity(nickname);
       if (!isNicknameValid) return CommonError('INVALID_NICKNAME');
 
-      const isProfileAlreadyExists = await this.userProfileRepository
-        .createQueryBuilder('profile')
-        .select('profile.id')
-        .where('profile.userId = :id', { id: user.id })
-        .getOne();
-      if (isProfileAlreadyExists) return CommonError('PROFILE_ALREADY_EXISTS');
+      const { profile } = await this.getProfile(user, {});
+      if (profile) return CommonError('PROFILE_ALREADY_EXISTS');
 
       // Check if there exists a user with the inputted nickname
       const duplicateNickname = await this.userProfileRepository.findOne(
@@ -323,13 +319,13 @@ export class UsersService {
       );
       if (duplicateNickname) return CommonError('DUPLICATE_NICKNAME');
 
-      await this.userProfileRepository.insert(
+      const { id } = await this.userProfileRepository.save(
         this.userProfileRepository.create({
           nickname,
           isMale,
-          user,
         }),
       );
+      await this.userRepository.update(user.id, { profile: { id } });
 
       return { ok: true };
     } catch (e) {
@@ -369,10 +365,13 @@ export class UsersService {
     ...profile
   }: AdminUpdateProfileInput): Promise<UpdateProfileOutput> {
     try {
-      const profileToUpdate = await this.userProfileRepository
-        .createQueryBuilder('profile')
-        .where('profile.userId = :userId', { userId })
+      const u = await this.userRepository
+        .createQueryBuilder('u')
+        .select('u.id')
+        .leftJoinAndSelect('u.profile', 'p')
+        .where('u.id = :id', { id: userId })
         .getOne();
+      const profileToUpdate = u?.profile;
       if (!profileToUpdate) return CommonError('PROFILE_NOT_FOUND');
 
       await this.userProfileRepository.save({ ...profileToUpdate, ...profile });

@@ -36,7 +36,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any) {
     try {
       const user = await this.usersService.getUserById(payload.id);
-      return user.isLocked ? null : user;
+      return user ? (user.isLocked ? null : user) : null;
     } catch (e) {
       console.log(e);
       return null;
