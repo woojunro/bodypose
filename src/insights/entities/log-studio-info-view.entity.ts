@@ -9,6 +9,7 @@ export enum ViewSource {
   STUDIO_PHOTO = 'STUDIO_PHOTO',
   STUDIO_REVIEW = 'STUDIO_REVIEW',
   HOME = 'HOME',
+  ETC = 'ETC',
 }
 
 registerEnumType(ViewSource, { name: 'ViewSource' });
