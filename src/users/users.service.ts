@@ -1,7 +1,12 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { hash } from 'bcrypt';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AuthService } from 'src/auth/auth.service';
 import { unlinkKakaoUser } from 'src/auth/utils/kakaoOAuth.util';
 import {
   CommonError,
@@ -19,6 +24,7 @@ import {
   CreateProfileInput,
   CreateProfileOutput,
   DeleteProfileImageInput,
+  GetProfileInput,
   GetProfileOutput,
   UpdateProfileImageInput,
   UpdateProfileInput,
@@ -32,16 +38,20 @@ import {
 } from './dtos/update-password.dto';
 import { VerifyUserInput, VerifyUserOutput } from './dtos/verify-user.dto';
 import { PasswordReset } from './entities/password-reset.entity';
-import {
-  SocialAccount,
-  SocialProvider,
-} from './entities/social-account.entity';
+import { UserOauth, OAuthProvider } from './entities/user-oauth.entity';
 import { UserProfile } from './entities/user-profile.entity';
 import { UserType, User } from './entities/user.entity';
 import { Verification } from './entities/verification.entity';
-import { GqlExecutionContext } from '@nestjs/graphql';
 import { UploadsService } from 'src/uploads/uploads.service';
 import { CoreOutput } from 'src/common/dtos/output.dto';
+import { AuthService } from 'src/auth/auth.service';
+import {
+  NO_PROFILE_NICKNAME,
+  PASSWORD_HASH_ROUNDS,
+} from 'src/common/constants/common.constant';
+import { LockUserInput, LockUserOutput } from './dtos/lock-user.dto';
+import { UpdateEmailInput, UpdateEmailOutput } from './dtos/update-email.dto';
+import { GetUserInfoInput, GetUserInfoOutput } from './dtos/get-user-info.dto';
 
 @Injectable()
 export class UsersService {
@@ -50,22 +60,21 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(UserProfile)
     private readonly userProfileRepository: Repository<UserProfile>,
-    @InjectRepository(SocialAccount)
-    private readonly socialAccountRepository: Repository<SocialAccount>,
+    @InjectRepository(UserOauth)
+    private readonly userOAuthRepository: Repository<UserOauth>,
     @InjectRepository(Verification)
     private readonly verificationRepository: Repository<Verification>,
     @InjectRepository(PasswordReset)
     private readonly passwordResetRepository: Repository<PasswordReset>,
-    @Inject(forwardRef(() => AuthService))
-    private readonly authService: AuthService,
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
     @Inject(forwardRef(() => UploadsService))
     private readonly uploadsService: UploadsService,
   ) {}
 
-  checkPasswordSecurity(password?: string): boolean {
-    if (!password) return false;
+  checkPasswordSecurity(password: string): boolean {
     // At least one lowercase
     // At least one number
     // At least eight characters
@@ -81,17 +90,18 @@ export class UsersService {
     );
   }
 
-  async createUserWithEmail(
-    { email, password, nickname }: CreateUserWithEmailInput,
-    context: GqlExecutionContext,
-  ): Promise<CreateUserWithEmailOutput> {
+  isMineOrAdmin(user: User, id: number): boolean {
+    return user.type === UserType.ADMIN || user.id === id;
+  }
+
+  async createUserWithEmail({
+    email,
+    password,
+  }: CreateUserWithEmailInput): Promise<CreateUserWithEmailOutput> {
     try {
       // Check password security
       const isPasswordSecure = this.checkPasswordSecurity(password);
       if (!isPasswordSecure) return CommonError('INSECURE_PASSWORD');
-      // Check nickname validity
-      const isNicknameValid = this.checkNicknameValidity(nickname);
-      if (!isNicknameValid) return CommonError('INVALID_NICKNAME');
       // Check if there exists a user with the inputted email
       const emailUser = await this.userRepository
         .createQueryBuilder('user')
@@ -100,27 +110,19 @@ export class UsersService {
         .withDeleted()
         .getOne();
       if (emailUser) return CommonError('DUPLICATE_EMAIL');
-      // Check if there exists a user with the inputted nickname
-      const nicknameProfile = await this.userProfileRepository.findOne(
-        { nickname },
-        { select: ['id'] },
-      );
-      if (nicknameProfile) return CommonError('DUPLICATE_NICKNAME');
+
+      // Hash the password
+      const hashedPassword = await hash(password, PASSWORD_HASH_ROUNDS);
 
       // Create and save the user
       const newUser = this.userRepository.create({
         email,
-        password,
+        password: hashedPassword,
         type: UserType.USER,
-        lastLoginAt: new Date(),
+        isLocked: false,
         isVerified: false,
       });
       const createdUser = await this.userRepository.save(newUser);
-
-      // Create profile for the user
-      const newProfile = this.userProfileRepository.create({ nickname });
-      newProfile.user = createdUser;
-      await this.userProfileRepository.save(newProfile);
 
       // Create verification code and send it to the user
       const newVerification = this.verificationRepository.create();
@@ -128,13 +130,12 @@ export class UsersService {
       const { code } = await this.verificationRepository.save(newVerification);
       this.mailService.sendEmailVerification(
         email,
-        nickname,
+        NO_PROFILE_NICKNAME,
         createdUser.id,
         code,
       );
 
-      // Return tokens after login
-      return await this.authService.emailLogin({ email, password }, context);
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
@@ -143,40 +144,77 @@ export class UsersService {
 
   async createSocialAccount(
     email: string,
-    provider: SocialProvider,
+    provider: OAuthProvider,
     socialId: string,
+    isVerified: boolean,
   ): Promise<User> {
-    let user = await this.userRepository
-      .createQueryBuilder('user')
-      .where('user.email = :email', { email })
-      .withDeleted()
-      .getOne();
-    if (!user) {
-      user = await this.userRepository.save(
+    try {
+      const user = await this.userRepository.save(
         this.userRepository.create({
           email,
-          lastLoginAt: new Date(),
-          isVerified: true,
+          isVerified,
           isLocked: false,
           type: UserType.USER,
         }),
       );
-    }
+      await this.userOAuthRepository.save(
+        this.userOAuthRepository.create({
+          user,
+          provider,
+          socialId,
+        }),
+      );
 
-    await this.socialAccountRepository.save(
-      this.socialAccountRepository.create({
-        user,
+      if (!isVerified) {
+        // Create verification code and send it to the user
+        const newVerification = this.verificationRepository.create();
+        newVerification.user = user;
+        const { code } = await this.verificationRepository.save(
+          newVerification,
+        );
+        this.mailService.sendEmailVerification(
+          email,
+          NO_PROFILE_NICKNAME,
+          user.id,
+          code,
+        );
+      }
+
+      return user;
+    } catch (e) {
+      console.log(e);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async createUserOAuth(
+    id: number,
+    provider: OAuthProvider,
+    socialId: string,
+  ): Promise<CoreOutput> {
+    try {
+      const user = await this.userRepository.findOne(id, {
+        select: ['id', 'isVerified', 'password'],
+      });
+      const oauth = await this.userOAuthRepository.findOne({
         provider,
         socialId,
-      }),
-    );
-
-    // The user is verified
-    user.password = null;
-    user.isVerified = true;
-    user = await this.userRepository.save(user);
-
-    return user;
+      });
+      if (oauth) return CommonError('DUPLICATE_OAUTH');
+      const newOAuth = this.userOAuthRepository.create({
+        user: { id },
+        provider,
+        socialId,
+      });
+      await this.userOAuthRepository.save(newOAuth);
+      user.isVerified = true;
+      user.password = null;
+      await this.userRepository.save(user);
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
   }
 
   async getUserById(id: number): Promise<User> {
@@ -186,29 +224,34 @@ export class UsersService {
     );
   }
 
-  async getUserByEmail(email: string): Promise<User> {
-    const user = this.userRepository
-      .createQueryBuilder('user')
-      .addSelect('user.password')
-      .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
-      .where('user.email = :email', { email })
+  async getUserByEmail(email: string, needPassword = true): Promise<User> {
+    let query = this.userRepository
+      .createQueryBuilder('u')
+      .select(['u.id', 'u.type', 'u.isLocked']);
+    if (needPassword) {
+      query = query.addSelect('u.password');
+    }
+    const user = query
+      .leftJoinAndSelect('u.oauthList', 'oauth')
+      .where('u.email = :email', { email })
       .withDeleted()
       .getOne();
     return user;
   }
 
   async getUserBySocialId(
-    provider: SocialProvider,
+    provider: OAuthProvider,
     socialId: string,
   ): Promise<User> {
     const user = await this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
-      .where('socialAccount.provider = :provider', { provider })
-      .andWhere('socialAccount.socialId = :socialId', { socialId })
+      .createQueryBuilder('u')
+      .select(['u.id', 'u.isLocked'])
+      .leftJoinAndSelect('u.oauthList', 'oauth')
+      .where('oauth.provider = :provider', { provider })
+      .andWhere('oauth.socialId = :socialId', { socialId })
       .withDeleted()
       .getOne();
-
+    console.log(user);
     return user;
   }
 
@@ -222,21 +265,52 @@ export class UsersService {
     this.userRepository.save(user);
   }
 
+  async getUserInfo(
+    user: User,
+    { id }: GetUserInfoInput,
+  ): Promise<GetUserInfoOutput> {
+    if (id) {
+      if (!this.isMineOrAdmin(user, id)) {
+        return CommonError('UNAUTHORIZED');
+      }
+    }
+
+    const queryId = id || user.id;
+    const userInfo = await this.userRepository
+      .createQueryBuilder('u')
+      .select([
+        'u.id',
+        'u.createdAt',
+        'u.type',
+        'u.email',
+        'u.lastLoginAt',
+        'u.isVerified',
+        'u.deletedAt',
+      ])
+      .leftJoinAndSelect('u.oauthList', 'o')
+      .leftJoinAndSelect('u.profile', 'p')
+      .where('u.id = :queryId', { queryId })
+      .withDeleted()
+      .getOne();
+
+    if (!userInfo) return CommonError('USER_NOT_FOUND');
+    return {
+      ok: true,
+      userInfo,
+    };
+  }
+
   async createMyProfile(
     user: User,
-    { nickname, gender }: CreateProfileInput,
+    { nickname, isMale }: CreateProfileInput,
   ): Promise<CreateProfileOutput> {
     try {
       // Check nickname validity
       const isNicknameValid = this.checkNicknameValidity(nickname);
       if (!isNicknameValid) return CommonError('INVALID_NICKNAME');
 
-      const isProfileAlreadyExists = await this.userProfileRepository
-        .createQueryBuilder('profile')
-        .select('profile.id')
-        .where('profile.userId = :id', { id: user.id })
-        .getOne();
-      if (isProfileAlreadyExists) return CommonError('PROFILE_ALREADY_EXISTS');
+      const { profile } = await this.getProfile(user, {});
+      if (profile) return CommonError('PROFILE_ALREADY_EXISTS');
 
       // Check if there exists a user with the inputted nickname
       const duplicateNickname = await this.userProfileRepository.findOne(
@@ -245,13 +319,13 @@ export class UsersService {
       );
       if (duplicateNickname) return CommonError('DUPLICATE_NICKNAME');
 
-      await this.userProfileRepository.insert(
+      const { id } = await this.userProfileRepository.save(
         this.userProfileRepository.create({
           nickname,
-          gender,
-          user,
+          isMale,
         }),
       );
+      await this.userRepository.update(user.id, { profile: { id } });
 
       return { ok: true };
     } catch (e) {
@@ -260,12 +334,20 @@ export class UsersService {
     }
   }
 
-  async getMyProfile({ id }: User): Promise<GetProfileOutput> {
+  async getProfile(
+    user: User,
+    { id }: GetProfileInput,
+  ): Promise<GetProfileOutput> {
     try {
-      const profile = await this.userProfileRepository
-        .createQueryBuilder('profile')
-        .where('profile.userId = :id', { id })
+      const queryId = id || user.id;
+      const queryUser = await this.userRepository
+        .createQueryBuilder('u')
+        .select('u.id')
+        .leftJoinAndSelect('u.profile', 'p')
+        .where('u.id = :queryId', { queryId })
+        .withDeleted()
         .getOne();
+      const profile = queryUser?.profile;
 
       return {
         ok: Boolean(profile),
@@ -283,10 +365,13 @@ export class UsersService {
     ...profile
   }: AdminUpdateProfileInput): Promise<UpdateProfileOutput> {
     try {
-      const profileToUpdate = await this.userProfileRepository
-        .createQueryBuilder('profile')
-        .where('profile.userId = :userId', { userId })
+      const u = await this.userRepository
+        .createQueryBuilder('u')
+        .select('u.id')
+        .leftJoinAndSelect('u.profile', 'p')
+        .where('u.id = :id', { id: userId })
         .getOne();
+      const profileToUpdate = u?.profile;
       if (!profileToUpdate) return CommonError('PROFILE_NOT_FOUND');
 
       await this.userProfileRepository.save({ ...profileToUpdate, ...profile });
@@ -311,8 +396,9 @@ export class UsersService {
       }
 
       // Check if the profile exists
-      const { ok, error, profile: profileToUpdate } = await this.getMyProfile(
+      const { ok, error, profile: profileToUpdate } = await this.getProfile(
         user,
+        {},
       );
       if (!ok) return { ok, error };
 
@@ -335,8 +421,9 @@ export class UsersService {
   ): Promise<UpdateProfileOutput> {
     try {
       // Check if the profile exists
-      const { ok, error, profile: profileToUpdate } = await this.getMyProfile(
+      const { ok, error, profile: profileToUpdate } = await this.getProfile(
         user,
+        {},
       );
       if (!ok) return { ok, error };
 
@@ -372,7 +459,7 @@ export class UsersService {
         if (!profileToUpdate) return CommonError('PROFILE_NOT_FOUND');
       } else {
         // Check if the profile exists
-        const { ok, error, profile } = await this.getMyProfile(user);
+        const { ok, error, profile } = await this.getProfile(user, {});
         if (!ok) return { ok, error };
         profileToUpdate = profile;
       }
@@ -409,9 +496,9 @@ export class UsersService {
           error: 'USER_NOT_FOUND',
         };
       }
-      for (const socialAccount of user.socialAccounts) {
+      for (const socialAccount of []) {
         switch (socialAccount.provider) {
-          case SocialProvider.KAKAO:
+          case OAuthProvider.KAKAO:
             const adminKey = this.configService.get<string>('KAKAO_ADMIN_KEY');
             const result = await unlinkKakaoUser(
               socialAccount.socialId,
@@ -431,6 +518,44 @@ export class UsersService {
     }
   }
 
+  async updateEmail(
+    { userId, email }: UpdateEmailInput,
+    user: User,
+  ): Promise<UpdateEmailOutput> {
+    try {
+      if (!this.isMineOrAdmin(user, userId)) {
+        return CommonError('INVALID_REQUEST');
+      }
+      const doesUserExist = await this.getUserById(userId);
+      if (!doesUserExist) return CommonError('USER_NOT_FOUND');
+      // Check duplicate email
+      const isEmailDuplicate = await this.userRepository
+        .createQueryBuilder('u')
+        .select('u.id')
+        .where('u.email = :email', { email })
+        .withDeleted()
+        .getOne();
+      if (isEmailDuplicate) return CommonError('DUPLICATE_EMAIL');
+      // Update email and set isVerified to false
+      const payload = this.userRepository.create({
+        id: userId,
+        email,
+        isVerified: false,
+      });
+      const updatedUser = await this.userRepository.save(payload);
+      // Send email verification mail
+      const { error } = await this.resendVerificationMail(updatedUser);
+      return {
+        ok: true,
+        error,
+        email: updatedUser.email,
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
   async verifyUser({
     userId,
     code,
@@ -438,18 +563,22 @@ export class UsersService {
     try {
       const verification = await this.verificationRepository
         .createQueryBuilder('verification')
-        .innerJoinAndSelect('verification.user', 'user')
+        .innerJoin('verification.user', 'user')
+        .addSelect(['user.id', 'user.isVerified'])
         .where('user.id = :userId', { userId })
         .getOne();
-      if (!verification || verification.code !== code) {
-        return {
-          ok: false,
-          error: 'INVALID_REQUEST',
-        };
+      const isValid =
+        verification &&
+        verification.updatedAt >= new Date(Date.now() - 3600 * 1000 * 24) &&
+        verification.code === code;
+      if (!isValid) return CommonError('INVALID_REQUEST');
+      if (verification.user.isVerified) {
+        await this.verificationRepository.delete(verification.id);
+        return CommonError('ALREADY_VERIFIED');
       }
       verification.user.isVerified = true;
       await this.userRepository.save(verification.user);
-      await this.verificationRepository.delete({ id: verification.id });
+      await this.verificationRepository.delete(verification.id);
       return { ok: true };
     } catch (e) {
       console.log(e);
@@ -465,22 +594,28 @@ export class UsersService {
         .where('verification.userId = :id', { id: user.id })
         .getOne();
       if (!verification) {
+        // Create one
         verification = await this.verificationRepository.save(
           this.verificationRepository.create({
             user: { id: user.id },
           }),
         );
+      } else {
+        // Update code
+        verification.createCode();
+        verification = await this.verificationRepository.save(verification);
       }
 
-      const { nickname } = await this.userProfileRepository
-        .createQueryBuilder('profile')
-        .select('profile.nickname')
-        .where('profile.userId = :id', { id: user.id })
+      const { profile } = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoin('user.profile', 'profile')
+        .select(['user.id', 'profile.nickname'])
+        .where('user.id = :id', { id: user.id })
         .getOne();
 
       await this.mailService.sendEmailVerification(
         user.email,
-        nickname,
+        profile?.nickname || NO_PROFILE_NICKNAME,
         user.id,
         verification.code,
       );
@@ -491,21 +626,19 @@ export class UsersService {
     }
   }
 
-  async requestPasswordReset(
-    currentUser: User,
-    { email }: RequestPasswordResetInput,
-  ): Promise<RequestPasswordResetOutput> {
+  async requestPasswordReset({
+    email,
+  }: RequestPasswordResetInput): Promise<RequestPasswordResetOutput> {
     try {
-      if (currentUser && currentUser.email !== email)
-        return CommonError('UNAUTHORIZED');
       const user = await this.userRepository
         .createQueryBuilder('user')
-        .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
-        .leftJoinAndSelect('user.profile', 'profile')
+        .leftJoinAndSelect('user.oauthList', 'o')
+        .leftJoin('user.profile', 'profile')
+        .addSelect('profile.nickname')
         .where('user.email = :email', { email })
         .getOne();
       if (!user) return CommonError('USER_NOT_FOUND');
-      if (user.socialAccounts.length !== 0) return CommonError('SOCIAL_USER');
+      if (user.oauthList.length !== 0) return CommonError('SOCIAL_USER');
       let savedReset: PasswordReset;
       const reset = await this.passwordResetRepository
         .createQueryBuilder('reset')
@@ -522,14 +655,13 @@ export class UsersService {
       }
       const ok = await this.mailService.sendPasswordReset(
         user.email,
-        user.profile ? user.profile.nickname : 'UNKNOWN',
+        user.profile?.nickname || NO_PROFILE_NICKNAME,
         user.id,
         savedReset.code,
       );
-      // UNKNOWN may be impossible
       return {
         ok,
-        error: !ok && 'MAILGUN_API_ERROR',
+        error: ok ? null : 'MAILGUN_API_ERROR',
       };
     } catch (e) {
       console.log(e);
@@ -545,38 +677,47 @@ export class UsersService {
     try {
       // Check security
       if (!this.checkPasswordSecurity(newPassword)) {
-        return {
-          ok: false,
-          error: 'INSECURE_PASSWORD',
-        };
+        return CommonError('INSECURE_PASSWORD');
       }
       // Find user with code
       const reset = await this.passwordResetRepository
         .createQueryBuilder('reset')
-        .innerJoinAndSelect('reset.user', 'user')
-        .where('user.id = :userId', { userId })
+        .innerJoin('reset.user', 'user')
+        .addSelect(['user.id', 'user.password'])
+        .where('reset.userId = :userId', { userId })
         .getOne();
       if (!reset || reset.code !== code) {
-        return {
-          ok: false,
-          error: 'INVALID_REQUEST',
-        };
+        return CommonError('INVALID_REQUEST');
       }
       // Check code expire (1 hour)
       if (Date.now() - reset.updatedAt.valueOf() > 1000 * 3600) {
-        return {
-          ok: false,
-          error: 'CODE_EXPIRED',
-        };
+        return CommonError('CODE_EXPIRED');
       }
       // Update
       const { user } = reset;
-      user.password = newPassword;
+      const hashedPassword = await hash(newPassword, PASSWORD_HASH_ROUNDS);
+      user.password = hashedPassword;
       await this.userRepository.save(user);
       // Delete code
       await this.passwordResetRepository.delete({ id: reset.id });
       // return
       return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async lockUser({ id }: LockUserInput): Promise<LockUserOutput> {
+    try {
+      const user = await this.getUserById(id);
+      if (!user) return CommonError('USER_NOT_FOUND');
+      user.isLocked = !user.isLocked;
+      const { isLocked } = await this.userRepository.save(user);
+      return {
+        ok: true,
+        isLocked,
+      };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;

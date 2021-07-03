@@ -18,6 +18,7 @@ import {
   CreateProfileInput,
   CreateProfileOutput,
   DeleteProfileImageInput,
+  GetProfileInput,
   GetProfileOutput,
   UpdateProfileInput,
   UpdateProfileOutput,
@@ -32,15 +33,30 @@ import { VerifyUserInput, VerifyUserOutput } from './dtos/verify-user.dto';
 import { UserType, User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { CoreOutput } from 'src/common/dtos/output.dto';
+import { LockUserInput, LockUserOutput } from './dtos/lock-user.dto';
+import { UpdateEmailInput, UpdateEmailOutput } from './dtos/update-email.dto';
+import { GetUserInfoInput, GetUserInfoOutput } from './dtos/get-user-info.dto';
 
 @Resolver(of => User)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
   @Query(returns => GetProfileOutput)
-  @Roles(UserType.USER)
-  myProfile(@CurrentUser() user: User): Promise<GetProfileOutput> {
-    return this.usersService.getMyProfile(user);
+  @Roles(UserType.USER, UserType.STUDIO, UserType.ADMIN)
+  userProfile(
+    @CurrentUser() user: User,
+    @Args('input') input: GetProfileInput,
+  ): Promise<GetProfileOutput> {
+    return this.usersService.getProfile(user, input);
+  }
+
+  @Query(returns => GetUserInfoOutput)
+  @Roles(UserType.USER, UserType.ADMIN)
+  userInfo(
+    @CurrentUser() user: User,
+    @Args('input') input: GetUserInfoInput,
+  ): Promise<GetUserInfoOutput> {
+    return this.usersService.getUserInfo(user, input);
   }
 
   // Public
@@ -49,7 +65,7 @@ export class UsersResolver {
     @Args('input') input: CreateUserWithEmailInput,
     @Context() context: GqlExecutionContext,
   ): Promise<CreateUserWithEmailOutput> {
-    return this.usersService.createUserWithEmail(input, context);
+    return this.usersService.createUserWithEmail(input);
   }
 
   @Mutation(returns => CreateProfileOutput)
@@ -93,6 +109,15 @@ export class UsersResolver {
     return this.usersService.deleteUserById(user.id);
   }
 
+  @Roles(UserType.USER, UserType.ADMIN, UserType.STUDIO)
+  @Mutation(returns => UpdateEmailOutput)
+  updateEmail(
+    @Args('input') input: UpdateEmailInput,
+    @CurrentUser() user: User,
+  ): Promise<UpdateEmailOutput> {
+    return this.usersService.updateEmail(input, user);
+  }
+
   // Public
   @Mutation(returns => VerifyUserOutput)
   verifyUser(@Args('input') input: VerifyUserInput): Promise<VerifyUserOutput> {
@@ -107,10 +132,9 @@ export class UsersResolver {
   // Public
   @Mutation(returns => RequestPasswordResetOutput)
   requestPasswordReset(
-    @CurrentUser() user: User,
     @Args('input') input: RequestPasswordResetInput,
   ): Promise<RequestPasswordResetOutput> {
-    return this.usersService.requestPasswordReset(user, input);
+    return this.usersService.requestPasswordReset(input);
   }
 
   // Public
@@ -119,5 +143,11 @@ export class UsersResolver {
     @Args('input') input: UpdatePasswordInput,
   ): Promise<UpdatePasswordOutput> {
     return this.usersService.updatePassword(input);
+  }
+
+  @Mutation(returns => LockUserOutput)
+  @Roles(UserType.ADMIN)
+  lockUser(@Args('input') input: LockUserInput): Promise<LockUserOutput> {
+    return this.usersService.lockUser(input);
   }
 }

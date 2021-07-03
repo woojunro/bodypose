@@ -6,7 +6,10 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
-  app.enableCors();
+  app.enableCors({
+    credentials: true,
+    origin: true,
+  });
   app.use(cookieParser());
   const PORT = Number(process.env.PORT) || 8080;
   await app.listen(PORT);

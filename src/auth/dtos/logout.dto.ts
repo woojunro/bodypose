@@ -1,11 +1,9 @@
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { IsBoolean } from 'class-validator';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 
-@InputType()
 export class LogoutInput {
-  @Field(type => Boolean)
+  @IsBoolean()
   fromAllDevices: boolean;
 }
 
-@ObjectType()
 export class LogoutOutput extends CoreOutput {}

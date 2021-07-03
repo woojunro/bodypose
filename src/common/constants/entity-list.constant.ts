@@ -1,5 +1,5 @@
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
-import { LogOriginalStudioPhotoExposure } from 'src/insights/entities/log-original-studio-photo-exposure.entity';
+import { LogOriginalStudioPhoto } from 'src/insights/entities/log-original-studio-photo.entity';
 import { LogStudioContact } from 'src/insights/entities/log-studio-contact.entity';
 import { LogStudioInfoView } from 'src/insights/entities/log-studio-info-view.entity';
 import { LogStudioReservation } from 'src/insights/entities/log-studio-reservation.entity';
@@ -23,41 +23,57 @@ import { UsersHeartStudios } from 'src/studios/entities/users-heart-studios.enti
 import { UsersReportStudioReviews } from 'src/studios/entities/users-report-studio-reviews.entity';
 import { UsersReviewStudios } from 'src/studios/entities/users-review-studios.entity';
 import { PasswordReset } from 'src/users/entities/password-reset.entity';
-import { SocialAccount } from 'src/users/entities/social-account.entity';
+import { UserOauth } from 'src/users/entities/user-oauth.entity';
 import { UserProfile } from 'src/users/entities/user-profile.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Verification } from 'src/users/entities/verification.entity';
 
 export const LOG_ENTITIES = [
-  LogOriginalStudioPhotoExposure,
+  LogOriginalStudioPhoto,
   LogStudioInfoView,
   LogStudioContact,
   LogStudioReservation,
 ];
 
-export const ENTITY_LIST = [
+export const USERS_SERVICE_ENTITIES = [
   User,
-  RefreshToken,
+  UserOauth,
   UserProfile,
-  SocialAccount,
   Verification,
+  PasswordReset,
+];
+
+export const AUTH_SERVICE_ENTITIES = [RefreshToken];
+
+export const STUDIOS_SERVICE_ENTITIES = [
   Studio,
   Branch,
   Catchphrase,
-  StudioPhoto,
-  BackgroundConcept,
-  CostumeConcept,
-  ObjectConcept,
   StudioProduct,
   HairMakeupShop,
   HairMakeupProduct,
   AdditionalProduct,
-  UsersReviewStudios,
-  ReviewPhoto,
-  PasswordReset,
-  Notice,
   UsersHeartStudios,
-  UsersHeartStudioPhotos,
+  UsersReviewStudios,
   UsersReportStudioReviews,
+];
+
+export const PHOTOS_SERVICE_ENTITIES = [
+  StudioPhoto,
+  BackgroundConcept,
+  CostumeConcept,
+  ObjectConcept,
+  ReviewPhoto,
+  UsersHeartStudioPhotos,
+];
+
+export const NOTICES_SERVICE_ENTITIES = [Notice];
+
+export const ENTITY_LIST = [
+  ...USERS_SERVICE_ENTITIES,
+  ...AUTH_SERVICE_ENTITIES,
+  ...STUDIOS_SERVICE_ENTITIES,
+  ...PHOTOS_SERVICE_ENTITIES,
+  ...NOTICES_SERVICE_ENTITIES,
   ...LOG_ENTITIES,
 ];

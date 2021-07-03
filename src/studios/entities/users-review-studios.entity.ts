@@ -56,4 +56,8 @@ export class UsersReviewStudios extends CoreEntity {
   @OneToMany(relation => ReviewPhoto, photo => photo.review)
   @Field(type => [ReviewPhoto])
   photos: ReviewPhoto[];
+
+  @Column({ type: 'int', default: 0 })
+  @Field(type => Int)
+  clickCount: number;
 }

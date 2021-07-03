@@ -1,13 +1,16 @@
+import { compare } from 'bcrypt';
 import { v4 } from 'uuid';
 import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
   forwardRef,
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { GqlExecutionContext } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Request, Response } from 'express';
@@ -15,12 +18,8 @@ import {
   CommonError,
   UNEXPECTED_ERROR,
 } from 'src/common/constants/error.constant';
-import {
-  ACCESS_TOKEN_COOKIE_OPTIONS,
-  REFRESH_TOKEN_COOKIE_OPTIONS,
-} from 'src/common/constants/token-cookie.constant';
-import { SocialProvider } from 'src/users/entities/social-account.entity';
-import { User } from 'src/users/entities/user.entity';
+import { OAuthProvider } from 'src/users/entities/user-oauth.entity';
+import { User, UserType } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import {
@@ -32,12 +31,14 @@ import { GetOAuthProfileWithAccessTokenOutput } from './dtos/oauth.dto';
 import { RefreshTokenOutput } from './dtos/refresh-token.dto';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { getGoogleProfileWithAccessToken } from './utils/googleAuth.util';
-import {
-  getKakaoProfileWithAccessToken,
-  unlinkKakaoUser,
-} from './utils/kakaoOAuth.util';
+import { getKakaoProfileWithAccessToken } from './utils/kakaoOAuth.util';
 import { getNaverProfileWithAccessToken } from './utils/naverLogin.util';
 import { LogoutInput, LogoutOutput } from './dtos/logout.dto';
+import { ConfigService } from '@nestjs/config';
+import {
+  NINETY_DAYS_IN_MS,
+  TWO_HOURS_IN_MS,
+} from 'src/common/constants/common.constant';
 
 @Injectable()
 export class AuthService {
@@ -50,30 +51,44 @@ export class AuthService {
     private readonly refreshTokenRepository: Repository<RefreshToken>,
   ) {}
 
-  async processLogin(user: User, context: any): Promise<LoginOutput> {
-    try {
-      // Check if the user is locked
-      if (user.isLocked) return CommonError('USER_LOCKED');
-      // Issue an auth token
-      const payload = { id: user.id };
-      const token = this.jwtService.sign(payload);
-      // Update lastLogin
-      this.usersService.updateLastLoginAt(user.id);
-      // Set cookie
-      const refresh = await this.issueRefreshToken(user.id);
-      context.res.cookie('refresh', refresh, REFRESH_TOKEN_COOKIE_OPTIONS);
-      context.res.cookie('authorization', token, ACCESS_TOKEN_COOKIE_OPTIONS);
-      // If not verified, notify
-      return {
-        ok: true,
-        token,
-        refresh,
-        error: user.isVerified ? null : 'USER_NOT_VERIFIED',
-      };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
+  async processLogin(user: User, res: Response): Promise<LoginOutput> {
+    // Check if the user is locked
+    if (user.isLocked) throw new ForbiddenException('USER_LOCKED');
+    // Issue an auth token
+    const payload = { id: user.id };
+    const token = this.jwtService.sign(payload, { expiresIn: '2h' });
+    // Set cookies
+    const refresh = await this.issueRefreshToken(user.id);
+    const now = Date.now();
+    res.cookie('refresh', refresh, {
+      expires: new Date(now + NINETY_DAYS_IN_MS),
+      httpOnly: true,
+      path: '/auth/refresh',
+      sameSite: 'lax',
+    });
+    this.setAccessTokenCookies(res, token, now);
+    // Update lastLogin
+    this.usersService.updateLastLoginAt(user.id);
+    // return
+    return {
+      access: token,
+      refresh,
+    };
+  }
+
+  setAccessTokenCookies(res: Response, token: string, now: number): void {
+    // HttpOnly
+    res.cookie('authorization', token, {
+      expires: new Date(now + TWO_HOURS_IN_MS),
+      httpOnly: true,
+      sameSite: 'lax',
+    });
+    // For checking if the access token exists
+    res.cookie('access', 'access', {
+      expires: new Date(now + TWO_HOURS_IN_MS),
+      httpOnly: false,
+      sameSite: 'lax',
+    });
   }
 
   async issueRefreshToken(id: number): Promise<string> {
@@ -91,10 +106,7 @@ export class AuthService {
         );
       }
       const payload = { id, token: refreshToken.token };
-      return this.jwtService.sign(payload, {
-        secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
-        expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRE'),
-      });
+      return this.jwtService.sign(payload, { expiresIn: '90d' });
     } catch (e) {
       console.log(e);
       throw new InternalServerErrorException();
@@ -109,131 +121,152 @@ export class AuthService {
       let { refresh } = cookies;
       if (!refresh) refresh = body.refresh;
       if (!refresh) throw new Error();
-      const payload = this.jwtService.verify(refresh, {
-        secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
-      });
+      const payload = this.jwtService.verify(refresh);
       // If the token is expired, verify() will throw an error
-      const {
-        token,
-        user,
-      } = await this.refreshTokenRepository
+      const refreshToken = await this.refreshTokenRepository
         .createQueryBuilder('refresh')
         .innerJoin('refresh.user', 'user')
         .addSelect('user.id')
         .addSelect('user.isLocked')
         .where('userId = :id', { id: payload.id })
         .getOne();
+      if (!refreshToken) throw new Error();
+      const { token, user } = refreshToken;
       if (token !== payload.token || user.isLocked) throw new Error();
 
+      const now = Date.now();
       // Issue tokens
-      const accessToken = this.jwtService.sign({ id: user.id });
+      const accessToken = this.jwtService.sign(
+        { id: user.id },
+        { expiresIn: '2h' },
+      );
       // Sliding refresh token exp
       const thirtyDaysInSeconds = 60 * 60 * 24 * 30;
-      if (
-        Number(payload.exp) - thirtyDaysInSeconds <
-        Math.floor(Date.now() / 1000)
-      )
-        refresh = this.jwtService.sign(
-          { id: user.id, token },
-          {
-            secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
-            expiresIn: this.configService.get<string>(
-              'JWT_REFRESH_TOKEN_EXPIRE',
-            ),
-          },
-        );
-
-      // Set cookies
-      res.cookie('refresh', refresh, REFRESH_TOKEN_COOKIE_OPTIONS);
-      res.cookie('authorization', accessToken, ACCESS_TOKEN_COOKIE_OPTIONS);
+      if (Number(payload.exp) - thirtyDaysInSeconds < Math.floor(now / 1000)) {
+        // Set refresh
+        refresh = await this.issueRefreshToken(user.id);
+        res.cookie('refresh', refresh, {
+          expires: new Date(now + NINETY_DAYS_IN_MS),
+          httpOnly: true,
+          path: '/auth/refresh',
+          sameSite: 'lax',
+        });
+      }
+      // Set access
+      this.setAccessTokenCookies(res, accessToken, now);
 
       return {
-        ok: true,
-        token: accessToken,
+        access: accessToken,
         refresh,
       };
     } catch (e) {
       console.log(e);
+      // Clear cookies
+      res.clearCookie('authorization');
+      res.clearCookie('access');
+      res.clearCookie('refresh', {
+        path: '/auth/refresh',
+      });
       throw new UnauthorizedException();
     }
   }
 
   async emailLogin(
     { email, password }: EmailLoginInput,
-    context: GqlExecutionContext,
+    res: Response,
   ): Promise<LoginOutput> {
-    try {
-      // Get a user with the inputted email
-      const user = await this.usersService.getUserByEmail(email);
-      if (!user) return CommonError('USER_NOT_FOUND');
-      // Check if the user has social accounts
-      if (user.socialAccounts.length !== 0)
-        return CommonError('SOCIAL_ACCOUNTS_EXIST');
-      // Check if the password is correct
-      const isPasswordCorrect = await user.checkPassword(password);
-      if (!isPasswordCorrect) return CommonError('WRONG_PASSWORD');
-
-      return await this.processLogin(user, context);
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
+    // Get a user with the inputted email
+    const user = await this.usersService.getUserByEmail(email);
+    if (!user) throw new NotFoundException('USER_NOT_FOUND');
+    if (user.type === UserType.STUDIO) {
+      throw new ForbiddenException('FORBIDDEN_LOGIN_METHOD');
     }
+    // Check if the user is created with social oauth
+    if (user.oauthList.length !== 0) {
+      throw new BadRequestException('SOCIAL_USER');
+    }
+    // Check if the password is correct
+    const isPasswordCorrect = await compare(password, user.password);
+    if (!isPasswordCorrect) throw new UnauthorizedException('WRONG_PASSWORD');
+
+    return await this.processLogin(user, res);
   }
 
   async socialLogin(
-    { provider, accessToken }: SocialLoginInput,
-    context: GqlExecutionContext,
+    { provider, accessToken, email: emailInput }: SocialLoginInput,
+    res: Response,
   ): Promise<LoginOutput> {
-    try {
-      // Get OAuth Profile
-      const {
-        ok,
-        error,
-        profile: { socialId, email },
-      } = await this.getOAuthProfileWithAccessToken(accessToken, provider);
-      if (!ok) return { ok, error };
+    // Get OAuth Profile
+    const {
+      ok,
+      error,
+      profile: { socialId, email },
+    } = await this.getOAuthProfileWithAccessToken(accessToken, provider);
+    if (!ok) throw new InternalServerErrorException(error);
 
-      // TEMPORARY: FOR KAKAO
-      if (!email) {
-        if (provider === SocialProvider.KAKAO)
-          unlinkKakaoUser(
-            socialId,
-            this.configService.get<string>('KAKAO_ADMIN_KEY'),
-          );
-        return CommonError('EMAIL_NOT_FOUND');
+    // Check if the profile is connected to a user
+    let user = await this.usersService.getUserBySocialId(provider, socialId);
+    if (!user) {
+      if (!(email || emailInput)) {
+        throw new BadRequestException('EMAIL_NOT_FOUND');
       }
 
-      // Check if the profile is connected to a user
-      let user = await this.usersService.getUserBySocialId(provider, socialId);
-      if (!user) {
-        user = await this.usersService.createSocialAccount(
+      if (email) {
+        const existingUser = await this.usersService.getUserByEmail(
           email,
+          false,
+        );
+        if (existingUser) {
+          if (existingUser.type !== UserType.USER) {
+            throw new ForbiddenException('FORBIDDEN_LOGIN_METHOD');
+          }
+          const { error } = await this.usersService.createUserOAuth(
+            existingUser.id,
+            provider,
+            socialId,
+          );
+          if (error) throw new InternalServerErrorException(error);
+          user = existingUser;
+        } else {
+          user = await this.usersService.createSocialAccount(
+            email,
+            provider,
+            socialId,
+            true,
+          );
+        }
+      } else {
+        const existingUser = await this.usersService.getUserByEmail(
+          emailInput,
+          false,
+        );
+        if (existingUser) throw new ConflictException('DUPLICATE_EMAIL');
+        user = await this.usersService.createSocialAccount(
+          emailInput,
           provider,
           socialId,
+          false,
         );
       }
-
-      return await this.processLogin(user, context);
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
     }
+
+    return await this.processLogin(user, res);
   }
 
   async getOAuthProfileWithAccessToken(
     accessToken: string,
-    provider: SocialProvider,
+    provider: OAuthProvider,
   ): Promise<GetOAuthProfileWithAccessTokenOutput> {
     try {
       let result: GetOAuthProfileWithAccessTokenOutput;
       switch (provider) {
-        case SocialProvider.KAKAO:
+        case OAuthProvider.KAKAO:
           result = await getKakaoProfileWithAccessToken(accessToken);
           break;
-        case SocialProvider.NAVER:
+        case OAuthProvider.NAVER:
           result = await getNaverProfileWithAccessToken(accessToken);
           break;
-        case SocialProvider.GOOGLE:
+        case OAuthProvider.GOOGLE:
           result = await getGoogleProfileWithAccessToken(
             this.configService.get<string>('GOOGLE_AUTH_CLIENT_ID'),
             accessToken,
@@ -253,7 +286,7 @@ export class AuthService {
   async logout(
     user: User,
     { fromAllDevices }: LogoutInput,
-    context: any,
+    res: Response,
   ): Promise<LogoutOutput> {
     try {
       if (fromAllDevices) {
@@ -265,14 +298,15 @@ export class AuthService {
         );
       }
       // Clear cookies
-      context.res.clearCookie('authorization');
-      context.res.clearCookie('refresh', {
-        path: REFRESH_TOKEN_COOKIE_OPTIONS.path,
+      res.clearCookie('authorization');
+      res.clearCookie('access');
+      res.clearCookie('refresh', {
+        path: '/auth/refresh',
       });
       return { ok: true };
     } catch (e) {
       console.log(e);
-      return UNEXPECTED_ERROR;
+      throw new InternalServerErrorException();
     }
   }
 }

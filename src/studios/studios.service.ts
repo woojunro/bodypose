@@ -5,13 +5,18 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
+import {
+  CommonError,
+  UNEXPECTED_ERROR,
+} from 'src/common/constants/error.constant';
+import { CoreOutput } from 'src/common/dtos/output.dto';
 import { ReviewPhoto } from 'src/photos/entities/review-photo.entity';
 import { PhotosService } from 'src/photos/photos.service';
 import { UploadsService } from 'src/uploads/uploads.service';
 import { UserType, User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
+import { ClickStudioReviewInput } from './dtos/click-studio-review.dto';
 import {
   CreateBranchInput,
   CreateBranchOutput,
@@ -871,7 +876,8 @@ export class StudiosService {
         .createQueryBuilder('review')
         .leftJoin('review.studio', 'studio')
         .leftJoin('review.user', 'user')
-        .addSelect('user.nickname')
+        .withDeleted()
+        .leftJoinAndSelect('user.profile', 'profile')
         .leftJoinAndSelect('review.photos', 'photo')
         .where('studio.slug = :studioSlug', { studioSlug })
         .andWhere('studio.coverPhotoUrl IS NOT NULL')
@@ -909,7 +915,8 @@ export class StudiosService {
         .addSelect('studio.name')
         .addSelect('studio.slug')
         .leftJoin('review.user', 'user')
-        .addSelect('user.nickname')
+        .withDeleted()
+        .leftJoinAndSelect('user.profile', 'profile')
         .leftJoinAndSelect('review.photos', 'photo')
         .where('studio.coverPhotoUrl IS NOT NULL')
         .orderBy('review.createdAt', 'DESC')
@@ -938,7 +945,8 @@ export class StudiosService {
       const studioReviews = await this.studioReviewRepository
         .createQueryBuilder('review')
         .leftJoin('review.user', 'user')
-        .addSelect('user.nickname')
+        .withDeleted()
+        .leftJoinAndSelect('user.profile', 'profile')
         .leftJoin('review.studio', 'studio')
         .addSelect('studio.name')
         .addSelect('studio.slug')
@@ -956,6 +964,25 @@ export class StudiosService {
         ok: true,
         studioReviews,
       };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async clickStudioReview({ id }: ClickStudioReviewInput): Promise<CoreOutput> {
+    try {
+      const review = await this.studioReviewRepository.findOne(id, {
+        select: ['id'],
+      });
+      if (!review) return CommonError('STUDIO_REVIEW_NOT_FOUND');
+      await this.studioReviewRepository
+        .createQueryBuilder('review')
+        .update()
+        .where('review.id = :id', { id })
+        .set({ clickCount: () => 'clickCount + 1' })
+        .execute();
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
@@ -1063,14 +1090,9 @@ export class StudiosService {
       // 스튜디오 존재 여부 확인
       const studio = await this.studioRepository.findOne(
         { slug },
-        { select: ['id', 'heartCount'] },
+        { select: ['id'] },
       );
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
       // 이미 찜 되어 있는지 확인
       const isAlreadyHearted = await this.usersHeartStudiosRepository.findOne({
         where: {
@@ -1078,12 +1100,7 @@ export class StudiosService {
           studio: studio.id,
         },
       });
-      if (isAlreadyHearted) {
-        return {
-          ok: false,
-          error: 'ALREADY_HEARTED',
-        };
-      }
+      if (isAlreadyHearted) return CommonError('ALREADY_HEARTED');
       // 생성
       await this.usersHeartStudiosRepository.save(
         this.usersHeartStudiosRepository.create({
@@ -1092,8 +1109,12 @@ export class StudiosService {
         }),
       );
       // 스튜디오 heartCount 증가
-      studio.heartCount++;
-      await this.studioRepository.save(studio);
+      await this.studioRepository
+        .createQueryBuilder('studio')
+        .update(Studio)
+        .where('studio.id = :id', { id: studio.id })
+        .set({ heartCount: () => 'heartCount + 1' })
+        .execute();
       return { ok: true };
     } catch (e) {
       console.log(e);
@@ -1109,14 +1130,9 @@ export class StudiosService {
       // 스튜디오 존재 여부 확인
       const studio = await this.studioRepository.findOne(
         { slug },
-        { select: ['id', 'heartCount'] },
+        { select: ['id'] },
       );
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
       // 이미 찜 되어 있는지 확인
       const isAlreadyHearted = await this.usersHeartStudiosRepository.findOne({
         where: {
@@ -1124,19 +1140,18 @@ export class StudiosService {
           studio: studio.id,
         },
       });
-      if (!isAlreadyHearted) {
-        return {
-          ok: false,
-          error: 'ALREADY_DISHEARTED',
-        };
-      }
+      if (!isAlreadyHearted) return CommonError('ALREADY_DISHEARTED');
       // 삭제
       await this.usersHeartStudiosRepository.delete({
         id: isAlreadyHearted.id,
       });
       // 스튜디오 heartCount 감소
-      studio.heartCount--;
-      await this.studioRepository.save(studio);
+      await this.studioRepository
+        .createQueryBuilder('studio')
+        .update(Studio)
+        .where('studio.id = :id', { id: studio.id })
+        .set({ heartCount: () => 'heartCount - 1' })
+        .execute();
       return { ok: true };
     } catch (e) {
       console.log(e);
