@@ -6,8 +6,6 @@ import { useQuery } from '@apollo/client';
 import { ALL_STUDIO_REVIEWS_QUERY } from '../../gql/queries/StudioReviewQuery';
 import { useHistory } from 'react-router-dom';
 import { MY_PROFILE_QUERY } from '../../gql/queries/MyProfileQuery';
-import { clearTokenAndCache } from '../../apollo';
-import LoggedIn from '../../contexts/LoginContext';
 import FullReviewScreen from './FullReviewScreen';
 import LoadingIcon from '../../components/mobileComponents/conceptListScreen/LoadingIcon';
 import ReactGA from 'react-ga';
@@ -26,18 +24,8 @@ const ReviewListScreen = () => {
       },
     }
   );
-  const { data: profileData, loading: profileLoading } = useQuery(
-    MY_PROFILE_QUERY,
-    {
-      onError: () => {
-        if (LoggedIn.loggedIn) {
-          clearTokenAndCache();
-          LoggedIn.setLoggedIn(false);
-          window.location.reload();
-        }
-      },
-    }
-  );
+  const { data: profileData, loading: profileLoading } =
+    useQuery(MY_PROFILE_QUERY);
 
   const [page, setPage] = useState(1);
   const [isReviewDetailOpen, setIsReviewDetailOpen] = useState(false);

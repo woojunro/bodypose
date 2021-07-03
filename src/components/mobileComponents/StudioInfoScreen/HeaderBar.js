@@ -1,11 +1,10 @@
 import { IoIosHeartEmpty, IoIosHeart, IoMdShare } from 'react-icons/io';
 import { useHistory } from 'react-router-dom';
-import LoginContext from '../../../contexts/LoginContext';
 import { FiArrowLeft } from 'react-icons/fi';
 import './HeaderBar.css';
-import React, { useState, useContext } from 'react';
-import { client } from '../../../apollo';
-import { gql, useMutation } from '@apollo/client';
+import React, { useState } from 'react';
+import { client, IsLoggedInVar } from '../../../apollo';
+import { gql, useMutation, useReactiveVar } from '@apollo/client';
 import {
   DISHEART_STUDIO_MUTATION,
   HEART_STUDIO_MUTATION,
@@ -13,7 +12,7 @@ import {
 
 const HeaderBar = ({ currentStudio, copyTextToClipboard, setIsAlertOpen }) => {
   const [isHearted, setIsHearted] = useState(currentStudio.isHearted);
-  const LoggedIn = useContext(LoginContext);
+  const isLoggedIn = useReactiveVar(IsLoggedInVar);
   const history = useHistory();
 
   const gobackFunction = () => {
@@ -71,13 +70,11 @@ const HeaderBar = ({ currentStudio, copyTextToClipboard, setIsAlertOpen }) => {
   });
 
   const ChangeHeart = () => {
-    if (!LoggedIn.loggedIn) {
+    if (!isLoggedIn) {
       const ok = window.confirm(
         '로그인이 필요한 기능입니다. 로그인 하시겠습니까?'
       );
-      if (!ok) {
-        return;
-      }
+      if (!ok) return;
       history.push({
         pathname: '/login',
         state: { previousPath: '/studios' },

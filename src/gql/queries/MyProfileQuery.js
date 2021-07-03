@@ -1,16 +1,15 @@
 import { gql } from '@apollo/client';
 
 export const MY_PROFILE_QUERY = gql`
-  query GetMyProfile {
-    myProfile {
+  query userProfile {
+    userProfile(input: {}) {
       ok
       error
       profile {
         id
-        email
-        loginMethod
         nickname
-        isVerified
+        isMale
+        profileImageUrl
       }
     }
   }

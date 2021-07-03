@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IoIosClose } from 'react-icons/io';
 import { useHistory } from 'react-router-dom';
 import './ConceptModal.css';
@@ -7,13 +7,12 @@ import { IoHeart, IoHeartOutline } from 'react-icons/io5';
 import Swipe from 'react-easy-swipe';
 
 import LoadingIcon from './LoadingIcon';
-import LoginContext from '../../../contexts/LoginContext';
-import { gql, useMutation } from '@apollo/client';
+import { gql, useMutation, useReactiveVar } from '@apollo/client';
 import {
   DISHEART_STUDIO_PHOTO_MUTATION,
   HEART_STUDIO_PHOTO_MUTATION,
 } from '../../../gql/mutations/HeartStudioPhotoMutation';
-import { client } from '../../../apollo';
+import { client, IsLoggedInVar } from '../../../apollo';
 import $ from 'jquery';
 
 const Modal = ({
@@ -45,7 +44,7 @@ const Modal = ({
         `,
       });
 
-  const LoggedIn = useContext(LoginContext);
+  const isLoggedIn = useReactiveVar(IsLoggedInVar);
   const [isHearted, setIsHearted] = useState(concept.isHearted);
 
   const [disheartLoading, setDisHeartLoading] = useState(false);
@@ -149,7 +148,7 @@ const Modal = ({
       </div>
     );
   } else {
-    if (LoggedIn.loggedIn) {
+    if (isLoggedIn) {
       RenderedHeart = (
         <div onClick={ChangeHeart}>
           <IoHeartOutline className="conceptRegHeart" />
@@ -164,10 +163,7 @@ const Modal = ({
               const ok = window.confirm(
                 '로그인이 필요한 기능입니다. 로그인 하시겠습니까?'
               );
-              if (!ok) {
-                return;
-              }
-
+              if (!ok) return;
               history.push({
                 pathname: '/login',
                 state: { previousPath: history.location.pathname },

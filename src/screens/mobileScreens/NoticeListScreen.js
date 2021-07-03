@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/client';
 import React, { useState, useEffect } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import LoadingComponent from '../../components/mobileComponents/LoadingComponent';
 import { NOTICES_QUERY } from '../../gql/queries/NoticeQuery';
 import ReactGA from 'react-ga';
@@ -74,7 +74,7 @@ const NoticeListScreen = () => {
       </div>
       <div className="noticeList">
         {data?.notices &&
-          data.notices.notices.map((notice) => (
+          data.notices.notices.map(notice => (
             <div
               onClick={() => {
                 history.push(`/notices/${notice.id}`);

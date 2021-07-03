@@ -1,10 +1,7 @@
-export const GobackArrow = (hist) => {
-  let history = hist;
-  if (!history.location.state) {
-    history.push('/error');
+export const GobackArrow = hist => {
+  if (hist.location.state?.previousPath) {
+    hist.goBack();
   } else {
-    if (history.location.state.previousPath === '/concepts') {
-      history.goBack();
-    } else history.push('/');
+    hist.push('/');
   }
 };

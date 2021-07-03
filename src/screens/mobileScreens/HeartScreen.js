@@ -1,7 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import BottomNavigation from '../../components/mobileComponents/BottomNavigation';
 import Header from '../../components/mobileComponents/HeaderM';
-import LoginContext from '../../contexts/LoginContext';
 import { Redirect, useHistory } from 'react-router-dom';
 import HeartStudios from '../../components/mobileComponents/HeartsScreen/HeartStudios';
 import HeartConcepts from '../../components/mobileComponents/HeartsScreen/HeartConcepts';
@@ -9,17 +8,19 @@ import HeartConcepts from '../../components/mobileComponents/HeartsScreen/HeartC
 import { MakingPickContainer } from '../../components/functions/Heart/PickFunctions';
 import './HeartScreen.css';
 import ReactGA from 'react-ga';
+import { useReactiveVar } from '@apollo/client';
+import { IsLoggedInVar } from '../../apollo';
 
 const HeartScreen = () => {
   React.useEffect(() => {
     ReactGA.pageview(window.location.pathname);
   }, []);
-  const LoggedIn = useContext(LoginContext);
+  const isLoggedIn = useReactiveVar(IsLoggedInVar);
   const history = useHistory();
 
   const [pick, setPick] = useState('studio');
 
-  if (!LoggedIn.loggedIn) {
+  if (!isLoggedIn) {
     return (
       <Redirect
         to={{
@@ -30,7 +31,6 @@ const HeartScreen = () => {
     );
   } else {
     const PickContainer = MakingPickContainer(pick, setPick);
-
     return (
       <div>
         <Header pageName="hearts" />

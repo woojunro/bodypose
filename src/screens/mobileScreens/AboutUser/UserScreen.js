@@ -1,42 +1,45 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import BottomNavigation from '../../../components/mobileComponents/BottomNavigation';
 import Header from '../../../components/mobileComponents/HeaderM';
-import LoginContext from '../../../contexts/LoginContext';
-import { Redirect, useHistory, Link } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
 import { IoIosArrowForward } from 'react-icons/io/';
 import Gmail from '../../../materials/gmail.png';
 import AppLoadingScreen from '../../../components/mobileComponents/AppLoadingScreen';
 
 import './UserScreen.css';
-import { useQuery } from '@apollo/client';
-import { clearTokenAndCache } from '../../../apollo';
-import { MY_PROFILE_QUERY } from '../../../gql/queries/MyProfileQuery';
+import { useQuery, useReactiveVar } from '@apollo/client';
+import { clearTokenAndCache, IsLoggedInVar } from '../../../apollo';
+import { MY_USER_INFO_QUERY } from '../../../gql/queries/MyUserInfoQuery';
+import { logout } from '../../../components/functions/Login/Logout';
+import { shouldUpdateEmail } from '../../../constants/shouldUpdateEmail';
 
 const UserScreen = () => {
-  const LoggedIn = useContext(LoginContext);
+  const isLoggedIn = useReactiveVar(IsLoggedInVar);
   const history = useHistory();
 
-  const { data, loading } = useQuery(MY_PROFILE_QUERY, {
+  const { data, loading } = useQuery(MY_USER_INFO_QUERY, {
+    onCompleted: data => {
+      const email = data.userInfo?.userInfo?.email;
+      if (!email || shouldUpdateEmail(email)) {
+        history.push('/updateEmail');
+      } else if (!data.userInfo?.userInfo?.profile) {
+        history.push('/createProfile');
+      }
+    },
     onError: () => {
-      LoggedIn.setLoggedIn(false);
+      IsLoggedInVar(false);
     },
   });
 
-  if (!LoggedIn.loggedIn) {
-    return (
-      <Redirect
-        to={{
-          pathname: '/login',
-          state: { previousPath: history.location.pathname },
-        }}
-      />
-    );
+  if (!isLoggedIn) {
+    return <Redirect to={{ pathname: '/login' }} />;
   }
 
-  const LogoutFunction = () => {
-    clearTokenAndCache();
-    LoggedIn.setLoggedIn(false);
+  const LogoutFunction = async () => {
+    await logout();
     history.push('/');
+    await clearTokenAndCache();
+    IsLoggedInVar(false);
   };
 
   return loading ? (
@@ -51,11 +54,12 @@ const UserScreen = () => {
     <div>
       <Header pageName="users" />
       <div className="welcome">
-        <div className="nickNamePart">{data.myProfile.profile.nickname}</div>
+        <div className="nickNamePart">
+          {data.userInfo.userInfo.profile?.nickname || '바프새내기'}
+        </div>
         <div className="welcomePart">님 환영합니다.</div>
       </div>
       <div className="userSemiTitle">계정</div>
-
       <div
         onClick={() => {
           history.push('/users/myInfo');
@@ -63,10 +67,19 @@ const UserScreen = () => {
         }}
         className="userTap"
       >
-        <div className="userTapName">내 정보 관리</div>
+        <div className="userTapName">계정</div>
         <IoIosArrowForward className="userArrow" />
       </div>
-
+      <div
+        onClick={() => {
+          history.push('/users/profile');
+          window.scrollTo(0, 0);
+        }}
+        className="userTap"
+      >
+        <div className="userTapName">프로필</div>
+        <IoIosArrowForward className="userArrow" />
+      </div>
       <div
         onClick={() => {
           history.push('/users/myReview');
@@ -77,7 +90,6 @@ const UserScreen = () => {
         <div className="userTapName">내가 쓴 리뷰</div>
         <IoIosArrowForward className="userArrow" />
       </div>
-
       <div className="userLineContainer">
         <div className="userLine"></div>
       </div>
@@ -105,7 +117,7 @@ const UserScreen = () => {
         <IoIosArrowForward className="userArrow" />
       </div>
 
-      <div className="userTap" onClick={() => LogoutFunction()}>
+      <div className="userTap" onClick={LogoutFunction}>
         <div className="userTapName">로그아웃</div>
         <IoIosArrowForward className="userArrow" />
       </div>

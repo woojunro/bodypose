@@ -3,14 +3,11 @@ import React, { useState, useEffect } from 'react';
 import './InputForm.css';
 
 const InputForm = ({ onInputSubmit, placeholder, type, initialValue = '' }) => {
-  const [term, setTerm] = useState('');
-
-  useEffect(() => {
-    if (initialValue.length > 0) setTerm(initialValue);
-  }, []);
+  const [term, setTerm] = useState(initialValue);
 
   useEffect(() => {
     onInputSubmit(term);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [term]);
 
   return (

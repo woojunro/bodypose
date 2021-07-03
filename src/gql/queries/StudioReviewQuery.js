@@ -24,7 +24,10 @@ export const STUDIO_REVIEWS_QUERY = gql`
           url
         }
         user {
-          nickname
+          profile {
+            id
+            nickname
+          }
         }
       }
     }
@@ -49,7 +52,10 @@ export const ALL_STUDIO_REVIEWS_QUERY = gql`
           url
         }
         user {
-          nickname
+          profile {
+            id
+            nickname
+          }
         }
         studio {
           name
@@ -77,7 +83,10 @@ export const MY_STUDIO_REVIEWS_QUERY = gql`
           url
         }
         user {
-          nickname
+          profile {
+            id
+            nickname
+          }
         }
         studio {
           name
