@@ -876,6 +876,7 @@ export class StudiosService {
         .createQueryBuilder('review')
         .leftJoin('review.studio', 'studio')
         .leftJoin('review.user', 'user')
+        .addSelect(['user.id'])
         .withDeleted()
         .leftJoinAndSelect('user.profile', 'profile')
         .leftJoinAndSelect('review.photos', 'photo')
@@ -915,6 +916,7 @@ export class StudiosService {
         .addSelect('studio.name')
         .addSelect('studio.slug')
         .leftJoin('review.user', 'user')
+        .addSelect(['user.id'])
         .withDeleted()
         .leftJoinAndSelect('user.profile', 'profile')
         .leftJoinAndSelect('review.photos', 'photo')
@@ -945,6 +947,7 @@ export class StudiosService {
       const studioReviews = await this.studioReviewRepository
         .createQueryBuilder('review')
         .leftJoin('review.user', 'user')
+        .addSelect(['user.id'])
         .withDeleted()
         .leftJoinAndSelect('user.profile', 'profile')
         .leftJoin('review.studio', 'studio')
@@ -978,8 +981,8 @@ export class StudiosService {
       if (!review) return CommonError('STUDIO_REVIEW_NOT_FOUND');
       await this.studioReviewRepository
         .createQueryBuilder('review')
-        .update()
-        .where('review.id = :id', { id })
+        .update(UsersReviewStudios)
+        .where({ id })
         .set({ clickCount: () => 'clickCount + 1' })
         .execute();
       return { ok: true };
@@ -1112,7 +1115,7 @@ export class StudiosService {
       await this.studioRepository
         .createQueryBuilder('studio')
         .update(Studio)
-        .where('studio.id = :id', { id: studio.id })
+        .where({ id: studio.id })
         .set({ heartCount: () => 'heartCount + 1' })
         .execute();
       return { ok: true };
@@ -1149,7 +1152,7 @@ export class StudiosService {
       await this.studioRepository
         .createQueryBuilder('studio')
         .update(Studio)
-        .where('studio.id = :id', { id: studio.id })
+        .where({ id: studio.id })
         .set({ heartCount: () => 'heartCount - 1' })
         .execute();
       return { ok: true };
