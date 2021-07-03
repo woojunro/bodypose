@@ -5,13 +5,18 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
+import {
+  CommonError,
+  UNEXPECTED_ERROR,
+} from 'src/common/constants/error.constant';
+import { CoreOutput } from 'src/common/dtos/output.dto';
 import { ReviewPhoto } from 'src/photos/entities/review-photo.entity';
 import { PhotosService } from 'src/photos/photos.service';
 import { UploadsService } from 'src/uploads/uploads.service';
 import { UserType, User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
+import { ClickStudioReviewInput } from './dtos/click-studio-review.dto';
 import {
   CreateBranchInput,
   CreateBranchOutput,
@@ -959,6 +964,25 @@ export class StudiosService {
         ok: true,
         studioReviews,
       };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async clickStudioReview({ id }: ClickStudioReviewInput): Promise<CoreOutput> {
+    try {
+      const review = await this.studioReviewRepository.findOne(id, {
+        select: ['id'],
+      });
+      if (!review) return CommonError('STUDIO_REVIEW_NOT_FOUND');
+      await this.studioReviewRepository
+        .createQueryBuilder('review')
+        .update()
+        .where('review.id = :id', { id })
+        .set({ clickCount: () => 'clickCount + 1' })
+        .execute();
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;

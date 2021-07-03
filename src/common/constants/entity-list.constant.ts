@@ -1,5 +1,5 @@
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
-import { LogOriginalStudioPhotoExposure } from 'src/insights/entities/log-original-studio-photo-exposure.entity';
+import { LogOriginalStudioPhoto } from 'src/insights/entities/log-original-studio-photo.entity';
 import { LogStudioContact } from 'src/insights/entities/log-studio-contact.entity';
 import { LogStudioInfoView } from 'src/insights/entities/log-studio-info-view.entity';
 import { LogStudioReservation } from 'src/insights/entities/log-studio-reservation.entity';
@@ -29,7 +29,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Verification } from 'src/users/entities/verification.entity';
 
 export const LOG_ENTITIES = [
-  LogOriginalStudioPhotoExposure,
+  LogOriginalStudioPhoto,
   LogStudioInfoView,
   LogStudioContact,
   LogStudioReservation,

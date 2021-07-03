@@ -81,11 +81,15 @@ export class PhotosService {
     private readonly uploadsService: UploadsService,
   ) {}
 
-  async checkIfStudioPhotoExists(id: number): Promise<boolean> {
-    const studioPhoto = await this.studioPhotoRepository.findOne(id, {
-      select: ['id'],
-    });
-    return studioPhoto ? true : false;
+  async getStudioPhoto(id: number): Promise<StudioPhoto> {
+    const studioPhoto = await this.studioPhotoRepository
+      .createQueryBuilder('p')
+      .select('p.id')
+      .innerJoin('p.studio', 's')
+      .addSelect('s.id')
+      .where('p.id = :id', { id })
+      .getOne();
+    return studioPhoto;
   }
 
   async getAllStudioPhotos(

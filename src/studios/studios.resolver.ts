@@ -1,7 +1,9 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import { Roles } from 'src/auth/roles.decorator';
+import { CoreOutput } from 'src/common/dtos/output.dto';
 import { UserType, User } from 'src/users/entities/user.entity';
+import { ClickStudioReviewInput } from './dtos/click-studio-review.dto';
 import {
   CreateBranchInput,
   CreateBranchOutput,
@@ -197,9 +199,13 @@ export class StudioReviewResolver {
     return this.studiosService.getMyStudioReviews(user);
   }
 
-  /*
-  리뷰 작성 API는 사진 업로드 관계로 uploads에서 담당
-  */
+  // Public
+  @Mutation(returns => CoreOutput)
+  clickStudioReview(
+    @Args('input') input: ClickStudioReviewInput,
+  ): Promise<CoreOutput> {
+    return this.studiosService.clickStudioReview(input);
+  }
 
   @Mutation(returns => DeleteStudioReviewOutput)
   @Roles(UserType.USER, UserType.ADMIN)
