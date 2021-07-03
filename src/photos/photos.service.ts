@@ -5,7 +5,10 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
+import {
+  CommonError,
+  UNEXPECTED_ERROR,
+} from 'src/common/constants/error.constant';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { StudiosService } from 'src/studios/studios.service';
 import { UploadsService } from 'src/uploads/uploads.service';
@@ -661,36 +664,29 @@ export class PhotosService {
     { id }: HeartStudioPhotoInput,
   ): Promise<HeartStudioPhotoOutput> {
     try {
-      const photo = await this.studioPhotoRepository.findOne(
-        { id },
-        { select: ['id', 'heartCount'] },
-      );
-      if (!photo) {
-        return {
-          ok: false,
-          error: 'STUDIO_PHOTO_NOT_FOUND',
-        };
-      }
+      const photo = await this.studioPhotoRepository.findOne(id, {
+        select: ['id'],
+      });
+      if (!photo) return CommonError('STUDIO_PHOTO_NOT_FOUND');
       const isAlreadyHearted = await this.usersHeartStudioPhotosRepository.findOne(
         {
           user: { id: user.id },
           studioPhoto: { id: photo.id },
         },
       );
-      if (isAlreadyHearted) {
-        return {
-          ok: false,
-          error: 'ALREADY_HEARTED',
-        };
-      }
+      if (isAlreadyHearted) return CommonError('ALREADY_HEARTED');
       await this.usersHeartStudioPhotosRepository.save(
         this.usersHeartStudioPhotosRepository.create({
           user: { id: user.id },
-          studioPhoto: { id: photo.id },
+          studioPhoto: { id },
         }),
       );
-      photo.heartCount++;
-      await this.studioPhotoRepository.save(photo);
+      await this.studioPhotoRepository
+        .createQueryBuilder('photo')
+        .update(StudioPhoto)
+        .where('photo.id = :id', { id })
+        .set({ heartCount: () => 'heartCount + 1' })
+        .execute();
       return { ok: true, id };
     } catch (e) {
       console.log(e);
@@ -703,29 +699,22 @@ export class PhotosService {
     { id }: HeartStudioPhotoInput,
   ): Promise<HeartStudioPhotoOutput> {
     try {
-      const photo = await this.studioPhotoRepository.findOne(
-        { id },
-        { select: ['id', 'heartCount'] },
-      );
-      if (!photo) {
-        return {
-          ok: false,
-          error: 'STUDIO_PHOTO_NOT_FOUND',
-        };
-      }
+      const photo = await this.studioPhotoRepository.findOne(id, {
+        select: ['id'],
+      });
+      if (!photo) return CommonError('STUDIO_PHOTO_NOT_FOUND');
       const heart = await this.usersHeartStudioPhotosRepository.findOne({
         user: { id: user.id },
-        studioPhoto: { id: photo.id },
+        studioPhoto: { id },
       });
-      if (!heart) {
-        return {
-          ok: false,
-          error: 'ALREADY_DISHEARTED',
-        };
-      }
+      if (!heart) return CommonError('ALREADY_DISHEARTED');
       await this.usersHeartStudioPhotosRepository.delete({ id: heart.id });
-      photo.heartCount--;
-      await this.studioPhotoRepository.save(photo);
+      await this.studioPhotoRepository
+        .createQueryBuilder('photo')
+        .update(StudioPhoto)
+        .where('photo.id = :id', { id })
+        .set({ heartCount: () => 'heartCount - 1' })
+        .execute();
       return { ok: true, id };
     } catch (e) {
       console.log(e);

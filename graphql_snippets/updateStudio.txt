@@ -1,9 +1,0 @@
-mutation {
-  updateStudio(input: {
-    slug: "balance-button"
-    payload: {}
-  }) {
-    ok
-    error
-  }
-}

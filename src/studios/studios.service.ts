@@ -1090,14 +1090,9 @@ export class StudiosService {
       // 스튜디오 존재 여부 확인
       const studio = await this.studioRepository.findOne(
         { slug },
-        { select: ['id', 'heartCount'] },
+        { select: ['id'] },
       );
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
       // 이미 찜 되어 있는지 확인
       const isAlreadyHearted = await this.usersHeartStudiosRepository.findOne({
         where: {
@@ -1105,12 +1100,7 @@ export class StudiosService {
           studio: studio.id,
         },
       });
-      if (isAlreadyHearted) {
-        return {
-          ok: false,
-          error: 'ALREADY_HEARTED',
-        };
-      }
+      if (isAlreadyHearted) return CommonError('ALREADY_HEARTED');
       // 생성
       await this.usersHeartStudiosRepository.save(
         this.usersHeartStudiosRepository.create({
@@ -1119,8 +1109,12 @@ export class StudiosService {
         }),
       );
       // 스튜디오 heartCount 증가
-      studio.heartCount++;
-      await this.studioRepository.save(studio);
+      await this.studioRepository
+        .createQueryBuilder('studio')
+        .update(Studio)
+        .where('studio.id = :id', { id: studio.id })
+        .set({ heartCount: () => 'heartCount + 1' })
+        .execute();
       return { ok: true };
     } catch (e) {
       console.log(e);
@@ -1136,14 +1130,9 @@ export class StudiosService {
       // 스튜디오 존재 여부 확인
       const studio = await this.studioRepository.findOne(
         { slug },
-        { select: ['id', 'heartCount'] },
+        { select: ['id'] },
       );
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
       // 이미 찜 되어 있는지 확인
       const isAlreadyHearted = await this.usersHeartStudiosRepository.findOne({
         where: {
@@ -1151,19 +1140,18 @@ export class StudiosService {
           studio: studio.id,
         },
       });
-      if (!isAlreadyHearted) {
-        return {
-          ok: false,
-          error: 'ALREADY_DISHEARTED',
-        };
-      }
+      if (!isAlreadyHearted) return CommonError('ALREADY_DISHEARTED');
       // 삭제
       await this.usersHeartStudiosRepository.delete({
         id: isAlreadyHearted.id,
       });
       // 스튜디오 heartCount 감소
-      studio.heartCount--;
-      await this.studioRepository.save(studio);
+      await this.studioRepository
+        .createQueryBuilder('studio')
+        .update(Studio)
+        .where('studio.id = :id', { id: studio.id })
+        .set({ heartCount: () => 'heartCount - 1' })
+        .execute();
       return { ok: true };
     } catch (e) {
       console.log(e);
