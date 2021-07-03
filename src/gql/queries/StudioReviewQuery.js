@@ -24,6 +24,7 @@ export const STUDIO_REVIEWS_QUERY = gql`
           url
         }
         user {
+          id
           profile {
             id
             nickname
@@ -52,6 +53,7 @@ export const ALL_STUDIO_REVIEWS_QUERY = gql`
           url
         }
         user {
+          id
           profile {
             id
             nickname
@@ -83,6 +85,7 @@ export const MY_STUDIO_REVIEWS_QUERY = gql`
           url
         }
         user {
+          id
           profile {
             id
             nickname

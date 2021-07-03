@@ -10,13 +10,17 @@ import ReviewTab from '../../components/mobileComponents/StudioInfoScreen/Review
 import BottomAlertDialog from '../../components/mobileComponents/BottomAlertDialog';
 
 import SeeMoreStudio from '../../components/mobileComponents/StudioInfoScreen/SeeMoreStudio';
-import { useParams } from 'react-router-dom';
-import { useQuery } from '@apollo/client';
+import { useHistory, useParams } from 'react-router-dom';
+import { useMutation, useQuery } from '@apollo/client';
 import { STUDIO_QUERY } from '../../gql/queries/StudioQuery';
 import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import ScrollToTopButton from '../../components/mobileComponents/ScrollToTopButton';
 import ReactGA from 'react-ga';
+import {
+  CONTACT_STUDIO_MUTATION,
+  VIEW_STUDIO_INFO_MUTATION,
+} from '../../gql/mutations/LogMutation';
 
 const StudioInfoScreen = () => {
   useEffect(() => {
@@ -25,13 +29,61 @@ const StudioInfoScreen = () => {
   const { slug } = useParams();
   const { data, loading, refetch } = useQuery(STUDIO_QUERY, {
     variables: { slug },
+    onCompleted: data => {
+      if (!data.studio.ok) {
+        history.push('/error');
+        return;
+      }
+      const studioId = data.studio.studio.id;
+      let source = 'ETC';
+      switch (history.location.state?.previousPath) {
+        case '/':
+          source = 'HOME';
+          break;
+        case '/studios':
+          source = 'STUDIO_LIST';
+          break;
+        case '/concepts':
+          source = 'STUDIO_PHOTO';
+          break;
+        case '/reviews':
+          source = 'STUDIO_REVIEW';
+          break;
+        default:
+          source = 'ETC';
+          break;
+      }
+      viewStudioInfo({
+        variables: {
+          input: {
+            source,
+            studioId,
+          },
+        },
+      });
+    },
   });
+  const history = useHistory();
   const { data: studioData, loading: studioLoading } = useQuery(
     ALL_STUDIOS_QUERY,
     {
       fetchPolicy: 'cache-and-network',
     }
   );
+
+  const [viewStudioInfo] = useMutation(VIEW_STUDIO_INFO_MUTATION);
+  const [contactStudio] = useMutation(CONTACT_STUDIO_MUTATION);
+  const onContactClick = contactType => {
+    contactStudio({
+      variables: {
+        input: {
+          studioId: data.studio.studio.id,
+          contactType,
+        },
+      },
+    });
+  };
+
   const [navigator, setNavigator] = useState('portfolio');
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [offsetY, setOffsetY] = useState(0);
@@ -99,7 +151,7 @@ const StudioInfoScreen = () => {
         setIsAlertOpen={setIsAlertOpen}
       />
       <TitlePart currentStudio={studio} />
-      <StudioLinks currentStudio={studio} />
+      <StudioLinks currentStudio={studio} onContactClick={onContactClick} />
       <TopNavigator
         navigator={navigator}
         setNavigator={setNavigator}

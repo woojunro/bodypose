@@ -14,6 +14,7 @@ import {
 } from '../../../gql/mutations/HeartStudioPhotoMutation';
 import { client, IsLoggedInVar } from '../../../apollo';
 import $ from 'jquery';
+import { EXPOSE_ORIGINAL_STUDIO_PHOTO_MUTATION } from '../../../gql/mutations/LogMutation';
 
 const Modal = ({
   close,
@@ -50,6 +51,20 @@ const Modal = ({
   const [disheartLoading, setDisHeartLoading] = useState(false);
   const history = useHistory();
 
+  const [exposeOriginalStudioPhoto] = useMutation(
+    EXPOSE_ORIGINAL_STUDIO_PHOTO_MUTATION
+  );
+
+  useEffect(() => {
+    exposeOriginalStudioPhoto({
+      variables: {
+        input: {
+          studioPhotoId: id,
+        },
+      },
+    });
+  }, [id]);
+
   //뒤로가기 기능.
   window.addEventListener('popstate', function (e) {
     close();
@@ -67,6 +82,7 @@ const Modal = ({
       }
     }, 500); //check every half second if the url has changed
   });
+
   useEffect(() => {
     setIsHearted(concept.isHearted);
   }, [concept]);

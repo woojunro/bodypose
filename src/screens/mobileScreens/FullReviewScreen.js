@@ -10,8 +10,9 @@ import RemoveModal from '../../components/mobileComponents/ReviewList/RemoveModa
 import ToStudioButton from '../../components/mobileComponents/ReviewList/ToStudioButton';
 import ReviewOption from '../../components/mobileComponents/ReviewList/ReviewOption';
 import { client } from '../../apollo';
-import { gql } from '@apollo/client';
+import { gql, useMutation } from '@apollo/client';
 import ReactGA from 'react-ga';
+import { CLICK_STUDIO_REVIEW_MUTATION } from '../../gql/mutations/ClickStudioReviewMutation';
 
 const FullReviewScreen = ({
   id,
@@ -27,6 +28,7 @@ const FullReviewScreen = ({
   const [isOptionOpen, setIsOptionOpen] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);
+  const [clickStudioReview] = useMutation(CLICK_STUDIO_REVIEW_MUTATION);
 
   const fragment = currentStudioName
     ? gql`
@@ -42,7 +44,11 @@ const FullReviewScreen = ({
             url
           }
           user {
-            nickname
+            id
+            profile {
+              id
+              nickname
+            }
           }
         }
       `
@@ -59,7 +65,11 @@ const FullReviewScreen = ({
             url
           }
           user {
-            nickname
+            id
+            profile {
+              id
+              nickname
+            }
           }
           studio {
             name
@@ -75,6 +85,7 @@ const FullReviewScreen = ({
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    clickStudioReview({ variables: { input: { id } } });
   }, []);
 
   return (
@@ -103,7 +114,9 @@ const FullReviewScreen = ({
         </div>
         <div className="fullReviewTopPart">
           <div className="fullReviewLeftPart">
-            <div className="fullReviewUserName">{review.user.nickname}</div>
+            <div className="fullReviewUserName">
+              {review.user.profile.nickname}
+            </div>
 
             <div className="fullratingAndStudio">
               <div className="fullReviewrating">{GetStars(review.rating)}</div>
@@ -121,7 +134,7 @@ const FullReviewScreen = ({
           {isOptionOpen ? (
             <ReviewOption
               reviewNumber={review.id}
-              isSameUser={nickname === review.user.nickname}
+              isSameUser={nickname === review.user.profile.nickname}
               setIsOptionOpen={setIsOptionOpen}
               setIsReportOpen={setIsReportOpen}
               setIsRemoveOpen={setIsRemoveOpen}
