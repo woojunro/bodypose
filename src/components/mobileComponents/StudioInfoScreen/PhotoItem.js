@@ -31,6 +31,12 @@ const PhotoItem = ({
       const conceptCountStr = String(item.conceptCount);
       var minmaxPeopleCount = 0;
       var minmaxConceptCount = 0;
+      var conceptNum;
+      if (item.conceptCount === 10000) {
+        conceptNum = '무제한';
+      } else {
+        conceptNum = item.conceptCount;
+      }
       if (peopleCountStr.includes(126)) {
         minmaxPeopleCount = splitMinMaxPeopleCount(peopleCountStr);
       }
@@ -51,10 +57,10 @@ const PhotoItem = ({
                     : peopleCountStr.includes(126)
                     ? conceptCountStr.includes(126)
                       ? `${minmaxPeopleCount}인촬영 - ${minmaxConceptCount}컨셉`
-                      : `${minmaxPeopleCount}인촬영 - ${item.conceptCount}컨셉`
+                      : `${minmaxPeopleCount}인촬영 - ${conceptNum}컨셉`
                     : conceptCountStr.includes(126)
                     ? `${item.peopleCount}인촬영 - ${minmaxConceptCount}컨셉`
-                    : `${item.peopleCount}인촬영 - ${item.conceptCount}컨셉`}
+                    : `${item.peopleCount}인촬영 - ${conceptNum}컨셉`}
                 </div>
                 {currentStudio.isOriginalPhotoProvided ? (
                   <div className="itemUnder">
