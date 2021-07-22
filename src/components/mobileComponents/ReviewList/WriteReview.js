@@ -7,6 +7,9 @@ import imageCompression from 'browser-image-compression';
 import LoadingIcon from '../conceptListScreen/LoadingIcon';
 import axios from 'axios';
 import { BASE_URL } from '../../../constants/urls';
+import { refreshAccessToken } from '../../functions/Common/refreshAccessToken';
+import { IsLoggedInVar } from '../../../apollo';
+import { alertError } from '../../functions/Common/alertError';
 
 const WriteReview = ({
   studioName,
@@ -102,14 +105,10 @@ const WriteReview = ({
       form.append('photos', pic, pic.name);
     }
     try {
+      axios.defaults.withCredentials = true;
       const response = await axios.post(
         `${BASE_URL}/uploads/studio-review`,
-        form,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('jwt')}`,
-          },
-        }
+        form
       );
       if (response.data.ok) {
         setIsWriteReviewOpen(false);
@@ -119,7 +118,17 @@ const WriteReview = ({
         throw new Error();
       }
     } catch (e) {
-      alert('오류가 발생하였습니다. 다시 시도해주세요.');
+      if (e.response?.status === 403) {
+        const refreshed = await refreshAccessToken();
+        if (refreshed) {
+          handleSubmit();
+        } else {
+          IsLoggedInVar(false);
+          setIsWriteReviewOpen(false);
+        }
+      } else {
+        alertError();
+      }
     }
     setSubmitLoading(false);
   };
@@ -279,7 +288,7 @@ const WriteReview = ({
                 에프먼스는 이에 대한 법적 책임을 지지 않습니다.
               </div>
             </div>
-          </div>{' '}
+          </div>
         </div>
       </div>
     )

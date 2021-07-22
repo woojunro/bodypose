@@ -216,46 +216,49 @@ const Modal = ({
                 }}
               />
               <div className="conceptModalContents">
-                <div className="mainPhotoArea">
-                  {whileFetching ? (
+                {whileFetching ? (
+                  <div className="mainPhotoArea">
                     <div className="whileLoading">
                       <LoadingIcon />
                     </div>
-                  ) : (
-                    <>
-                      <div>
-                        {selectedPhotoNum > 0 ? (
-                          <div className="prevArrowContainer">
-                            <IoIosArrowBack
-                              className="prevButton"
-                              onClick={() => {
-                                setThisPhoto(selectedPhotoNum - 1);
-                              }}
-                            />
-                          </div>
-                        ) : null}
-                      </div>
-                      <Swipe
-                        onSwipeRight={() => onSwipeRight()}
-                        onSwipeLeft={() => onSwipeLeft()}
-                      >
-                        <img alt="studioPicture" src={concept.originalUrl} />
-                      </Swipe>
-                      <div>
-                        {!isFinalPhoto ? (
-                          <div className="nextArrowContainer">
-                            <IoIosArrowForward
-                              className="nextButton"
-                              onClick={() => {
-                                setThisPhoto(selectedPhotoNum + 1);
-                              }}
-                            />
-                          </div>
-                        ) : null}
-                      </div>
-                    </>
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <Swipe
+                    className="mainPhotoArea"
+                    onSwipeRight={() => onSwipeRight()}
+                    onSwipeLeft={() => onSwipeLeft()}
+                  >
+                    <div>
+                      {selectedPhotoNum > 0 ? (
+                        <div className="prevArrowContainer">
+                          <IoIosArrowBack
+                            className="prevButton"
+                            onClick={() => {
+                              setThisPhoto(selectedPhotoNum - 1);
+                            }}
+                          />
+                        </div>
+                      ) : null}
+                    </div>
+                    <img
+                      className="mainPhotoAreaImg"
+                      alt="studioPicture"
+                      src={concept.originalUrl}
+                    />
+                    <div>
+                      {!isFinalPhoto ? (
+                        <div className="nextArrowContainer">
+                          <IoIosArrowForward
+                            className="nextButton"
+                            onClick={() => {
+                              setThisPhoto(selectedPhotoNum + 1);
+                            }}
+                          />
+                        </div>
+                      ) : null}
+                    </div>
+                  </Swipe>
+                )}
               </div>
               <div className="toStudioInfoContainer">
                 {history.location.pathname ===

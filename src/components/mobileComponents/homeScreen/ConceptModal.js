@@ -110,18 +110,21 @@ const Modal = ({ isOpen, close, concept }) => {
           <div className="conceptmodal">
             <div className="concepttrueModal">
               <div className="topBarContainer">
-                <div style={{ width: '45px' }}></div>
                 <div className="studioTitle">{concept.studio.name}</div>
-                <IoIosClose
-                  className="conceptModalClose"
-                  onClick={() => {
-                    close();
-                  }}
-                />
               </div>
+              <IoIosClose
+                className="conceptModalClose"
+                onClick={() => {
+                  close();
+                }}
+              />
               <div className="conceptModalContents">
                 <div className="mainPhotoArea">
-                  <img alt="studioPicture" src={concept.originalUrl} />
+                  <img
+                    className="mainPhotoAreaImg"
+                    alt="studioPicture"
+                    src={concept.originalUrl}
+                  />
                 </div>
               </div>
               <div className="toStudioInfoContainer">
