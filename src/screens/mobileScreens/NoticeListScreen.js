@@ -76,6 +76,7 @@ const NoticeListScreen = () => {
         {data?.notices &&
           data.notices.notices.map(notice => (
             <div
+              key={`notice-${notice.id}`}
               onClick={() => {
                 history.push(`/notices/${notice.id}`);
                 window.scrollTo(0, 0);

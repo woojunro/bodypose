@@ -108,7 +108,7 @@ const ReviewTab = ({ currentStudio, refetchStudio }) => {
         isReviewDetailOpen && (
           <FullReviewScreen
             id={reviewDetailId}
-            nickname={profileData?.myProfile?.profile.nickname}
+            nickname={profileData?.userProfile?.profile.nickname}
             close={closeReviewDetail}
             currentStudioName={currentStudio.name}
             refetchReviews={refetchReviews}

@@ -17,11 +17,11 @@ import ReactGA from 'react-ga';
 
 const StudioListScreen = () => {
   useEffect(() => {
-    window.postMessage(data, '*');
+    // window.postMessage(data, '*');
     ReactGA.pageview(window.location.pathname);
   }, []);
   const { data, loading, error } = useQuery(ALL_STUDIOS_QUERY, {
-    onCompleted: (data) => {
+    onCompleted: data => {
       if (!data || !data.allStudios.studios) {
         return;
       }
