@@ -55,7 +55,6 @@ export const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-export const clearTokenAndCache = async () => {
+export const clearCache = async () => {
   await client.resetStore();
-  localStorage.clear();
 };

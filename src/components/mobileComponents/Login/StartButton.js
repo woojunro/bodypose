@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/client';
 import axios from 'axios';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { clearTokenAndCache, IsLoggedInVar } from '../../../apollo';
+import { clearCache, IsLoggedInVar } from '../../../apollo';
 import { BASE_URL } from '../../../constants/urls';
 import { EMAIL_REGISTER_MUTATION } from '../../../gql/mutations/RegisterMutation';
 import { alertError } from '../../functions/Common/alertError';
@@ -27,7 +27,7 @@ export const StartButton = ({
           try {
             const res = await axios.post(url, payload);
             if (res.data.access && res.data.refresh) {
-              await clearTokenAndCache();
+              await clearCache();
               IsLoggedInVar(true);
               history.push('/createProfile');
             } else {

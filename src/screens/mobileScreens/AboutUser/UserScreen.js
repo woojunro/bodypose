@@ -8,9 +8,8 @@ import AppLoadingScreen from '../../../components/mobileComponents/AppLoadingScr
 
 import './UserScreen.css';
 import { useQuery, useReactiveVar } from '@apollo/client';
-import { clearTokenAndCache, IsLoggedInVar } from '../../../apollo';
+import { IsLoggedInVar } from '../../../apollo';
 import { MY_USER_INFO_QUERY } from '../../../gql/queries/MyUserInfoQuery';
-import { logout } from '../../../components/functions/Login/Logout';
 import { shouldUpdateEmail } from '../../../constants/shouldUpdateEmail';
 
 const UserScreen = () => {
@@ -35,11 +34,8 @@ const UserScreen = () => {
     return <Redirect to={{ pathname: '/login' }} />;
   }
 
-  const LogoutFunction = async () => {
-    await logout();
-    history.push('/');
-    await clearTokenAndCache();
-    IsLoggedInVar(false);
+  const LogoutFunction = () => {
+    history.push('/logout');
   };
 
   return loading ? (
@@ -121,7 +117,6 @@ const UserScreen = () => {
         <div className="userTapName">로그아웃</div>
         <IoIosArrowForward className="userArrow" />
       </div>
-
       <div
         onClick={() => {
           history.push('/users/leave');

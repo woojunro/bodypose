@@ -6,7 +6,7 @@ import LeaveButton from '../../../components/mobileComponents/Login/LeaveButton'
 import './LeaveScreen.css';
 import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
 import { MY_PROFILE_QUERY } from '../../../gql/queries/MyProfileQuery';
-import { clearTokenAndCache, IsLoggedInVar } from '../../../apollo';
+import { IsLoggedInVar } from '../../../apollo';
 import AppLoadingScreen from '../../../components/mobileComponents/AppLoadingScreen';
 import { LEAVE_BODYPOSE_MUTATION } from '../../../gql/mutations/LeaveMutation';
 
@@ -21,7 +21,6 @@ const LeaveScreen = () => {
   const [unregister, { loading }] = useMutation(LEAVE_BODYPOSE_MUTATION, {
     onCompleted: async data => {
       if (data.deleteMyAccount.ok) {
-        await clearTokenAndCache();
         setIsLeaved(true);
       } else {
         alert('오류가 발생하였습니다. 다시 시도해주세요.');
@@ -37,11 +36,9 @@ const LeaveScreen = () => {
   useEffect(() => {
     if (isLeaved) {
       setTimeout(() => {
-        history.push('/');
-        IsLoggedInVar(false);
+        history.push('/logout');
       }, 2000);
     }
-    return null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLeaved]);
 

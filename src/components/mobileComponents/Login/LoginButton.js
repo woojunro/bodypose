@@ -3,7 +3,7 @@ import axios from 'axios';
 import './LoginButton.css';
 import { BASE_URL } from '../../../constants/urls';
 import { CheckValidEmail } from '../../functions/Login/LoginFunctions';
-import { clearTokenAndCache, IsLoggedInVar } from '../../../apollo';
+import { clearCache, IsLoggedInVar } from '../../../apollo';
 
 const LoginButton = ({ email, password, setValidInfo, setErrorMessage }) => {
   const [loading, setLoading] = useState(false);
@@ -25,7 +25,7 @@ const LoginButton = ({ email, password, setValidInfo, setErrorMessage }) => {
       axios.defaults.withCredentials = true;
       const res = await axios.post(url, payload);
       if (res.data.access && res.data.refresh) {
-        await clearTokenAndCache();
+        await clearCache();
         IsLoggedInVar(true);
       }
     } catch (e) {

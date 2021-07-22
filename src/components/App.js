@@ -32,6 +32,7 @@ import './App.css';
 import AppLoadingScreen from './mobileComponents/AppLoadingScreen';
 import { MY_USER_INFO_QUERY } from '../gql/queries/MyUserInfoQuery';
 import { shouldUpdateEmail } from '../constants/shouldUpdateEmail';
+import LogoutScreen from '../screens/mobileScreens/LogoutScreen';
 
 ReactGA.initialize('UA-190823210-1');
 const history = createBrowserHistory();
@@ -99,6 +100,7 @@ const App = () => {
         <Route exact path="/error" component={ErrorScreenM} />
         <Route path="/kakaoLink/:kakaoID" component={KakaoLinkScreenM} />
         <Route path="/kakaoPhone/:kakaoID" component={KakaoPhoneScreenM} />
+        <Route exact path="/logout" component={LogoutScreen} />
         <Route component={ErrorScreenM} />
       </Switch>
     </Router>
