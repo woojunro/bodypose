@@ -8,10 +8,12 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import { isIE } from 'react-device-detect';
 import IEScreen from './screens/mobileScreens/IEScreen';
-
 import { ApolloProvider } from '@apollo/client';
 import { client } from './apollo';
+import { initialize } from 'react-ga';
 import App from './components/App';
+
+initialize(process.env.REACT_APP_GA_ID);
 
 ReactDOM.render(
   <ApolloProvider client={client}>

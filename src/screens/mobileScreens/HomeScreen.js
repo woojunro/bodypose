@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import HeaderM from '../../components/mobileComponents/HeaderM';
 import AdTapCarousel from '../../components/mobileComponents/homeScreen/AdTabCarousel';
-
 import MainCardScrollView from '../../components/mobileComponents/homeScreen/MainCardScrollView';
 import SeeAll from '../../components/mobileComponents/homeScreen/SeeAll';
 import BottomNavigation from '../../components/mobileComponents/BottomNavigation';
@@ -24,14 +23,10 @@ import {
 } from '../../constants/numOfPhotos';
 import { randomPage } from '../../components/functions/Concept/randomPages';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
-import ReactGA from 'react-ga';
 
 const take = 8;
 
 const HomeScreen = () => {
-  useEffect(() => {
-    ReactGA.pageview(window.location.pathname);
-  }, []);
   const [randomFemalePage] = useState(
     randomPage(Math.floor(FEMALE_PHOTOS_NUM / take))
   );
@@ -61,19 +56,20 @@ const HomeScreen = () => {
       objectConceptSlugs: [],
     },
   });
-  const { data: maleData, loading: maleLoading, error: maleError } = useQuery(
-    ALL_STUDIO_PHOTOS_QUERY,
-    {
-      variables: {
-        take,
-        page: randomMalePage,
-        gender: 'MALE',
-        backgroundConceptSlugs: [],
-        costumeConceptSlugs: [],
-        objectConceptSlugs: [],
-      },
-    }
-  );
+  const {
+    data: maleData,
+    loading: maleLoading,
+    error: maleError,
+  } = useQuery(ALL_STUDIO_PHOTOS_QUERY, {
+    variables: {
+      take,
+      page: randomMalePage,
+      gender: 'MALE',
+      backgroundConceptSlugs: [],
+      costumeConceptSlugs: [],
+      objectConceptSlugs: [],
+    },
+  });
   const {
     data: coupleData,
     loading: coupleLoading,

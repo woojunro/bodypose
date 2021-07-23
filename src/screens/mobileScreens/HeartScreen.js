@@ -7,14 +7,10 @@ import HeartConcepts from '../../components/mobileComponents/HeartsScreen/HeartC
 
 import { MakingPickContainer } from '../../components/functions/Heart/PickFunctions';
 import './HeartScreen.css';
-import ReactGA from 'react-ga';
 import { useReactiveVar } from '@apollo/client';
 import { IsLoggedInVar } from '../../apollo';
 
 const HeartScreen = () => {
-  React.useEffect(() => {
-    ReactGA.pageview(window.location.pathname);
-  }, []);
   const isLoggedIn = useReactiveVar(IsLoggedInVar);
   const history = useHistory();
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 import './ReviewListScreen.css';
 import ReviewScrollView from '../../components/mobileComponents/ReviewList/ReviewScrollView';
@@ -8,12 +8,8 @@ import { useHistory } from 'react-router-dom';
 import { MY_PROFILE_QUERY } from '../../gql/queries/MyProfileQuery';
 import FullReviewScreen from './FullReviewScreen';
 import LoadingIcon from '../../components/mobileComponents/conceptListScreen/LoadingIcon';
-import ReactGA from 'react-ga';
 
 const ReviewListScreen = () => {
-  useEffect(() => {
-    ReactGA.pageview(window.location.pathname);
-  }, []);
   const history = useHistory();
   const { data, loading, fetchMore, refetch } = useQuery(
     ALL_STUDIO_REVIEWS_QUERY,

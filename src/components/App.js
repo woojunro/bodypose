@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { createBrowserHistory } from 'history';
-import ReactGA from 'react-ga';
+import Analytics from 'react-router-ga';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { IsLoggedInVar } from '../apollo';
@@ -33,15 +32,10 @@ import AppLoadingScreen from './mobileComponents/AppLoadingScreen';
 import { MY_USER_INFO_QUERY } from '../gql/queries/MyUserInfoQuery';
 import { shouldUpdateEmail } from '../constants/shouldUpdateEmail';
 import LogoutScreen from '../screens/mobileScreens/LogoutScreen';
-
-ReactGA.initialize('UA-190823210-1');
-const history = createBrowserHistory();
-history.listen(location => {
-  ReactGA.set({ page: location.pathname });
-  ReactGA.pageview(location.pathname);
-});
+import { createBrowserHistory } from 'history';
 
 const App = () => {
+  const history = createBrowserHistory();
   const [isAppLoading, setIsAppLoading] = useState(true);
 
   const { loading } = useQuery(MY_USER_INFO_QUERY, {
@@ -71,38 +65,48 @@ const App = () => {
   }
 
   return (
-    <Router history={history}>
-      <Switch className="app">
-        <Route exact path="/" component={HomeScreenM} />
-        <Route exact path="/studios" component={StudioListScreenM} />
-        <Route exact path="/concepts" component={ConceptListScreenM} />
-        <Route exact path="/reviews" component={ReviewListScreenM} />
-        <Route exact path="/studios/:slug" component={StudioInfoScreenM} />
-        <Route exact path="/users" component={UserScreenM} />
-        <Route exact path="/hearts" component={HeartScreenM} />
-        <Route exact path="/notices" component={NoticeListScreenM} />
-        <Route path="/notices/:noticeId" component={NoticeScreenM} />
-        <Route exact path="/login" component={LoginScreenM} />
-        <Route
-          path="/login/:provider/callback"
-          component={SocialLoginCallbackScreenM}
-        />
-        <Route exact path="/createProfile" component={CreateProfileScreenM} />
-        <Route exact path="/updateEmail" component={UpdateEmailScreenM} />
-        <Route exact path="/changePassword" component={ChangePasswordScreenM} />
-        <Route path="/newPassword" component={NewPasswordScreenM} />
-        <Route exact path="/startWithEmail" component={StartWithEmailScreenM} />
-        <Route path="/confirmEmail" component={ConfirmEmailScreenM} />
-        <Route exact path="/users/myInfo" component={MyInfoScreenM} />
-        <Route exact path="/users/myReview" component={MyReviewScreenM} />
-        <Route exact path="/users/leave" component={LeaveScreenM} />
-        <Route exact path="/users/profile" component={MyProfileScreenM} />
-        <Route exact path="/error" component={ErrorScreenM} />
-        <Route path="/kakaoLink/:kakaoID" component={KakaoLinkScreenM} />
-        <Route path="/kakaoPhone/:kakaoID" component={KakaoPhoneScreenM} />
-        <Route exact path="/logout" component={LogoutScreen} />
-        <Route component={ErrorScreenM} />
-      </Switch>
+    <Router>
+      <Analytics id={process.env.REACT_APP_GA_ID}>
+        <Switch className="app">
+          <Route exact path="/" component={HomeScreenM} />
+          <Route exact path="/studios" component={StudioListScreenM} />
+          <Route exact path="/concepts" component={ConceptListScreenM} />
+          <Route exact path="/reviews" component={ReviewListScreenM} />
+          <Route exact path="/studios/:slug" component={StudioInfoScreenM} />
+          <Route exact path="/users" component={UserScreenM} />
+          <Route exact path="/hearts" component={HeartScreenM} />
+          <Route exact path="/notices" component={NoticeListScreenM} />
+          <Route path="/notices/:noticeId" component={NoticeScreenM} />
+          <Route exact path="/login" component={LoginScreenM} />
+          <Route
+            path="/login/:provider/callback"
+            component={SocialLoginCallbackScreenM}
+          />
+          <Route exact path="/createProfile" component={CreateProfileScreenM} />
+          <Route exact path="/updateEmail" component={UpdateEmailScreenM} />
+          <Route
+            exact
+            path="/changePassword"
+            component={ChangePasswordScreenM}
+          />
+          <Route path="/newPassword" component={NewPasswordScreenM} />
+          <Route
+            exact
+            path="/startWithEmail"
+            component={StartWithEmailScreenM}
+          />
+          <Route path="/confirmEmail" component={ConfirmEmailScreenM} />
+          <Route exact path="/users/myInfo" component={MyInfoScreenM} />
+          <Route exact path="/users/myReview" component={MyReviewScreenM} />
+          <Route exact path="/users/leave" component={LeaveScreenM} />
+          <Route exact path="/users/profile" component={MyProfileScreenM} />
+          <Route exact path="/error" component={ErrorScreenM} />
+          <Route path="/kakaoLink/:kakaoID" component={KakaoLinkScreenM} />
+          <Route path="/kakaoPhone/:kakaoID" component={KakaoPhoneScreenM} />
+          <Route exact path="/logout" component={LogoutScreen} />
+          <Route component={ErrorScreenM} />
+        </Switch>
+      </Analytics>
     </Router>
   );
 };

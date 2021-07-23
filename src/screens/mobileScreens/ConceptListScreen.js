@@ -12,13 +12,9 @@ import { useQuery } from '@apollo/client';
 import { ALL_STUDIO_PHOTOS_QUERY } from '../../gql/queries/StudioPhotoQuery';
 import { randomPage } from '../../components/functions/Concept/randomPages';
 import shuffle from '../../components/functions/Shuffle';
-import ReactGA from 'react-ga';
 const genderOptions = [null, 'MALE', 'FEMALE', 'COUPLE'];
 
 const ConceptListScreen = () => {
-  React.useEffect(() => {
-    ReactGA.pageview(window.location.pathname);
-  }, []);
   const [initialPage, setInitialPage] = useState(1);
   const [isPageInitialized, setIsPageInitialized] = useState(false);
   const [pageList, setPageList] = useState([]);
@@ -40,7 +36,7 @@ const ConceptListScreen = () => {
       costumeConceptSlugs: selectedConcepts.costumeConcept,
       objectConceptSlugs: selectedConcepts.objectConcept,
     },
-    onCompleted: (data) => {
+    onCompleted: data => {
       if (!data.allStudioPhotos.ok) {
         setHasMore(false);
       } else {
@@ -71,11 +67,11 @@ const ConceptListScreen = () => {
     setIsModalOpen(true);
   };
 
-  const handlePhotoNum = (num) => {
+  const handlePhotoNum = num => {
     setSelectedPhotoNum(num);
   };
 
-  const handleConcepts = (object) => {
+  const handleConcepts = object => {
     setSelectedConcepts(object);
   };
 
@@ -203,14 +199,14 @@ const ConceptListScreen = () => {
               ? null
               : data.allStudioPhotos.photos.length % 3 === 0
               ? null
-              : [
-                  ...Array(3 - (data.allStudioPhotos.photos.length % 3)),
-                ].map((_, idx) => (
-                  <div
-                    key={`concept-blank-${idx}`}
-                    className="concepListCardContainer"
-                  />
-                ))}
+              : [...Array(3 - (data.allStudioPhotos.photos.length % 3))].map(
+                  (_, idx) => (
+                    <div
+                      key={`concept-blank-${idx}`}
+                      className="concepListCardContainer"
+                    />
+                  )
+                )}
           </div>
         </InfiniteScroll>
         {isModalOpen ? (

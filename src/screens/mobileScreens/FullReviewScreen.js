@@ -6,12 +6,10 @@ import ReviewBody from '../../components/mobileComponents/ReviewList/ReviewBody'
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import ReportModal from '../../components/mobileComponents/ReviewList/ReportModal';
 import RemoveModal from '../../components/mobileComponents/ReviewList/RemoveModal';
-
 import ToStudioButton from '../../components/mobileComponents/ReviewList/ToStudioButton';
 import ReviewOption from '../../components/mobileComponents/ReviewList/ReviewOption';
 import { client } from '../../apollo';
 import { gql, useMutation } from '@apollo/client';
-import ReactGA from 'react-ga';
 import { CLICK_STUDIO_REVIEW_MUTATION } from '../../gql/mutations/ClickStudioReviewMutation';
 
 const FullReviewScreen = ({
@@ -22,9 +20,6 @@ const FullReviewScreen = ({
   refetchReviews = () => {},
   refetchStudio = () => {},
 }) => {
-  React.useEffect(() => {
-    ReactGA.pageview(window.location.pathname);
-  }, []);
   const [isOptionOpen, setIsOptionOpen] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [isRemoveOpen, setIsRemoveOpen] = useState(false);

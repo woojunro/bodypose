@@ -8,7 +8,6 @@ import ItemTab from '../../components/mobileComponents/StudioInfoScreen/ItemTab'
 import InfoTab from '../../components/mobileComponents/StudioInfoScreen/InfoTab';
 import ReviewTab from '../../components/mobileComponents/StudioInfoScreen/ReviewTab';
 import BottomAlertDialog from '../../components/mobileComponents/BottomAlertDialog';
-
 import SeeMoreStudio from '../../components/mobileComponents/StudioInfoScreen/SeeMoreStudio';
 import { useHistory, useParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client';
@@ -16,16 +15,12 @@ import { STUDIO_QUERY } from '../../gql/queries/StudioQuery';
 import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import ScrollToTopButton from '../../components/mobileComponents/ScrollToTopButton';
-import ReactGA from 'react-ga';
 import {
   CONTACT_STUDIO_MUTATION,
   VIEW_STUDIO_INFO_MUTATION,
 } from '../../gql/mutations/LogMutation';
 
 const StudioInfoScreen = () => {
-  useEffect(() => {
-    ReactGA.pageview(window.location.pathname);
-  }, []);
   const { slug } = useParams();
   const { data, loading, refetch } = useQuery(STUDIO_QUERY, {
     variables: { slug },

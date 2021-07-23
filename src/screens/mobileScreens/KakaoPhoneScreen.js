@@ -4,12 +4,8 @@ import './KakaoPhoneScreen.css';
 import Kakao1 from '../../materials/kakao1.png';
 import Kakao2 from '../../materials/kakaoPhoneNumber.jpeg';
 import Kakao3 from '../../materials/kakaoPhoneNumber2.jpeg';
-import ReactGA from 'react-ga';
 
 const KakaoPhoneScreen = ({ match }) => {
-  React.useEffect(() => {
-    ReactGA.pageview(window.location.pathname);
-  }, []);
   const [isAlertOpen, setIsAlertOpen] = React.useState(false);
 
   const kakaoID = match.params.kakaoID;
@@ -58,7 +54,6 @@ const KakaoPhoneScreen = ({ match }) => {
       <div className="kakaoPhotos">
         <img src={Kakao1} alt="카카오톡에 들어가세요" />
       </div>
-
       <div className="kakaoDescription">2. 연락처로 추가를 눌러주세요.</div>
       <div className="kakaoPhotos">
         <img src={Kakao2} alt="카카오톡에 들어가세요" />
