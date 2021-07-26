@@ -76,13 +76,18 @@ export class UploadsService {
     body: UploadStudioReviewDto,
     user: User,
   ): Promise<CreateStudioReviewOutput> {
+    const { studioSlug, text } = body;
+    const rating = Math.floor(Number(body.rating));
+    const thumbnailIndex = Math.floor(Number(body.thumbnailIndex));
+    const isPhotoForProof = body.isPhotoForProof === 'true';
+
     if (
       photos.length < 1 ||
       photos.length > 3 ||
-      body.rating < 1 ||
-      body.rating > 5 ||
-      body.thumbnailIndex < 0 ||
-      body.thumbnailIndex >= photos.length
+      rating < 1 ||
+      rating > 5 ||
+      thumbnailIndex < 0 ||
+      thumbnailIndex >= photos.length
     ) {
       throw new BadRequestException('INVALID_PAYLOAD');
     }
@@ -111,13 +116,13 @@ export class UploadsService {
     }
 
     return this.studiosService.createStudioReview(user, {
-      studioSlug: body.studioSlug,
+      studioSlug,
       payload: {
-        rating: body.rating,
-        text: body.text,
-        isPhotoForProof: body.isPhotoForProof,
+        rating,
+        text,
+        isPhotoForProof,
         photoUrls,
-        thumbnailIndex: body.thumbnailIndex,
+        thumbnailIndex,
       },
     });
   }
