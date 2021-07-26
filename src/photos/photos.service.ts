@@ -684,7 +684,7 @@ export class PhotosService {
       await this.studioPhotoRepository
         .createQueryBuilder('photo')
         .update(StudioPhoto)
-        .where('photo.id = :id', { id })
+        .where({ id })
         .set({ heartCount: () => 'heartCount + 1' })
         .execute();
       return { ok: true, id };
@@ -712,7 +712,7 @@ export class PhotosService {
       await this.studioPhotoRepository
         .createQueryBuilder('photo')
         .update(StudioPhoto)
-        .where('photo.id = :id', { id })
+        .where({ id })
         .set({ heartCount: () => 'heartCount - 1' })
         .execute();
       return { ok: true, id };
