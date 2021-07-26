@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Request, Response } from 'express';
+import { CookieOptions, Request, Response } from 'express';
 import {
   CommonError,
   UNEXPECTED_ERROR,
@@ -36,12 +36,16 @@ import { getNaverProfileWithAccessToken } from './utils/naverLogin.util';
 import { LogoutInput, LogoutOutput } from './dtos/logout.dto';
 import { ConfigService } from '@nestjs/config';
 import {
-  NINETY_DAYS_IN_MS,
-  TWO_HOURS_IN_MS,
-} from 'src/common/constants/common.constant';
+  ACCESS_TOKEN_EXPIRES_IN,
+  REFRESH_TOKEN_EXPIRES_IN,
+  REFRESH_TOKEN_VALIDITY_MS,
+  ACCESS_TOKEN_VALIDITY_MS,
+} from 'src/auth/constants/cookie.constant';
 
 @Injectable()
 export class AuthService {
+  private shouldCookieSecure: boolean;
+
   constructor(
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
@@ -49,23 +53,23 @@ export class AuthService {
     private readonly configService: ConfigService,
     @InjectRepository(RefreshToken)
     private readonly refreshTokenRepository: Repository<RefreshToken>,
-  ) {}
+  ) {
+    this.shouldCookieSecure =
+      configService.get<string>('NODE_ENV') === 'production';
+  }
 
   async processLogin(user: User, res: Response): Promise<LoginOutput> {
     // Check if the user is locked
     if (user.isLocked) throw new ForbiddenException('USER_LOCKED');
     // Issue an auth token
     const payload = { id: user.id };
-    const token = this.jwtService.sign(payload, { expiresIn: '2h' });
+    const token = this.jwtService.sign(payload, {
+      expiresIn: ACCESS_TOKEN_EXPIRES_IN,
+    });
     // Set cookies
     const refresh = await this.issueRefreshToken(user.id);
     const now = Date.now();
-    res.cookie('refresh', refresh, {
-      expires: new Date(now + NINETY_DAYS_IN_MS),
-      httpOnly: true,
-      path: '/auth/refresh',
-      sameSite: 'lax',
-    });
+    this.setRefreshTokenCookie(res, refresh, now);
     this.setAccessTokenCookies(res, token, now);
     // Update lastLogin
     this.usersService.updateLastLoginAt(user.id);
@@ -76,19 +80,47 @@ export class AuthService {
     };
   }
 
+  getTokenCookieOption(isAccessToken: boolean, now: number): CookieOptions {
+    if (isAccessToken) {
+      return {
+        secure: this.shouldCookieSecure,
+        expires: new Date(now + ACCESS_TOKEN_VALIDITY_MS),
+        httpOnly: true,
+        sameSite: 'lax',
+      };
+    } else {
+      // Refresh token
+      return {
+        secure: this.shouldCookieSecure,
+        expires: new Date(now + REFRESH_TOKEN_VALIDITY_MS),
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/auth/refresh',
+      };
+    }
+  }
+
   setAccessTokenCookies(res: Response, token: string, now: number): void {
     // HttpOnly
-    res.cookie('authorization', token, {
-      expires: new Date(now + TWO_HOURS_IN_MS),
-      httpOnly: true,
-      sameSite: 'lax',
-    });
+    res.cookie('authorization', token, this.getTokenCookieOption(true, now));
     // For checking if the access token exists
+    // deepcode ignore WebCookieHttpOnlyDisabledExplicitly: needs insecure cookies in dev mode
     res.cookie('access', 'access', {
-      expires: new Date(now + TWO_HOURS_IN_MS),
+      secure: this.shouldCookieSecure,
+      expires: new Date(now + ACCESS_TOKEN_VALIDITY_MS),
       httpOnly: false,
       sameSite: 'lax',
     });
+  }
+
+  setRefreshTokenCookie(res: Response, token: string, now: number): void {
+    res.cookie('refresh', token, this.getTokenCookieOption(false, now));
+  }
+
+  clearAllAuthCookies(res: Response): void {
+    res.clearCookie('authorization');
+    res.clearCookie('access');
+    res.clearCookie('refresh', { path: '/auth/refresh' });
   }
 
   async issueRefreshToken(id: number): Promise<string> {
@@ -106,7 +138,9 @@ export class AuthService {
         );
       }
       const payload = { id, token: refreshToken.token };
-      return this.jwtService.sign(payload, { expiresIn: '90d' });
+      return this.jwtService.sign(payload, {
+        expiresIn: REFRESH_TOKEN_EXPIRES_IN,
+      });
     } catch (e) {
       console.log(e);
       throw new InternalServerErrorException();
@@ -138,35 +172,24 @@ export class AuthService {
       // Issue tokens
       const accessToken = this.jwtService.sign(
         { id: user.id },
-        { expiresIn: '2h' },
+        { expiresIn: ACCESS_TOKEN_EXPIRES_IN },
       );
       // Sliding refresh token exp
       const thirtyDaysInSeconds = 60 * 60 * 24 * 30;
       if (Number(payload.exp) - thirtyDaysInSeconds < Math.floor(now / 1000)) {
         // Set refresh
         refresh = await this.issueRefreshToken(user.id);
-        res.cookie('refresh', refresh, {
-          expires: new Date(now + NINETY_DAYS_IN_MS),
-          httpOnly: true,
-          path: '/auth/refresh',
-          sameSite: 'lax',
-        });
+        this.setRefreshTokenCookie(res, refresh, now);
       }
       // Set access
       this.setAccessTokenCookies(res, accessToken, now);
-
       return {
         access: accessToken,
         refresh,
       };
     } catch (e) {
       console.log(e);
-      // Clear cookies
-      res.clearCookie('authorization');
-      res.clearCookie('access');
-      res.clearCookie('refresh', {
-        path: '/auth/refresh',
-      });
+      this.clearAllAuthCookies(res);
       throw new UnauthorizedException();
     }
   }
@@ -210,7 +233,6 @@ export class AuthService {
       if (!(email || emailInput)) {
         throw new BadRequestException('EMAIL_NOT_FOUND');
       }
-
       if (email) {
         const existingUser = await this.usersService.getUserByEmail(
           email,
@@ -249,7 +271,6 @@ export class AuthService {
         );
       }
     }
-
     return await this.processLogin(user, res);
   }
 
@@ -289,7 +310,7 @@ export class AuthService {
     res: Response,
   ): Promise<LogoutOutput> {
     try {
-      if (fromAllDevices) {
+      if (user && fromAllDevices) {
         await this.refreshTokenRepository.save(
           this.refreshTokenRepository.create({
             user: { id: user.id },
@@ -297,12 +318,7 @@ export class AuthService {
           }),
         );
       }
-      // Clear cookies
-      res.clearCookie('authorization');
-      res.clearCookie('access');
-      res.clearCookie('refresh', {
-        path: '/auth/refresh',
-      });
+      this.clearAllAuthCookies(res);
       return { ok: true };
     } catch (e) {
       console.log(e);
