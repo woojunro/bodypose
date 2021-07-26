@@ -1,11 +1,4 @@
-import {
-  IsBoolean,
-  IsInt,
-  IsString,
-  Max,
-  Min,
-  MinLength,
-} from 'class-validator';
+import { IsString, MinLength } from 'class-validator';
 
 export class UploadPhotoDto {
   studioSlug: string;
@@ -13,15 +6,15 @@ export class UploadPhotoDto {
 
 export class UploadStudioReviewDto extends UploadPhotoDto {
   @IsString()
-  rating: number;
+  rating: string;
 
   @IsString()
   @MinLength(12)
   text: string;
 
   @IsString()
-  isPhotoForProof: boolean;
+  isPhotoForProof: string;
 
   @IsString()
-  thumbnailIndex: number;
+  thumbnailIndex: string;
 }

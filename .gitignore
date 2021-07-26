@@ -38,3 +38,5 @@ gcp-key.json
 app.yaml
 cron.yaml
 *.pem
+
+.dccache

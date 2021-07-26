@@ -49,7 +49,7 @@ export class AuthController {
     return this.authService.refreshAccessToken(req, res);
   }
 
-  @Roles(UserType.USER, UserType.STUDIO, UserType.ADMIN)
+  // Public
   @Post('logout')
   @HttpCode(200)
   logout(
