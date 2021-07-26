@@ -46,6 +46,10 @@ import { InsightsModule } from './insights/insights.module';
         GOOGLE_CLOUD_PROJECT: Joi.string().required(),
         GCLOUD_STORAGE_BUCKET: Joi.string().required(),
         KAKAO_ADMIN_KEY: Joi.string().required(),
+        APPLE_LOGIN_P8_BASE64: Joi.string().required(),
+        APPLE_LOGIN_TEAM_ID: Joi.string().required(),
+        APPLE_LOGIN_KEY_ID: Joi.string().required(),
+        APPLE_LOGIN_CLIENT_ID: Joi.string().required(),
         GOOGLE_AUTH_CLIENT_ID: Joi.string().required(),
         GOOGLE_APPLICATION_CREDENTIALS:
           process.env.NODE_ENV === 'development'

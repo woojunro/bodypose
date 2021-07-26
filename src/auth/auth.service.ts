@@ -41,10 +41,12 @@ import {
   REFRESH_TOKEN_VALIDITY_MS,
   ACCESS_TOKEN_VALIDITY_MS,
 } from 'src/auth/constants/cookie.constant';
+import { getAppleProfileWithAccessToken } from './utils/appleLogin.util';
 
 @Injectable()
 export class AuthService {
   private shouldCookieSecure: boolean;
+  private appleLoginPrivateKey: string;
 
   constructor(
     @Inject(forwardRef(() => UsersService))
@@ -56,6 +58,13 @@ export class AuthService {
   ) {
     this.shouldCookieSecure =
       configService.get<string>('NODE_ENV') === 'production';
+    const encodedPrivateKey = this.configService.get<string>(
+      'APPLE_LOGIN_P8_BASE64',
+    );
+    this.appleLoginPrivateKey = Buffer.from(
+      encodedPrivateKey,
+      'base64',
+    ).toString('utf8');
   }
 
   async processLogin(user: User, res: Response): Promise<LoginOutput> {
@@ -220,13 +229,13 @@ export class AuthService {
     res: Response,
   ): Promise<LoginOutput> {
     // Get OAuth Profile
-    const {
-      ok,
-      error,
-      profile: { socialId, email },
-    } = await this.getOAuthProfileWithAccessToken(accessToken, provider);
+    const { ok, error, profile } = await this.getOAuthProfileWithAccessToken(
+      accessToken,
+      provider,
+    );
     if (!ok) throw new InternalServerErrorException(error);
 
+    const { socialId, email } = profile;
     // Check if the profile is connected to a user
     let user = await this.usersService.getUserBySocialId(provider, socialId);
     if (!user) {
@@ -291,6 +300,15 @@ export class AuthService {
           result = await getGoogleProfileWithAccessToken(
             this.configService.get<string>('GOOGLE_AUTH_CLIENT_ID'),
             accessToken,
+          );
+          break;
+        case OAuthProvider.APPLE:
+          result = await getAppleProfileWithAccessToken(
+            accessToken,
+            this.configService.get<string>('APPLE_LOGIN_CLIENT_ID'),
+            this.configService.get<string>('APPLE_LOGIN_TEAM_ID'),
+            this.configService.get<string>('APPLE_LOGIN_KEY_ID'),
+            this.appleLoginPrivateKey,
           );
           break;
         default:
