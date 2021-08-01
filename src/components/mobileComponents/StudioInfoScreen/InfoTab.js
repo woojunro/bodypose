@@ -1,13 +1,12 @@
 import React from 'react';
 import './InfoTab.css';
 import InfoToggleDiv from './InfoToggleDiv';
-import './StudioMap';
 import StudioMap from './StudioMap';
 
 const InfoTab = ({ currentStudio }) => {
   return (
     <div className="infoTab">
-      <StudioMap currentStudio={currentStudio} />
+      <StudioMap branches={currentStudio.branches} />
       {currentStudio.parkingInfoDescription && (
         <InfoToggleDiv
           title="주차 정보"

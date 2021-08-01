@@ -9,9 +9,7 @@ const LogoutScreen = () => {
   const history = useHistory();
 
   useEffect(() => {
-    logout()
-      .then(() => setLoading(false))
-      .catch(() => setLoading(false));
+    logout().finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
