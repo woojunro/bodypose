@@ -12,14 +12,15 @@ class KakaoMap extends React.Component {
     const { currentLocation } = this.props;
     const { kakao } = window;
     kakao.maps.load(() => {
-      const container = document.getElementById('map');
+      const mapContainer = document.getElementById('map');
+
       //위도,경도, 줌 정도
-      const options = {
+      const mapOptions = {
         center: new kakao.maps.LatLng(0, 0),
-        level: 3,
+
+        level: 4,
       };
-      const map = new kakao.maps.Map(container, options);
-      const bounds = new kakao.maps.LatLngBounds();
+      const map = new kakao.maps.Map(mapContainer, mapOptions);
 
       // 주소-좌표 변환 객체를 생성합니다
       const geocoder = new kakao.maps.services.Geocoder();
@@ -28,7 +29,15 @@ class KakaoMap extends React.Component {
       geocoder.addressSearch(currentLocation.address, (result, status) => {
         // 정상적으로 검색이 완료됐으면
         if (status === kakao.maps.services.Status.OK) {
-          const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+          var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+          // 결과값으로 받은 위치를 마커로 표시합니다
+          new kakao.maps.Marker({
+            map: map,
+            position: coords,
+          });
+
+          map.setCenter(coords);
 
           // Set onClick of kakao map button
           this.kakaoMapButtonRef.current.onclick = () => {
@@ -38,15 +47,6 @@ class KakaoMap extends React.Component {
             url += String(coords.getLng());
             window.open(url, '_blank');
           };
-
-          // 결과값으로 받은 위치를 마커로 표시합니다
-          new kakao.maps.Marker({
-            map: map,
-            position: coords,
-          });
-
-          bounds.extend(coords);
-          map.setBounds(bounds);
         }
       });
     });
