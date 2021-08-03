@@ -1,15 +1,46 @@
-.studioAdress {
+.mapCategoryTitle {
+  margin-left: 7px;
   margin-top: 20px;
   font-size: 15px;
-}
-.MapTotalContainer {
-  margin-left: 3px;
-  margin-right: 3px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
 }
 
-.adressTitle {
-  font-weight: bold;
+.studioAddressDivContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
-.adressInfo {
-  font-size: 14px;
+.studioAddressDiv {
+  width: 92%;
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.branchSelectContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.branchCountText {
+  margin: 0 4% 5px 0;
+  font-size: 10px;
+  text-align: end;
+}
+
+.studioAddressLabel {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.studioAddressText {
+  color: var(--color-showMore);
+}
+
+.MapTotalContainer {
+  margin-top: 10px;
+  margin-left: 3px;
+  margin-right: 3px;
 }

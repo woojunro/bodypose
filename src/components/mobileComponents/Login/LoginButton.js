@@ -27,6 +27,7 @@ const LoginButton = ({ email, password, setValidInfo, setErrorMessage }) => {
       if (res.data.access && res.data.refresh) {
         await clearCache();
         IsLoggedInVar(true);
+        window.location.reload();
       }
     } catch (e) {
       const errorMessage = e.response?.data?.message;
