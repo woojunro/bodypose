@@ -22,6 +22,7 @@ import { Studio } from 'src/studios/entities/studio.entity';
 import { UsersHeartStudios } from 'src/studios/entities/users-heart-studios.entity';
 import { UsersReportStudioReviews } from 'src/studios/entities/users-report-studio-reviews.entity';
 import { UsersReviewStudios } from 'src/studios/entities/users-review-studios.entity';
+import { Partner } from 'src/users/entities/partner.entity';
 import { PasswordReset } from 'src/users/entities/password-reset.entity';
 import { UserOauth } from 'src/users/entities/user-oauth.entity';
 import { UserProfile } from 'src/users/entities/user-profile.entity';
@@ -41,6 +42,7 @@ export const USERS_SERVICE_ENTITIES = [
   UserProfile,
   Verification,
   PasswordReset,
+  Partner,
 ];
 
 export const AUTH_SERVICE_ENTITIES = [RefreshToken];
