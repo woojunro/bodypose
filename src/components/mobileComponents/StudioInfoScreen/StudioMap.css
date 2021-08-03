@@ -1,17 +1,37 @@
+.mapCategoryTitle {
+  margin-left: 7px;
+  margin-top: 20px;
+  font-size: 15px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.studioAddressDivContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
 .studioAddressDiv {
+  width: 92%;
   margin-top: 10px;
   font-size: 13px;
 }
 
+.branchSelectContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .branchCountText {
-  margin: 0 5px 5px 0;
+  margin: 0 4% 5px 0;
   font-size: 10px;
   text-align: end;
 }
 
 .studioAddressLabel {
   font-weight: bold;
-  margin-left: 5px;
   margin-right: 10px;
 }
 

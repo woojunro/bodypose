@@ -55,13 +55,18 @@ class KakaoMap extends React.Component {
   render() {
     return (
       <>
-        <div
-          id="map"
-          style={{ width: '100%', height: '220px', marginTop: '10px' }}
-        />
-        <div ref={this.kakaoMapButtonRef} className="kakaoMapButton">
-          <img src={KakaoMapLogo} alt="카카오맵 로고" />
-          <div>카카오맵에서 보기</div>
+        <div className="kakaoMapContainer">
+          <div
+            id="map"
+            style={{ width: '92%', height: '250px', marginTop: '10px' }}
+          />
+        </div>
+
+        <div className="kakaoMapButtonContainer">
+          <div ref={this.kakaoMapButtonRef} className="kakaoMapButton">
+            <img src={KakaoMapLogo} alt="카카오맵 로고" />
+            <div>카카오맵에서 보기</div>
+          </div>
         </div>
       </>
     );

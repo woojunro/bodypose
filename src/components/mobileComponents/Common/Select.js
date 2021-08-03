@@ -1,6 +1,8 @@
 import React from 'react';
 import Select from 'react-select';
 
+import './Select.css';
+
 const textStyle = {
   fontSize: '14px',
   fontWeight: '600',
@@ -9,6 +11,7 @@ const textStyle = {
 const BodyposeSelect = ({ options, currentOption, setCurrentOption }) => {
   return (
     <Select
+      className="branchSelect"
       isSearchable={false}
       value={currentOption}
       onChange={value => setCurrentOption(value)}

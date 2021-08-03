@@ -25,7 +25,10 @@ const StudioMap = ({ branches }) => {
 
   return (
     <div className="categoryContainer">
-      <div onClick={() => setIsMapOpen(!isMapOpen)} className="categoryTitle">
+      <div
+        onClick={() => setIsMapOpen(!isMapOpen)}
+        className="mapCategoryTitle"
+      >
         위치{renderedArrow()}
       </div>
       {isMapOpen ? (
@@ -34,16 +37,22 @@ const StudioMap = ({ branches }) => {
             {branches.length > 1 && (
               <>
                 <div className="branchCountText">지점 {branches.length}개</div>
-                <Select
-                  options={branchOptions}
-                  currentOption={currentBranch}
-                  setCurrentOption={setCurrentBranch}
-                />
+                <div className="branchSelectContainer">
+                  <Select
+                    options={branchOptions}
+                    currentOption={currentBranch}
+                    setCurrentOption={setCurrentBranch}
+                  />
+                </div>
               </>
             )}
-            <div className="studioAddressDiv">
-              <span className="studioAddressLabel">주소</span>
-              <span className="studioAddressText">{currentBranch.address}</span>
+            <div className="studioAddressDivContainer">
+              <div className="studioAddressDiv">
+                <span className="studioAddressLabel">주소</span>
+                <span className="studioAddressText">
+                  {currentBranch.address}
+                </span>
+              </div>
             </div>
             <KakaoMap
               key={currentBranch.address}
