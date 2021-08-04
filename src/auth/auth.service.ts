@@ -322,6 +322,18 @@ export class AuthService {
     }
   }
 
+  async partnersLogin(
+    { email, password }: EmailLoginInput,
+    res: Response,
+  ): Promise<LoginOutput> {
+    const partner = await this.usersService.getPartnerByEmail(email);
+    if (!partner) throw new NotFoundException('PARTNER_NOT_FOUND');
+    const { user } = partner;
+    const isPasswordCorrect = await compare(password, user.password);
+    if (!isPasswordCorrect) throw new UnauthorizedException('WRONG_PASSWORD');
+    return this.processLogin(user, res);
+  }
+
   async logout(
     user: User,
     { fromAllDevices }: LogoutInput,

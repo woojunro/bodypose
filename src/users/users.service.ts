@@ -52,6 +52,8 @@ import {
 import { LockUserInput, LockUserOutput } from './dtos/lock-user.dto';
 import { UpdateEmailInput, UpdateEmailOutput } from './dtos/update-email.dto';
 import { GetUserInfoInput, GetUserInfoOutput } from './dtos/get-user-info.dto';
+import { Partner } from './entities/partner.entity';
+import { CreatePartnerInput, CreatePartnerOutput } from './dtos/partner.dto';
 
 @Injectable()
 export class UsersService {
@@ -66,6 +68,8 @@ export class UsersService {
     private readonly verificationRepository: Repository<Verification>,
     @InjectRepository(PasswordReset)
     private readonly passwordResetRepository: Repository<PasswordReset>,
+    @InjectRepository(Partner)
+    private readonly partnerRepository: Repository<Partner>,
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
     @Inject(forwardRef(() => AuthService))
@@ -722,5 +726,42 @@ export class UsersService {
       console.log(e);
       return UNEXPECTED_ERROR;
     }
+  }
+
+  async createPartner({
+    password,
+    ...input
+  }: CreatePartnerInput): Promise<CreatePartnerOutput> {
+    try {
+      if (!this.checkPasswordSecurity(password)) {
+        return CommonError('INSECURE_PASSWORD');
+      }
+      const partner = await this.partnerRepository.findOne(
+        { email: input.email },
+        { select: ['id'] },
+      );
+      if (partner) return CommonError('DUPLICATE_EMAIL');
+      const hashedPassword = await hash(password, PASSWORD_HASH_ROUNDS);
+      const user = await this.userRepository.save(
+        this.userRepository.create({
+          type: UserType.STUDIO,
+          email: `partners${Date.now()}`,
+          password: hashedPassword,
+          isVerified: true,
+          isLocked: true,
+        }),
+      );
+      await this.partnerRepository.save(
+        this.partnerRepository.create({ ...input, user }),
+      );
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getPartnerByEmail(email: string): Promise<Partner> {
+    return this.partnerRepository.findOne({ email }, { relations: ['user'] });
   }
 }

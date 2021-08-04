@@ -36,6 +36,8 @@ import { CoreOutput } from 'src/common/dtos/output.dto';
 import { LockUserInput, LockUserOutput } from './dtos/lock-user.dto';
 import { UpdateEmailInput, UpdateEmailOutput } from './dtos/update-email.dto';
 import { GetUserInfoInput, GetUserInfoOutput } from './dtos/get-user-info.dto';
+import { Partner } from './entities/partner.entity';
+import { CreatePartnerInput, CreatePartnerOutput } from './dtos/partner.dto';
 
 @Resolver(of => User)
 export class UsersResolver {
@@ -149,5 +151,18 @@ export class UsersResolver {
   @Roles(UserType.ADMIN)
   lockUser(@Args('input') input: LockUserInput): Promise<LockUserOutput> {
     return this.usersService.lockUser(input);
+  }
+}
+
+@Resolver(of => Partner)
+export class PartnersResolver {
+  constructor(private readonly usersService: UsersService) {}
+
+  // Public
+  @Mutation(returns => CreatePartnerOutput)
+  createPartner(
+    @Args('input') input: CreatePartnerInput,
+  ): Promise<CreatePartnerOutput> {
+    return this.usersService.createPartner(input);
   }
 }
