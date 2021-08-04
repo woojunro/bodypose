@@ -23,15 +23,20 @@ export class Partner extends CoreEntity {
   @Length(8, 20)
   phoneNumber: string;
 
-  @Column({ length: 255 })
+  @Column({ length: 30 })
   @Field(type => String)
-  @Length(1, 255)
-  instagramUrl: string;
+  @Length(1, 30)
+  instagram: string;
 
   @Column({ length: 15 })
   @Field(type => String)
   @Length(10, 15)
   businessNumber: string;
+
+  @Column({ length: 15 })
+  @Field(type => String)
+  @Length(1, 15)
+  reqStudioName: string;
 
   @OneToOne(relation => User, { onDelete: 'CASCADE' })
   @JoinColumn()

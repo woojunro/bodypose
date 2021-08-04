@@ -1,6 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UsersResolver } from './users.resolver';
+import { PartnersResolver, UsersResolver } from './users.resolver';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MailModule } from 'src/mail/mail.module';
 import { PhotosModule } from 'src/photos/photos.module';
@@ -16,7 +16,7 @@ import { USERS_SERVICE_ENTITIES } from 'src/common/constants/entity-list.constan
     forwardRef(() => PhotosModule),
     forwardRef(() => UploadsModule),
   ],
-  providers: [UsersService, UsersResolver],
+  providers: [UsersService, UsersResolver, PartnersResolver],
   exports: [UsersService],
 })
 export class UsersModule {}
