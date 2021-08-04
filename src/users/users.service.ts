@@ -760,4 +760,8 @@ export class UsersService {
       return UNEXPECTED_ERROR;
     }
   }
+
+  async getPartnerByEmail(email: string): Promise<Partner> {
+    return this.partnerRepository.findOne({ email }, { relations: ['user'] });
+  }
 }
