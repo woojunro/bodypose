@@ -1,7 +1,8 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { IsInt, Length, Min } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
+import { Partner } from 'src/users/entities/partner.entity';
+import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { AdditionalProduct } from './additional-product.entity';
 import { Branch } from './branch.entity';
 import { Catchphrase } from './catchphrase.entity';
@@ -93,4 +94,9 @@ export class Studio extends CoreEntity {
   @OneToMany(relation => AdditionalProduct, product => product.studio)
   @Field(type => [AdditionalProduct])
   additionalProducts: AdditionalProduct[];
+
+  // 파트너스 정보
+  @ManyToOne(relation => Partner, { nullable: true })
+  @Field(type => Partner, { nullable: true })
+  partner?: Partner;
 }
