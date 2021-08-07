@@ -15,7 +15,7 @@ import { PhotosService } from 'src/photos/photos.service';
 import { UploadsService } from 'src/uploads/uploads.service';
 import { UserType, User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { ClickStudioReviewInput } from './dtos/click-studio-review.dto';
 import {
   CreateBranchInput,
@@ -77,6 +77,7 @@ import { AdditionalProduct } from './entities/additional-product.entity';
 import { Branch } from './entities/branch.entity';
 import { HairMakeupProduct } from './entities/hair-makeup-product.entity';
 import { HairMakeupShop } from './entities/hair-makeup-shop.entity';
+import { StudioInfo } from './entities/studio-info.entity';
 import { StudioProduct } from './entities/studio-product.entity';
 import { Studio } from './entities/studio.entity';
 import { UsersHeartStudios } from './entities/users-heart-studios.entity';
@@ -88,6 +89,8 @@ export class StudiosService {
   constructor(
     @InjectRepository(Studio)
     private readonly studioRepository: Repository<Studio>,
+    @InjectRepository(StudioInfo)
+    private readonly studioInfoRepository: Repository<StudioInfo>,
     @InjectRepository(StudioProduct)
     private readonly studioProductRepository: Repository<StudioProduct>,
     @InjectRepository(Branch)
@@ -112,19 +115,12 @@ export class StudiosService {
     private readonly uploadsService: UploadsService,
   ) {}
 
-  getStudioById(id: number): Promise<Studio> {
-    return this.studioRepository.findOne(
-      { id },
-      { relations: ['catchphrases'] },
-    );
-  }
-
   async checkIfStudioExistsById(id: number): Promise<boolean> {
     const studio = await this.studioRepository.findOne(id, { select: ['id'] });
     return studio ? true : false;
   }
 
-  checkIfStudioExists(slug: string): Promise<Studio> {
+  checkIfStudioExistsBySlug(slug: string): Promise<Studio> {
     return this.studioRepository.findOne(
       { slug },
       { select: ['id', 'name', 'slug'] },
@@ -132,34 +128,50 @@ export class StudiosService {
   }
 
   getStudioBySlug(slug: string): Promise<Studio> {
-    return this.studioRepository.findOne(
-      { slug },
-      { relations: ['catchphrases'] },
-    );
+    return this.studioRepository.findOne({ slug });
   }
 
-  async createStudio(input: CreateStudioInput): Promise<CreateStudioOutput> {
+  async createStudio({
+    name,
+    slug,
+  }: CreateStudioInput): Promise<CreateStudioOutput> {
     try {
       // Check duplicate studioSlug
-      const studioBySlug = await this.getStudioBySlug(input.slug);
-      if (studioBySlug) {
-        return {
-          ok: false,
-          error: 'DUPLICATE_STUDIO_SLUG',
-        };
-      }
+      const existingStudio = await this.checkIfStudioExistsBySlug(slug);
+      if (existingStudio) return CommonError('DUPLICATE_STUDIO_SLUG');
       // Create studio
-      const newStudio = this.studioRepository.create({ ...input });
-      // Save
-      const savedStudio = await this.studioRepository.save(newStudio);
+      const newStudio = this.studioRepository.create({ name, slug });
+      const studio = await this.studioRepository.save(newStudio);
+      // Create studioInfo
+      const newInfo = this.studioInfoRepository.create({ studio });
+      const info = await this.studioInfoRepository.save(newInfo);
+      // return
+      studio.info = info;
       return {
         ok: true,
-        id: savedStudio.id,
-        slug: savedStudio.slug,
+        studio,
       };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
+    }
+  }
+
+  filterStudioQueryByUserType(
+    query: SelectQueryBuilder<Studio>,
+    user: User,
+    studioAlias: string,
+  ): SelectQueryBuilder<Studio> {
+    switch (user?.type) {
+      case UserType.ADMIN:
+        return query;
+      case UserType.STUDIO:
+        return query.andWhere(
+          `${studioAlias}.isPublic = 1 OR partner.id = :id`,
+          { id: user.id },
+        );
+      default:
+        return query.andWhere(`${studioAlias}.isPublic = 1`);
     }
   }
 
@@ -168,18 +180,20 @@ export class StudiosService {
     { slug }: GetStudioInput,
   ): Promise<GetStudioOutput> {
     try {
-      let studio = await this.studioRepository.findOne(
-        { slug },
-        { relations: ['branches'] },
-      );
-      if (!studio.coverPhotoUrl && (!user || user.type !== UserType.ADMIN))
-        studio = null;
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
+      let query = this.studioRepository
+        .createQueryBuilder('s')
+        .leftJoinAndSelect('s.branches', 'branch')
+        .leftJoinAndSelect('s.catchphrases', 'catchphrase')
+        .leftJoinAndSelect('s.info', 'info')
+        .leftJoinAndSelect('s.studioProducts', 'studioProduct')
+        .leftJoinAndSelect('s.hairMakeupShops', 'shop')
+        .leftJoinAndSelect('shop.products', 'shopProduct')
+        .leftJoinAndSelect('s.additionalProducts', 'additionalProduct')
+        .leftJoinAndSelect('s.partner', 'partner')
+        .where('s.slug = :slug', { slug });
+      query = this.filterStudioQueryByUserType(query, user, 's');
+      const studio = await query.getOne();
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
       // If logged in, check isHearted
       let heart: UsersHeartStudios;
       if (user) {
@@ -190,7 +204,7 @@ export class StudiosService {
           },
         });
       }
-      // Return
+      // return
       return {
         ok: true,
         studio: {
@@ -206,23 +220,12 @@ export class StudiosService {
 
   async getAllStudios(user: User): Promise<GetStudiosOutput> {
     try {
-      const studios = await this.studioRepository.find({
-        relations: ['branches'],
-        select: [
-          'id',
-          'name',
-          'slug',
-          'heartCount',
-          'lowestPrice',
-          'reviewCount',
-          'totalRating',
-          'premiumTier',
-          'coverPhotoUrl',
-        ],
-      });
-      if (!studios) {
-        throw new InternalServerErrorException();
-      }
+      let query = this.studioRepository
+        .createQueryBuilder('s')
+        .leftJoinAndSelect('s.branches', 'branch')
+        .leftJoinAndSelect('s.catchphrases', 'catchphrase');
+      query = this.filterStudioQueryByUserType(query, user, 's');
+      const studios = await query.getMany();
       let heartStudios: UsersHeartStudios[] = [];
       if (user) {
         heartStudios = await this.usersHeartStudiosRepository.find({
@@ -231,8 +234,6 @@ export class StudiosService {
       }
       const studiosWithIsHearted: StudioWithIsHearted[] = [];
       for (const studio of studios) {
-        if (!studio.coverPhotoUrl && (!user || user.type !== UserType.ADMIN))
-          continue;
         studiosWithIsHearted.push({
           ...studio,
           isHearted: heartStudios.some(heart => heart.studioId === studio.id),

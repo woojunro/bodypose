@@ -1,5 +1,5 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { IsInt, Length, Min } from 'class-validator';
+import { IsBoolean, IsInt, Length, Min } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Partner } from 'src/users/entities/partner.entity';
 import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
@@ -25,8 +25,14 @@ export class Studio extends CoreEntity {
   @Length(1, 20)
   slug: string;
 
+  // 스튜디오 공개 여부 (미공개시 ADMIN과 partner만 열람 가능)
+  @Column({ default: false })
+  @Field(type => Boolean)
+  @IsBoolean()
+  isPublic: boolean;
+
   // 프리미엄 단계
-  @Column({ type: 'int' })
+  @Column({ type: 'int', default: 0 })
   @Field(type => Int)
   @IsInt()
   @Min(0)

@@ -95,7 +95,7 @@ export class UploadsService {
       throw new BadRequestException('NO_STUDIO_SLUG');
     }
 
-    const studio = await this.studiosService.checkIfStudioExists(
+    const studio = await this.studiosService.checkIfStudioExistsBySlug(
       body.studioSlug,
     );
     if (!studio) {
@@ -151,7 +151,7 @@ export class UploadsService {
       throw new BadRequestException('NO_STUDIO_SLUG');
     }
 
-    const studio = await this.studiosService.checkIfStudioExists(
+    const studio = await this.studiosService.checkIfStudioExistsBySlug(
       body.studioSlug,
     );
     if (!studio) {

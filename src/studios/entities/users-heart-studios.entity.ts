@@ -13,7 +13,6 @@ import { Studio } from './studio.entity';
 @ObjectType()
 export class UsersHeartStudios {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  @Field(type => BigInt)
   id: bigint;
 
   @CreateDateColumn()
