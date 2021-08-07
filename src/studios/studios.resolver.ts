@@ -51,6 +51,10 @@ import {
   UpdateHairMakeupShopsInput,
 } from './dtos/update-product.dto';
 import {
+  UpdateStudioInfoInput,
+  UpdateStudioInfoOutput,
+} from './dtos/update-studio-info.dto';
+import {
   UpdateStudioInput,
   UpdateStudioOutput,
 } from './dtos/update-studio.dto';
@@ -88,11 +92,21 @@ export class StudiosResolver {
   }
 
   @Mutation(returns => UpdateStudioOutput)
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
   updateStudio(
+    @CurrentUser() user: User,
     @Args('input') input: UpdateStudioInput,
   ): Promise<UpdateStudioOutput> {
-    return this.studiosService.updateStudio(input);
+    return this.studiosService.updateStudio(user, input);
+  }
+
+  @Mutation(returns => UpdateStudioInfoOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
+  updateStudioInfo(
+    @CurrentUser() user: User,
+    @Args('input') input: UpdateStudioInfoInput,
+  ): Promise<UpdateStudioInfoOutput> {
+    return this.studiosService.updateStudioInfo(user, input);
   }
 
   @Mutation(returns => CreateBranchOutput)

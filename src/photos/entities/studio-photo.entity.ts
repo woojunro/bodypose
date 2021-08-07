@@ -43,9 +43,7 @@ export class StudioPhoto extends CoreEntity {
   @IsString()
   substr: string;
 
-  @ManyToOne(relation => Studio, studio => studio.photos, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(relation => Studio, { onDelete: 'CASCADE' })
   @Field(type => Studio)
   studio: Studio;
 
