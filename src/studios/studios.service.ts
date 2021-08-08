@@ -133,6 +133,7 @@ export class StudiosService {
   async createStudio({
     name,
     slug,
+    partnerEmail,
   }: CreateStudioInput): Promise<CreateStudioOutput> {
     try {
       // Check duplicate studioSlug
@@ -140,6 +141,17 @@ export class StudiosService {
       if (existingStudio) return CommonError('DUPLICATE_STUDIO_SLUG');
       // Create studio
       const newStudio = this.studioRepository.create({ name, slug });
+      // Connect partner
+      if (partnerEmail) {
+        const partner = await this.usersService.getPartnerByEmail(partnerEmail);
+        if (!partner) return CommonError('PARTNER_NOT_FOUND');
+        newStudio.partner = partner;
+        await this.usersService.lockUser({
+          id: partner.user.id,
+          isLocked: false,
+        });
+      }
+      // Insert into studio table
       const studio = await this.studioRepository.save(newStudio);
       // Create studioInfo
       const newInfo = this.studioInfoRepository.create({ studio });
@@ -155,6 +167,8 @@ export class StudiosService {
       return UNEXPECTED_ERROR;
     }
   }
+
+  // TODO: assignStudioPartner
 
   filterStudioQueryByUserType(
     query: SelectQueryBuilder<Studio>,
@@ -184,7 +198,7 @@ export class StudiosService {
         .leftJoinAndSelect('s.branches', 'branch')
         .leftJoinAndSelect('s.catchphrases', 'catchphrase')
         .leftJoinAndSelect('s.info', 'info')
-        .leftJoinAndSelect('s.partner', 'partner')
+        .leftJoin('s.partner', 'partner')
         .where('s.slug = :slug', { slug });
       query = this.filterStudioQueryByUserType(query, user, 's');
       const studio = await query.getOne();

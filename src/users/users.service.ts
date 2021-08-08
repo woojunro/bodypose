@@ -53,7 +53,10 @@ import { LockUserInput, LockUserOutput } from './dtos/lock-user.dto';
 import { UpdateEmailInput, UpdateEmailOutput } from './dtos/update-email.dto';
 import { GetUserInfoInput, GetUserInfoOutput } from './dtos/get-user-info.dto';
 import { Partner } from './entities/partner.entity';
-import { CreatePartnerInput, CreatePartnerOutput } from './dtos/partner.dto';
+import {
+  CreatePartnerInput,
+  CreatePartnerOutput,
+} from './dtos/create-partner.dto';
 
 @Injectable()
 export class UsersService {
@@ -712,15 +715,15 @@ export class UsersService {
     }
   }
 
-  async lockUser({ id }: LockUserInput): Promise<LockUserOutput> {
+  async lockUser({ id, isLocked }: LockUserInput): Promise<LockUserOutput> {
     try {
       const user = await this.getUserById(id);
       if (!user) return CommonError('USER_NOT_FOUND');
-      user.isLocked = !user.isLocked;
-      const { isLocked } = await this.userRepository.save(user);
+      user.isLocked = isLocked;
+      const { isLocked: updated } = await this.userRepository.save(user);
       return {
         ok: true,
-        isLocked,
+        isLocked: updated,
       };
     } catch (e) {
       console.log(e);

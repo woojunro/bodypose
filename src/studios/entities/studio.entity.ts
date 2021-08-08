@@ -102,7 +102,10 @@ export class Studio extends CoreEntity {
   additionalProducts: AdditionalProduct[];
 
   // 파트너스 정보
-  @ManyToOne(relation => Partner, { nullable: true })
+  @ManyToOne(relation => Partner, partner => partner.studios, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   @Field(type => Partner, { nullable: true })
   partner?: Partner;
 }
