@@ -11,6 +11,10 @@ import { UploadsService } from 'src/uploads/uploads.service';
 import { UserType, User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { Repository, SelectQueryBuilder } from 'typeorm';
+import {
+  AssignStudioPartnerInput,
+  AssignStudioPartnerOutput,
+} from './dtos/assign-studio-partner.dto';
 import { ClickStudioReviewInput } from './dtos/click-studio-review.dto';
 import {
   CreateBranchInput,
@@ -130,11 +134,17 @@ export class StudiosService {
     return this.studioRepository.findOne({ slug });
   }
 
+  checkIfSlugIsValid(slug: string): boolean {
+    return /^[a-z0-9](-?[a-z0-9])*$/g.test(slug);
+  }
+
   async createStudio({
     name,
     slug,
   }: CreateStudioInput): Promise<CreateStudioOutput> {
     try {
+      const isValid = this.checkIfSlugIsValid(slug);
+      if (!isValid) return CommonError('INVALID_SLUG');
       // Check duplicate studioSlug
       const existingStudio = await this.checkIfStudioExistsBySlug(slug);
       if (existingStudio) return CommonError('DUPLICATE_SLUG');
@@ -157,7 +167,27 @@ export class StudiosService {
     }
   }
 
-  // TODO: assignStudioPartner
+  async assignStudioPartner({
+    studioSlug,
+    partnerEmail,
+  }: AssignStudioPartnerInput): Promise<AssignStudioPartnerOutput> {
+    try {
+      const studio = await this.getStudioBySlug(studioSlug);
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const partner = await this.usersService.getPartnerByEmail(partnerEmail);
+      if (!partner) return CommonError('PARTNER_NOT_FOUND');
+      // Assign partner and save
+      studio.partner = partner;
+      await this.studioRepository.save(studio);
+      // Unlock partner user
+      const { id } = partner.user;
+      await this.usersService.lockUser({ id, isLocked: false });
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
 
   filterStudioQueryByUserType(
     query: SelectQueryBuilder<Studio>,

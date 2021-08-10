@@ -3,6 +3,10 @@ import { CurrentUser } from 'src/auth/current-user.decorator';
 import { Roles } from 'src/auth/roles.decorator';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { UserType, User } from 'src/users/entities/user.entity';
+import {
+  AssignStudioPartnerInput,
+  AssignStudioPartnerOutput,
+} from './dtos/assign-studio-partner.dto';
 import { ClickStudioReviewInput } from './dtos/click-studio-review.dto';
 import {
   CreateBranchInput,
@@ -89,6 +93,14 @@ export class StudiosResolver {
     @Args('input') input: CreateStudioInput,
   ): Promise<CreateStudioOutput> {
     return this.studiosService.createStudio(input);
+  }
+
+  @Mutation(returns => AssignStudioPartnerOutput)
+  @Roles(UserType.ADMIN)
+  assignStudioPartner(
+    @Args('input') input: AssignStudioPartnerInput,
+  ): Promise<AssignStudioPartnerOutput> {
+    return this.studiosService.assignStudioPartner(input);
   }
 
   @Mutation(returns => UpdateStudioOutput)
