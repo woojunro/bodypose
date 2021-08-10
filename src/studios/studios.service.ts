@@ -133,24 +133,13 @@ export class StudiosService {
   async createStudio({
     name,
     slug,
-    partnerEmail,
   }: CreateStudioInput): Promise<CreateStudioOutput> {
     try {
       // Check duplicate studioSlug
       const existingStudio = await this.checkIfStudioExistsBySlug(slug);
-      if (existingStudio) return CommonError('DUPLICATE_STUDIO_SLUG');
+      if (existingStudio) return CommonError('DUPLICATE_SLUG');
       // Create studio
       const newStudio = this.studioRepository.create({ name, slug });
-      // Connect partner
-      if (partnerEmail) {
-        const partner = await this.usersService.getPartnerByEmail(partnerEmail);
-        if (!partner) return CommonError('PARTNER_NOT_FOUND');
-        newStudio.partner = partner;
-        await this.usersService.lockUser({
-          id: partner.user.id,
-          isLocked: false,
-        });
-      }
       // Insert into studio table
       const studio = await this.studioRepository.save(newStudio);
       // Create studioInfo

@@ -8,12 +8,7 @@ export class CreateStudioInput extends PickType(
   Studio,
   ['name', 'slug'],
   InputType,
-) {
-  @Field(type => String, { nullable: true })
-  @IsOptional()
-  @IsEmail()
-  partnerEmail?: string;
-}
+) {}
 
 @ObjectType()
 export class CreateStudioOutput extends CoreOutput {
