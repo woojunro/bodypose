@@ -192,14 +192,15 @@ export class StudiosService {
   filterStudioQueryByUserType(
     query: SelectQueryBuilder<Studio>,
     user: User,
-    studioAlias: string,
+    studioAlias = 'studio',
+    partnerAlias = 'partner',
   ): SelectQueryBuilder<Studio> {
     switch (user?.type) {
       case UserType.ADMIN:
         return query;
       case UserType.STUDIO:
         return query.andWhere(
-          `${studioAlias}.isPublic = 1 OR partner.userId = :id`,
+          `(${studioAlias}.isPublic = 1 OR ${partnerAlias}.userId = :id)`,
           { id: user.id },
         );
       default:
@@ -223,21 +224,22 @@ export class StudiosService {
       const studio = await query.getOne();
       if (!studio) return CommonError('STUDIO_NOT_FOUND');
       // If logged in, check isHearted
-      let heart: UsersHeartStudios;
-      if (user) {
-        heart = await this.usersHeartStudiosRepository.findOne({
+      let isHearted: boolean = null;
+      if (user?.type === UserType.USER) {
+        const heart = await this.usersHeartStudiosRepository.findOne({
           where: {
             user: user.id,
             studio: studio.id,
           },
         });
+        isHearted = Boolean(heart);
       }
       // return
       return {
         ok: true,
         studio: {
           ...studio,
-          isHearted: Boolean(user) && Boolean(heart),
+          isHearted,
         },
       };
     } catch (e) {

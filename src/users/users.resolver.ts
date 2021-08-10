@@ -56,7 +56,7 @@ export class UsersResolver {
   }
 
   @Query(returns => GetUserInfoOutput)
-  @Roles(UserType.USER, UserType.ADMIN)
+  @Roles(UserType.USER, UserType.STUDIO, UserType.ADMIN)
   userInfo(
     @CurrentUser() user: User,
     @Args('input') input: GetUserInfoInput,
