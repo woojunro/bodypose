@@ -234,13 +234,9 @@ export class StudiosService {
         });
         isHearted = Boolean(heart);
       }
-      // return
       return {
         ok: true,
-        studio: {
-          ...studio,
-          isHearted,
-        },
+        studio: { ...studio, isHearted },
       };
     } catch (e) {
       console.log(e);
@@ -257,18 +253,18 @@ export class StudiosService {
         .leftJoin('s.partner', 'partner');
       query = this.filterStudioQueryByUserType(query, user, 's');
       const studios = await query.getMany();
-      let heartStudios: UsersHeartStudios[] = [];
-      if (user) {
-        heartStudios = await this.usersHeartStudiosRepository.find({
-          where: { user: user.id },
-        });
-      }
-      const studiosWithIsHearted: StudioWithIsHearted[] = [];
-      for (const studio of studios) {
-        studiosWithIsHearted.push({
+      let studiosWithIsHearted: StudioWithIsHearted[];
+      if (user?.type === UserType.USER) {
+        const hearts = await this.usersHeartStudiosRepository.find({ user });
+        studiosWithIsHearted = studios.map(studio => ({
           ...studio,
-          isHearted: heartStudios.some(heart => heart.studioId === studio.id),
-        });
+          isHearted: hearts.some(heart => heart.studioId === studio.id),
+        }));
+      } else {
+        studiosWithIsHearted = studios.map(studio => ({
+          ...studio,
+          isHearted: null,
+        }));
       }
       return {
         ok: true,
