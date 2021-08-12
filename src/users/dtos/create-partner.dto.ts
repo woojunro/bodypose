@@ -6,7 +6,7 @@ import { Partner } from '../entities/partner.entity';
 @InputType()
 export class CreatePartnerInput extends OmitType(
   Partner,
-  ['id', 'createdAt', 'updatedAt', 'user'],
+  ['id', 'createdAt', 'updatedAt', 'user', 'studios'],
   InputType,
 ) {
   @Field(type => String)

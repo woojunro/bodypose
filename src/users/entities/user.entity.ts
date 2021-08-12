@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { UserProfile } from './user-profile.entity';
 import { UserOauth } from './user-oauth.entity';
+import { IsBoolean } from 'class-validator';
 
 export enum UserType {
   USER = 'USER',
@@ -38,6 +39,8 @@ export class User extends CoreEntity {
   isVerified: boolean;
 
   @Column()
+  @Field(type => Boolean)
+  @IsBoolean()
   isLocked: boolean;
 
   @Column({ type: 'datetime', nullable: true })

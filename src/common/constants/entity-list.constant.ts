@@ -17,6 +17,7 @@ import { Branch } from 'src/studios/entities/branch.entity';
 import { Catchphrase } from 'src/studios/entities/catchphrase.entity';
 import { HairMakeupProduct } from 'src/studios/entities/hair-makeup-product.entity';
 import { HairMakeupShop } from 'src/studios/entities/hair-makeup-shop.entity';
+import { StudioInfo } from 'src/studios/entities/studio-info.entity';
 import { StudioProduct } from 'src/studios/entities/studio-product.entity';
 import { Studio } from 'src/studios/entities/studio.entity';
 import { UsersHeartStudios } from 'src/studios/entities/users-heart-studios.entity';
@@ -49,6 +50,7 @@ export const AUTH_SERVICE_ENTITIES = [RefreshToken];
 
 export const STUDIOS_SERVICE_ENTITIES = [
   Studio,
+  StudioInfo,
   Branch,
   Catchphrase,
   StudioProduct,

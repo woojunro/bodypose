@@ -1,7 +1,8 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { IsEmail, Length } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Studio } from 'src/studios/entities/studio.entity';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { User } from './user.entity';
 
 @Entity()
@@ -41,4 +42,8 @@ export class Partner extends CoreEntity {
   @OneToOne(relation => User, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
+
+  @OneToMany(relation => Studio, studio => studio.partner)
+  @Field(type => [Studio])
+  studios: Studio[];
 }

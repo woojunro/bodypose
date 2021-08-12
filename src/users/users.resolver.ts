@@ -37,7 +37,10 @@ import { LockUserInput, LockUserOutput } from './dtos/lock-user.dto';
 import { UpdateEmailInput, UpdateEmailOutput } from './dtos/update-email.dto';
 import { GetUserInfoInput, GetUserInfoOutput } from './dtos/get-user-info.dto';
 import { Partner } from './entities/partner.entity';
-import { CreatePartnerInput, CreatePartnerOutput } from './dtos/partner.dto';
+import {
+  CreatePartnerInput,
+  CreatePartnerOutput,
+} from './dtos/create-partner.dto';
 
 @Resolver(of => User)
 export class UsersResolver {
@@ -53,7 +56,7 @@ export class UsersResolver {
   }
 
   @Query(returns => GetUserInfoOutput)
-  @Roles(UserType.USER, UserType.ADMIN)
+  @Roles(UserType.USER, UserType.STUDIO, UserType.ADMIN)
   userInfo(
     @CurrentUser() user: User,
     @Args('input') input: GetUserInfoInput,

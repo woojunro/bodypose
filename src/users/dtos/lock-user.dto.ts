@@ -3,7 +3,11 @@ import { CoreOutput } from 'src/common/dtos/output.dto';
 import { User } from '../entities/user.entity';
 
 @InputType()
-export class LockUserInput extends PickType(User, ['id'], InputType) {}
+export class LockUserInput extends PickType(
+  User,
+  ['id', 'isLocked'],
+  InputType,
+) {}
 
 @ObjectType()
 export class LockUserOutput extends CoreOutput {

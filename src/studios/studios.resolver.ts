@@ -3,6 +3,10 @@ import { CurrentUser } from 'src/auth/current-user.decorator';
 import { Roles } from 'src/auth/roles.decorator';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { UserType, User } from 'src/users/entities/user.entity';
+import {
+  AssignStudioPartnerInput,
+  AssignStudioPartnerOutput,
+} from './dtos/assign-studio-partner.dto';
 import { ClickStudioReviewInput } from './dtos/click-studio-review.dto';
 import {
   CreateBranchInput,
@@ -23,6 +27,7 @@ import {
   DeleteStudioReviewInput,
   DeleteStudioReviewOutput,
 } from './dtos/delete-studio-review.dto';
+import { GetMyStudiosOutput } from './dtos/get-my-studios.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
   GetAllStudioReviewsInput,
@@ -50,6 +55,10 @@ import {
   UpdateHairMakeupShopsOutput,
   UpdateHairMakeupShopsInput,
 } from './dtos/update-product.dto';
+import {
+  UpdateStudioInfoInput,
+  UpdateStudioInfoOutput,
+} from './dtos/update-studio-info.dto';
 import {
   UpdateStudioInput,
   UpdateStudioOutput,
@@ -79,6 +88,12 @@ export class StudiosResolver {
     return this.studiosService.getAllStudios(user);
   }
 
+  @Query(returns => GetMyStudiosOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
+  myStudios(@CurrentUser() user: User): Promise<GetMyStudiosOutput> {
+    return this.studiosService.getMyStudios(user);
+  }
+
   @Mutation(returns => CreateStudioOutput)
   @Roles(UserType.ADMIN)
   createStudio(
@@ -87,12 +102,30 @@ export class StudiosResolver {
     return this.studiosService.createStudio(input);
   }
 
-  @Mutation(returns => UpdateStudioOutput)
+  @Mutation(returns => AssignStudioPartnerOutput)
   @Roles(UserType.ADMIN)
+  assignStudioPartner(
+    @Args('input') input: AssignStudioPartnerInput,
+  ): Promise<AssignStudioPartnerOutput> {
+    return this.studiosService.assignStudioPartner(input);
+  }
+
+  @Mutation(returns => UpdateStudioOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
   updateStudio(
+    @CurrentUser() user: User,
     @Args('input') input: UpdateStudioInput,
   ): Promise<UpdateStudioOutput> {
-    return this.studiosService.updateStudio(input);
+    return this.studiosService.updateStudio(user, input);
+  }
+
+  @Mutation(returns => UpdateStudioInfoOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
+  updateStudioInfo(
+    @CurrentUser() user: User,
+    @Args('input') input: UpdateStudioInfoInput,
+  ): Promise<UpdateStudioInfoOutput> {
+    return this.studiosService.updateStudioInfo(user, input);
   }
 
   @Mutation(returns => CreateBranchOutput)

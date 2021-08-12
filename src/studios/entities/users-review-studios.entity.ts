@@ -34,9 +34,7 @@ export class UsersReviewStudios extends CoreEntity {
   @Field(type => User)
   user: User;
 
-  @ManyToOne(relation => Studio, studio => studio.reviews, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(relation => Studio, { onDelete: 'CASCADE' })
   @Field(type => Studio)
   studio: Studio;
 
