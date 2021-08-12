@@ -296,27 +296,24 @@ export class StudiosService {
 
   async updateStudio(
     user: User,
-    { id, payload }: UpdateStudioInput,
+    { slug, payload }: UpdateStudioInput,
   ): Promise<UpdateStudioOutput> {
     try {
-      const studio = await this.studioRepository.findOne(id);
+      const studio = await this.studioRepository.findOne({ slug });
       if (!studio) return CommonError('STUDIO_NOT_FOUND');
-      const checked = await this.checkIfUserIsAdminOrOwner(studio.id, user);
-      if (!checked) return CommonError('FORBIDDEN');
-      // Check duplicate slug
+      const valid = await this.checkIfUserIsAdminOrOwner(studio.id, user);
+      if (!valid) return CommonError('FORBIDDEN');
+      // Check slug
       if (payload.slug) {
-        const existingStudio = await this.studioRepository.findOne({
-          slug: payload.slug,
-        });
+        const isSlugValid = this.checkIfSlugIsValid(payload.slug);
+        if (!isSlugValid) return CommonError('INVALID_SLUG');
+        const existingStudio = await this.getStudioBySlug(payload.slug);
         if (existingStudio) return CommonError('DUPLICATE_STUDIO_SLUG');
       }
       // Update
       const studioToUpdate = { ...studio, ...payload };
-      const updatedStudio = await this.studioRepository.save(studioToUpdate);
-      return {
-        ok: true,
-        studio: updatedStudio,
-      };
+      await this.studioRepository.save(studioToUpdate);
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
