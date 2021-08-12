@@ -18,7 +18,11 @@ class UpdateStudioInfoPayload extends PartialType(
 ) {}
 
 @InputType()
-export class UpdateStudioInfoInput extends PickType(Studio, ['id'], InputType) {
+export class UpdateStudioInfoInput extends PickType(
+  Studio,
+  ['slug'],
+  InputType,
+) {
   @Field(type => UpdateStudioInfoPayload)
   @ValidateNested()
   @Type(() => UpdateStudioInfoPayload)
@@ -26,7 +30,4 @@ export class UpdateStudioInfoInput extends PickType(Studio, ['id'], InputType) {
 }
 
 @ObjectType()
-export class UpdateStudioInfoOutput extends CoreOutput {
-  @Field(type => StudioInfo, { nullable: true })
-  studioInfo?: StudioInfo;
-}
+export class UpdateStudioInfoOutput extends CoreOutput {}

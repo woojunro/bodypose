@@ -308,7 +308,9 @@ export class StudiosService {
         const isSlugValid = this.checkIfSlugIsValid(payload.slug);
         if (!isSlugValid) return CommonError('INVALID_SLUG');
         const existingStudio = await this.getStudioBySlug(payload.slug);
-        if (existingStudio) return CommonError('DUPLICATE_STUDIO_SLUG');
+        if (existingStudio && existingStudio.id !== studio.id) {
+          return CommonError('DUPLICATE_SLUG');
+        }
       }
       // Update
       const studioToUpdate = { ...studio, ...payload };
@@ -322,13 +324,25 @@ export class StudiosService {
 
   async updateStudioInfo(
     user: User,
-    { id, payload }: UpdateStudioInfoInput,
+    { slug, payload }: UpdateStudioInfoInput,
   ): Promise<UpdateStudioInfoOutput> {
-    const info = await this.studioInfoRepository.findOne(id);
-    if (!info) return CommonError('STUDIO_INFO_NOT_FOUND');
-    const checked = await this.checkIfUserIsAdminOrOwner(id, user);
-    if (!checked) return CommonError('FORBIDDEN');
-    return CommonError('TEST');
+    try {
+      const info = await this.studioInfoRepository
+        .createQueryBuilder('info')
+        .leftJoin('info.studio', 'studio')
+        .addSelect(['studio.id', 'studio.slug'])
+        .where('studio.slug = :slug', { slug })
+        .getOne();
+      if (!info) return CommonError('STUDIO_INFO_NOT_FOUND');
+      const valid = await this.checkIfUserIsAdminOrOwner(info.studio.id, user);
+      if (!valid) return CommonError('FORBIDDEN');
+      const infoToUpdate = { ...info, ...payload };
+      await this.studioInfoRepository.save(infoToUpdate);
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
   }
 
   async createBranches({
