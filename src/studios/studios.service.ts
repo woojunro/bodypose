@@ -39,6 +39,7 @@ import {
   DeleteStudioReviewInput,
   DeleteStudioReviewOutput,
 } from './dtos/delete-studio-review.dto';
+import { GetMyStudiosOutput } from './dtos/get-my-studios.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
   GetAllStudioReviewsInput,
@@ -189,41 +190,31 @@ export class StudiosService {
     }
   }
 
-  filterStudioQueryByUserType(
-    query: SelectQueryBuilder<Studio>,
-    user: User,
-    studioAlias = 'studio',
-    partnerAlias = 'partner',
-  ): SelectQueryBuilder<Studio> {
-    switch (user?.type) {
-      case UserType.ADMIN:
-        return query;
-      case UserType.STUDIO:
-        return query.andWhere(
-          `(${studioAlias}.isPublic = 1 OR ${partnerAlias}.userId = :id)`,
-          { id: user.id },
-        );
-      default:
-        return query.andWhere(`${studioAlias}.isPublic = 1`);
-    }
-  }
-
   async getStudio(
     user: User,
     { slug }: GetStudioInput,
   ): Promise<GetStudioOutput> {
     try {
-      let query = this.studioRepository
-        .createQueryBuilder('s')
-        .leftJoinAndSelect('s.branches', 'branch')
-        .leftJoinAndSelect('s.catchphrases', 'catchphrase')
-        .leftJoinAndSelect('s.info', 'info')
-        .leftJoin('s.partner', 'partner')
-        .where('s.slug = :slug', { slug });
-      query = this.filterStudioQueryByUserType(query, user, 's');
+      let query = await this.studioRepository
+        .createQueryBuilder('studio')
+        .leftJoinAndSelect('studio.branches', 'branch')
+        .leftJoinAndSelect('studio.catchphrases', 'catchphrase')
+        .leftJoinAndSelect('studio.info', 'info')
+        .leftJoin('studio.partner', 'partner')
+        .where('studio.slug = :slug', { slug });
+      switch (user?.type) {
+        case UserType.ADMIN:
+          break;
+        case UserType.STUDIO:
+          query = query.andWhere('partner.userId = :id', { id: user.id });
+          break;
+        default:
+          query = query.andWhere('studio.isPublic = true');
+          break;
+      }
       const studio = await query.getOne();
       if (!studio) return CommonError('STUDIO_NOT_FOUND');
-      // If logged in, check isHearted
+      // If USER, check isHearted
       let isHearted: boolean = null;
       if (user?.type === UserType.USER) {
         const heart = await this.usersHeartStudiosRepository.findOne({
@@ -246,13 +237,10 @@ export class StudiosService {
 
   async getAllStudios(user: User): Promise<GetStudiosOutput> {
     try {
-      let query = this.studioRepository
-        .createQueryBuilder('s')
-        .leftJoinAndSelect('s.branches', 'branch')
-        .leftJoinAndSelect('s.catchphrases', 'catchphrase')
-        .leftJoin('s.partner', 'partner');
-      query = this.filterStudioQueryByUserType(query, user, 's');
-      const studios = await query.getMany();
+      const studios = await this.studioRepository.find({
+        where: { isPublic: true },
+        relations: ['branches', 'catchphrases'],
+      });
       let studiosWithIsHearted: StudioWithIsHearted[];
       if (user?.type === UserType.USER) {
         const hearts = await this.usersHeartStudiosRepository.find({ user });
@@ -270,6 +258,31 @@ export class StudiosService {
         ok: true,
         studios: studiosWithIsHearted,
       };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getMyStudios(user: User): Promise<GetMyStudiosOutput> {
+    try {
+      let studios: Studio[];
+      switch (user?.type) {
+        case UserType.ADMIN:
+          studios = await this.studioRepository.find();
+          break;
+        case UserType.STUDIO:
+          studios = await this.studioRepository
+            .createQueryBuilder('studio')
+            .leftJoin('studio.partner', 'partner')
+            .where('partner.userId = :id', { id: user.id })
+            .getMany();
+          break;
+        default:
+          studios = [];
+          break;
+      }
+      return { ok: true, studios };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;

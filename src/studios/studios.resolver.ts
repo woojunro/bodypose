@@ -27,6 +27,7 @@ import {
   DeleteStudioReviewInput,
   DeleteStudioReviewOutput,
 } from './dtos/delete-studio-review.dto';
+import { GetMyStudiosOutput } from './dtos/get-my-studios.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
   GetAllStudioReviewsInput,
@@ -85,6 +86,12 @@ export class StudiosResolver {
   @Query(returns => GetStudiosOutput)
   allStudios(@CurrentUser() user: User): Promise<GetStudiosOutput> {
     return this.studiosService.getAllStudios(user);
+  }
+
+  @Query(returns => GetMyStudiosOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
+  myStudios(@CurrentUser() user: User): Promise<GetMyStudiosOutput> {
+    return this.studiosService.getMyStudios(user);
   }
 
   @Mutation(returns => CreateStudioOutput)
