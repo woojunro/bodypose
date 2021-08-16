@@ -10,16 +10,12 @@ import { PhotosService } from 'src/photos/photos.service';
 import { UploadsService } from 'src/uploads/uploads.service';
 import { UserType, User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
-import { Repository, SelectQueryBuilder } from 'typeorm';
+import { Repository } from 'typeorm';
 import {
   AssignStudioPartnerInput,
   AssignStudioPartnerOutput,
 } from './dtos/assign-studio-partner.dto';
 import { ClickStudioReviewInput } from './dtos/click-studio-review.dto';
-import {
-  CreateBranchInput,
-  CreateBranchOutput,
-} from './dtos/create-branch.dto';
 import {
   CreateStudioProductsInput,
   CreateProductsOutput,
@@ -59,8 +55,8 @@ import {
   ReportStudioReviewOutput,
 } from './dtos/report-studio-review.dto';
 import {
-  UpdateBranchInput,
-  UpdateBranchOutput,
+  UpdateBranchesInput,
+  UpdateBranchesOutput,
 } from './dtos/update-branch.dto';
 import {
   UpdateStudioProductsInput,
@@ -198,7 +194,6 @@ export class StudiosService {
       let query = await this.studioRepository
         .createQueryBuilder('studio')
         .leftJoinAndSelect('studio.branches', 'branch')
-        .leftJoinAndSelect('studio.catchphrases', 'catchphrase')
         .leftJoinAndSelect('studio.info', 'info')
         .leftJoin('studio.partner', 'partner')
         .where('studio.slug = :slug', { slug });
@@ -237,10 +232,12 @@ export class StudiosService {
 
   async getAllStudios(user: User): Promise<GetStudiosOutput> {
     try {
-      const studios = await this.studioRepository.find({
-        where: { isPublic: true },
-        relations: ['branches', 'catchphrases'],
-      });
+      const studios = await this.studioRepository
+        .createQueryBuilder('s')
+        .leftJoin('s.branches', 'b')
+        .addSelect(['b.name', 'b.address'])
+        .where('s.isPublic = true')
+        .getMany();
       let studiosWithIsHearted: StudioWithIsHearted[];
       if (user?.type === UserType.USER) {
         const hearts = await this.usersHeartStudiosRepository.find({ user });
@@ -340,16 +337,15 @@ export class StudiosService {
     { slug, payload }: UpdateStudioInfoInput,
   ): Promise<UpdateStudioInfoOutput> {
     try {
-      const info = await this.studioInfoRepository
-        .createQueryBuilder('info')
-        .leftJoin('info.studio', 'studio')
-        .addSelect(['studio.id', 'studio.slug'])
-        .where('studio.slug = :slug', { slug })
-        .getOne();
-      if (!info) return CommonError('STUDIO_INFO_NOT_FOUND');
-      const valid = await this.checkIfUserIsAdminOrOwner(info.studio.id, user);
+      const studio = await this.studioRepository.findOne(
+        { slug },
+        { relations: ['info'] },
+      );
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const valid = await this.checkIfUserIsAdminOrOwner(studio.id, user);
       if (!valid) return CommonError('FORBIDDEN');
-      const infoToUpdate = { ...info, ...payload };
+      const { info } = studio;
+      const infoToUpdate = { ...info, ...payload, studio };
       await this.studioInfoRepository.save(infoToUpdate);
       return { ok: true };
     } catch (e) {
@@ -358,88 +354,29 @@ export class StudiosService {
     }
   }
 
-  async createBranches({
-    studioSlug,
-    payload: payloadList,
-  }: CreateBranchInput): Promise<CreateBranchOutput> {
+  async updateBranches(
+    user: User,
+    { slug, payload }: UpdateBranchesInput,
+  ): Promise<UpdateBranchesOutput> {
     try {
-      if (payloadList.length === 0) {
-        return {
-          ok: false,
-          error: 'INVALID_PAYLOAD_LENGTH',
-        };
-      }
-      const studio = await this.studioRepository.findOne({ slug: studioSlug });
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
-      const idList: number[] = [];
-      for (const payload of payloadList) {
-        const newBranch = this.branchRepository.create({ ...payload });
-        newBranch.studio = studio;
-        const { id } = await this.branchRepository.save(newBranch);
-        idList.push(id);
-      }
-      return {
-        ok: true,
-        idList,
-      };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
-  }
-
-  async updateBranches({
-    studioSlug,
-    payload,
-  }: UpdateBranchInput): Promise<UpdateBranchOutput> {
-    try {
-      if (payload.length === 0) {
-        return {
-          ok: false,
-          error: 'INVALID_PAYLOAD_LENGTH',
-        };
-      }
       const studio = await this.studioRepository.findOne(
-        { slug: studioSlug },
+        { slug },
         { relations: ['branches'] },
       );
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const valid = await this.checkIfUserIsAdminOrOwner(studio.id, user);
+      if (!valid) return CommonError('FORBIDDEN');
       const { branches } = studio;
-      const idList: number[] = [];
-      // Overwrite
-      for (let i = 0; i < branches.length && i < payload.length; i++) {
-        const { name, address } = payload[i];
-        branches[i].name = name;
-        branches[i].address = address;
-        const { id } = await this.branchRepository.save(branches[i]);
-        idList.push(id);
-      }
-      if (branches.length > payload.length) {
-        for (let i = payload.length; i < branches.length; i++) {
-          await this.branchRepository.delete({ id: branches[i].id });
-        }
-      } else if (branches.length < payload.length) {
-        for (let i = branches.length; i < payload.length; i++) {
-          const newBranch = this.branchRepository.create({ ...payload[i] });
-          newBranch.studio = studio;
-          const { id } = await this.branchRepository.save(newBranch);
-          idList.push(id);
-        }
-      }
-      return {
-        ok: true,
-        idList,
-      };
+      // Delete all existing branches
+      const idsToDelete = branches.map(branch => branch.id);
+      if (idsToDelete.length) await this.branchRepository.delete(idsToDelete);
+      // Create new branches
+      const newBranches = payload.map(branch => ({
+        ...branch,
+        studio,
+      }));
+      await this.branchRepository.insert(newBranches);
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
