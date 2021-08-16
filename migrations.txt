@@ -7,3 +7,11 @@ query: ALTER TABLE `partner` ADD CONSTRAINT `FK_17701946f05279c9fe1a05cccf5` FOR
 query: ALTER TABLE `studio_info` ADD CONSTRAINT `FK_3c628ebe3d7a4e58abc4cc8ba9e` FOREIGN KEY (`studioId`) REFERENCES `studio`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 query: ALTER TABLE `studio` ADD CONSTRAINT `FK_c3225d87566bd792e75005e6b50` FOREIGN KEY (`partnerId`) REFERENCES `partner`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 query: COMMIT
+
+2021-08-16 DEV
+
+query: ALTER TABLE `branch` ADD `parkingInfo` text NULL
+query: ALTER TABLE `branch` DROP COLUMN `name`
+query: ALTER TABLE `branch` ADD `name` varchar(10) NOT NULL
+query: ALTER TABLE `branch` DROP COLUMN `address`
+query: ALTER TABLE `branch` ADD `address` varchar(100) NOT NULL

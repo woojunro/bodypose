@@ -9,10 +9,6 @@ import {
 } from './dtos/assign-studio-partner.dto';
 import { ClickStudioReviewInput } from './dtos/click-studio-review.dto';
 import {
-  CreateBranchInput,
-  CreateBranchOutput,
-} from './dtos/create-branch.dto';
-import {
   CreateStudioProductsInput,
   CreateProductsOutput,
   CreateAdditionalProductsInput,
@@ -45,8 +41,8 @@ import {
   ReportStudioReviewOutput,
 } from './dtos/report-studio-review.dto';
 import {
-  UpdateBranchInput,
-  UpdateBranchOutput,
+  UpdateBranchesInput,
+  UpdateBranchesOutput,
 } from './dtos/update-branch.dto';
 import {
   UpdateStudioProductsInput,
@@ -128,20 +124,13 @@ export class StudiosResolver {
     return this.studiosService.updateStudioInfo(user, input);
   }
 
-  @Mutation(returns => CreateBranchOutput)
-  @Roles(UserType.ADMIN)
-  createBranches(
-    @Args('input') input: CreateBranchInput,
-  ): Promise<CreateBranchOutput> {
-    return this.studiosService.createBranches(input);
-  }
-
-  @Mutation(returns => UpdateBranchOutput)
-  @Roles(UserType.ADMIN)
+  @Mutation(returns => UpdateBranchesOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
   updateBranches(
-    @Args('input') input: UpdateBranchInput,
-  ): Promise<UpdateBranchOutput> {
-    return this.studiosService.updateBranches(input);
+    @CurrentUser() user: User,
+    @Args('input') input: UpdateBranchesInput,
+  ): Promise<UpdateBranchesOutput> {
+    return this.studiosService.updateBranches(user, input);
   }
 }
 
