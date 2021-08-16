@@ -194,7 +194,6 @@ export class StudiosService {
       let query = await this.studioRepository
         .createQueryBuilder('studio')
         .leftJoinAndSelect('studio.branches', 'branch')
-        .leftJoinAndSelect('studio.catchphrases', 'catchphrase')
         .leftJoinAndSelect('studio.info', 'info')
         .leftJoin('studio.partner', 'partner')
         .where('studio.slug = :slug', { slug });
@@ -233,10 +232,12 @@ export class StudiosService {
 
   async getAllStudios(user: User): Promise<GetStudiosOutput> {
     try {
-      const studios = await this.studioRepository.find({
-        where: { isPublic: true },
-        relations: ['branches', 'catchphrases'],
-      });
+      const studios = await this.studioRepository
+        .createQueryBuilder('s')
+        .leftJoin('s.branches', 'b')
+        .addSelect(['b.name', 'b.address'])
+        .where('s.isPublic = true')
+        .getMany();
       let studiosWithIsHearted: StudioWithIsHearted[];
       if (user?.type === UserType.USER) {
         const hearts = await this.usersHeartStudiosRepository.find({ user });
