@@ -41,6 +41,7 @@ export class Partner extends CoreEntity {
 
   @OneToOne(relation => User, { onDelete: 'CASCADE' })
   @JoinColumn()
+  @Field(type => User)
   user: User;
 
   @OneToMany(relation => Studio, studio => studio.partner)

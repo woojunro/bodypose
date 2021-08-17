@@ -45,6 +45,15 @@ import {
   ChangePasswordInput,
   ChangePasswordOutput,
 } from './dtos/change-password.dto';
+import {
+  GetPartnerInput,
+  GetPartnerOutput,
+  GetPartnersOutput,
+} from './dtos/get-partner.dto';
+import {
+  UpdatePartnerInput,
+  UpdatePartnerOutput,
+} from './dtos/update-partner.dto';
 
 @Resolver(of => User)
 export class UsersResolver {
@@ -180,5 +189,29 @@ export class PartnersResolver {
     @Args('input') input: CreatePartnerInput,
   ): Promise<CreatePartnerOutput> {
     return this.usersService.createPartner(input);
+  }
+
+  @Query(returns => GetPartnerOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
+  partner(
+    @CurrentUser() user: User,
+    @Args('input', { nullable: true }) input?: GetPartnerInput,
+  ): Promise<GetPartnerOutput> {
+    return this.usersService.getPartner(user, input);
+  }
+
+  @Query(returns => GetPartnersOutput)
+  @Roles(UserType.ADMIN)
+  partners(): Promise<GetPartnersOutput> {
+    return this.usersService.getPartners();
+  }
+
+  @Mutation(returns => UpdatePartnerOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
+  updatePartner(
+    @CurrentUser() user: User,
+    @Args('input') input: UpdatePartnerInput,
+  ): Promise<UpdatePartnerOutput> {
+    return this.usersService.updatePartner(user, input);
   }
 }

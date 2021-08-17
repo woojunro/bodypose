@@ -61,6 +61,15 @@ import {
   ChangePasswordInput,
   ChangePasswordOutput,
 } from './dtos/change-password.dto';
+import {
+  GetPartnerInput,
+  GetPartnerOutput,
+  GetPartnersOutput,
+} from './dtos/get-partner.dto';
+import {
+  UpdatePartnerInput,
+  UpdatePartnerOutput,
+} from './dtos/update-partner.dto';
 
 @Injectable()
 export class UsersService {
@@ -795,5 +804,72 @@ export class UsersService {
 
   async getPartnerByEmail(email: string): Promise<Partner> {
     return this.partnerRepository.findOne({ email }, { relations: ['user'] });
+  }
+
+  async getPartner(
+    user: User,
+    input?: GetPartnerInput,
+  ): Promise<GetPartnerOutput> {
+    try {
+      let partner: Partner;
+      const query = this.partnerRepository
+        .createQueryBuilder('partner')
+        .leftJoinAndSelect('partner.studios', 'studio')
+        .leftJoin('partner.user', 'user')
+        .addSelect([
+          'user.id',
+          'user.createdAt',
+          'user.lastLoginAt',
+          'user.isLocked',
+        ]);
+      if (input) {
+        if (user.type !== UserType.ADMIN) return CommonError('FORBIDDEN');
+        const { email } = input;
+        partner = await query
+          .where('partner.email = :email', { email })
+          .getOne();
+      } else {
+        partner = await query
+          .where('partner.userId = :id', { id: user.id })
+          .getOne();
+      }
+      if (!partner) return CommonError('PARTNER_NOT_FOUND');
+      return { ok: true, partner };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getPartners(): Promise<GetPartnersOutput> {
+    try {
+      const partners = await this.partnerRepository.find({
+        select: ['id', 'email', 'reqStudioName'],
+      });
+      return { ok: true, partners };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async updatePartner(
+    user: User,
+    { email, payload }: UpdatePartnerInput,
+  ): Promise<UpdatePartnerOutput> {
+    try {
+      let partner: Partner;
+      if (email) {
+        if (user.type !== UserType.ADMIN) return CommonError('FORBIDDEN');
+        partner = await this.partnerRepository.findOne({ email });
+      } else {
+        partner = await this.partnerRepository.findOne({ user });
+      }
+      await this.partnerRepository.save({ ...partner, ...payload });
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
   }
 }
