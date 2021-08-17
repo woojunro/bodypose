@@ -1,5 +1,5 @@
 import { Field, InputType, Int, ObjectType, PickType } from '@nestjs/graphql';
-import { IsEmail, IsString, Length } from 'class-validator';
+import { IsEmail, Length } from 'class-validator';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { PasswordReset } from '../entities/password-reset.entity';
 
@@ -24,7 +24,7 @@ export class UpdatePasswordInput extends PickType(
   userId: number;
 
   @Field(type => String)
-  @IsString()
+  @Length(8, 128)
   newPassword: string;
 }
 

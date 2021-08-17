@@ -1,4 +1,4 @@
-import { hash } from 'bcrypt';
+import { hash, compare } from 'bcrypt';
 import {
   forwardRef,
   Inject,
@@ -57,6 +57,10 @@ import {
   CreatePartnerInput,
   CreatePartnerOutput,
 } from './dtos/create-partner.dto';
+import {
+  ChangePasswordInput,
+  ChangePasswordOutput,
+} from './dtos/change-password.dto';
 
 @Injectable()
 export class UsersService {
@@ -708,6 +712,31 @@ export class UsersService {
       // Delete code
       await this.passwordResetRepository.delete({ id: reset.id });
       // return
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async changePassword(
+    user: User,
+    { currentPassword, newPassword }: ChangePasswordInput,
+  ): Promise<ChangePasswordOutput> {
+    try {
+      if (!this.checkPasswordSecurity(newPassword)) {
+        return CommonError('INSECURE_PASSWORD');
+      }
+      const { email } = user;
+      const { id, password } = await this.getUserByEmail(email);
+      const isCorrect = await compare(currentPassword, password);
+      if (!isCorrect) return CommonError('WRONG_PASSWORD');
+      const hashedPassword = await hash(newPassword, PASSWORD_HASH_ROUNDS);
+      const updatedUser = this.userRepository.create({
+        id,
+        password: hashedPassword,
+      });
+      await this.userRepository.save(updatedUser);
       return { ok: true };
     } catch (e) {
       console.log(e);

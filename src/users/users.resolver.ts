@@ -41,6 +41,10 @@ import {
   CreatePartnerInput,
   CreatePartnerOutput,
 } from './dtos/create-partner.dto';
+import {
+  ChangePasswordInput,
+  ChangePasswordOutput,
+} from './dtos/change-password.dto';
 
 @Resolver(of => User)
 export class UsersResolver {
@@ -148,6 +152,15 @@ export class UsersResolver {
     @Args('input') input: UpdatePasswordInput,
   ): Promise<UpdatePasswordOutput> {
     return this.usersService.updatePassword(input);
+  }
+
+  @Mutation(returns => ChangePasswordOutput)
+  @Roles(UserType.STUDIO)
+  changePassword(
+    @CurrentUser() user: User,
+    @Args('input') input: ChangePasswordInput,
+  ): Promise<ChangePasswordOutput> {
+    return this.usersService.changePassword(user, input);
   }
 
   @Mutation(returns => LockUserOutput)

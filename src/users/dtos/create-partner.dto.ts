@@ -10,7 +10,7 @@ export class CreatePartnerInput extends OmitType(
   InputType,
 ) {
   @Field(type => String)
-  @Length(8)
+  @Length(8, 128)
   password: string;
 }
 
