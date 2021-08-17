@@ -61,7 +61,11 @@ import {
   ChangePasswordInput,
   ChangePasswordOutput,
 } from './dtos/change-password.dto';
-import { GetPartnerInput, GetPartnerOutput } from './dtos/get-partner.dto';
+import {
+  GetPartnerInput,
+  GetPartnerOutput,
+  GetPartnersOutput,
+} from './dtos/get-partner.dto';
 
 @Injectable()
 export class UsersService {
@@ -827,6 +831,18 @@ export class UsersService {
       }
       if (!partner) return CommonError('PARTNER_NOT_FOUND');
       return { ok: true, partner };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getPartners(): Promise<GetPartnersOutput> {
+    try {
+      const partners = await this.partnerRepository.find({
+        select: ['id', 'email', 'reqStudioName'],
+      });
+      return { ok: true, partners };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
