@@ -61,6 +61,7 @@ import {
   ChangePasswordInput,
   ChangePasswordOutput,
 } from './dtos/change-password.dto';
+import { GetPartnerInput, GetPartnerOutput } from './dtos/get-partner.dto';
 
 @Injectable()
 export class UsersService {
@@ -795,5 +796,40 @@ export class UsersService {
 
   async getPartnerByEmail(email: string): Promise<Partner> {
     return this.partnerRepository.findOne({ email }, { relations: ['user'] });
+  }
+
+  async getPartner(
+    user: User,
+    input?: GetPartnerInput,
+  ): Promise<GetPartnerOutput> {
+    try {
+      let partner: Partner;
+      const query = this.partnerRepository
+        .createQueryBuilder('partner')
+        .leftJoinAndSelect('partner.studios', 'studio')
+        .leftJoin('partner.user', 'user')
+        .addSelect([
+          'user.id',
+          'user.createdAt',
+          'user.lastLoginAt',
+          'user.isLocked',
+        ]);
+      if (input) {
+        if (user.type !== UserType.ADMIN) return CommonError('FORBIDDEN');
+        const { email } = input;
+        partner = await query
+          .where('partner.email = :email', { email })
+          .getOne();
+      } else {
+        partner = await query
+          .where('partner.userId = :id', { id: user.id })
+          .getOne();
+      }
+      if (!partner) return CommonError('PARTNER_NOT_FOUND');
+      return { ok: true, partner };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
   }
 }
