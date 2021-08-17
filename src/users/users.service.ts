@@ -66,6 +66,10 @@ import {
   GetPartnerOutput,
   GetPartnersOutput,
 } from './dtos/get-partner.dto';
+import {
+  UpdatePartnerInput,
+  UpdatePartnerOutput,
+} from './dtos/update-partner.dto';
 
 @Injectable()
 export class UsersService {
@@ -843,6 +847,26 @@ export class UsersService {
         select: ['id', 'email', 'reqStudioName'],
       });
       return { ok: true, partners };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async updatePartner(
+    user: User,
+    { email, payload }: UpdatePartnerInput,
+  ): Promise<UpdatePartnerOutput> {
+    try {
+      let partner: Partner;
+      if (email) {
+        if (user.type !== UserType.ADMIN) return CommonError('FORBIDDEN');
+        partner = await this.partnerRepository.findOne({ email });
+      } else {
+        partner = await this.partnerRepository.findOne({ user });
+      }
+      await this.partnerRepository.save({ ...partner, ...payload });
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;

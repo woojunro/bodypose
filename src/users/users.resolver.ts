@@ -50,6 +50,10 @@ import {
   GetPartnerOutput,
   GetPartnersOutput,
 } from './dtos/get-partner.dto';
+import {
+  UpdatePartnerInput,
+  UpdatePartnerOutput,
+} from './dtos/update-partner.dto';
 
 @Resolver(of => User)
 export class UsersResolver {
@@ -200,5 +204,14 @@ export class PartnersResolver {
   @Roles(UserType.ADMIN)
   partners(): Promise<GetPartnersOutput> {
     return this.usersService.getPartners();
+  }
+
+  @Mutation(returns => UpdatePartnerOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
+  updatePartner(
+    @CurrentUser() user: User,
+    @Args('input') input: UpdatePartnerInput,
+  ): Promise<UpdatePartnerOutput> {
+    return this.usersService.updatePartner(user, input);
   }
 }
