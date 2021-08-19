@@ -1,5 +1,12 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { IsEnum, IsInt, IsOptional, Length, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  Length,
+  Min,
+} from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { Studio } from './studio.entity';
@@ -88,6 +95,11 @@ export class StudioProduct extends CoreEntity {
   @IsInt()
   @Min(-1)
   weekendPrice?: number;
+
+  @Column()
+  @Field(type => Boolean)
+  @IsBoolean()
+  isOriginalProvided: boolean;
 
   @ManyToOne(relation => Studio, studio => studio.studioProducts, {
     onDelete: 'CASCADE',

@@ -25,6 +25,10 @@ import {
 import { GetMyStudiosOutput } from './dtos/get-my-studios.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
+  GetStudioProductsInput,
+  GetStudioProductsOutput,
+} from './dtos/get-studio-products.dto';
+import {
   GetAllStudioReviewsInput,
   GetStudioReviewsInput,
   GetStudioReviewsOutput,
@@ -144,6 +148,15 @@ export class ProductResolver {
   @Query(returns => GetProductsOutput)
   products(@Args('input') input: GetProductsInput): Promise<GetProductsOutput> {
     return this.studiosService.getProducts(input);
+  }
+
+  // Public
+  @Query(returns => GetStudioProductsOutput)
+  studioProducts(
+    @CurrentUser() user: User,
+    @Args('input') input: GetStudioProductsInput,
+  ): Promise<GetStudioProductsOutput> {
+    return this.studiosService.getStudioProducts(user, input);
   }
 
   @Mutation(returns => UpdateStudioProductsOutput)

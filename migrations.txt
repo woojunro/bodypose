@@ -25,3 +25,4 @@ query: ALTER TABLE `studio_product` ADD `title` varchar(25) NOT NULL
 query: ALTER TABLE `studio_product` CHANGE `conceptCount` `conceptCount` int NULL
 query: ALTER TABLE `studio_product` CHANGE `weekdayPrice` `weekdayPrice` int NULL
 query: ALTER TABLE `studio_product` CHANGE `weekendPrice` `weekendPrice` int NULL
+query: ALTER TABLE `studio_product` ADD `isOriginalProvided` tinyint NOT NULL

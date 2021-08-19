@@ -10,7 +10,7 @@ import { PhotosService } from 'src/photos/photos.service';
 import { UploadsService } from 'src/uploads/uploads.service';
 import { UserType, User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import {
   AssignStudioPartnerInput,
   AssignStudioPartnerOutput,
@@ -36,6 +36,10 @@ import {
 } from './dtos/delete-studio-review.dto';
 import { GetMyStudiosOutput } from './dtos/get-my-studios.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
+import {
+  GetStudioProductsInput,
+  GetStudioProductsOutput,
+} from './dtos/get-studio-products.dto';
 import {
   GetAllStudioReviewsInput,
   GetStudioReviewsInput,
@@ -188,6 +192,22 @@ export class StudiosService {
     }
   }
 
+  filterStudioQueryByUser(
+    query: SelectQueryBuilder<Studio>,
+    user: User,
+    studioAlias = 'studio',
+    partnerAlias = 'partner',
+  ): SelectQueryBuilder<Studio> {
+    switch (user?.type) {
+      case UserType.ADMIN:
+        return query;
+      case UserType.STUDIO:
+        return query.andWhere(`${partnerAlias}.userId = :id`, { id: user.id });
+      default:
+        return query.andWhere(`${studioAlias}.isPublic = true`);
+    }
+  }
+
   async getStudio(
     user: User,
     { slug }: GetStudioInput,
@@ -199,16 +219,7 @@ export class StudiosService {
         .leftJoinAndSelect('studio.info', 'info')
         .leftJoin('studio.partner', 'partner')
         .where('studio.slug = :slug', { slug });
-      switch (user?.type) {
-        case UserType.ADMIN:
-          break;
-        case UserType.STUDIO:
-          query = query.andWhere('partner.userId = :id', { id: user.id });
-          break;
-        default:
-          query = query.andWhere('studio.isPublic = true');
-          break;
-      }
+      query = this.filterStudioQueryByUser(query, user);
       const studio = await query.getOne();
       if (!studio) return CommonError('STUDIO_NOT_FOUND');
       // If USER, check isHearted
@@ -417,6 +428,28 @@ export class StudiosService {
         hairMakeupShops,
         additionalProducts,
       };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getStudioProducts(
+    user: User,
+    { slug }: GetStudioProductsInput,
+  ): Promise<GetStudioProductsOutput> {
+    try {
+      let query = await this.studioRepository
+        .createQueryBuilder('studio')
+        .select('studio.id')
+        .leftJoinAndSelect('studio.studioProducts', 'studioProduct')
+        .leftJoin('studio.partner', 'partner')
+        .where('studio.slug = :slug', { slug });
+      query = this.filterStudioQueryByUser(query, user);
+      const studio = await query.getOne();
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const { studioProducts } = studio;
+      return { ok: true, studioProducts };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
