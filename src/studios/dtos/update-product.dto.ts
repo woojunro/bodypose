@@ -4,11 +4,7 @@ import {
   CreateAdditionalProductsInput,
   CreateHairMakeupShopsInput,
   CreateProductsOutput,
-  CreateStudioProductsInput,
 } from './create-product.dto';
-
-@InputType()
-export class UpdateStudioProductsInput extends CreateStudioProductsInput {}
 
 @InputType()
 export class UpdateAdditionalProductsInput extends CreateAdditionalProductsInput {}

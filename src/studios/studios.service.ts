@@ -17,7 +17,6 @@ import {
 } from './dtos/assign-studio-partner.dto';
 import { ClickStudioReviewInput } from './dtos/click-studio-review.dto';
 import {
-  CreateStudioProductsInput,
   CreateProductsOutput,
   CreateAdditionalProductsInput,
   CreateHairMakeupShopsInput,
@@ -59,7 +58,6 @@ import {
   UpdateBranchesOutput,
 } from './dtos/update-branch.dto';
 import {
-  UpdateStudioProductsInput,
   UpdateProductsOutput,
   UpdateAdditionalProductsInput,
   UpdateHairMakeupShopsInput,
@@ -69,6 +67,10 @@ import {
   UpdateStudioInfoInput,
   UpdateStudioInfoOutput,
 } from './dtos/update-studio-info.dto';
+import {
+  UpdateStudioProductsInput,
+  UpdateStudioProductsOutput,
+} from './dtos/update-studio-product.dto';
 import {
   UpdateStudioInput,
   UpdateStudioOutput,
@@ -421,129 +423,73 @@ export class StudiosService {
     }
   }
 
-  async createStudioProducts({
-    studioSlug,
-    products,
-  }: CreateStudioProductsInput): Promise<CreateProductsOutput> {
-    try {
-      if (products.length === 0) {
-        return {
-          ok: false,
-          error: 'INVALID_PAYLOAD_LENGTH',
-        };
-      }
-      // Find studio
-      const studio = await this.studioRepository.findOne({ slug: studioSlug });
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
-      // Create and save products
-      const idList: number[] = [];
-      let lowestPrice = 0;
-      for (const product of products) {
-        const newProduct = this.studioProductRepository.create({ ...product });
-        newProduct.studio = studio;
-        const { id, weekdayPrice } = await this.studioProductRepository.save(
-          newProduct,
-        );
-        idList.push(id);
-        if (
-          lowestPrice === 0 ||
-          (weekdayPrice !== 0 && weekdayPrice < lowestPrice)
-        ) {
-          lowestPrice = weekdayPrice;
+  getLowestPrice(lowestPrice: number, product: StudioProduct): number {
+    if (product.peopleCount !== product.maxPeopleCount) {
+      return lowestPrice;
+    }
+    const { weekdayPrice, weekendPrice } = product;
+    let ret = lowestPrice;
+    for (const price of [weekdayPrice, weekendPrice]) {
+      if (Number.isInteger(price) && price >= 0) {
+        if (ret == null) ret = price;
+        else if (price < ret) {
+          ret = price;
         }
       }
-      // Update lowestPrice
-      studio.lowestPrice = lowestPrice;
-      await this.studioRepository.save(studio);
-      // return idList
-      return {
-        ok: true,
-        idList,
-      };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
     }
+    return ret;
   }
 
-  async updateStudioProducts({
-    studioSlug,
-    products,
-  }: UpdateStudioProductsInput): Promise<UpdateProductsOutput> {
+  async updateStudioProducts(
+    user: User,
+    { slug, payload }: UpdateStudioProductsInput,
+  ): Promise<UpdateStudioProductsOutput> {
     try {
-      if (products.length === 0) {
-        return {
-          ok: false,
-          error: 'INVALID_PAYLOAD_LENGTH',
-        };
-      }
       // Find studio
       const studio = await this.studioRepository.findOne(
-        { slug: studioSlug },
+        { slug },
         { relations: ['studioProducts'] },
       );
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const valid = await this.checkIfUserIsAdminOrOwner(studio.id, user);
+      if (!valid) return CommonError('FORBIDDEN');
       // Overwrite
       const { studioProducts: currentProducts } = studio;
-      const idList: number[] = [];
-      let lowestPrice = 0;
-      for (let i = 0; i < currentProducts.length && i < products.length; i++) {
-        currentProducts[i] = { ...currentProducts[i], ...products[i] };
-        const { id, weekdayPrice } = await this.studioProductRepository.save(
-          currentProducts[i],
+      let lowestPrice: number = null;
+      for (let i = 0; i < currentProducts.length && i < payload.length; i++) {
+        const productToUpdate = { ...currentProducts[i], ...payload[i] };
+        const product = await this.studioProductRepository.save(
+          productToUpdate,
         );
-        idList.push(id);
-        if (
-          lowestPrice === 0 ||
-          (weekdayPrice !== 0 && weekdayPrice < lowestPrice)
-        ) {
-          lowestPrice = weekdayPrice;
-        }
+        // Update lowestPrice
+        lowestPrice = this.getLowestPrice(lowestPrice, product);
       }
-      if (currentProducts.length > products.length) {
+      if (currentProducts.length > payload.length) {
         // Delete products that haven't been updated
-        for (let i = products.length; i < currentProducts.length; i++) {
-          await this.studioProductRepository.delete({
-            id: currentProducts[i].id,
-          });
+        const idsToDelete: number[] = [];
+        for (let i = payload.length; i < currentProducts.length; i++) {
+          idsToDelete.push(currentProducts[i].id);
         }
-      } else if (currentProducts.length < products.length) {
+        await this.studioProductRepository.delete(idsToDelete);
+      } else if (currentProducts.length < payload.length) {
         // Add more products
-        for (let i = currentProducts.length; i < products.length; i++) {
+        for (let i = currentProducts.length; i < payload.length; i++) {
           const newProduct = this.studioProductRepository.create({
-            ...products[i],
+            ...payload[i],
           });
           newProduct.studio = studio;
-          const { id, weekdayPrice } = await this.studioProductRepository.save(
-            newProduct,
-          );
-          idList.push(id);
-          if (
-            lowestPrice === 0 ||
-            (weekdayPrice !== 0 && weekdayPrice < lowestPrice)
-          ) {
-            lowestPrice = weekdayPrice;
-          }
+          const product = await this.studioProductRepository.save(newProduct);
+          // Update lowestPrice
+          lowestPrice = this.getLowestPrice(lowestPrice, product);
         }
       }
       // Update lowestPrice
-      const { studioProducts, ...studioToUpdate } = studio;
-      studioToUpdate.lowestPrice = lowestPrice;
+      const studioToUpdate = this.studioRepository.create({
+        id: studio.id,
+        lowestPrice,
+      });
       await this.studioRepository.save(studioToUpdate);
-      return {
-        ok: true,
-        idList,
-      };
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;

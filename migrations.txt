@@ -15,3 +15,13 @@ query: ALTER TABLE `branch` DROP COLUMN `name`
 query: ALTER TABLE `branch` ADD `name` varchar(10) NOT NULL
 query: ALTER TABLE `branch` DROP COLUMN `address`
 query: ALTER TABLE `branch` ADD `address` varchar(100) NOT NULL
+
+2021-08-19 DEV
+
+query: ALTER TABLE `studio_product` ADD `maxPeopleCount` int NULL
+query: ALTER TABLE `studio_product` ADD `maxConceptCount` int NULL
+query: ALTER TABLE `studio_product` DROP COLUMN `title`
+query: ALTER TABLE `studio_product` ADD `title` varchar(25) NOT NULL
+query: ALTER TABLE `studio_product` CHANGE `conceptCount` `conceptCount` int NULL
+query: ALTER TABLE `studio_product` CHANGE `weekdayPrice` `weekdayPrice` int NULL
+query: ALTER TABLE `studio_product` CHANGE `weekendPrice` `weekendPrice` int NULL
