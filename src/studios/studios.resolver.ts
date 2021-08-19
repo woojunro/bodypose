@@ -9,7 +9,6 @@ import {
 } from './dtos/assign-studio-partner.dto';
 import { ClickStudioReviewInput } from './dtos/click-studio-review.dto';
 import {
-  CreateStudioProductsInput,
   CreateProductsOutput,
   CreateAdditionalProductsInput,
   CreateHairMakeupShopsInput,
@@ -25,6 +24,10 @@ import {
 } from './dtos/delete-studio-review.dto';
 import { GetMyStudiosOutput } from './dtos/get-my-studios.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
+import {
+  GetStudioProductsInput,
+  GetStudioProductsOutput,
+} from './dtos/get-studio-products.dto';
 import {
   GetAllStudioReviewsInput,
   GetStudioReviewsInput,
@@ -45,7 +48,6 @@ import {
   UpdateBranchesOutput,
 } from './dtos/update-branch.dto';
 import {
-  UpdateStudioProductsInput,
   UpdateProductsOutput,
   UpdateAdditionalProductsInput,
   UpdateHairMakeupShopsOutput,
@@ -55,6 +57,10 @@ import {
   UpdateStudioInfoInput,
   UpdateStudioInfoOutput,
 } from './dtos/update-studio-info.dto';
+import {
+  UpdateStudioProductsInput,
+  UpdateStudioProductsOutput,
+} from './dtos/update-studio-product.dto';
 import {
   UpdateStudioInput,
   UpdateStudioOutput,
@@ -144,20 +150,22 @@ export class ProductResolver {
     return this.studiosService.getProducts(input);
   }
 
-  @Mutation(returns => CreateProductsOutput)
-  @Roles(UserType.ADMIN)
-  createStudioProducts(
-    @Args('input') input: CreateStudioProductsInput,
-  ): Promise<CreateProductsOutput> {
-    return this.studiosService.createStudioProducts(input);
+  // Public
+  @Query(returns => GetStudioProductsOutput)
+  studioProducts(
+    @CurrentUser() user: User,
+    @Args('input') input: GetStudioProductsInput,
+  ): Promise<GetStudioProductsOutput> {
+    return this.studiosService.getStudioProducts(user, input);
   }
 
-  @Mutation(returns => UpdateProductsOutput)
-  @Roles(UserType.ADMIN)
+  @Mutation(returns => UpdateStudioProductsOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
   updateStudioProducts(
+    @CurrentUser() user: User,
     @Args('input') input: UpdateStudioProductsInput,
-  ): Promise<UpdateProductsOutput> {
-    return this.studiosService.updateStudioProducts(input);
+  ): Promise<UpdateStudioProductsOutput> {
+    return this.studiosService.updateStudioProducts(user, input);
   }
 
   @Mutation(returns => CreateProductsOutput)

@@ -1,34 +1,9 @@
-import {
-  Field,
-  InputType,
-  Int,
-  ObjectType,
-  OmitType,
-  PickType,
-} from '@nestjs/graphql';
+import { Field, InputType, Int, ObjectType, PickType } from '@nestjs/graphql';
 import { IsString } from 'class-validator';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { AdditionalProduct } from '../entities/additional-product.entity';
 import { HairMakeupProduct } from '../entities/hair-makeup-product.entity';
 import { HairMakeupShop } from '../entities/hair-makeup-shop.entity';
-import { StudioProduct } from '../entities/studio-product.entity';
-
-@InputType()
-class CreateStudioProductPayload extends OmitType(
-  StudioProduct,
-  ['id', 'createdAt', 'updatedAt', 'studio'],
-  InputType,
-) {}
-
-@InputType()
-export class CreateStudioProductsInput {
-  @Field(type => String)
-  @IsString()
-  studioSlug: string;
-
-  @Field(type => [CreateStudioProductPayload])
-  products: CreateStudioProductPayload[];
-}
 
 @InputType()
 class CreateHairMakeupProductPayload extends PickType(

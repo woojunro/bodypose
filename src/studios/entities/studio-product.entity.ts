@@ -1,5 +1,12 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  Length,
+  Min,
+} from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { Studio } from './studio.entity';
@@ -24,9 +31,9 @@ export class StudioProduct extends CoreEntity {
   @IsEnum(StudioProductType)
   type: StudioProductType;
 
-  @Column()
+  @Column({ length: 25 })
   @Field(type => String)
-  @IsString()
+  @Length(1, 25)
   title: string;
 
   @Column()
@@ -35,16 +42,31 @@ export class StudioProduct extends CoreEntity {
   @Min(1)
   peopleCount: number;
 
-  @Column()
-  @Field(type => Int)
+  @Column({ nullable: true })
+  @Field(type => Int, { nullable: true })
+  @IsOptional()
   @IsInt()
   @Min(1)
-  conceptCount: number;
+  maxPeopleCount?: number;
+
+  @Column({ nullable: true })
+  @Field(type => Int, { nullable: true })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  conceptCount?: number;
+
+  @Column({ nullable: true })
+  @Field(type => Int, { nullable: true })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  maxConceptCount?: number;
 
   @Column()
   @Field(type => Int)
   @IsInt()
-  @Min(1)
+  @Min(0)
   cutCount: number;
 
   @Column({ nullable: true })
@@ -57,24 +79,30 @@ export class StudioProduct extends CoreEntity {
   @Column({ nullable: true })
   @Field(type => String, { nullable: true })
   @IsOptional()
-  @IsString()
+  @Length(1, 255)
   description?: string;
 
-  @Column()
-  @Field(type => Int)
+  @Column({ nullable: true })
+  @Field(type => Int, { nullable: true })
+  @IsOptional()
   @IsInt()
-  @Min(0)
-  weekdayPrice: number;
+  @Min(-1)
+  weekdayPrice?: number;
+
+  @Column({ nullable: true })
+  @Field(type => Int, { nullable: true })
+  @IsOptional()
+  @IsInt()
+  @Min(-1)
+  weekendPrice?: number;
 
   @Column()
-  @Field(type => Int)
-  @IsInt()
-  @Min(0)
-  weekendPrice: number;
+  @Field(type => Boolean)
+  @IsBoolean()
+  isOriginalProvided: boolean;
 
   @ManyToOne(relation => Studio, studio => studio.studioProducts, {
     onDelete: 'CASCADE',
   })
-  @Field(type => Studio)
   studio: Studio;
 }
