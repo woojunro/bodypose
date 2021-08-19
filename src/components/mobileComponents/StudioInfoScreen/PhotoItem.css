@@ -16,19 +16,18 @@
   justify-content: flex-end;
 }
 .whichDay {
-  margin-right: 9px;
+  margin-right: 11px;
   display: flex;
-  width: 77px;
+  width: 90px;
   justify-content: space-between;
   font-size: 11px;
   color: var(--color-footer);
 }
 
 .photoItemContainer {
-  margin-left: -3px;
-  margin-right: -3px;
+  margin-left: 0px;
+  margin-right: 0px;
   padding-right: 7px;
-  display: flex;
 
   padding-top: 13px;
   padding-bottom: 12px;
@@ -36,15 +35,8 @@
 }
 
 .photoItemTitle {
-  text-align: center;
   font-weight: bold;
-  font-size: 13px;
-  width: 80px;
-  margin-right: 15px;
-  word-break: keep-all;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  font-size: 14px;
 }
 
 .photoItemInfoContainer {
@@ -61,14 +53,12 @@
 }
 
 .itemUpper {
-  font-size: 12px;
-  font-weight: bold;
-  color: var(--color-footer);
+  margin-top: 6px;
+  font-size: 11px;
 }
 .itemUnder {
   margin-top: 5px;
   font-size: 10px;
-  color: var(--color-footer);
 }
 
 .photoItemrightPart {
@@ -79,11 +69,12 @@
 .photoItemPrice {
   margin-left: 5px;
   display: flex;
-  width: 53px;
+  width: 60px;
   justify-content: flex-end;
 }
 
 .photoItemBottomPart {
+  color: var(--color-footer);
   font-size: 9px;
   margin-top: 5px;
   margin-bottom: -6px;

@@ -8,8 +8,8 @@ const PhotoItem = ({
   isPhotoItemOpen,
   setIsPhotoItemOpen,
 }) => {
-  const indoor = products.filter((product) => product.type === 'STUDIO');
-  const outdoor = products.filter((product) => product.type === 'OUTDOOR');
+  const indoor = products.filter(product => product.type === 'STUDIO');
+  const outdoor = products.filter(product => product.type === 'OUTDOOR');
   const indoorNotice = currentStudio.studioProductListDescription;
   const outdoorNotice = currentStudio.outdoorProductListDescription;
   const renderedArrow = () => {
@@ -20,13 +20,13 @@ const PhotoItem = ({
     );
   };
 
-  const splitMinMaxPeopleCount = (stringToSplit) => {
+  const splitMinMaxPeopleCount = stringToSplit => {
     var arrayOfMinMax = stringToSplit.split('126');
     return `${arrayOfMinMax[0]}~${arrayOfMinMax[1]}`;
   };
 
-  const renderedItem = (itemList) =>
-    itemList.map((item) => {
+  const renderedItem = itemList =>
+    itemList.map(item => {
       const peopleCountStr = String(item.peopleCount);
       const conceptCountStr = String(item.conceptCount);
       var minmaxPeopleCount = 0;
@@ -45,56 +45,61 @@ const PhotoItem = ({
       }
       return (
         <div key={`studioProduct-${item.id}`} className="photoItemContainer">
-          <div className="photoItemTitle">{item.title}</div>
           <div className="photoItemInfoContainer">
             <div className="photoItemTopPart">
               <div className="photoItemleftPart">
-                <div className="itemUpper">
-                  {item.conceptCount === 0
-                    ? peopleCountStr.includes(126)
-                      ? `${minmaxPeopleCount}인촬영`
-                      : `${item.peopleCount}인촬영 `
-                    : peopleCountStr.includes(126)
-                    ? conceptCountStr.includes(126)
-                      ? `${minmaxPeopleCount}인촬영 - ${minmaxConceptCount}컨셉`
-                      : `${minmaxPeopleCount}인촬영 - ${conceptNum}컨셉`
-                    : conceptCountStr.includes(126)
-                    ? `${item.peopleCount}인촬영 - ${minmaxConceptCount}컨셉`
-                    : `${item.peopleCount}인촬영 - ${conceptNum}컨셉`}
+                <div className="photoItemTitle">{item.title}</div>
+                <div className="photoSpecific">
+                  <div className="itemUpper">
+                    {item.conceptCount === 0
+                      ? peopleCountStr.includes(126)
+                        ? `${minmaxPeopleCount}인촬영`
+                        : `${item.peopleCount}인촬영 `
+                      : peopleCountStr.includes(126)
+                      ? conceptCountStr.includes(126)
+                        ? `${minmaxPeopleCount}인촬영 - ${minmaxConceptCount}컨셉`
+                        : `${minmaxPeopleCount}인촬영 - ${conceptNum}컨셉`
+                      : conceptCountStr.includes(126)
+                      ? `${item.peopleCount}인촬영 - ${minmaxConceptCount}컨셉`
+                      : `${item.peopleCount}인촬영 - ${conceptNum}컨셉`}
+                  </div>
+                  {currentStudio.isOriginalPhotoProvided ? (
+                    <div className="itemUnder">
+                      {item.cutCount === 0
+                        ? `보정본+원본`
+                        : `보정본 ${item.cutCount}컷+원본`}
+                      {item.minuteCount && (
+                        <span>
+                          {item.minuteCount % 60 === 0
+                            ? ` | ${item.minuteCount / 60}시간 내외`
+                            : item.minuteCount < 60
+                            ? ` | ${item.minuteCount}분 내외`
+                            : ` | ${Math.floor(item.minuteCount / 60)}시간 ${
+                                item.minuteCount % 60
+                              }분 내외`}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="itemUnder">
+                      {item.cutCount === 0 ? null : `보정본 ${item.cutCount}컷`}
+                      {item.minuteCount && (
+                        <span>
+                          {item.minuteCount % 60 === 0
+                            ? ` | ${item.minuteCount / 60}시간 내외`
+                            : item.minuteCount < 60
+                            ? ` | ${item.minuteCount}분 내외`
+                            : ` | ${Math.floor(item.minuteCount / 60)}시간 ${
+                                item.minuteCount % 60
+                              }분 내외`}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
-                {currentStudio.isOriginalPhotoProvided ? (
-                  <div className="itemUnder">
-                    {item.cutCount === 0
-                      ? `보정본+원본`
-                      : `보정본 ${item.cutCount}컷+원본`}
-                    {item.minuteCount && (
-                      <span>
-                        {item.minuteCount % 60 === 0
-                          ? ` | ${item.minuteCount / 60}시간 내외`
-                          : item.minuteCount < 60
-                          ? ` | ${item.minuteCount}분 내외`
-                          : ` | ${Math.floor(item.minuteCount / 60)}시간 ${
-                              item.minuteCount % 60
-                            }분 내외`}
-                      </span>
-                    )}
-                  </div>
-                ) : (
-                  <div className="itemUnder">
-                    {item.cutCount === 0 ? null : `보정본 ${item.cutCount}컷`}
-                    {item.minuteCount && (
-                      <span>
-                        {item.minuteCount % 60 === 0
-                          ? ` | ${item.minuteCount / 60}시간 내외`
-                          : item.minuteCount < 60
-                          ? ` | ${item.minuteCount}분 내외`
-                          : ` | ${Math.floor(item.minuteCount / 60)}시간 ${
-                              item.minuteCount % 60
-                            }분 내외`}
-                      </span>
-                    )}
-                  </div>
-                )}
+                {item.description ? (
+                  <div className="photoItemBottomPart">{item.description}</div>
+                ) : null}
               </div>
               <div className="photoItemrightPart">
                 <div className="photoItemPrice">
@@ -105,9 +110,6 @@ const PhotoItem = ({
                 </div>
               </div>
             </div>
-            {item.description ? (
-              <div className="photoItemBottomPart">* {item.description}</div>
-            ) : null}
           </div>
         </div>
       );
@@ -115,7 +117,7 @@ const PhotoItem = ({
 
   const renderedIndoorNotice =
     indoorNotice &&
-    indoorNotice.split('\n').map((notice) => {
+    indoorNotice.split('\n').map(notice => {
       return (
         <div key={notice} className="itemNotice">
           * {notice}
@@ -125,7 +127,7 @@ const PhotoItem = ({
 
   const renderedOutdoorNotice =
     outdoorNotice &&
-    outdoorNotice.split('\n').map((notice) => {
+    outdoorNotice.split('\n').map(notice => {
       return (
         <div key={notice} className="itemNotice">
           * {notice}
