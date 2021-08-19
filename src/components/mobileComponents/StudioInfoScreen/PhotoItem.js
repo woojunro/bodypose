@@ -65,9 +65,11 @@ const PhotoItem = ({
                   </div>
                   {currentStudio.isOriginalPhotoProvided ? (
                     <div className="itemUnder">
-                      {item.cutCount === 0
-                        ? `보정본+원본`
-                        : `보정본 ${item.cutCount}컷+원본`}
+                      <span>
+                        {item.cutCount === 0
+                          ? `보정본+원본`
+                          : `보정본 ${item.cutCount}컷+원본`}
+                      </span>
                       {item.minuteCount && (
                         <span>
                           {item.minuteCount % 60 === 0
