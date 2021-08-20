@@ -5,10 +5,20 @@ import { Carousel } from 'react-responsive-carousel';
 import './AdTabCarousel.css';
 
 const AdTap = () => {
-  const adTabitems = HOMESCREEN_AD_URL.map((url) => {
+  const adTabitems = HOMESCREEN_AD_URL.map(item => {
     return (
-      <div key={url} className="adTap">
-        <img alt="바디프로필의 모든 정보 바디포즈" src={url} />
+      <div key={item.url} className="adTap">
+        <img
+          alt="바디프로필의 모든 정보 바디포즈"
+          src={item.url}
+          onClick={
+            item.link
+              ? () => {
+                  window.open(item.link, '_blank');
+                }
+              : null
+          }
+        />
       </div>
     );
   });
@@ -19,7 +29,14 @@ const AdTap = () => {
         <div className="adTap">
           <img
             alt="바디프로필의 모든 정보 바디포즈"
-            src={HOMESCREEN_AD_URL[0]}
+            src={HOMESCREEN_AD_URL[0].url}
+            onClick={
+              HOMESCREEN_AD_URL[0].link
+                ? () => {
+                    window.open(HOMESCREEN_AD_URL[0].link, '_blank');
+                  }
+                : null
+            }
           />
         </div>
       );

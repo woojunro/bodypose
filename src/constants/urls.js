@@ -5,7 +5,10 @@ export const BASE_URL = isDevUrl ? DEV_SERVER_URL : PROD_SERVER_URL;
 export const HTTP_PROTOCOL = isDevUrl ? 'http' : 'https';
 
 export const HOMESCREEN_AD_URL = [
-  'https://storage.googleapis.com/bodypose-storage/ads/big%20door.png',
+  {
+    url: 'https://storage.googleapis.com/bodypose-storage/ads/app%20download.png',
+    link: 'http://onelink.to/q7jy6s',
+  },
 ];
 
 export const KAKAO_LOGIN_SCRIPT_URL =
