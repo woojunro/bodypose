@@ -6,8 +6,8 @@ import OptionProduct from './OptionProduct';
 
 const ItemTab = ({ currentStudio, products }) => {
   const [isPhotoItemOpen, setIsPhotoItemOpen] = useState(true);
-  const [isHairOpen, setIsHairOpen] = useState(false);
-  const [isOptionOpen, setIsOptionOpen] = useState(false);
+  const [isHairOpen, setIsHairOpen] = useState(true);
+  const [isOptionOpen, setIsOptionOpen] = useState(true);
 
   return (
     <div className="itemTab">
