@@ -9,8 +9,6 @@ import {
 } from './dtos/assign-studio-partner.dto';
 import { ClickStudioReviewInput } from './dtos/click-studio-review.dto';
 import {
-  CreateProductsOutput,
-  CreateAdditionalProductsInput,
   CreateHairMakeupShopsInput,
   CreateHairMakeupShopsOutput,
 } from './dtos/create-product.dto';
@@ -44,12 +42,14 @@ import {
   ReportStudioReviewOutput,
 } from './dtos/report-studio-review.dto';
 import {
+  UpdateAdditionalProductsInput,
+  UpdateAdditionalProductsOutput,
+} from './dtos/update-additional-product.dto';
+import {
   UpdateBranchesInput,
   UpdateBranchesOutput,
 } from './dtos/update-branch.dto';
 import {
-  UpdateProductsOutput,
-  UpdateAdditionalProductsInput,
   UpdateHairMakeupShopsOutput,
   UpdateHairMakeupShopsInput,
 } from './dtos/update-product.dto';
@@ -168,20 +168,13 @@ export class ProductResolver {
     return this.studiosService.updateStudioProducts(user, input);
   }
 
-  @Mutation(returns => CreateProductsOutput)
-  @Roles(UserType.ADMIN)
-  createAdditionalProducts(
-    @Args('input') input: CreateAdditionalProductsInput,
-  ): Promise<CreateProductsOutput> {
-    return this.studiosService.createAdditionalProducts(input);
-  }
-
-  @Mutation(returns => UpdateProductsOutput)
-  @Roles(UserType.ADMIN)
+  @Mutation(returns => UpdateAdditionalProductsOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
   updateAdditionalProducts(
+    @CurrentUser() user: User,
     @Args('input') input: UpdateAdditionalProductsInput,
-  ): Promise<UpdateProductsOutput> {
-    return this.studiosService.updateAdditionalProducts(input);
+  ): Promise<UpdateAdditionalProductsOutput> {
+    return this.studiosService.updateAdditionalProducts(user, input);
   }
 
   @Mutation(returns => CreateHairMakeupShopsOutput)

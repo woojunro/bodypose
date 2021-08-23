@@ -1,19 +1,9 @@
 import { InputType, ObjectType } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
-import {
-  CreateAdditionalProductsInput,
-  CreateHairMakeupShopsInput,
-  CreateProductsOutput,
-} from './create-product.dto';
-
-@InputType()
-export class UpdateAdditionalProductsInput extends CreateAdditionalProductsInput {}
+import { CreateHairMakeupShopsInput } from './create-product.dto';
 
 @InputType()
 export class UpdateHairMakeupShopsInput extends CreateHairMakeupShopsInput {}
-
-@ObjectType()
-export class UpdateProductsOutput extends CreateProductsOutput {}
 
 @ObjectType()
 export class UpdateHairMakeupShopsOutput extends CoreOutput {}

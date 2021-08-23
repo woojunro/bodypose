@@ -1,7 +1,6 @@
-import { Field, InputType, Int, ObjectType, PickType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
 import { IsString } from 'class-validator';
 import { CoreOutput } from 'src/common/dtos/output.dto';
-import { AdditionalProduct } from '../entities/additional-product.entity';
 import { HairMakeupProduct } from '../entities/hair-makeup-product.entity';
 import { HairMakeupShop } from '../entities/hair-makeup-shop.entity';
 
@@ -30,29 +29,6 @@ export class CreateHairMakeupShopsInput {
 
   @Field(type => [CreateHairMakeupShopPayload])
   shops: CreateHairMakeupShopPayload[];
-}
-
-@InputType()
-class CreateAdditionalProductsPayload extends PickType(
-  AdditionalProduct,
-  ['title', 'description', 'price'],
-  InputType,
-) {}
-
-@InputType()
-export class CreateAdditionalProductsInput {
-  @Field(type => String)
-  @IsString()
-  studioSlug: string;
-
-  @Field(type => [CreateAdditionalProductsPayload])
-  products: CreateAdditionalProductsPayload[];
-}
-
-@ObjectType()
-export class CreateProductsOutput extends CoreOutput {
-  @Field(type => [Int], { nullable: true })
-  idList?: number[];
 }
 
 @ObjectType()
