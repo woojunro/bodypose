@@ -6,14 +6,24 @@
 .selectedItem {
   font-weight: bold;
   cursor: pointer;
+  width: 33%;
+  display: flex;
+  justify-content: center;
 
   font-size: 15px;
   color: black;
+}
+.selectedTitle {
   border-bottom: 1px solid black;
   padding-bottom: 1px;
 }
 .unselectedItem {
   font-size: 15px;
+  width: 33%;
+
+  display: flex;
+  justify-content: center;
+
   cursor: pointer;
 }
 
