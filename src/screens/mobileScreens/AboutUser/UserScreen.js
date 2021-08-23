@@ -76,7 +76,7 @@ const UserScreen = () => {
         <div className="userTapName">프로필</div>
         <IoIosArrowForward className="userArrow" />
       </div>
-      <div
+      {/* <div
         onClick={() => {
           history.push('/users/myReview');
           window.scrollTo(0, 0);
@@ -85,7 +85,7 @@ const UserScreen = () => {
       >
         <div className="userTapName">내가 쓴 리뷰</div>
         <IoIosArrowForward className="userArrow" />
-      </div>
+      </div> */}
       <div className="userLineContainer">
         <div className="userLine"></div>
       </div>
@@ -129,7 +129,7 @@ const UserScreen = () => {
       </div>
 
       <div className="userLineContainer">
-        <div className="userLine"></div>{' '}
+        <div className="userLine"></div>
       </div>
       <BottomNavigation pageName="users" />
     </div>

@@ -17,7 +17,6 @@ const StudioCard = ({
   name,
   title,
   location,
-  rating,
   price,
   review,
   mainPhoto,
@@ -126,7 +125,7 @@ const StudioCard = ({
               <span>{title}</span>
             </div>
             <div className="location">{adress}</div>
-            <div className="thirdLine">
+            {/* <div className="thirdLine">
               <IoStar color="#FFD800" fontSize="17px" />
               {review === 0 ? (
                 <span className="noReviewSpan">리뷰 없음</span>
@@ -136,7 +135,7 @@ const StudioCard = ({
                   <span className="review">{`(${review}개)`}</span>
                 </>
               )}
-            </div>
+            </div> */}
           </div>
           <div className="lower">
             <div className="eventLine">

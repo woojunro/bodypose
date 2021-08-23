@@ -3,7 +3,7 @@ export const STUDIO_SORT_OPTIONS = [
   { name: 'byName', title: '이름순' },
   { name: 'byPrice', title: '가격순' },
   { name: 'byHearts', title: '찜많은순' },
-  { name: 'byRating', title: '평점순' },
+  // { name: 'byRating', title: '평점순' },
 ];
 export const STUDIO_LOCATION_OPTIONS = [
   { name: 'default', title: '지역전체' },

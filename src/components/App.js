@@ -7,7 +7,7 @@ import HomeScreenM from '../screens/mobileScreens/HomeScreen';
 import StudioInfoScreenM from '../screens/mobileScreens/StudioInfoScreen';
 import StudioListScreenM from '../screens/mobileScreens/StudioListScreen';
 import ConceptListScreenM from '../screens/mobileScreens/ConceptListScreen';
-import ReviewListScreenM from '../screens/mobileScreens/ReviewListScreen';
+// import ReviewListScreenM from '../screens/mobileScreens/ReviewListScreen';
 import UserScreenM from '../screens/mobileScreens/AboutUser/UserScreen';
 import HeartScreenM from '../screens/mobileScreens/HeartScreen';
 import NoticeListScreenM from '../screens/mobileScreens/NoticeListScreen';
@@ -17,7 +17,7 @@ import LoginScreenM from '../screens/mobileScreens/AboutAuth/LoginScreen';
 import ChangePasswordScreenM from '../screens/mobileScreens/AboutAuth/ChangePasswordScreen';
 import StartWithEmailScreenM from '../screens/mobileScreens/AboutAuth/StartWithEmailScreen';
 import MyInfoScreenM from '../screens/mobileScreens/AboutUser/MyInfoScreen';
-import MyReviewScreenM from '../screens/mobileScreens/AboutUser/MyReviewScreen';
+// import MyReviewScreenM from '../screens/mobileScreens/AboutUser/MyReviewScreen';
 import LeaveScreenM from '../screens/mobileScreens/AboutUser/LeaveScreen';
 import NewPasswordScreenM from '../screens/mobileScreens/AboutAuth/NewPasswordScreen';
 import ConfirmEmailScreenM from '../screens/mobileScreens/AboutAuth/ConfirmEmailScreen';
@@ -71,7 +71,7 @@ const App = () => {
           <Route exact path="/" component={HomeScreenM} />
           <Route exact path="/studios" component={StudioListScreenM} />
           <Route exact path="/concepts" component={ConceptListScreenM} />
-          <Route exact path="/reviews" component={ReviewListScreenM} />
+          {/* <Route exact path="/reviews" component={ReviewListScreenM} /> */}
           <Route exact path="/studios/:slug" component={StudioInfoScreenM} />
           <Route exact path="/users" component={UserScreenM} />
           <Route exact path="/hearts" component={HeartScreenM} />
@@ -97,7 +97,7 @@ const App = () => {
           />
           <Route path="/confirmEmail" component={ConfirmEmailScreenM} />
           <Route exact path="/users/myInfo" component={MyInfoScreenM} />
-          <Route exact path="/users/myReview" component={MyReviewScreenM} />
+          {/* <Route exact path="/users/myReview" component={MyReviewScreenM} /> */}
           <Route exact path="/users/leave" component={LeaveScreenM} />
           <Route exact path="/users/profile" component={MyProfileScreenM} />
           <Route exact path="/error" component={ErrorScreenM} />

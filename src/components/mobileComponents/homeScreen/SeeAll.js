@@ -11,10 +11,10 @@ const SeeAll = () => {
   const items = [
     { name: '스튜디오', icon: SeeAllStudio, pageTo: '/studios' },
     { name: '컨셉', icon: SeeAllConcept, pageTo: '/concepts' },
-    { name: '리뷰', icon: SeeAllReview, pageTo: '/reviews' },
+    // { name: '리뷰', icon: SeeAllReview, pageTo: '/reviews' },
   ];
 
-  const renderedItems = items.map((item) => {
+  const renderedItems = items.map(item => {
     return (
       <li key={item.name}>
         <div
