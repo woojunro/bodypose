@@ -32,6 +32,10 @@ import {
   DeleteStudioReviewInput,
   DeleteStudioReviewOutput,
 } from './dtos/delete-studio-review.dto';
+import {
+  GetAdditionalProductsInput,
+  GetAdditionalProductsOutput,
+} from './dtos/get-additional-products.dto';
 import { GetMyStudiosOutput } from './dtos/get-my-studios.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
@@ -525,6 +529,28 @@ export class StudiosService {
       });
       await this.studioRepository.save(studioToUpdate);
       return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getAdditionalProducts(
+    user: User,
+    { slug }: GetAdditionalProductsInput,
+  ): Promise<GetAdditionalProductsOutput> {
+    try {
+      let query = await this.studioRepository
+        .createQueryBuilder('studio')
+        .select('studio.id')
+        .leftJoinAndSelect('studio.additionalProducts', 'additionalProduct')
+        .leftJoin('studio.partner', 'partner')
+        .where('studio.slug = :slug', { slug });
+      query = this.filterStudioQueryByUser(query, user);
+      const studio = await query.getOne();
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const { additionalProducts } = studio;
+      return { ok: true, additionalProducts };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;

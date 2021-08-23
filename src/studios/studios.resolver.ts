@@ -20,6 +20,10 @@ import {
   DeleteStudioReviewInput,
   DeleteStudioReviewOutput,
 } from './dtos/delete-studio-review.dto';
+import {
+  GetAdditionalProductsInput,
+  GetAdditionalProductsOutput,
+} from './dtos/get-additional-products.dto';
 import { GetMyStudiosOutput } from './dtos/get-my-studios.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
@@ -166,6 +170,15 @@ export class ProductResolver {
     @Args('input') input: UpdateStudioProductsInput,
   ): Promise<UpdateStudioProductsOutput> {
     return this.studiosService.updateStudioProducts(user, input);
+  }
+
+  // Public
+  @Query(returns => GetAdditionalProductsOutput)
+  additionalProducts(
+    @CurrentUser() user: User,
+    @Args('input') input: GetAdditionalProductsInput,
+  ): Promise<GetAdditionalProductsOutput> {
+    return this.studiosService.getAdditionalProducts(user, input);
   }
 
   @Mutation(returns => UpdateAdditionalProductsOutput)
