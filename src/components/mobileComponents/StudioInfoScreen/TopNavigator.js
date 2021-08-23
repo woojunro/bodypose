@@ -3,8 +3,8 @@ import './TopNavigator.css';
 
 const TopNavigator = ({ navigator, setNavigator, reviews = 0 }) => {
   const items = [
-    { name: 'portfolio', title: '포트폴리오' },
     { name: 'item', title: '상품' },
+    { name: 'portfolio', title: '포트폴리오' },
     { name: 'info', title: '정보' },
     // { name: 'review', title: '리뷰' },
   ];
