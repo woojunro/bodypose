@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   forwardRef,
   Inject,
   Injectable,
@@ -12,7 +13,7 @@ import { File } from './dtos/file.dto';
 import { randomFileName } from './utils/file-upload';
 import { format } from 'url';
 import {
-  UploadPhotoDto,
+  UploadStudioPhotoDto,
   UploadStudioReviewDto,
 } from './dtos/upload-studio-photo.dto';
 import { StudiosService } from 'src/studios/studios.service';
@@ -21,6 +22,7 @@ import { User } from 'src/users/entities/user.entity';
 import { UploadFileOutput } from './dtos/upload-file.dto';
 import {
   CommonError,
+  INTERNAL_SERVER_ERROR,
   UNEXPECTED_ERROR,
 } from 'src/common/constants/error.constant';
 import { UsersService } from 'src/users/users.service';
@@ -71,6 +73,7 @@ export class UploadsService {
     }
   }
 
+  /*
   async uploadStudioReview(
     photos: File[],
     body: UploadStudioReviewDto,
@@ -136,8 +139,24 @@ export class UploadsService {
 
     return this.usersService.updateProfileImage(user, { profileImageUrl });
   }
+  */
 
-  async uploadStudioPhoto(photos, body: UploadPhotoDto) {
+  async checkValidityOfAccess(
+    studioSlug: string,
+    user: User,
+  ): Promise<boolean> {
+    const studio = await this.studiosService.checkIfStudioExistsBySlug(
+      studioSlug,
+    );
+    if (!studio) throw new NotFoundException('STUDIO_NOT_FOUND');
+    const valid = await this.studiosService.checkIfUserIsAdminOrOwner(
+      studio.id,
+      user,
+    );
+    return valid;
+  }
+
+  async uploadStudioPhoto(photos, body: UploadStudioPhotoDto) {
     if (!photos) {
       throw new BadRequestException('NO_PHOTO');
     }
@@ -216,6 +235,45 @@ export class UploadsService {
         originalUrl: promises[1],
       };
     });
+  }
+
+  async uploadStudioLogo(
+    user: User,
+    logo: File,
+    { studioSlug }: UploadStudioPhotoDto,
+  ): Promise<UploadFileOutput> {
+    if (!logo) throw new BadRequestException('NO_LOGO');
+    const valid = await this.checkValidityOfAccess(studioSlug, user);
+    if (!valid) throw new ForbiddenException('FORBIDDEN');
+    const filePath = `studio-logos/${studioSlug}/${randomFileName(logo)}`;
+    const { ok, error, url } = await this.uploadFile(filePath, logo);
+    if (!ok) throw new InternalServerErrorException(error);
+    const ret = await this.studiosService.updateStudioLogo(studioSlug, url);
+    if (ret === INTERNAL_SERVER_ERROR) {
+      throw new InternalServerErrorException(INTERNAL_SERVER_ERROR);
+    }
+    return { ok: true, url: ret };
+  }
+
+  async uploadStudioCoverPhoto(
+    user: User,
+    cover: File,
+    { studioSlug }: UploadStudioPhotoDto,
+  ): Promise<UploadFileOutput> {
+    if (!cover) throw new BadRequestException('NO_COVER');
+    const valid = await this.checkValidityOfAccess(studioSlug, user);
+    if (!valid) throw new ForbiddenException('FORBIDDEN');
+    const filePath = `studio-covers/${studioSlug}/${randomFileName(cover)}`;
+    const { ok, error, url } = await this.uploadFile(filePath, cover);
+    if (!ok) throw new InternalServerErrorException(error);
+    const ret = await this.studiosService.updateStudioCoverPhoto(
+      studioSlug,
+      url,
+    );
+    if (ret === INTERNAL_SERVER_ERROR) {
+      throw new InternalServerErrorException(INTERNAL_SERVER_ERROR);
+    }
+    return { ok: true, url: ret };
   }
 
   async deleteFile(filePath: string): Promise<void> {

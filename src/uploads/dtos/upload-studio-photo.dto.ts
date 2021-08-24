@@ -1,10 +1,10 @@
 import { IsString, MinLength } from 'class-validator';
 
-export class UploadPhotoDto {
+export class UploadStudioPhotoDto {
   studioSlug: string;
 }
 
-export class UploadStudioReviewDto extends UploadPhotoDto {
+export class UploadStudioReviewDto extends UploadStudioPhotoDto {
   @IsString()
   rating: string;
 
