@@ -17,8 +17,6 @@ import {
 } from './dtos/assign-studio-partner.dto';
 import { ClickStudioReviewInput } from './dtos/click-studio-review.dto';
 import {
-  CreateProductsOutput,
-  CreateAdditionalProductsInput,
   CreateHairMakeupShopsInput,
   CreateHairMakeupShopsOutput,
 } from './dtos/create-product.dto';
@@ -34,6 +32,10 @@ import {
   DeleteStudioReviewInput,
   DeleteStudioReviewOutput,
 } from './dtos/delete-studio-review.dto';
+import {
+  GetAdditionalProductsInput,
+  GetAdditionalProductsOutput,
+} from './dtos/get-additional-products.dto';
 import { GetMyStudiosOutput } from './dtos/get-my-studios.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
@@ -58,12 +60,14 @@ import {
   ReportStudioReviewOutput,
 } from './dtos/report-studio-review.dto';
 import {
+  UpdateAdditionalProductsInput,
+  UpdateAdditionalProductsOutput,
+} from './dtos/update-additional-product.dto';
+import {
   UpdateBranchesInput,
   UpdateBranchesOutput,
 } from './dtos/update-branch.dto';
 import {
-  UpdateProductsOutput,
-  UpdateAdditionalProductsInput,
   UpdateHairMakeupShopsInput,
   UpdateHairMakeupShopsOutput,
 } from './dtos/update-product.dto';
@@ -503,7 +507,9 @@ export class StudiosService {
         for (let i = payload.length; i < currentProducts.length; i++) {
           idsToDelete.push(currentProducts[i].id);
         }
-        await this.studioProductRepository.delete(idsToDelete);
+        if (idsToDelete.length) {
+          await this.studioProductRepository.delete(idsToDelete);
+        }
       } else if (currentProducts.length < payload.length) {
         // Add more products
         for (let i = currentProducts.length; i < payload.length; i++) {
@@ -529,108 +535,72 @@ export class StudiosService {
     }
   }
 
-  async createAdditionalProducts({
-    studioSlug,
-    products,
-  }: CreateAdditionalProductsInput): Promise<CreateProductsOutput> {
+  async getAdditionalProducts(
+    user: User,
+    { slug }: GetAdditionalProductsInput,
+  ): Promise<GetAdditionalProductsOutput> {
     try {
-      if (products.length === 0) {
-        return {
-          ok: false,
-          error: 'INVALID_PAYLOAD_LENGTH',
-        };
-      }
-      // Find studio
-      const studio = await this.studioRepository.findOne({ slug: studioSlug });
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
-      // Create and save products
-      const idList: number[] = [];
-      for (const product of products) {
-        const newProduct = this.additionalProductRepository.create({
-          ...product,
-        });
-        newProduct.studio = studio;
-        const { id } = await this.additionalProductRepository.save(newProduct);
-        idList.push(id);
-      }
-      // Return idList
-      return {
-        ok: true,
-        idList,
-      };
+      let query = await this.studioRepository
+        .createQueryBuilder('studio')
+        .select('studio.id')
+        .leftJoinAndSelect('studio.additionalProducts', 'additionalProduct')
+        .leftJoin('studio.partner', 'partner')
+        .where('studio.slug = :slug', { slug });
+      query = this.filterStudioQueryByUser(query, user);
+      const studio = await query.getOne();
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const { additionalProducts } = studio;
+      return { ok: true, additionalProducts };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
     }
   }
 
-  async updateAdditionalProducts({
-    studioSlug,
-    products,
-  }: UpdateAdditionalProductsInput): Promise<UpdateProductsOutput> {
+  async updateAdditionalProducts(
+    user: User,
+    { slug, payload }: UpdateAdditionalProductsInput,
+  ): Promise<UpdateAdditionalProductsOutput> {
     try {
-      let isDeletion = false;
-      if (products.length === 0) {
-        isDeletion = true;
-      }
       // Find studio
       const studio = await this.studioRepository.findOne(
-        { slug: studioSlug },
+        { slug },
         { relations: ['additionalProducts'] },
       );
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
-      // Delete
-      if (isDeletion) {
-        for (const product of studio.additionalProducts) {
-          await this.additionalProductRepository.delete({ id: product.id });
-        }
-        return { ok: true };
-      }
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const valid = await this.checkIfUserIsAdminOrOwner(studio.id, user);
+      if (!valid) return CommonError('FORBIDDEN');
       // Overwrite
       const { additionalProducts: currentProducts } = studio;
-      const idList: number[] = [];
-      for (let i = 0; i < currentProducts.length && i < products.length; i++) {
-        currentProducts[i] = { ...currentProducts[i], ...products[i] };
-        const { id } = await this.additionalProductRepository.save(
-          currentProducts[i],
-        );
-        idList.push(id);
+      const productsToSave: AdditionalProduct[] = [];
+      for (let i = 0; i < currentProducts.length && i < payload.length; i++) {
+        const product = this.additionalProductRepository.create({
+          ...currentProducts[i],
+          ...payload[i],
+        });
+        productsToSave.push(product);
       }
-      if (currentProducts.length > products.length) {
+      if (currentProducts.length > payload.length) {
         // Delete products that haven't been updated
-        for (let i = products.length; i < currentProducts.length; i++) {
-          await this.additionalProductRepository.delete({
-            id: currentProducts[i].id,
-          });
+        const idsToDelete: number[] = [];
+        for (let i = payload.length; i < currentProducts.length; i++) {
+          idsToDelete.push(currentProducts[i].id);
         }
-      } else if (currentProducts.length < products.length) {
+        if (idsToDelete.length) {
+          await this.additionalProductRepository.delete(idsToDelete);
+        }
+      } else if (currentProducts.length < payload.length) {
         // Add more products
-        for (let i = currentProducts.length; i < products.length; i++) {
+        for (let i = currentProducts.length; i < payload.length; i++) {
           const newProduct = this.additionalProductRepository.create({
-            ...products[i],
+            ...payload[i],
+            studio,
           });
-          newProduct.studio = studio;
-          const { id } = await this.additionalProductRepository.save(
-            newProduct,
-          );
-          idList.push(id);
+          productsToSave.push(newProduct);
         }
       }
-      // return
-      return {
-        ok: true,
-        idList,
-      };
+      await this.additionalProductRepository.save(productsToSave);
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;

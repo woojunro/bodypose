@@ -26,3 +26,9 @@ query: ALTER TABLE `studio_product` CHANGE `conceptCount` `conceptCount` int NUL
 query: ALTER TABLE `studio_product` CHANGE `weekdayPrice` `weekdayPrice` int NULL
 query: ALTER TABLE `studio_product` CHANGE `weekendPrice` `weekendPrice` int NULL
 query: ALTER TABLE `studio_product` ADD `isOriginalProvided` tinyint NOT NULL
+
+2021-08-23 DEV
+
+query: ALTER TABLE `additional_product` DROP COLUMN `title`
+query: ALTER TABLE `additional_product` ADD `title` varchar(50) NOT NULL
+query: ALTER TABLE `additional_product` CHANGE `price` `price` int NULL
