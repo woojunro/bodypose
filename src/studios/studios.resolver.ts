@@ -20,6 +20,10 @@ import {
   GetAdditionalProductsInput,
   GetAdditionalProductsOutput,
 } from './dtos/get-additional-products.dto';
+import {
+  GetHairMakeupShopsInput,
+  GetHairMakeupShopsOutput,
+} from './dtos/get-hair-makeup-shops.dto';
 import { GetMyStudiosOutput } from './dtos/get-my-studios.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
@@ -184,6 +188,15 @@ export class ProductResolver {
     @Args('input') input: UpdateAdditionalProductsInput,
   ): Promise<UpdateAdditionalProductsOutput> {
     return this.studiosService.updateAdditionalProducts(user, input);
+  }
+
+  // Public
+  @Query(returns => GetHairMakeupShopsOutput)
+  hairMakeupShops(
+    @CurrentUser() user: User,
+    @Args('input') input: GetHairMakeupShopsInput,
+  ): Promise<GetHairMakeupShopsOutput> {
+    return this.studiosService.getHairMakeupShops(user, input);
   }
 
   @Mutation(returns => UpdateHairMakeupShopsOutput)

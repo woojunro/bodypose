@@ -32,6 +32,10 @@ import {
   GetAdditionalProductsInput,
   GetAdditionalProductsOutput,
 } from './dtos/get-additional-products.dto';
+import {
+  GetHairMakeupShopsInput,
+  GetHairMakeupShopsOutput,
+} from './dtos/get-hair-makeup-shops.dto';
 import { GetMyStudiosOutput } from './dtos/get-my-studios.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
@@ -597,6 +601,29 @@ export class StudiosService {
       }
       await this.additionalProductRepository.save(productsToSave);
       return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getHairMakeupShops(
+    user: User,
+    { slug }: GetHairMakeupShopsInput,
+  ): Promise<GetHairMakeupShopsOutput> {
+    try {
+      let query = await this.studioRepository
+        .createQueryBuilder('studio')
+        .select('studio.id')
+        .leftJoinAndSelect('studio.hairMakeupShops', 'shop')
+        .leftJoinAndSelect('shop.products', 'product')
+        .leftJoin('studio.partner', 'partner')
+        .where('studio.slug = :slug', { slug });
+      query = this.filterStudioQueryByUser(query, user);
+      const studio = await query.getOne();
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const { hairMakeupShops } = studio;
+      return { ok: true, hairMakeupShops };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
