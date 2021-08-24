@@ -672,6 +672,7 @@ export class StudiosService {
     }
   }
 
+  /*
   async createStudioReview(
     user: User,
     { studioSlug, payload }: CreateStudioReviewInput,
@@ -971,6 +972,7 @@ export class StudiosService {
       return UNEXPECTED_ERROR;
     }
   }
+  */
 
   async heartStudio(
     user: User,

@@ -209,6 +209,7 @@ export class ProductResolver {
   }
 }
 
+/*
 @Resolver(of => UsersReviewStudios)
 export class StudioReviewResolver {
   constructor(private readonly studiosService: StudiosService) {}
@@ -263,6 +264,7 @@ export class StudioReviewResolver {
     return this.studiosService.reportStudioReview(user, input);
   }
 }
+*/
 
 @Resolver(of => UsersHeartStudios)
 export class UsersHeartStudiosResolver {

@@ -27,6 +27,7 @@ import { imageFileFilter } from './utils/file-upload';
 export class UploadsController {
   constructor(private readonly uploadsService: UploadsService) {}
 
+  /*
   @Post('studio-review')
   @Roles(UserType.USER)
   @UseInterceptors(
@@ -45,6 +46,7 @@ export class UploadsController {
   ): Promise<CreateStudioReviewOutput> {
     return this.uploadsService.uploadStudioReview(photos, body, user);
   }
+  */
 
   @Post('studio-photo')
   @Roles(UserType.ADMIN)
