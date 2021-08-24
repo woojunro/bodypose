@@ -9,10 +9,6 @@ import {
 } from './dtos/assign-studio-partner.dto';
 import { ClickStudioReviewInput } from './dtos/click-studio-review.dto';
 import {
-  CreateHairMakeupShopsInput,
-  CreateHairMakeupShopsOutput,
-} from './dtos/create-product.dto';
-import {
   CreateStudioInput,
   CreateStudioOutput,
 } from './dtos/create-studio.dto';
@@ -24,6 +20,10 @@ import {
   GetAdditionalProductsInput,
   GetAdditionalProductsOutput,
 } from './dtos/get-additional-products.dto';
+import {
+  GetHairMakeupShopsInput,
+  GetHairMakeupShopsOutput,
+} from './dtos/get-hair-makeup-shops.dto';
 import { GetMyStudiosOutput } from './dtos/get-my-studios.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
@@ -54,9 +54,9 @@ import {
   UpdateBranchesOutput,
 } from './dtos/update-branch.dto';
 import {
-  UpdateHairMakeupShopsOutput,
   UpdateHairMakeupShopsInput,
-} from './dtos/update-product.dto';
+  UpdateHairMakeupShopsOutput,
+} from './dtos/update-hair-makeup-shop.dto';
 import {
   UpdateStudioInfoInput,
   UpdateStudioInfoOutput,
@@ -190,20 +190,22 @@ export class ProductResolver {
     return this.studiosService.updateAdditionalProducts(user, input);
   }
 
-  @Mutation(returns => CreateHairMakeupShopsOutput)
-  @Roles(UserType.ADMIN)
-  createHairMakeupShops(
-    @Args('input') input: CreateHairMakeupShopsInput,
-  ): Promise<CreateHairMakeupShopsOutput> {
-    return this.studiosService.createHairMakeupShops(input);
+  // Public
+  @Query(returns => GetHairMakeupShopsOutput)
+  hairMakeupShops(
+    @CurrentUser() user: User,
+    @Args('input') input: GetHairMakeupShopsInput,
+  ): Promise<GetHairMakeupShopsOutput> {
+    return this.studiosService.getHairMakeupShops(user, input);
   }
 
   @Mutation(returns => UpdateHairMakeupShopsOutput)
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
   updateHairMakeupShops(
+    @CurrentUser() user: User,
     @Args('input') input: UpdateHairMakeupShopsInput,
   ): Promise<UpdateHairMakeupShopsOutput> {
-    return this.studiosService.updateHairMakeupShops(input);
+    return this.studiosService.updateHairMakeupShops(user, input);
   }
 }
 

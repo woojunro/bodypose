@@ -32,3 +32,14 @@ query: ALTER TABLE `studio_product` ADD `isOriginalProvided` tinyint NOT NULL
 query: ALTER TABLE `additional_product` DROP COLUMN `title`
 query: ALTER TABLE `additional_product` ADD `title` varchar(50) NOT NULL
 query: ALTER TABLE `additional_product` CHANGE `price` `price` int NULL
+
+2021-08-24 DEV
+
+query: ALTER TABLE `hair_makeup_product` DROP COLUMN `title`
+query: ALTER TABLE `hair_makeup_product` ADD `title` varchar(50) NOT NULL
+query: ALTER TABLE `hair_makeup_shop` DROP COLUMN `name`
+query: ALTER TABLE `hair_makeup_shop` ADD `name` varchar(20) NOT NULL
+query: ALTER TABLE `hair_makeup_shop` DROP COLUMN `address`
+query: ALTER TABLE `hair_makeup_shop` ADD `address` varchar(100) NULL
+query: ALTER TABLE `hair_makeup_shop` DROP COLUMN `productListDescription`
+query: ALTER TABLE `hair_makeup_shop` ADD `productListDescription` text NULL
