@@ -17,10 +17,6 @@ import {
 } from './dtos/assign-studio-partner.dto';
 import { ClickStudioReviewInput } from './dtos/click-studio-review.dto';
 import {
-  CreateHairMakeupShopsInput,
-  CreateHairMakeupShopsOutput,
-} from './dtos/create-product.dto';
-import {
   CreateStudioReviewInput,
   CreateStudioReviewOutput,
 } from './dtos/create-studio-review.dto';
@@ -70,7 +66,7 @@ import {
 import {
   UpdateHairMakeupShopsInput,
   UpdateHairMakeupShopsOutput,
-} from './dtos/update-product.dto';
+} from './dtos/update-hair-makeup-shop.dto';
 import {
   UpdateStudioInfoInput,
   UpdateStudioInfoOutput,
@@ -607,150 +603,39 @@ export class StudiosService {
     }
   }
 
-  async createHairMakeupShops({
-    studioSlug,
-    shops,
-  }: CreateHairMakeupShopsInput): Promise<CreateHairMakeupShopsOutput> {
+  async updateHairMakeupShops(
+    user: User,
+    { slug, payload }: UpdateHairMakeupShopsInput,
+  ): Promise<UpdateHairMakeupShopsOutput> {
     try {
-      // Validate shops
-      const INVALID_PAYLOAD_LENGTH = {
-        ok: false,
-        error: 'INVALID_PAYLOAD_LENGTH',
-      };
-      if (shops.length === 0) {
-        return INVALID_PAYLOAD_LENGTH;
-      }
       // Find studio
       const studio = await this.studioRepository.findOne(
-        { slug: studioSlug },
-        { relations: ['hairMakeupShops'] },
-      );
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
-      // Check if hairMakeupShops already exist
-      if (studio.hairMakeupShops.length !== 0) {
-        return {
-          ok: false,
-          error: 'HAIR_MAKEUP_SHOPS_ALREADY_EXIST',
-        };
-      }
-      // Create and save shops and products
-      for (const shop of shops) {
-        const { products, ...shopInfo } = shop;
-        const newShop = this.hairMakeupShopRepository.create({ ...shopInfo });
-        newShop.studio = studio;
-        const savedShop = await this.hairMakeupShopRepository.save(newShop);
-        for (const product of products) {
-          const newProduct = this.hairMakeupProductRepository.create({
-            ...product,
-          });
-          newProduct.shop = savedShop;
-          await this.hairMakeupProductRepository.save(newProduct);
-        }
-      }
-      // return
-      return { ok: true };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
-  }
-
-  async updateHairMakeupShops({
-    studioSlug,
-    shops,
-  }: UpdateHairMakeupShopsInput): Promise<UpdateHairMakeupShopsOutput> {
-    try {
-      let isDeletion = false;
-      if (shops.length === 0) {
-        isDeletion = true;
-      }
-      // Find studio
-      const studio = await this.studioRepository.findOne(
-        { slug: studioSlug },
+        { slug },
         { relations: ['hairMakeupShops', 'hairMakeupShops.products'] },
       );
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const valid = await this.checkIfUserIsAdminOrOwner(studio.id, user);
+      if (!valid) return CommonError('FORBIDDEN');
+      // Delete all existing shops
+      const idsToDelete = studio.hairMakeupShops.map(shop => shop.id);
+      if (idsToDelete.length) {
+        await this.hairMakeupShopRepository.delete(idsToDelete);
       }
-      // Delete all shops
-      if (isDeletion) {
-        for (const shop of studio.hairMakeupShops) {
-          await this.hairMakeupShopRepository.delete({ id: shop.id });
-        }
-        return { ok: true };
-      }
-      // Overwrite shops
-      for (
-        let i = 0;
-        i < shops.length && i < studio.hairMakeupShops.length;
-        i++
-      ) {
-        const currentShop = studio.hairMakeupShops[i];
-        const { products, ...shopInfo } = shops[i];
-        const updatedShop = await this.hairMakeupShopRepository.save({
-          ...currentShop,
-          ...shopInfo,
+      // Create new shops
+      for (const shop of payload) {
+        const { products, ...others } = shop;
+        let newShop = this.hairMakeupShopRepository.create({
+          ...others,
+          studio,
         });
-        // Overwrite products
-        for (
-          let j = 0;
-          j < products.length && j < updatedShop.products.length;
-          j++
-        ) {
-          const currentProduct = updatedShop.products[j];
-          await this.hairMakeupProductRepository.save({
-            ...currentProduct,
-            ...products[j],
-          });
-        }
-        if (updatedShop.products.length > products.length) {
-          // Delete the rest products
-          for (let j = products.length; j < updatedShop.products.length; j++) {
-            await this.hairMakeupProductRepository.delete({
-              id: updatedShop.products[j].id,
-            });
-          }
-        } else if (updatedShop.products.length < products.length) {
-          // Create new products
-          for (let j = updatedShop.products.length; j < products.length; j++) {
-            const newProduct = this.hairMakeupProductRepository.create({
-              ...products[j],
-            });
-            newProduct.shop = updatedShop;
-            await this.hairMakeupProductRepository.save(newProduct);
-          }
-        }
-      }
-      if (shops.length < studio.hairMakeupShops.length) {
-        // Delete the rest shops
-        for (let i = shops.length; i < studio.hairMakeupShops.length; i++) {
-          await this.hairMakeupShopRepository.delete({
-            id: studio.hairMakeupShops[i].id,
-          });
-        }
-      } else if (shops.length > studio.hairMakeupShops.length) {
-        // Create new shops
-        for (let i = studio.hairMakeupShops.length; i < shops.length; i++) {
-          const { products, ...shopInfo } = shops[i];
-          const newShop = this.hairMakeupShopRepository.create({ ...shopInfo });
-          newShop.studio = studio;
-          const savedShop = await this.hairMakeupShopRepository.save(newShop);
-          for (const product of products) {
-            const newProduct = this.hairMakeupProductRepository.create({
-              ...product,
-            });
-            newProduct.shop = savedShop;
-            await this.hairMakeupProductRepository.save(newProduct);
-          }
-        }
+        newShop = await this.hairMakeupShopRepository.save(newShop);
+        const newProducts = products.map(product =>
+          this.hairMakeupProductRepository.create({
+            ...product,
+            shop: newShop,
+          }),
+        );
+        await this.hairMakeupProductRepository.save(newProducts);
       }
       // return
       return { ok: true };
