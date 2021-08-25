@@ -49,16 +49,14 @@ const HairMakeup = ({ shops, isHairOpen, setIsHairOpen }) => {
           <div className="hairshopName">
             <b>{shop.name}</b>
           </div>
-          {shop.address && (
-            <div className="hairshopAdress">주소 : {shop.address}</div>
-          )}
+          {shop.address && <div className="hairshopAdress">{shop.address}</div>}
           {shop.contactInfo ? (
             shop.contactInfo.startsWith('http') ? (
               <div
                 className="hairshopLink"
                 onClick={() => openInNewTab(shop.contactInfo)}
               >
-                <div className="hairshopContact">헤어샵 정보 보기</div>
+                <div className="hairshopContact">헤어샵 정보</div>
                 <IoMdArrowRoundForward className="harishopArrow" size="13px" />
               </div>
             ) : (
