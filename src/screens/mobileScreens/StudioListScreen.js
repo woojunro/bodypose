@@ -12,6 +12,7 @@ import StudioListView from '../../components/mobileComponents/studioListScreen/S
 import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import './StudioListScreen.css';
+import { getLocation } from '../../components/functions/GeoLocation';
 
 const StudioListScreen = () => {
   const { data, loading, error } = useQuery(ALL_STUDIOS_QUERY, {
@@ -35,6 +36,10 @@ const StudioListScreen = () => {
   const [locationBy, setLocationBy] = useState(STUDIO_LOCATION_OPTIONS[0]);
   const [searchTerm, setSearchTerm] = useState('');
   const [studios, setStudios] = useState([]);
+  const [location, setLocation] = useState({});
+
+  //현재 좌표
+  getLocation(setLocation);
 
   useEffect(() => {
     if (data) {
