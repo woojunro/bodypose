@@ -1088,18 +1088,13 @@ export class StudiosService {
     try {
       const heartStudios = await this.usersHeartStudiosRepository.find({
         relations: ['studio', 'studio.branches'],
-        where: { user: user.id },
+        where: { user: user.id, studio: { isPublic: true } },
         order: { heartAt: 'DESC' },
       });
-      const studios: StudioWithIsHearted[] = [];
-      for (const heartStudio of heartStudios) {
-        const { studio } = heartStudio;
-        if (!studio.coverPhotoUrl) continue;
-        studios.push({
-          ...studio,
-          isHearted: true,
-        });
-      }
+      const studios: StudioWithIsHearted[] = heartStudios.map(heart => ({
+        ...heart.studio,
+        isHearted: true,
+      }));
       return {
         ok: true,
         studios,

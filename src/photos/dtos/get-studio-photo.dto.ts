@@ -43,8 +43,8 @@ export class GetMyHeartStudioPhotosInput extends PaginationInput {}
 export class StudioPhotoWithIsHearted extends OmitType(StudioPhoto, [
   'extractSubstrFromOriginalUrl',
 ]) {
-  @Field(type => Boolean)
-  isHearted: boolean;
+  @Field(type => Boolean, { nullable: true })
+  isHearted?: boolean;
 }
 
 @ObjectType()

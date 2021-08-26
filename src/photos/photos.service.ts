@@ -14,7 +14,13 @@ import { StudiosService } from 'src/studios/studios.service';
 import { UploadsService } from 'src/uploads/uploads.service';
 import { UserType, User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
-import { FindOneOptions, IsNull, Not, Repository } from 'typeorm';
+import {
+  FindOneOptions,
+  IsNull,
+  Not,
+  Repository,
+  SelectQueryBuilder,
+} from 'typeorm';
 import {
   CreatePhotoConceptInput,
   CreatePhotoConceptOutput,
@@ -38,6 +44,7 @@ import {
   GetStudioPhotosInput,
   GetStudioPhotosOutput,
   GetMyHeartStudioPhotosInput,
+  StudioPhotoWithIsHearted,
 } from './dtos/get-studio-photo.dto';
 import {
   HeartStudioPhotoInput,
@@ -95,6 +102,22 @@ export class PhotosService {
     return studioPhoto;
   }
 
+  filterStudioPhotoQueryByUser(
+    query: SelectQueryBuilder<StudioPhoto>,
+    user: User,
+    studioAlias = 'studio',
+    partnerAlias = 'partner',
+  ): SelectQueryBuilder<StudioPhoto> {
+    switch (user?.type) {
+      case UserType.ADMIN:
+        return query;
+      case UserType.STUDIO:
+        return query.andWhere(`${partnerAlias}.userId = :id`, { id: user.id });
+      default:
+        return query.andWhere(`${studioAlias}.isPublic = true`);
+    }
+  }
+
   async getAllStudioPhotos(
     user: User,
     input: GetAllStudioPhotosInput,
@@ -109,74 +132,66 @@ export class PhotosService {
         objectConceptSlugs,
       } = input;
 
-      let query = this.studioPhotoRepository.createQueryBuilder('photo');
-      query = query.leftJoinAndSelect('photo.studio', 'studio');
+      let query = this.studioPhotoRepository
+        .createQueryBuilder('photo')
+        .leftJoinAndSelect('photo.studio', 'studio')
+        .leftJoin('studio.partner', 'partner')
+        .where({ gender: gender ? gender : Not(IsNull()) });
 
       if (backgroundConceptSlugs.length !== 0) {
-        query = query.leftJoin('photo.backgroundConcepts', 'backgroundConcept');
+        query = query
+          .leftJoin('photo.backgroundConcepts', 'backgroundConcept')
+          .andWhere('backgroundConcept.slug IN (:bgSlugs)', {
+            bgSlugs: backgroundConceptSlugs,
+          });
       }
       if (costumeConceptSlugs.length !== 0) {
-        query = query.leftJoin('photo.costumeConcepts', 'costumeConcept');
+        query = query
+          .leftJoin('photo.costumeConcepts', 'costumeConcept')
+          .andWhere('costumeConcept.slug IN (:costumeSlugs)', {
+            costumeSlugs: costumeConceptSlugs,
+          });
       }
       if (objectConceptSlugs.length !== 0) {
-        query = query.leftJoin('photo.objectConcepts', 'objectConcept');
+        query = query
+          .leftJoin('photo.objectConcepts', 'objectConcept')
+          .andWhere('objectConcept.slug IN (:objectSlugs)', {
+            objectSlugs: objectConceptSlugs,
+          });
       }
 
-      const [photos, count] = await query
-        .where({ gender: gender ? gender : Not(IsNull()) })
-        .andWhere('studio.coverPhotoUrl IS NOT NULL')
-        .andWhere(
-          backgroundConceptSlugs.length !== 0
-            ? 'backgroundConcept.slug IN (:bgSlugs)'
-            : '1=1',
-          { bgSlugs: backgroundConceptSlugs },
-        )
-        .andWhere(
-          costumeConceptSlugs.length !== 0
-            ? 'costumeConcept.slug IN (:costumeSlugs)'
-            : '1=1',
-          { costumeSlugs: costumeConceptSlugs },
-        )
-        .andWhere(
-          objectConceptSlugs.length !== 0
-            ? 'objectConcept.slug IN (:objectSlugs)'
-            : '1=1',
-          { objectSlugs: objectConceptSlugs },
-        )
+      query = this.filterStudioPhotoQueryByUser(query, user);
+      const [studioPhotos, count] = await query
         .orderBy('photo.substr', 'ASC')
         .addOrderBy('photo.id', 'DESC')
         .skip((page - 1) * take)
         .take(take)
         .getManyAndCount();
 
-      let heartPhotos: UsersHeartStudioPhotos[] = [];
-      if (user) {
-        const photoIds = photos.map(photo => photo.id);
-        const query = this.usersHeartStudioPhotosRepository
-          .createQueryBuilder('heart')
-          .select(['heart.id'])
-          .leftJoin('heart.user', 'user')
-          .leftJoin('heart.studioPhoto', 'photo')
-          .addSelect(['photo.id'])
-          .where('user.id = :id', { id: user.id });
-
-        if (photoIds.length > 0) {
-          heartPhotos = await query
-            .andWhere('photo.id IN (:photoIds)', { photoIds })
+      let photos: StudioPhotoWithIsHearted[] = [];
+      if (user?.type === UserType.USER) {
+        const photoIds = studioPhotos.map(photo => photo.id);
+        let hearts: UsersHeartStudioPhotos[] = [];
+        if (photoIds.length) {
+          hearts = await this.usersHeartStudioPhotosRepository
+            .createQueryBuilder('heart')
+            .where('heart.userId = :id', { id: user.id })
+            .andWhere('heart.studioPhotoId IN (:photoIds)', { photoIds })
             .getMany();
         }
+        photos = studioPhotos.map(photo => ({
+          ...photo,
+          isHearted: hearts.some(heart => heart.studioPhotoId === photo.id),
+        }));
+      } else {
+        photos = photos.map(photo => ({ ...photo, isHearted: null }));
       }
 
       // return
       return {
         ok: true,
         totalPages: Math.ceil(count / take),
-        photos: photos.map(photo => ({
-          ...photo,
-          isHearted: heartPhotos.some(
-            heart => heart.studioPhoto.id === photo.id,
-          ),
-        })),
+        photos,
       };
     } catch (e) {
       console.log(e);
@@ -190,47 +205,41 @@ export class PhotosService {
   ): Promise<GetStudioPhotosOutput> {
     try {
       const photosPerPage = 24;
-      const [photos, count] = await this.studioPhotoRepository
+      let query = this.studioPhotoRepository
         .createQueryBuilder('photo')
         .leftJoinAndSelect('photo.studio', 'studio')
+        .leftJoin('studio.partner', 'partner')
         .where({ gender: gender ? gender : Not(IsNull()) })
-        .andWhere(
-          user && user.type === UserType.ADMIN
-            ? '1=1'
-            : 'studio.coverPhotoUrl IS NOT NULL',
-        )
-        .andWhere('studio.slug = :slug', { slug: studioSlug })
+        .andWhere('studio.slug = :slug', { slug: studioSlug });
+      query = this.filterStudioPhotoQueryByUser(query, user);
+      const [studioPhotos, count] = await query
         .orderBy('photo.id', 'DESC')
         .take(photosPerPage)
         .skip((page - 1) * photosPerPage)
         .getManyAndCount();
 
-      let heartPhotos: UsersHeartStudioPhotos[] = [];
-      if (user) {
-        const photoIds = photos.map(photo => photo.id);
-        const query = this.usersHeartStudioPhotosRepository
-          .createQueryBuilder('heart')
-          .select(['heart.id'])
-          .leftJoin('heart.user', 'user')
-          .leftJoin('heart.studioPhoto', 'photo')
-          .addSelect(['photo.id'])
-          .where('user.id = :id', { id: user.id });
-
-        if (photoIds.length > 0) {
-          heartPhotos = await query
-            .andWhere('photo.id IN (:photoIds)', { photoIds })
+      let photos: StudioPhotoWithIsHearted[] = [];
+      if (user?.type === UserType.USER) {
+        const photoIds = studioPhotos.map(photo => photo.id);
+        let hearts: UsersHeartStudioPhotos[] = [];
+        if (photoIds.length) {
+          hearts = await this.usersHeartStudioPhotosRepository
+            .createQueryBuilder('heart')
+            .where('heart.userId = :id', { id: user.id })
+            .andWhere('heart.studioPhotoId IN (:photoIds)', { photoIds })
             .getMany();
         }
+        photos = studioPhotos.map(photo => ({
+          ...photo,
+          isHearted: hearts.some(heart => heart.studioPhotoId === photo.id),
+        }));
+      } else {
+        photos = photos.map(photo => ({ ...photo, isHearted: null }));
       }
 
       return {
         ok: true,
-        photos: photos.map(photo => ({
-          ...photo,
-          isHearted: heartPhotos.some(
-            heart => heart.studioPhoto.id === photo.id,
-          ),
-        })),
+        photos,
         totalPages: Math.ceil(count / photosPerPage),
       };
     } catch (e) {
@@ -719,12 +728,10 @@ export class PhotosService {
       const photosPerPage = 24;
       const [hearts, count] = await this.usersHeartStudioPhotosRepository
         .createQueryBuilder('heart')
-        .select(['heart.id', 'heart.heartAt'])
-        .leftJoin('heart.user', 'user')
         .leftJoinAndSelect('heart.studioPhoto', 'photo')
         .leftJoinAndSelect('photo.studio', 'studio')
-        .where('user.id = :id', { id: user.id })
-        .andWhere('studio.coverPhotoUrl IS NOT NULL')
+        .where('heart.userId = :id', { id: user.id })
+        .andWhere('studio.isPublic = true')
         .orderBy('heart.heartAt', 'DESC')
         .skip((page - 1) * photosPerPage)
         .take(photosPerPage)
