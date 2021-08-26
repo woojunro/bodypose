@@ -12,7 +12,10 @@ import StudioListView from '../../components/mobileComponents/studioListScreen/S
 import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import './StudioListScreen.css';
-import { getLocation } from '../../components/functions/GeoLocation';
+import {
+  getLocation,
+  getAdressByCoords,
+} from '../../components/functions/GeoLocation';
 
 const StudioListScreen = () => {
   const { data, loading, error } = useQuery(ALL_STUDIOS_QUERY, {
@@ -36,11 +39,31 @@ const StudioListScreen = () => {
   const [locationBy, setLocationBy] = useState(STUDIO_LOCATION_OPTIONS[0]);
   const [searchTerm, setSearchTerm] = useState('');
   const [studios, setStudios] = useState([]);
-  const [location, setLocation] = useState({});
+  const [location, setLocation] = useState();
 
   //현재 좌표
-  getLocation(setLocation);
+  // getLocation(setLocation);
 
+  useEffect(() => {
+    getAdressByCoords(setLocation);
+  }, []);
+
+  useEffect(() => {
+    //로케이션이 불려왔으면.
+    if (location) {
+      if (location.startsWith('서울')) {
+        setLocationBy(STUDIO_LOCATION_OPTIONS[1]);
+      } else if (location.startsWith('경기')) {
+        setLocationBy(STUDIO_LOCATION_OPTIONS[2]);
+      } else if (location.startsWith('부산')) {
+        setLocationBy(STUDIO_LOCATION_OPTIONS[2]);
+      } else if (location.startsWith('대구')) {
+        setLocationBy(STUDIO_LOCATION_OPTIONS[3]);
+      } else if (location.startsWith('천안')) {
+        setLocationBy(STUDIO_LOCATION_OPTIONS[4]);
+      }
+    }
+  }, [location]);
   useEffect(() => {
     if (data) {
       setStudios(
