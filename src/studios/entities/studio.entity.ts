@@ -1,6 +1,7 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { IsBoolean, IsInt, Length, Min } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
+import { StudioPhoto } from 'src/photos/entities/studio-photo.entity';
 import { Partner } from 'src/users/entities/partner.entity';
 import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { AdditionalProduct } from './additional-product.entity';
@@ -108,4 +109,8 @@ export class Studio extends CoreEntity {
   })
   @Field(type => Partner, { nullable: true })
   partner?: Partner;
+
+  // 포트폴리오 사진 목록
+  @OneToMany(relation => StudioPhoto, photo => photo.studio)
+  photos: StudioPhoto[];
 }
