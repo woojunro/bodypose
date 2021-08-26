@@ -1,6 +1,6 @@
 import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
 import { CoreOutput } from 'src/common/dtos/output.dto';
-import { PhotoGender, StudioPhoto } from '../entities/studio-photo.entity';
+import { StudioPhoto } from '../entities/studio-photo.entity';
 
 @InputType()
 export class CreateStudioPhotoInput extends PickType(

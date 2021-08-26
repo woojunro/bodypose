@@ -9,3 +9,5 @@ export const CommonError = (errorMessage: string): CoreOutput => ({
   ok: false,
   error: errorMessage,
 });
+
+export const INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR';

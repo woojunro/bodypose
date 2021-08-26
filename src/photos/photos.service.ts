@@ -474,25 +474,20 @@ export class PhotosService {
         objectConceptSlugs,
       } = input;
       // Get studio by slug
-      const studioBySlug = await this.studiosService.getStudioBySlug(
+      const studio = await this.studiosService.checkIfStudioExistsBySlug(
         studioSlug,
       );
-      if (!studioBySlug) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
       // Create a photo
       const newPhoto = this.studioPhotoRepository.create({
-        studio: studioBySlug,
+        studio,
         gender,
+        thumbnailUrl,
+        originalUrl,
         backgroundConcepts: [],
         costumeConcepts: [],
         objectConcepts: [],
       });
-      newPhoto.thumbnailUrl = thumbnailUrl;
-      newPhoto.originalUrl = originalUrl;
       // Attach Concepts
       for (const slug of backgroundConceptSlugs) {
         const { ok, error } = await this.attachPhotoConcept(
@@ -500,9 +495,7 @@ export class PhotosService {
           slug,
           PhotoConceptType.BACKGROUND,
         );
-        if (!ok) {
-          return { ok, error };
-        }
+        if (!ok) return { ok, error };
       }
       for (const slug of costumeConceptSlugs) {
         const { ok, error } = await this.attachPhotoConcept(
@@ -510,9 +503,7 @@ export class PhotosService {
           slug,
           PhotoConceptType.COSTUME,
         );
-        if (!ok) {
-          return { ok, error };
-        }
+        if (!ok) return { ok, error };
       }
       for (const slug of objectConceptSlugs) {
         const { ok, error } = await this.attachPhotoConcept(
@@ -520,9 +511,7 @@ export class PhotosService {
           slug,
           PhotoConceptType.OBJECT,
         );
-        if (!ok) {
-          return { ok, error };
-        }
+        if (!ok) return { ok, error };
       }
       // Save
       const createdPhoto = await this.studioPhotoRepository.save(newPhoto);

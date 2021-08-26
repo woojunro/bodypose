@@ -2,6 +2,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CommonError,
+  INTERNAL_SERVER_ERROR,
   UNEXPECTED_ERROR,
 } from 'src/common/constants/error.constant';
 import { CoreOutput } from 'src/common/dtos/output.dto';
@@ -349,6 +350,38 @@ export class StudiosService {
     }
   }
 
+  async updateStudioLogo(slug: string, url: string): Promise<string> {
+    try {
+      const { id } = await this.getStudioBySlug(slug);
+      const studioToUpdate = this.studioRepository.create({
+        id,
+        logoUrl: url,
+      });
+      const { logoUrl } = await this.studioRepository.save(studioToUpdate);
+      return logoUrl;
+    } catch (e) {
+      console.log(e);
+      return INTERNAL_SERVER_ERROR;
+    }
+  }
+
+  async updateStudioCoverPhoto(slug: string, url: string): Promise<string> {
+    try {
+      const { id } = await this.getStudioBySlug(slug);
+      const studioToUpdate = this.studioRepository.create({
+        id,
+        coverPhotoUrl: url,
+      });
+      const { coverPhotoUrl } = await this.studioRepository.save(
+        studioToUpdate,
+      );
+      return coverPhotoUrl;
+    } catch (e) {
+      console.log(e);
+      return INTERNAL_SERVER_ERROR;
+    }
+  }
+
   async updateStudioInfo(
     user: User,
     { slug, payload }: UpdateStudioInfoInput,
@@ -672,6 +705,7 @@ export class StudiosService {
     }
   }
 
+  /*
   async createStudioReview(
     user: User,
     { studioSlug, payload }: CreateStudioReviewInput,
@@ -971,6 +1005,7 @@ export class StudiosService {
       return UNEXPECTED_ERROR;
     }
   }
+  */
 
   async heartStudio(
     user: User,

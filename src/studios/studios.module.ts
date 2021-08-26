@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { StudiosService } from './studios.service';
 import {
   ProductResolver,
-  StudioReviewResolver,
+  // StudioReviewResolver,
   StudiosResolver,
   UsersHeartStudiosResolver,
 } from './studios.resolver';
@@ -26,7 +26,7 @@ import { STUDIOS_SERVICE_ENTITIES } from 'src/common/constants/entity-list.const
     StudiosResolver,
     ProductResolver,
     UsersHeartStudiosResolver,
-    StudioReviewResolver,
+    // StudioReviewResolver,
   ],
   exports: [StudiosService],
 })
