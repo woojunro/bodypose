@@ -12,12 +12,10 @@ import StudioListView from '../../components/mobileComponents/studioListScreen/S
 import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import './StudioListScreen.css';
-import {
-  getLocation,
-  getAdressByCoords,
-} from '../../components/functions/GeoLocation';
+import { getAdressByCoords } from '../../components/functions/GeoLocation';
+import LoadingIcon from '../../components/mobileComponents/conceptListScreen/LoadingIcon';
 
-const StudioListScreen = () => {
+const StudioListScreen = ({ addr, setAddr, declineGPS, setDeclineGPS }) => {
   const { data, loading, error } = useQuery(ALL_STUDIOS_QUERY, {
     onCompleted: data => {
       if (!data || !data.allStudios.studios) {
@@ -39,31 +37,39 @@ const StudioListScreen = () => {
   const [locationBy, setLocationBy] = useState(STUDIO_LOCATION_OPTIONS[0]);
   const [searchTerm, setSearchTerm] = useState('');
   const [studios, setStudios] = useState([]);
-  const [location, setLocation] = useState();
+  const [geo, setGeo] = useState(addr);
+  const [isLoadingGPS, setIsLoadingGPS] = useState(false);
 
   //현재 좌표
   // getLocation(setLocation);
 
   useEffect(() => {
-    getAdressByCoords(setLocation);
+    if (declineGPS) {
+      setIsLoadingGPS(false);
+    } else if (!geo) {
+      setIsLoadingGPS(true);
+      getAdressByCoords(setGeo, setDeclineGPS, setIsLoadingGPS);
+    }
   }, []);
 
   useEffect(() => {
     //로케이션이 불려왔으면.
-    if (location) {
-      if (location.startsWith('서울')) {
+    if (geo) {
+      setAddr(geo);
+      if (geo.startsWith('서울')) {
         setLocationBy(STUDIO_LOCATION_OPTIONS[1]);
-      } else if (location.startsWith('경기')) {
+      } else if (geo.startsWith('경기')) {
         setLocationBy(STUDIO_LOCATION_OPTIONS[2]);
-      } else if (location.startsWith('부산')) {
+      } else if (geo.startsWith('부산')) {
         setLocationBy(STUDIO_LOCATION_OPTIONS[2]);
-      } else if (location.startsWith('대구')) {
+      } else if (geo.startsWith('대구')) {
         setLocationBy(STUDIO_LOCATION_OPTIONS[3]);
-      } else if (location.startsWith('천안')) {
+      } else if (geo.startsWith('천안')) {
         setLocationBy(STUDIO_LOCATION_OPTIONS[4]);
       }
     }
-  }, [location]);
+  }, [geo]);
+
   useEffect(() => {
     if (data) {
       setStudios(
@@ -100,6 +106,13 @@ const StudioListScreen = () => {
         <div className="appLoader">
           <p>오류가 발생하였습니다. 다시 시도해주세요.</p>
         </div>
+      ) : isLoadingGPS ? (
+        <>
+          <LoadingIcon />
+          <div className="loadNeerStudio">
+            가까운 지역의 스튜디오를 불러오고 있습니다.
+          </div>
+        </>
       ) : (
         <>
           <div className="contentsBox">

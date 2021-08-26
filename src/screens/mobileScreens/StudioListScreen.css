@@ -8,3 +8,9 @@
 .studioListScreen {
   position: relative;
 }
+
+.loadNeerStudio {
+  display: flex;
+  justify-content: center;
+  font-size: 15px;
+}

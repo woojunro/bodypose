@@ -1,30 +1,6 @@
 import React from 'react';
 
-export const getLocation = setCoords => {
-  if (navigator.geolocation) {
-    //GPS 지원하면
-    return new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          resolve({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-        },
-        error => {
-          reject(error);
-        },
-        { enableHighAccuracy: false, maximumAge: 0, timeout: Infinity }
-      );
-    }).then(coords => {
-      setCoords(coords);
-      console.log(coords);
-      getAdressByCoords(coords);
-    });
-  }
-};
-
-export const getAdressByCoords = setAddr => {
+export const getAdressByCoords = (setAddr, setDeclineGPS, setIsLoadingGPS) => {
   const { kakao } = window;
   let geocoder = new kakao.maps.services.Geocoder();
   let positionOptions = {
@@ -45,11 +21,13 @@ export const getAdressByCoords = setAddr => {
         searchAddrFromCoords(coord, function (result, status) {
           if (status === kakao.maps.services.Status.OK) {
             setAddr(result[0].region_1depth_name);
+            setDeclineGPS(false);
           }
         });
       },
       err => {
         console.log(err);
+        setDeclineGPS(true);
       },
       positionOptions
     );

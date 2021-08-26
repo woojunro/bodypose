@@ -37,6 +37,9 @@ import { createBrowserHistory } from 'history';
 const App = () => {
   const history = createBrowserHistory();
   const [isAppLoading, setIsAppLoading] = useState(true);
+  //현재 위치.
+  const [currentAddr, setCurrentAddr] = useState();
+  const [declineGPS, setDeclineGPS] = useState();
 
   const { loading } = useQuery(MY_USER_INFO_QUERY, {
     fetchPolicy: 'network-only',
@@ -69,7 +72,18 @@ const App = () => {
       <Analytics id={process.env.REACT_APP_GA_ID}>
         <Switch className="app">
           <Route exact path="/" component={HomeScreenM} />
-          <Route exact path="/studios" component={StudioListScreenM} />
+          <Route
+            exact
+            path="/studios"
+            component={() => (
+              <StudioListScreenM
+                addr={currentAddr}
+                setAddr={setCurrentAddr}
+                declineGPS={declineGPS}
+                setDeclineGPS={setDeclineGPS}
+              />
+            )}
+          />
           <Route exact path="/concepts" component={ConceptListScreenM} />
           {/* <Route exact path="/reviews" component={ReviewListScreenM} /> */}
           <Route exact path="/studios/:slug" component={StudioInfoScreenM} />
