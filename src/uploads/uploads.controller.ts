@@ -21,6 +21,7 @@ import { ONE_MEGABYTE_IN_BYTES } from './constants/file-size.constant';
 import { UploadFileOutput } from './dtos/upload-file.dto';
 import {
   UploadStudioPhotoDto,
+  UploadStudioPortfolioPhotoDto,
   UploadStudioReviewDto,
 } from './dtos/upload-studio-photo.dto';
 import { UploadsService } from './uploads.service';
@@ -52,7 +53,7 @@ export class UploadsController {
   */
 
   @Post('studio-photo')
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -67,10 +68,11 @@ export class UploadsController {
     ),
   )
   async uploadStudioPhoto(
+    @CurrentUser() user: User,
     @UploadedFiles() photos,
-    @Body() body: UploadStudioPhotoDto,
+    @Body() body: UploadStudioPortfolioPhotoDto,
   ) {
-    return this.uploadsService.uploadStudioPhoto(photos, body);
+    return this.uploadsService.uploadStudioPhoto(user, photos, body);
   }
 
   @Post('studio-logo')

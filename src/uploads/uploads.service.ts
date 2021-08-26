@@ -14,6 +14,7 @@ import { randomFileName } from './utils/file-upload';
 import { format } from 'url';
 import {
   UploadStudioPhotoDto,
+  UploadStudioPortfolioPhotoDto,
   UploadStudioReviewDto,
 } from './dtos/upload-studio-photo.dto';
 import { StudiosService } from 'src/studios/studios.service';
@@ -26,6 +27,8 @@ import {
   UNEXPECTED_ERROR,
 } from 'src/common/constants/error.constant';
 import { UsersService } from 'src/users/users.service';
+import { PhotosService } from 'src/photos/photos.service';
+import { CreateStudioPhotoOutput } from 'src/photos/dtos/create-studio-photo.dto';
 
 @Injectable()
 export class UploadsService {
@@ -35,6 +38,8 @@ export class UploadsService {
     private readonly configService: ConfigService,
     @Inject(forwardRef(() => StudiosService))
     private readonly studiosService: StudiosService,
+    @Inject(forwardRef(() => PhotosService))
+    private readonly photosService: PhotosService,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
   ) {
@@ -156,85 +161,62 @@ export class UploadsService {
     return valid;
   }
 
-  async uploadStudioPhoto(photos, body: UploadStudioPhotoDto) {
-    if (!photos) {
-      throw new BadRequestException('NO_PHOTO');
+  async uploadStudioPhoto(
+    user,
+    photos,
+    {
+      studioSlug,
+      gender,
+      backgroundConceptSlugs,
+      costumeConceptSlugs,
+      objectConceptSlugs,
+    }: UploadStudioPortfolioPhotoDto,
+  ): Promise<CreateStudioPhotoOutput> {
+    // Validate payload
+    const errors: string[] = [];
+    if (!photos?.thumbnail || photos.thumbnail.length === 0) {
+      errors.push('NO_THUMBNAIL_PHOTO');
     }
-    if (!photos.thumbnail || photos.thumbnail.length === 0) {
-      throw new BadRequestException('NO_THUMBNAIL_PHOTO');
+    if (!photos?.original || photos.original.length === 0) {
+      errors.push('NO_ORIGINAL_PHOTO');
     }
-    if (!photos.original || photos.original.length === 0) {
-      throw new BadRequestException('NO_ORIGINAL_PHOTO');
-    }
-    if (!body.studioSlug) {
-      throw new BadRequestException('NO_STUDIO_SLUG');
+    if (errors.length) {
+      const errorMessage = errors.join(',');
+      throw new BadRequestException(errorMessage);
     }
 
-    const studio = await this.studiosService.checkIfStudioExistsBySlug(
-      body.studioSlug,
-    );
-    if (!studio) {
-      throw new NotFoundException({
-        statusCode: 404,
-        message: 'STUDIO_NOT_FOUND',
-      });
-    }
+    const valid = await this.checkValidityOfAccess(studioSlug, user);
+    if (!valid) throw new ForbiddenException('FORBIDDEN');
 
+    // Upload photos
     const thumbnailPhoto = photos.thumbnail[0];
     const originalPhoto = photos.original[0];
-    const promises = [];
+    const thumbnailPath = `studio-photos/${studioSlug}/thumbnails/${randomFileName(
+      thumbnailPhoto,
+    )}`;
+    const originalPath = `studio-photos/${studioSlug}/originals/${randomFileName(
+      originalPhoto,
+    )}`;
+    const thumbnail = await this.uploadFile(thumbnailPath, thumbnailPhoto);
+    if (!thumbnail.ok) throw new InternalServerErrorException(thumbnail.error);
+    const original = await this.uploadFile(originalPath, originalPhoto);
+    if (!original.ok) throw new InternalServerErrorException(original.error);
 
-    const thumbnailBlob = this.bucket.file(
-      `studio-photos/${body.studioSlug}/thumbnails/${randomFileName(
-        thumbnailPhoto,
-      )}`,
-    );
-    const thumbnailPromise: Promise<string> = new Promise((resolve, reject) => {
-      const thumbnailBlobStream = thumbnailBlob.createWriteStream();
-      thumbnailBlobStream
-        .on('error', err => {
-          console.log(err);
-          reject(new InternalServerErrorException('GOOGLE_SERVER_ERROR'));
-        })
-        .on('finish', () => {
-          const publicUrl = format(
-            `https://storage.googleapis.com/${this.bucket.name}/${thumbnailBlob.name}`,
-          );
-          resolve(publicUrl);
-        })
-        .end(thumbnailPhoto.buffer);
+    const {
+      ok,
+      error,
+      studioPhoto,
+    } = await this.photosService.createStudioPhoto({
+      studioSlug,
+      thumbnailUrl: thumbnail.url,
+      originalUrl: original.url,
+      gender,
+      backgroundConceptSlugs: backgroundConceptSlugs.split(','),
+      costumeConceptSlugs: costumeConceptSlugs.split(','),
+      objectConceptSlugs: objectConceptSlugs.split(','),
     });
-    promises.push(thumbnailPromise);
-
-    const originalBlob = this.bucket.file(
-      `studio-photos/${body.studioSlug}/originals/${randomFileName(
-        thumbnailPhoto,
-      )}`,
-    );
-    const originalPromise: Promise<string> = new Promise((resolve, reject) => {
-      const originalBlobStream = originalBlob.createWriteStream();
-      originalBlobStream
-        .on('error', err => {
-          console.log(err);
-          reject(new InternalServerErrorException('GOOGLE_SERVER_ERROR'));
-        })
-        .on('finish', () => {
-          const publicUrl = format(
-            `https://storage.googleapis.com/${this.bucket.name}/${originalBlob.name}`,
-          );
-          resolve(publicUrl);
-        })
-        .end(originalPhoto.buffer);
-    });
-    promises.push(originalPromise);
-
-    return Promise.all(promises).then(promises => {
-      return {
-        studioSlug: body.studioSlug,
-        thumbnailUrl: promises[0],
-        originalUrl: promises[1],
-      };
-    });
+    if (!ok) throw new InternalServerErrorException(error);
+    return { ok, studioPhoto };
   }
 
   async uploadStudioLogo(

@@ -1,7 +1,23 @@
-import { IsString, MinLength } from 'class-validator';
+import { IsEnum, IsString, Length, MinLength } from 'class-validator';
+import { PhotoGender } from 'src/photos/entities/studio-photo.entity';
 
 export class UploadStudioPhotoDto {
+  @Length(1, 20)
   studioSlug: string;
+}
+
+export class UploadStudioPortfolioPhotoDto extends UploadStudioPhotoDto {
+  @IsEnum(PhotoGender)
+  gender: PhotoGender;
+
+  @Length(1)
+  backgroundConceptSlugs: string;
+
+  @Length(1)
+  costumeConceptSlugs: string;
+
+  @Length(1)
+  objectConceptSlugs: string;
 }
 
 export class UploadStudioReviewDto extends UploadStudioPhotoDto {

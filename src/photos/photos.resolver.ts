@@ -7,10 +7,6 @@ import {
   CreatePhotoConceptOutput,
 } from './dtos/create-photo-concept.dto';
 import {
-  CreateStudioPhotoInput,
-  CreateStudioPhotoOutput,
-} from './dtos/create-studio-photo.dto';
-import {
   DeletePhotoConceptInput,
   DeletePhotoConceptOutput,
 } from './dtos/delete-photo-concept.dto';
@@ -68,14 +64,6 @@ export class PhotosResolver {
   @Query(returns => GetAllPhotoConceptsOutput)
   allPhotoConcepts(): Promise<GetAllPhotoConceptsOutput> {
     return this.photosService.getAllPhotoConcepts();
-  }
-
-  @Mutation(returns => CreateStudioPhotoOutput)
-  @Roles(UserType.ADMIN)
-  createStudioPhoto(
-    @Args('input') input: CreateStudioPhotoInput,
-  ): Promise<CreateStudioPhotoOutput> {
-    return this.photosService.createStudioPhoto(input);
   }
 
   @Mutation(returns => UpdateStudioPhotoOutput)
