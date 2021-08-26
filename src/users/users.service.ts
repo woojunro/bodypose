@@ -505,32 +505,9 @@ export class UsersService {
 
   async deleteUserById(id: number): Promise<DeleteUserOutput> {
     try {
-      const user = await this.userRepository
-        .createQueryBuilder('user')
-        .leftJoinAndSelect('user.socialAccounts', 'socialAccount')
-        .where('user.id = :id', { id })
-        .getOne();
-      if (!user) {
-        return {
-          ok: false,
-          error: 'USER_NOT_FOUND',
-        };
-      }
-      for (const socialAccount of []) {
-        switch (socialAccount.provider) {
-          case OAuthProvider.KAKAO:
-            const adminKey = this.configService.get<string>('KAKAO_ADMIN_KEY');
-            const result = await unlinkKakaoUser(
-              socialAccount.socialId,
-              adminKey,
-            );
-            if (!result.ok) return CommonError(result.error);
-            break;
-          default:
-            break;
-        }
-      }
-      const result = await this.userRepository.softDelete({ id: user.id });
+      const user = await this.getUserById(id);
+      if (!user) return CommonError('USER_NOT_FOUND');
+      await this.userRepository.softDelete(id);
       return { ok: true };
     } catch (e) {
       console.log(e);
