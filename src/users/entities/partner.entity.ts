@@ -39,6 +39,14 @@ export class Partner extends CoreEntity {
   @Length(1, 15)
   reqStudioName: string;
 
+  @Column({ nullable: true })
+  @Field(type => Date, { nullable: true })
+  emailAgreedAt?: Date;
+
+  @Column({ nullable: true })
+  @Field(type => Date, { nullable: true })
+  smsAgreedAt?: Date;
+
   @OneToOne(relation => User, { onDelete: 'CASCADE' })
   @JoinColumn()
   @Field(type => User)
