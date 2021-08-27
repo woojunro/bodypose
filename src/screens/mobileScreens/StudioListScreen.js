@@ -12,10 +12,18 @@ import StudioListView from '../../components/mobileComponents/studioListScreen/S
 import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import './StudioListScreen.css';
-import { getAdressByCoords } from '../../components/functions/GeoLocation';
-import LoadingIcon from '../../components/mobileComponents/conceptListScreen/LoadingIcon';
+// import { getAdressByCoords } from '../../components/functions/GeoLocation';
+// import LoadingIcon from '../../components/mobileComponents/conceptListScreen/LoadingIcon';
+import { useHistory } from 'react-router-dom';
 
-const StudioListScreen = ({ addr, setAddr, declineGPS, setDeclineGPS }) => {
+const StudioListScreen = ({
+  // addr,
+  // setAddr,
+  // declineGPS,
+  // setDeclineGPS,
+  studiosLocation,
+  setStudioLocation,
+}) => {
   const { data, loading, error } = useQuery(ALL_STUDIOS_QUERY, {
     onCompleted: data => {
       if (!data || !data.allStudios.studios) {
@@ -34,41 +42,43 @@ const StudioListScreen = ({ addr, setAddr, declineGPS, setDeclineGPS }) => {
   const [isSortByOpen, setIsSortByOpen] = useState(false);
   const [isLocationByOpen, setIsLocationByOpen] = useState(false);
   const [sortBy, setSortBy] = useState(STUDIO_SORT_OPTIONS[0]);
-  const [locationBy, setLocationBy] = useState(STUDIO_LOCATION_OPTIONS[0]);
+  const [locationBy, setLocationBy] = useState(
+    studiosLocation ? studiosLocation : STUDIO_LOCATION_OPTIONS[0]
+  );
   const [searchTerm, setSearchTerm] = useState('');
   const [studios, setStudios] = useState([]);
-  const [geo, setGeo] = useState(addr);
-  const [isLoadingGPS, setIsLoadingGPS] = useState(false);
+  // const [geo, setGeo] = useState(addr);
+  // const [isLoadingGPS, setIsLoadingGPS] = useState(false);
 
   //현재 좌표
   // getLocation(setLocation);
 
-  useEffect(() => {
-    if (declineGPS) {
-      setIsLoadingGPS(false);
-    } else if (!geo) {
-      setIsLoadingGPS(true);
-      getAdressByCoords(setGeo, setDeclineGPS, setIsLoadingGPS);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (declineGPS) {
+  //     setIsLoadingGPS(false);
+  //   } else if (!geo) {
+  //     setIsLoadingGPS(true);
+  //     getAdressByCoords(setGeo, setDeclineGPS, setIsLoadingGPS);
+  //   }
+  // }, []);
 
-  useEffect(() => {
-    //로케이션이 불려왔으면.
-    if (geo) {
-      setAddr(geo);
-      if (geo.startsWith('서울')) {
-        setLocationBy(STUDIO_LOCATION_OPTIONS[1]);
-      } else if (geo.startsWith('경기')) {
-        setLocationBy(STUDIO_LOCATION_OPTIONS[2]);
-      } else if (geo.startsWith('부산')) {
-        setLocationBy(STUDIO_LOCATION_OPTIONS[2]);
-      } else if (geo.startsWith('대구')) {
-        setLocationBy(STUDIO_LOCATION_OPTIONS[3]);
-      } else if (geo.startsWith('천안')) {
-        setLocationBy(STUDIO_LOCATION_OPTIONS[4]);
-      }
-    }
-  }, [geo]);
+  // useEffect(() => {
+  //   //로케이션이 불려왔으면.
+  //   if (geo) {
+  //     setAddr(geo);
+  //     if (geo.startsWith('서울')) {
+  //       setLocationBy(STUDIO_LOCATION_OPTIONS[1]);
+  //     } else if (geo.startsWith('경기')) {
+  //       setLocationBy(STUDIO_LOCATION_OPTIONS[2]);
+  //     } else if (geo.startsWith('부산')) {
+  //       setLocationBy(STUDIO_LOCATION_OPTIONS[2]);
+  //     } else if (geo.startsWith('대구')) {
+  //       setLocationBy(STUDIO_LOCATION_OPTIONS[3]);
+  //     } else if (geo.startsWith('천안')) {
+  //       setLocationBy(STUDIO_LOCATION_OPTIONS[4]);
+  //     }
+  //   }
+  // }, [geo]);
 
   useEffect(() => {
     if (data) {
@@ -81,7 +91,22 @@ const StudioListScreen = ({ addr, setAddr, declineGPS, setDeclineGPS }) => {
         )
       );
     }
-  }, [sortBy, locationBy, searchTerm]);
+  }, [sortBy, searchTerm]);
+
+  useEffect(() => {
+    setStudioLocation(locationBy);
+    if (data) {
+      setStudios(
+        SortingStudioFunction(
+          sortBy,
+          locationBy,
+          searchTerm,
+          data.allStudios.studios
+        )
+      );
+    }
+    console.log(1);
+  }, [locationBy]);
 
   useEffect(() => {
     document.body.style.overflow =
@@ -106,13 +131,6 @@ const StudioListScreen = ({ addr, setAddr, declineGPS, setDeclineGPS }) => {
         <div className="appLoader">
           <p>오류가 발생하였습니다. 다시 시도해주세요.</p>
         </div>
-      ) : isLoadingGPS ? (
-        <>
-          <LoadingIcon />
-          <div className="loadNeerStudio">
-            가까운 지역의 스튜디오를 불러오고 있습니다.
-          </div>
-        </>
       ) : (
         <>
           <div className="contentsBox">

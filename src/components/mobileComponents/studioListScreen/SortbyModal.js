@@ -11,11 +11,11 @@ const Modal = ({
   selectedOption,
 }) => {
   const [selected, setSelected] = useState(selectedOption);
-  const handleOption = (option) => {
+  const handleOption = option => {
     setOption(option);
     setSelected(option);
   };
-  const renderedOptions = options.map((option) => {
+  const renderedOptions = options.map(option => {
     if (option.title === selected.title) {
       return (
         <div key={option.title} className="selectedBox">
@@ -32,7 +32,7 @@ const Modal = ({
           setTimeout(() => {
             close();
             closeSortBy();
-          }, 1); //정렬 되는 시간을 위해서 0.01초 텀을 둠.
+          }, 100); //정렬 되는 시간을 위해서 0.05초 텀을 둠.
         }}
       >
         <div>{option.title}</div>
@@ -58,7 +58,7 @@ const Modal = ({
             <div className="sortBytrueModal">
               <div
                 className="sortBymodalContents"
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation();
                 }}
               >

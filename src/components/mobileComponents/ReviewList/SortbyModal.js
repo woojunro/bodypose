@@ -11,12 +11,14 @@ const Modal = ({
   selectedOption,
 }) => {
   const [selected, setSelected] = useState(selectedOption);
-  const handleOption = (option) => {
+
+  const handleOption = option => {
     setOption(option);
     setSelected(option);
   };
-  const renderedOptions = options.map((option) => {
+  const renderedOptions = options.map(option => {
     if (option.title === selected.title) {
+      console.log(option.title, selected.title);
       return (
         <div key={option.title} className="selectedBox">
           <div>{option.title}</div> <IoIosCheckmark fontSize="30px" />
@@ -58,7 +60,7 @@ const Modal = ({
               <div className="reviewSortBytrueModal">
                 <div
                   className="reviewSortBymodalContents"
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                   }}
                 >
