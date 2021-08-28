@@ -46,6 +46,10 @@ import {
   ReportStudioReviewOutput,
 } from './dtos/report-studio-review.dto';
 import {
+  SetStudioPublicInput,
+  SetStudioPublicOutput,
+} from './dtos/set-studio-public.dto';
+import {
   UpdateAdditionalProductsInput,
   UpdateAdditionalProductsOutput,
 } from './dtos/update-additional-product.dto';
@@ -123,6 +127,15 @@ export class StudiosResolver {
     @Args('input') input: UpdateStudioInput,
   ): Promise<UpdateStudioOutput> {
     return this.studiosService.updateStudio(user, input);
+  }
+
+  @Mutation(returns => SetStudioPublicOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
+  setStudioPublic(
+    @CurrentUser() user: User,
+    @Args('input') input: SetStudioPublicInput,
+  ): Promise<SetStudioPublicOutput> {
+    return this.studiosService.setStudioPublic(user, input);
   }
 
   @Mutation(returns => UpdateStudioInfoOutput)

@@ -43,3 +43,8 @@ query: ALTER TABLE `hair_makeup_shop` DROP COLUMN `address`
 query: ALTER TABLE `hair_makeup_shop` ADD `address` varchar(100) NULL
 query: ALTER TABLE `hair_makeup_shop` DROP COLUMN `productListDescription`
 query: ALTER TABLE `hair_makeup_shop` ADD `productListDescription` text NULL
+
+2021-08-26 DEV
+
+query: ALTER TABLE `partner` ADD `emailAgreedAt` datetime NULL
+query: ALTER TABLE `partner` ADD `smsAgreedAt` datetime NULL

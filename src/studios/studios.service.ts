@@ -61,6 +61,10 @@ import {
   ReportStudioReviewOutput,
 } from './dtos/report-studio-review.dto';
 import {
+  SetStudioPublicInput,
+  SetStudioPublicOutput,
+} from './dtos/set-studio-public.dto';
+import {
   UpdateAdditionalProductsInput,
   UpdateAdditionalProductsOutput,
 } from './dtos/update-additional-product.dto';
@@ -379,6 +383,44 @@ export class StudiosService {
     } catch (e) {
       console.log(e);
       return INTERNAL_SERVER_ERROR;
+    }
+  }
+
+  async setStudioPublic(
+    user: User,
+    { slug, isPublic }: SetStudioPublicInput,
+  ): Promise<SetStudioPublicOutput> {
+    try {
+      const studio = await this.studioRepository.findOne({
+        where: { slug },
+        relations: ['branches', 'info', 'studioProducts', 'photos'],
+      });
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const valid = await this.checkIfUserIsAdminOrOwner(studio.id, user);
+      if (!valid) return CommonError('FORBIDDEN');
+
+      if (isPublic) {
+        // Validation
+        const errors: string[] = [];
+        if (!studio.logoUrl) errors.push('NO_STUDIO_LOGO');
+        if (!studio.coverPhotoUrl) errors.push('NO_STUDIO_COVER');
+        if (!studio.info.contactUrl) errors.push('NO_CONTACT_URL');
+        if (!studio.info.reservation) errors.push('NO_RESERVATION_URL');
+        if (!studio.photos.length) errors.push('NO_STUDIO_PHOTOS');
+        if (!studio.studioProducts.length) errors.push('NO_STUDIO_PRODUCTS');
+        if (!studio.branches.length) errors.push('NO_STUDIO_BRANCHES');
+        if (errors.length) return CommonError(errors.join(','));
+      }
+
+      const studioToUpdate = this.studioRepository.create({
+        id: studio.id,
+        isPublic,
+      });
+      await this.studioRepository.save(studioToUpdate);
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
     }
   }
 
@@ -1088,18 +1130,13 @@ export class StudiosService {
     try {
       const heartStudios = await this.usersHeartStudiosRepository.find({
         relations: ['studio', 'studio.branches'],
-        where: { user: user.id },
+        where: { user: user.id, studio: { isPublic: true } },
         order: { heartAt: 'DESC' },
       });
-      const studios: StudioWithIsHearted[] = [];
-      for (const heartStudio of heartStudios) {
-        const { studio } = heartStudio;
-        if (!studio.coverPhotoUrl) continue;
-        studios.push({
-          ...studio,
-          isHearted: true,
-        });
-      }
+      const studios: StudioWithIsHearted[] = heartStudios.map(heart => ({
+        ...heart.studio,
+        isHearted: true,
+      }));
       return {
         ok: true,
         studios,
