@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Roles } from 'src/auth/roles.decorator';
+import { CoreOutput } from 'src/common/dtos/output.dto';
 import { UserType } from 'src/users/entities/user.entity';
 import {
   CreateNoticeInput,
@@ -16,10 +17,19 @@ import {
   GetNoticesOutput,
 } from './dtos/get-notice.dto';
 import {
+  CreatePartnersNoticeInput,
+  GetPartnersNoticeInput,
+  GetPartnersNoticeOutput,
+  GetPartnersNoticesInput,
+  GetPartnersNoticesOutput,
+  UpdatePartnersNoticeInput,
+} from './dtos/partners-notice.dto';
+import {
   UpdateNoticeInput,
   UpdateNoticeOutput,
 } from './dtos/update-notice.dto';
 import { Notice } from './entity/notice.entity';
+import { PartnersNotice } from './entity/partners-notice.entity';
 import { NoticesService } from './notices.service';
 
 @Resolver(of => Notice)
@@ -58,5 +68,50 @@ export class NoticesResolver {
     @Args('input') input: DeleteNoticeInput,
   ): Promise<DeleteNoticeOutput> {
     return this.noticesService.deleteNotice(input);
+  }
+}
+
+@Resolver(of => PartnersNotice)
+export class PartnersNoticesResolver {
+  constructor(private readonly noticesService: NoticesService) {}
+
+  @Roles(UserType.ADMIN)
+  @Mutation(returns => CoreOutput)
+  createPartnersNotice(
+    @Args('input') input: CreatePartnersNoticeInput,
+  ): Promise<CoreOutput> {
+    return this.noticesService.createPartnersNotice(input);
+  }
+
+  // Public
+  @Query(returns => GetPartnersNoticesOutput)
+  partnersNotices(
+    @Args('input') input: GetPartnersNoticesInput,
+  ): Promise<GetPartnersNoticesOutput> {
+    return this.noticesService.getPartnersNotices(input);
+  }
+
+  // Public
+  @Query(returns => GetPartnersNoticeOutput)
+  partnersNotice(
+    @Args('input') input: GetPartnersNoticeInput,
+  ): Promise<GetPartnersNoticeOutput> {
+    return this.noticesService.getPartnersNotice(input);
+  }
+
+  @Roles(UserType.ADMIN)
+  @Mutation(returns => CoreOutput)
+  updatePartnersNotice(
+    @Args('input') input: UpdatePartnersNoticeInput,
+  ): Promise<CoreOutput> {
+    return this.noticesService.updatePartnersNotice(input);
+  }
+
+  @Roles(UserType.ADMIN)
+  @Mutation(returns => CoreOutput)
+  deletePartnersNotice(
+    @Args('input') input: GetPartnersNoticeInput,
+  ): Promise<CoreOutput> {
+    return this.noticesService.deletePartnersNotice(input);
   }
 }

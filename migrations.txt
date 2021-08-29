@@ -48,3 +48,9 @@ query: ALTER TABLE `hair_makeup_shop` ADD `productListDescription` text NULL
 
 query: ALTER TABLE `partner` ADD `emailAgreedAt` datetime NULL
 query: ALTER TABLE `partner` ADD `smsAgreedAt` datetime NULL
+
+2021-08-29 DEV
+
+query: CREATE TABLE `partners_notice` (`id` int NOT NULL AUTO_INCREMENT, `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `title` varchar(100) NOT NULL, `content` text NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB
+query: ALTER TABLE `notice` DROP COLUMN `title`
+query: ALTER TABLE `notice` ADD `title` varchar(100) NOT NULL
