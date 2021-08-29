@@ -4,6 +4,7 @@ import { LogStudioContact } from 'src/insights/entities/log-studio-contact.entit
 import { LogStudioInfoView } from 'src/insights/entities/log-studio-info-view.entity';
 import { LogStudioReservation } from 'src/insights/entities/log-studio-reservation.entity';
 import { Notice } from 'src/notices/entity/notice.entity';
+import { PartnersNotice } from 'src/notices/entity/partners-notice.entity';
 import {
   BackgroundConcept,
   CostumeConcept,
@@ -71,7 +72,7 @@ export const PHOTOS_SERVICE_ENTITIES = [
   UsersHeartStudioPhotos,
 ];
 
-export const NOTICES_SERVICE_ENTITIES = [Notice];
+export const NOTICES_SERVICE_ENTITIES = [Notice, PartnersNotice];
 
 export const ENTITY_LIST = [
   ...USERS_SERVICE_ENTITIES,
