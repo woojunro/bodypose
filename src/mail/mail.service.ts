@@ -58,23 +58,17 @@ export class MailService {
     userId: number,
     code: string,
   ): Promise<boolean> {
-    try {
-      const ok = await this.sendEmail(
-        email,
-        '[바디포즈] 이메일을 확인해주세요.',
-        'bodypose-email-verification',
-        [
-          { key: 'nickname', value: nickname },
-          { key: 'userId', value: String(userId) },
-          { key: 'code', value: code },
-        ],
-        'v2',
-      );
-      return ok;
-    } catch (e) {
-      console.log(e);
-      return false;
-    }
+    return this.sendEmail(
+      email,
+      '[바디포즈] 이메일을 확인해주세요.',
+      'bodypose-email-verification',
+      [
+        { key: 'nickname', value: nickname },
+        { key: 'userId', value: String(userId) },
+        { key: 'code', value: code },
+      ],
+      'v2',
+    );
   }
 
   async sendPasswordReset(
@@ -83,23 +77,17 @@ export class MailService {
     userId: number,
     code: string,
   ): Promise<boolean> {
-    try {
-      const ok = await this.sendEmail(
-        email,
-        '[바디포즈] 비밀번호 변경',
-        'bodypose-password-reset',
-        [
-          { key: 'nickname', value: nickname },
-          { key: 'userId', value: String(userId) },
-          { key: 'code', value: code },
-        ],
-        'v2',
-      );
-      return ok;
-    } catch (e) {
-      console.log(e);
-      return false;
-    }
+    return this.sendEmail(
+      email,
+      '[바디포즈] 비밀번호 변경',
+      'bodypose-password-reset',
+      [
+        { key: 'nickname', value: nickname },
+        { key: 'userId', value: String(userId) },
+        { key: 'code', value: code },
+      ],
+      'v2',
+    );
   }
 
   async sendPartnerCreated(studioName: string): Promise<boolean> {
