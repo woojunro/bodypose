@@ -19,6 +19,7 @@ export class MailService {
     subject: string,
     template: string,
     emailVars: EmailVar[],
+    version = 'initial',
   ): Promise<boolean> {
     try {
       const form = new FormData();
@@ -26,7 +27,7 @@ export class MailService {
       form.append('to', to);
       form.append('subject', subject);
       form.append('template', template);
-      form.append('t:version', 'v2');
+      form.append('t:version', version);
       emailVars.forEach(emailVar => {
         form.append(`v:${emailVar.key}`, emailVar.value);
       });
@@ -67,6 +68,7 @@ export class MailService {
           { key: 'userId', value: String(userId) },
           { key: 'code', value: code },
         ],
+        'v2',
       );
       return ok;
     } catch (e) {
@@ -91,11 +93,21 @@ export class MailService {
           { key: 'userId', value: String(userId) },
           { key: 'code', value: code },
         ],
+        'v2',
       );
       return ok;
     } catch (e) {
       console.log(e);
       return false;
     }
+  }
+
+  async sendPartnerCreated(studioName: string): Promise<boolean> {
+    return this.sendEmail(
+      'help@fmonth.com',
+      '[바디포즈] 파트너스 가입 신청 알림',
+      'bodypose-partner-created',
+      [{ key: 'studio', value: studioName }],
+    );
   }
 }

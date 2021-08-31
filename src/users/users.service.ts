@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { unlinkKakaoUser } from 'src/auth/utils/kakaoOAuth.util';
 import {
   CommonError,
   UNEXPECTED_ERROR,
@@ -769,9 +768,10 @@ export class UsersService {
           isLocked: true,
         }),
       );
-      await this.partnerRepository.save(
+      const { reqStudioName } = await this.partnerRepository.save(
         this.partnerRepository.create({ ...input, user }),
       );
+      this.mailService.sendPartnerCreated(reqStudioName);
       return { ok: true };
     } catch (e) {
       console.log(e);
