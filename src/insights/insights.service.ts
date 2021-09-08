@@ -42,7 +42,9 @@ export class InsightsService {
     { studioPhotoId }: ExposeOriginalStudioPhotoInput,
   ): Promise<CoreOutput> {
     try {
-      const photo = await this.photosService.getStudioPhoto(studioPhotoId);
+      const photo = await this.photosService.checkIfStudioPhotoExists(
+        studioPhotoId,
+      );
       if (!photo) return CommonError('STUDIO_PHOTO_NOT_FOUND');
       const newLog = this.logOriginalStudioPhotoRepository.create({
         user: user ? { id: user.id } : null,

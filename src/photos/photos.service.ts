@@ -45,6 +45,8 @@ import {
   GetStudioPhotosOutput,
   GetMyHeartStudioPhotosInput,
   StudioPhotoWithIsHearted,
+  GetStudioPhotoInput,
+  GetStudioPhotoOutput,
 } from './dtos/get-studio-photo.dto';
 import {
   HeartStudioPhotoInput,
@@ -91,7 +93,30 @@ export class PhotosService {
     private readonly uploadsService: UploadsService,
   ) {}
 
-  async getStudioPhoto(id: number): Promise<StudioPhoto> {
+  async getStudioPhoto(
+    user: User,
+    { id }: GetStudioPhotoInput,
+  ): Promise<GetStudioPhotoOutput> {
+    try {
+      let query = this.studioPhotoRepository
+        .createQueryBuilder('photo')
+        .leftJoin('photo.studio', 'studio')
+        .leftJoin('studio.partner', 'partner')
+        .leftJoinAndSelect('photo.backgroundConcepts', 'backgroundConcept')
+        .leftJoinAndSelect('photo.costumeConcepts', 'costumeConcept')
+        .leftJoinAndSelect('photo.objectConcepts', 'objectConcept')
+        .where('photo.id = :id', { id });
+      query = this.filterStudioPhotoQueryByUser(query, user);
+      const photo = await query.getOne();
+      if (!photo) return CommonError('STUDIO_PHOTO_NOT_FOUND');
+      return { ok: true, photo };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async checkIfStudioPhotoExists(id: number): Promise<StudioPhoto> {
     const studioPhoto = await this.studioPhotoRepository
       .createQueryBuilder('p')
       .select('p.id')
@@ -207,7 +232,7 @@ export class PhotosService {
       const photosPerPage = 24;
       let query = this.studioPhotoRepository
         .createQueryBuilder('photo')
-        .leftJoinAndSelect('photo.studio', 'studio')
+        .leftJoin('photo.studio', 'studio')
         .leftJoin('studio.partner', 'partner')
         .where({ gender: gender ? gender : Not(IsNull()) })
         .andWhere('studio.slug = :slug', { slug: studioSlug });
@@ -234,7 +259,7 @@ export class PhotosService {
           isHearted: hearts.some(heart => heart.studioPhotoId === photo.id),
         }));
       } else {
-        photos = photos.map(photo => ({ ...photo, isHearted: null }));
+        photos = studioPhotos.map(photo => ({ ...photo, isHearted: null }));
       }
 
       return {
@@ -544,22 +569,8 @@ export class PhotosService {
     },
   }: UpdateStudioPhotoInput): Promise<UpdateStudioPhotoOutput> {
     try {
-      const photo = await this.studioPhotoRepository.findOne(
-        { id },
-        {
-          relations: [
-            'backgroundConcepts',
-            'costumeConcepts',
-            'objectConcepts',
-          ],
-        },
-      );
-      if (!photo) {
-        return {
-          ok: false,
-          error: 'STUDIO_PHOTO_NOT_FOUND',
-        };
-      }
+      const photo = await this.studioPhotoRepository.findOne(id);
+      if (!photo) return CommonError('STUDIO_PHOTO_NOT_FOUND');
       if (gender) {
         photo.gender = gender;
       }

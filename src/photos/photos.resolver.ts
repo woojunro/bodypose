@@ -19,6 +19,8 @@ import {
   GetAllStudioPhotosInput,
   GetAllStudioPhotosOutput,
   GetMyHeartStudioPhotosInput,
+  GetStudioPhotoInput,
+  GetStudioPhotoOutput,
   GetStudioPhotosInput,
   GetStudioPhotosOutput,
 } from './dtos/get-studio-photo.dto';
@@ -41,6 +43,15 @@ import { PhotosService } from './photos.service';
 @Resolver(of => StudioPhoto)
 export class PhotosResolver {
   constructor(private readonly photosService: PhotosService) {}
+
+  // Public
+  @Query(returns => GetStudioPhotoOutput)
+  studioPhoto(
+    @CurrentUser() user: User,
+    @Args('input') input: GetStudioPhotoInput,
+  ): Promise<GetStudioPhotoOutput> {
+    return this.photosService.getStudioPhoto(user, input);
+  }
 
   // Public
   @Query(returns => GetAllStudioPhotosOutput)
