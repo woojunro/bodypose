@@ -78,19 +78,21 @@ export class PhotosResolver {
   }
 
   @Mutation(returns => UpdateStudioPhotoOutput)
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
   updateStudioPhoto(
+    @CurrentUser() user: User,
     @Args('input') input: UpdateStudioPhotoInput,
   ): Promise<UpdateStudioPhotoOutput> {
-    return this.photosService.updateStudioPhoto(input);
+    return this.photosService.updateStudioPhoto(user, input);
   }
 
   @Mutation(returns => DeleteStudioPhotoOutput)
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
   deleteStudioPhoto(
+    @CurrentUser() user: User,
     @Args('input') input: DeleteStudioPhotoInput,
   ): Promise<DeleteStudioPhotoOutput> {
-    return this.photosService.deleteStudioPhoto(input);
+    return this.photosService.deleteStudioPhoto(user, input);
   }
 
   @Mutation(returns => CreatePhotoConceptOutput)

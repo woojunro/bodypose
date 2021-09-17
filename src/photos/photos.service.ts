@@ -559,21 +559,34 @@ export class PhotosService {
     }
   }
 
-  async updateStudioPhoto({
-    id,
-    payload: {
-      gender,
-      backgroundConceptSlugs,
-      costumeConceptSlugs,
-      objectConceptSlugs,
-    },
-  }: UpdateStudioPhotoInput): Promise<UpdateStudioPhotoOutput> {
+  async updateStudioPhoto(
+    user: User,
+    {
+      id,
+      payload: {
+        gender,
+        backgroundConceptSlugs,
+        costumeConceptSlugs,
+        objectConceptSlugs,
+      },
+    }: UpdateStudioPhotoInput,
+  ): Promise<UpdateStudioPhotoOutput> {
     try {
-      const photo = await this.studioPhotoRepository.findOne(id);
-      if (!photo) return CommonError('STUDIO_PHOTO_NOT_FOUND');
-      if (gender) {
-        photo.gender = gender;
-      }
+      const existingStudioPhoto = await this.studioPhotoRepository
+        .createQueryBuilder('photo')
+        .leftJoin('photo.studio', 'studio')
+        .addSelect('studio.id')
+        .where('photo.id = :id', { id })
+        .getOne();
+      if (!existingStudioPhoto) return CommonError('STUDIO_PHOTO_NOT_FOUND');
+      const valid = await this.studiosService.checkIfUserIsAdminOrOwner(
+        existingStudioPhoto.studio.id,
+        user,
+      );
+      if (!valid) return CommonError('INVALID');
+      // Update
+      const photo = this.studioPhotoRepository.create({ id });
+      if (gender) photo.gender = gender;
       if (backgroundConceptSlugs) {
         photo.backgroundConcepts = [];
         for (const slug of backgroundConceptSlugs) {
@@ -582,9 +595,7 @@ export class PhotosService {
             slug,
             PhotoConceptType.BACKGROUND,
           );
-          if (!ok) {
-            return { ok, error };
-          }
+          if (!ok) return { ok, error };
         }
       }
       if (costumeConceptSlugs) {
@@ -595,9 +606,7 @@ export class PhotosService {
             slug,
             PhotoConceptType.COSTUME,
           );
-          if (!ok) {
-            return { ok, error };
-          }
+          if (!ok) return { ok, error };
         }
       }
       if (objectConceptSlugs) {
@@ -608,9 +617,7 @@ export class PhotosService {
             slug,
             PhotoConceptType.OBJECT,
           );
-          if (!ok) {
-            return { ok, error };
-          }
+          if (!ok) return { ok, error };
         }
       }
       const studioPhoto = await this.studioPhotoRepository.save(photo);
@@ -624,37 +631,31 @@ export class PhotosService {
     }
   }
 
-  async deleteStudioPhoto({
-    id,
-    studioSlug,
-  }: DeleteStudioPhotoInput): Promise<DeleteStudioPhotoOutput> {
+  async deleteStudioPhoto(
+    user: User,
+    { id }: DeleteStudioPhotoInput,
+  ): Promise<DeleteStudioPhotoOutput> {
     try {
       const photo = await this.studioPhotoRepository.findOne(
         { id },
         { relations: ['studio'] },
       );
-      if (!photo) {
-        return {
-          ok: false,
-          error: 'PHOTO_NOT_FOUND',
-        };
-      }
-      if (photo.studio.slug !== studioSlug) {
-        return {
-          ok: false,
-          error: 'INVALID_STUDIO_SLUG',
-        };
-      }
-      await this.studioPhotoRepository.delete({ id });
-      // Delete photos in storage
+      if (!photo) return CommonError('STUDIO_PHOTO_NOT_FOUND');
+      const valid = await this.studiosService.checkIfUserIsAdminOrOwner(
+        photo.studio.id,
+        user,
+      );
+      if (!valid) return CommonError('INVALID');
+      // Delete
+      await this.studioPhotoRepository.delete(id);
       const thumbnailPhoto = photo.thumbnailUrl.substring(
         photo.thumbnailUrl.indexOf('studio-photos'),
       );
       const originalPhoto = photo.originalUrl.substring(
         photo.originalUrl.indexOf('studio-photos'),
       );
-      await this.uploadsService.deleteFile(thumbnailPhoto);
-      await this.uploadsService.deleteFile(originalPhoto);
+      this.uploadsService.deleteFile(thumbnailPhoto);
+      this.uploadsService.deleteFile(originalPhoto);
       return { ok: true };
     } catch (e) {
       console.log(e);
