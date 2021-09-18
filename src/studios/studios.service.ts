@@ -184,8 +184,12 @@ export class StudiosService {
     partnerEmail,
   }: AssignStudioPartnerInput): Promise<AssignStudioPartnerOutput> {
     try {
-      const studio = await this.getStudioBySlug(studioSlug);
+      const studio = await this.studioRepository.findOne(
+        { slug: studioSlug },
+        { relations: ['partner'] },
+      );
       if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      if (studio.partner) return CommonError('ALREADY_ASSIGNED');
       const partner = await this.usersService.getPartnerByEmail(partnerEmail);
       if (!partner) return CommonError('PARTNER_NOT_FOUND');
       // Assign partner and save
