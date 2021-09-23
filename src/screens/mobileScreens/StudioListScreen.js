@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client';
+import { useQuery, useReactiveVar } from '@apollo/client';
 import React, { useState, useEffect } from 'react';
 import SortingStudioFunction from '../../components/functions/Studio/SortingStudioFunc';
 import BottomNavigation from '../../components/mobileComponents/BottomNavigation';
@@ -13,6 +13,7 @@ import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import './StudioListScreen.css';
 import LocationSelect from '../../components/mobileComponents/studioListScreen/LocationSelect';
+import { StudioLocationVar } from '../../apollo';
 // import { getAdressByCoords } from '../../components/functions/GeoLocation';
 // import LoadingIcon from '../../components/mobileComponents/conceptListScreen/LoadingIcon';
 
@@ -21,7 +22,7 @@ const StudioListScreen = () => {
   const [isSortByOpen, setIsSortByOpen] = useState(false);
   const [isLocationByOpen, setIsLocationByOpen] = useState(false);
   const [sortBy, setSortBy] = useState(STUDIO_SORT_OPTIONS[0]);
-  const [locationBy, setLocationBy] = useState(null);
+  const locationBy = useReactiveVar(StudioLocationVar);
   const [searchTerm, setSearchTerm] = useState('');
   const [studios, setStudios] = useState([]);
   // const [geo, setGeo] = useState(addr);
@@ -112,7 +113,7 @@ const StudioListScreen = () => {
                 close={() => setIsLocationByOpen(false)}
                 closeAnother={() => setIsSortByOpen(false)}
                 options={STUDIO_LOCATION_OPTIONS}
-                setOption={setLocationBy}
+                setOption={StudioLocationVar}
                 selectedOption={locationBy}
               />
             </div>
@@ -120,7 +121,7 @@ const StudioListScreen = () => {
           <StudioListView studioList={studios} selectedLocation={locationBy} />
         </>
       ) : (
-        <LocationSelect setStudiosLocation={setLocationBy} />
+        <LocationSelect setStudiosLocation={StudioLocationVar} />
       )}
       <BottomNavigation pageName="studios" />
     </div>

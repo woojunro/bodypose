@@ -12,6 +12,8 @@ import { Observable } from 'apollo-link';
 
 export const IsLoggedInVar = makeVar(false);
 
+export const StudioLocationVar = makeVar(null);
+
 const httpLink = createHttpLink({
   uri: `${BASE_URL}/graphql`,
   credentials: 'include',

@@ -15,67 +15,46 @@ const HairMakeup = ({ shops, isHairOpen, setIsHairOpen }) => {
       <IoMdArrowDropdown fontSize="17px" />
     );
   };
+
   const openInNewTab = url => {
     const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
     if (newWindow) newWindow.opener = null;
   };
 
-  const renderedHairshopTitle = shop => {
-    if (shop.type === 'VISIT') {
-      return (
-        <>
-          <span className="hairshopName">
-            <b>{shop.name}</b>
-          </span>
-          <span className="goOut"> (출장 헤어/메이크업)</span>
-          {shop.contactInfo ? (
-            shop.contactInfo.startsWith('http') ? (
-              <div
-                className="hairshopLink"
-                onClick={() => openInNewTab(shop.contactInfo)}
-              >
-                <div className="hairshopContact">헤어샵 정보 보기</div>
-                <IoMdArrowRoundForward className="harishopArrow" size="13px" />
-              </div>
-            ) : (
-              <div className="hairshopContact">{shop.contactInfo}</div>
-            )
-          ) : null}
-        </>
-      );
-    } else if (shop.type === 'SPONSORED') {
-      return (
-        <>
-          <div className="hairshopName">
-            <b>{shop.name}</b>
-          </div>
-          {shop.address && <div className="hairshopAdress">{shop.address}</div>}
-          {shop.contactInfo ? (
-            shop.contactInfo.startsWith('http') ? (
-              <div
-                className="hairshopLink"
-                onClick={() => openInNewTab(shop.contactInfo)}
-              >
-                <div className="hairshopContact">헤어샵 정보</div>
-                <IoMdArrowRoundForward className="harishopArrow" size="13px" />
-              </div>
-            ) : (
-              <div className="hairshopContact">{shop.contactInfo}</div>
-            )
-          ) : null}
-        </>
-      );
-    } else {
-      // OWNED
-      return (
-        <>
-          <div className="hairshopName">
-            <b>{shop.name}</b>
-          </div>
-          <span className="goOut"> (자체 헤어/메이크업)</span>
-        </>
-      );
+  const getShopTypeString = type => {
+    switch (type) {
+      case 'VISIT':
+        return '(출장 헤어/메이크업)';
+      case 'SPONSORED':
+        return '(제휴)';
+      case 'OWNED':
+        return '(자체 헤어/메이크업)';
+      default:
+        return null;
     }
+  };
+
+  const renderedHairshopTitle = shop => {
+    return (
+      <>
+        <span className="hairshopName">
+          <b>{shop.name}</b>
+        </span>
+        <span className="goOut"> {getShopTypeString(shop.type)}</span>
+        {shop.contactInfo &&
+          (shop.contactInfo.startsWith('http') ? (
+            <div
+              className="hairshopLink"
+              onClick={() => openInNewTab(shop.contactInfo)}
+            >
+              <div className="hairshopContact">헤어샵 정보 보기</div>
+              <IoMdArrowRoundForward className="harishopArrow" size="13px" />
+            </div>
+          ) : (
+            <div className="hairshopContact">{shop.contactInfo}</div>
+          ))}
+      </>
+    );
   };
 
   return (
@@ -105,7 +84,9 @@ const HairMakeup = ({ shops, isHairOpen, setIsHairOpen }) => {
                 >
                   <div className="hairTitle">{item.title}</div>
                   <div className="hairPrice">
-                    {item.price ? `${item.price.toLocaleString()}원` : '문의'}
+                    {item.price === null
+                      ? '문의'
+                      : `${item.price.toLocaleString()} 원`}
                   </div>
                 </div>
               ))}

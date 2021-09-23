@@ -8,7 +8,7 @@ const StudioMap = ({ branches }) => {
   const branchOptions = branches.map(branch => ({
     value: branch.name,
     label: branch.name,
-    address: branch.address,
+    ...branch,
   }));
   const [isMapOpen, setIsMapOpen] = useState(true);
   const [currentBranch, setCurrentBranch] = useState(branchOptions[0]);
@@ -25,10 +25,7 @@ const StudioMap = ({ branches }) => {
 
   return (
     <div className="categoryContainer">
-      <div
-        onClick={() => setIsMapOpen(!isMapOpen)}
-        className="mapCategoryTitle"
-      >
+      <div onClick={() => setIsMapOpen(!isMapOpen)} className="categoryTitle">
         위치{renderedArrow()}
       </div>
       {isMapOpen ? (
@@ -58,6 +55,16 @@ const StudioMap = ({ branches }) => {
               key={currentBranch.address}
               currentLocation={currentBranch}
             />
+            {currentBranch.parkingInfo && (
+              <div className="studioAddressDivContainer">
+                <div className="studioAddressDiv">
+                  <div className="studioParkingLabel">주차 정보</div>
+                  <div className="studioParkingText">
+                    {currentBranch.parkingInfo}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </>
       ) : null}
