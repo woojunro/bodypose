@@ -409,7 +409,7 @@ export class StudiosService {
         if (!studio.logoUrl) errors.push('NO_STUDIO_LOGO');
         if (!studio.coverPhotoUrl) errors.push('NO_STUDIO_COVER');
         if (!studio.info.contactUrl) errors.push('NO_CONTACT_URL');
-        if (!studio.info.reservation) errors.push('NO_RESERVATION_URL');
+        if (!studio.info.reservationUrl) errors.push('NO_RESERVATION_URL');
         if (!studio.photos.length) errors.push('NO_STUDIO_PHOTOS');
         if (!studio.studioProducts.length) errors.push('NO_STUDIO_PRODUCTS');
         if (!studio.branches.length) errors.push('NO_STUDIO_BRANCHES');
@@ -1132,11 +1132,14 @@ export class StudiosService {
 
   async getHeartStudios(user: User): Promise<GetStudiosOutput> {
     try {
-      const heartStudios = await this.usersHeartStudiosRepository.find({
-        relations: ['studio', 'studio.branches'],
-        where: { user: user.id, studio: { isPublic: true } },
-        order: { heartAt: 'DESC' },
-      });
+      const heartStudios = await this.usersHeartStudiosRepository
+        .createQueryBuilder('heart')
+        .leftJoinAndSelect('heart.studio', 'studio')
+        .leftJoinAndSelect('studio.branches', 'branch')
+        .where('heart.userId = :id', { id: user.id })
+        .andWhere('studio.isPublic = true')
+        .orderBy('heart.heartAt', 'DESC')
+        .getMany();
       const studios: StudioWithIsHearted[] = heartStudios.map(heart => ({
         ...heart.studio,
         isHearted: true,
