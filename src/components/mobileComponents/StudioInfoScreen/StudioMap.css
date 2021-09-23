@@ -37,6 +37,7 @@
 }
 
 .studioParkingText {
+  white-space: pre-wrap;
   margin-top: 10px;
   color: var(--color-showMore);
 }

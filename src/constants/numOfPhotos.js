@@ -1,3 +1,3 @@
-export const FEMALE_PHOTOS_NUM = 6504;
-export const MALE_PHOTOS_NUM = 3456;
-export const COUPLE_PHOTOS_NUM = 216;
+export const FEMALE_PHOTOS_NUM = 8905;
+export const MALE_PHOTOS_NUM = 4712;
+export const COUPLE_PHOTOS_NUM = 355;
