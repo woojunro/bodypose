@@ -4,7 +4,7 @@ import './StudioMap.css';
 import Select from '../Common/Select';
 import KakaoMap from './KakaoMap';
 
-const StudioMap = ({ branches }) => {
+const StudioMap = ({ branches, studioName }) => {
   const branchOptions = branches.map(branch => ({
     value: branch.name,
     label: branch.name,
@@ -54,6 +54,8 @@ const StudioMap = ({ branches }) => {
             <KakaoMap
               key={currentBranch.address}
               currentLocation={currentBranch}
+              studioName={studioName}
+              hasOnlyOneBranch={branches.length === 1}
             />
             {currentBranch.parkingInfo && (
               <div className="studioAddressDivContainer">

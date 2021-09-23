@@ -5,6 +5,7 @@ import StudioMap from './StudioMap';
 
 const InfoTab = ({ currentStudio }) => {
   const {
+    name,
     branches,
     info: { description, reservation, cancel },
   } = currentStudio;
@@ -14,7 +15,7 @@ const InfoTab = ({ currentStudio }) => {
       {description && (
         <InfoToggleDiv title="스튜디오 소개" content={description} />
       )}
-      <StudioMap branches={branches} />
+      <StudioMap branches={branches} studioName={name} />
       {reservation && <InfoToggleDiv title="예약안내" content={reservation} />}
       {cancel && (
         <InfoToggleDiv
