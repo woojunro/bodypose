@@ -34,13 +34,13 @@ export class HairMakeupShop extends CoreEntity {
   @Column({ nullable: true })
   @Field(type => String, { nullable: true })
   @IsOptional()
-  @Length(1, 255)
+  @Length(0, 255)
   contactInfo?: string;
 
   @Column({ length: 100, nullable: true })
   @Field(type => String, { nullable: true })
   @IsOptional()
-  @Length(1, 100)
+  @Length(0, 100)
   address?: string;
 
   @Column({ type: 'text', nullable: true })

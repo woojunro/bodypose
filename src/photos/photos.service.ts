@@ -45,6 +45,8 @@ import {
   GetStudioPhotosOutput,
   GetMyHeartStudioPhotosInput,
   StudioPhotoWithIsHearted,
+  GetStudioPhotoInput,
+  GetStudioPhotoOutput,
 } from './dtos/get-studio-photo.dto';
 import {
   HeartStudioPhotoInput,
@@ -91,7 +93,30 @@ export class PhotosService {
     private readonly uploadsService: UploadsService,
   ) {}
 
-  async getStudioPhoto(id: number): Promise<StudioPhoto> {
+  async getStudioPhoto(
+    user: User,
+    { id }: GetStudioPhotoInput,
+  ): Promise<GetStudioPhotoOutput> {
+    try {
+      let query = this.studioPhotoRepository
+        .createQueryBuilder('photo')
+        .leftJoin('photo.studio', 'studio')
+        .leftJoin('studio.partner', 'partner')
+        .leftJoinAndSelect('photo.backgroundConcepts', 'backgroundConcept')
+        .leftJoinAndSelect('photo.costumeConcepts', 'costumeConcept')
+        .leftJoinAndSelect('photo.objectConcepts', 'objectConcept')
+        .where('photo.id = :id', { id });
+      query = this.filterStudioPhotoQueryByUser(query, user);
+      const photo = await query.getOne();
+      if (!photo) return CommonError('STUDIO_PHOTO_NOT_FOUND');
+      return { ok: true, photo };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async checkIfStudioPhotoExists(id: number): Promise<StudioPhoto> {
     const studioPhoto = await this.studioPhotoRepository
       .createQueryBuilder('p')
       .select('p.id')
@@ -207,7 +232,7 @@ export class PhotosService {
       const photosPerPage = 24;
       let query = this.studioPhotoRepository
         .createQueryBuilder('photo')
-        .leftJoinAndSelect('photo.studio', 'studio')
+        .leftJoin('photo.studio', 'studio')
         .leftJoin('studio.partner', 'partner')
         .where({ gender: gender ? gender : Not(IsNull()) })
         .andWhere('studio.slug = :slug', { slug: studioSlug });
@@ -234,7 +259,7 @@ export class PhotosService {
           isHearted: hearts.some(heart => heart.studioPhotoId === photo.id),
         }));
       } else {
-        photos = photos.map(photo => ({ ...photo, isHearted: null }));
+        photos = studioPhotos.map(photo => ({ ...photo, isHearted: null }));
       }
 
       return {
@@ -534,35 +559,34 @@ export class PhotosService {
     }
   }
 
-  async updateStudioPhoto({
-    id,
-    payload: {
-      gender,
-      backgroundConceptSlugs,
-      costumeConceptSlugs,
-      objectConceptSlugs,
-    },
-  }: UpdateStudioPhotoInput): Promise<UpdateStudioPhotoOutput> {
+  async updateStudioPhoto(
+    user: User,
+    {
+      id,
+      payload: {
+        gender,
+        backgroundConceptSlugs,
+        costumeConceptSlugs,
+        objectConceptSlugs,
+      },
+    }: UpdateStudioPhotoInput,
+  ): Promise<UpdateStudioPhotoOutput> {
     try {
-      const photo = await this.studioPhotoRepository.findOne(
-        { id },
-        {
-          relations: [
-            'backgroundConcepts',
-            'costumeConcepts',
-            'objectConcepts',
-          ],
-        },
+      const existingStudioPhoto = await this.studioPhotoRepository
+        .createQueryBuilder('photo')
+        .leftJoin('photo.studio', 'studio')
+        .addSelect('studio.id')
+        .where('photo.id = :id', { id })
+        .getOne();
+      if (!existingStudioPhoto) return CommonError('STUDIO_PHOTO_NOT_FOUND');
+      const valid = await this.studiosService.checkIfUserIsAdminOrOwner(
+        existingStudioPhoto.studio.id,
+        user,
       );
-      if (!photo) {
-        return {
-          ok: false,
-          error: 'STUDIO_PHOTO_NOT_FOUND',
-        };
-      }
-      if (gender) {
-        photo.gender = gender;
-      }
+      if (!valid) return CommonError('INVALID');
+      // Update
+      const photo = this.studioPhotoRepository.create({ id });
+      if (gender) photo.gender = gender;
       if (backgroundConceptSlugs) {
         photo.backgroundConcepts = [];
         for (const slug of backgroundConceptSlugs) {
@@ -571,9 +595,7 @@ export class PhotosService {
             slug,
             PhotoConceptType.BACKGROUND,
           );
-          if (!ok) {
-            return { ok, error };
-          }
+          if (!ok) return { ok, error };
         }
       }
       if (costumeConceptSlugs) {
@@ -584,9 +606,7 @@ export class PhotosService {
             slug,
             PhotoConceptType.COSTUME,
           );
-          if (!ok) {
-            return { ok, error };
-          }
+          if (!ok) return { ok, error };
         }
       }
       if (objectConceptSlugs) {
@@ -597,9 +617,7 @@ export class PhotosService {
             slug,
             PhotoConceptType.OBJECT,
           );
-          if (!ok) {
-            return { ok, error };
-          }
+          if (!ok) return { ok, error };
         }
       }
       const studioPhoto = await this.studioPhotoRepository.save(photo);
@@ -613,37 +631,31 @@ export class PhotosService {
     }
   }
 
-  async deleteStudioPhoto({
-    id,
-    studioSlug,
-  }: DeleteStudioPhotoInput): Promise<DeleteStudioPhotoOutput> {
+  async deleteStudioPhoto(
+    user: User,
+    { id }: DeleteStudioPhotoInput,
+  ): Promise<DeleteStudioPhotoOutput> {
     try {
       const photo = await this.studioPhotoRepository.findOne(
         { id },
         { relations: ['studio'] },
       );
-      if (!photo) {
-        return {
-          ok: false,
-          error: 'PHOTO_NOT_FOUND',
-        };
-      }
-      if (photo.studio.slug !== studioSlug) {
-        return {
-          ok: false,
-          error: 'INVALID_STUDIO_SLUG',
-        };
-      }
-      await this.studioPhotoRepository.delete({ id });
-      // Delete photos in storage
+      if (!photo) return CommonError('STUDIO_PHOTO_NOT_FOUND');
+      const valid = await this.studiosService.checkIfUserIsAdminOrOwner(
+        photo.studio.id,
+        user,
+      );
+      if (!valid) return CommonError('INVALID');
+      // Delete
+      await this.studioPhotoRepository.delete(id);
       const thumbnailPhoto = photo.thumbnailUrl.substring(
         photo.thumbnailUrl.indexOf('studio-photos'),
       );
       const originalPhoto = photo.originalUrl.substring(
         photo.originalUrl.indexOf('studio-photos'),
       );
-      await this.uploadsService.deleteFile(thumbnailPhoto);
-      await this.uploadsService.deleteFile(originalPhoto);
+      this.uploadsService.deleteFile(thumbnailPhoto);
+      this.uploadsService.deleteFile(originalPhoto);
       return { ok: true };
     } catch (e) {
       console.log(e);

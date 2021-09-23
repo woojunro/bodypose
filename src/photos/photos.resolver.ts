@@ -19,6 +19,8 @@ import {
   GetAllStudioPhotosInput,
   GetAllStudioPhotosOutput,
   GetMyHeartStudioPhotosInput,
+  GetStudioPhotoInput,
+  GetStudioPhotoOutput,
   GetStudioPhotosInput,
   GetStudioPhotosOutput,
 } from './dtos/get-studio-photo.dto';
@@ -41,6 +43,15 @@ import { PhotosService } from './photos.service';
 @Resolver(of => StudioPhoto)
 export class PhotosResolver {
   constructor(private readonly photosService: PhotosService) {}
+
+  // Public
+  @Query(returns => GetStudioPhotoOutput)
+  studioPhoto(
+    @CurrentUser() user: User,
+    @Args('input') input: GetStudioPhotoInput,
+  ): Promise<GetStudioPhotoOutput> {
+    return this.photosService.getStudioPhoto(user, input);
+  }
 
   // Public
   @Query(returns => GetAllStudioPhotosOutput)
@@ -67,19 +78,21 @@ export class PhotosResolver {
   }
 
   @Mutation(returns => UpdateStudioPhotoOutput)
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
   updateStudioPhoto(
+    @CurrentUser() user: User,
     @Args('input') input: UpdateStudioPhotoInput,
   ): Promise<UpdateStudioPhotoOutput> {
-    return this.photosService.updateStudioPhoto(input);
+    return this.photosService.updateStudioPhoto(user, input);
   }
 
   @Mutation(returns => DeleteStudioPhotoOutput)
-  @Roles(UserType.ADMIN)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
   deleteStudioPhoto(
+    @CurrentUser() user: User,
     @Args('input') input: DeleteStudioPhotoInput,
   ): Promise<DeleteStudioPhotoOutput> {
-    return this.photosService.deleteStudioPhoto(input);
+    return this.photosService.deleteStudioPhoto(user, input);
   }
 
   @Mutation(returns => CreatePhotoConceptOutput)

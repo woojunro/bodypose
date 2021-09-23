@@ -1,5 +1,13 @@
-import { Field, InputType, Int, ObjectType, OmitType } from '@nestjs/graphql';
+import {
+  Field,
+  InputType,
+  Int,
+  ObjectType,
+  OmitType,
+  PickType,
+} from '@nestjs/graphql';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { CoreOutput } from 'src/common/dtos/output.dto';
 import {
   PaginationInput,
   PaginationOutput,
@@ -57,4 +65,17 @@ export class GetAllStudioPhotosOutput extends PaginationOutput {
 export class GetStudioPhotosOutput extends PaginationOutput {
   @Field(type => [StudioPhotoWithIsHearted], { nullable: true })
   photos?: StudioPhotoWithIsHearted[];
+}
+
+@InputType()
+export class GetStudioPhotoInput extends PickType(
+  StudioPhoto,
+  ['id'],
+  InputType,
+) {}
+
+@ObjectType()
+export class GetStudioPhotoOutput extends CoreOutput {
+  @Field(type => StudioPhoto, { nullable: true })
+  photo?: StudioPhoto;
 }

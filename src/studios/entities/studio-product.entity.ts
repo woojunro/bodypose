@@ -79,7 +79,7 @@ export class StudioProduct extends CoreEntity {
   @Column({ nullable: true })
   @Field(type => String, { nullable: true })
   @IsOptional()
-  @Length(1, 255)
+  @Length(0, 255)
   description?: string;
 
   @Column({ nullable: true })

@@ -19,6 +19,7 @@ export class MailService {
     subject: string,
     template: string,
     emailVars: EmailVar[],
+    version = 'initial',
   ): Promise<boolean> {
     try {
       const form = new FormData();
@@ -26,7 +27,7 @@ export class MailService {
       form.append('to', to);
       form.append('subject', subject);
       form.append('template', template);
-      form.append('t:version', 'v2');
+      form.append('t:version', version);
       emailVars.forEach(emailVar => {
         form.append(`v:${emailVar.key}`, emailVar.value);
       });
@@ -57,22 +58,17 @@ export class MailService {
     userId: number,
     code: string,
   ): Promise<boolean> {
-    try {
-      const ok = await this.sendEmail(
-        email,
-        '[바디포즈] 이메일을 확인해주세요.',
-        'bodypose-email-verification',
-        [
-          { key: 'nickname', value: nickname },
-          { key: 'userId', value: String(userId) },
-          { key: 'code', value: code },
-        ],
-      );
-      return ok;
-    } catch (e) {
-      console.log(e);
-      return false;
-    }
+    return this.sendEmail(
+      email,
+      '[바디포즈] 이메일을 확인해주세요.',
+      'bodypose-email-verification',
+      [
+        { key: 'nickname', value: nickname },
+        { key: 'userId', value: String(userId) },
+        { key: 'code', value: code },
+      ],
+      'v2',
+    );
   }
 
   async sendPasswordReset(
@@ -81,21 +77,25 @@ export class MailService {
     userId: number,
     code: string,
   ): Promise<boolean> {
-    try {
-      const ok = await this.sendEmail(
-        email,
-        '[바디포즈] 비밀번호 변경',
-        'bodypose-password-reset',
-        [
-          { key: 'nickname', value: nickname },
-          { key: 'userId', value: String(userId) },
-          { key: 'code', value: code },
-        ],
-      );
-      return ok;
-    } catch (e) {
-      console.log(e);
-      return false;
-    }
+    return this.sendEmail(
+      email,
+      '[바디포즈] 비밀번호 변경',
+      'bodypose-password-reset',
+      [
+        { key: 'nickname', value: nickname },
+        { key: 'userId', value: String(userId) },
+        { key: 'code', value: code },
+      ],
+      'v2',
+    );
+  }
+
+  async sendPartnerCreated(studioName: string): Promise<boolean> {
+    return this.sendEmail(
+      'help@fmonth.com',
+      '[바디포즈] 파트너스 가입 신청 알림',
+      'bodypose-partner-created',
+      [{ key: 'studio', value: studioName }],
+    );
   }
 }
