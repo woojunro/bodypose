@@ -28,7 +28,7 @@ const BottomNavigation = ({ pageName }) => {
 
       emptyIcon: Camera,
       seletecdIcon: CameraSelected,
-      pageTo: '/studios',
+      pageTo: '/studioslocation',
     },
 
     {

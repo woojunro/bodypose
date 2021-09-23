@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Analytics from 'react-router-ga';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
@@ -6,6 +6,7 @@ import { IsLoggedInVar } from '../apollo';
 import HomeScreenM from '../screens/mobileScreens/HomeScreen';
 import StudioInfoScreenM from '../screens/mobileScreens/StudioInfoScreen';
 import StudioListScreenM from '../screens/mobileScreens/StudioListScreen';
+import StudioLocationScreenM from '../screens/mobileScreens/StudioLocationScreen';
 import ConceptListScreenM from '../screens/mobileScreens/ConceptListScreen';
 // import ReviewListScreenM from '../screens/mobileScreens/ReviewListScreen';
 import UserScreenM from '../screens/mobileScreens/AboutUser/UserScreen';
@@ -37,6 +38,13 @@ import { createBrowserHistory } from 'history';
 const App = () => {
   const history = createBrowserHistory();
   const [isAppLoading, setIsAppLoading] = useState(true);
+  //현재 위치.
+  // const [currentAddr, setCurrentAddr] = useState();
+  // const [declineGPS, setDeclineGPS] = useState();
+  const [studiosLocation, setStudiosLocation] = useState();
+  useEffect(() => {
+    console.log(studiosLocation);
+  }, [studiosLocation]);
 
   const { loading } = useQuery(MY_USER_INFO_QUERY, {
     fetchPolicy: 'network-only',
@@ -69,9 +77,29 @@ const App = () => {
       <Analytics id={process.env.REACT_APP_GA_ID}>
         <Switch className="app">
           <Route exact path="/" component={HomeScreenM} />
-          <Route exact path="/studios" component={StudioListScreenM} />
+          <Route
+            exact
+            path="/studios"
+            component={() => (
+              <StudioListScreenM
+                setStudioLocation={setStudiosLocation}
+                studiosLocation={studiosLocation}
+                // addr={currentAddr}
+                // setAddr={setCurrentAddr}
+                // declineGPS={declineGPS}
+                // setDeclineGPS={setDeclineGPS}
+              />
+            )}
+          />
           <Route exact path="/concepts" component={ConceptListScreenM} />
           {/* <Route exact path="/reviews" component={ReviewListScreenM} /> */}
+          <Route
+            exact
+            path="/studioslocation"
+            component={() => (
+              <StudioLocationScreenM setLocation={setStudiosLocation} />
+            )}
+          />
           <Route exact path="/studios/:slug" component={StudioInfoScreenM} />
           <Route exact path="/users" component={UserScreenM} />
           <Route exact path="/hearts" component={HeartScreenM} />

@@ -15,6 +15,7 @@ const SortButton = ({
   selectedOption,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const openModal = () => {
     setIsModalOpen(true);
   };
