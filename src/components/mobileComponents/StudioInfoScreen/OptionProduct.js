@@ -15,15 +15,18 @@ const OptionProduct = ({
       <div key={option.id} className="optionContainer">
         <div className="optionCardTop">
           <div className="optionTitle">{option.title}</div>
-          <div className="optionPrice">{option.price.toLocaleString()}</div>
+          <div className="optionPrice">
+            {option.price === null
+              ? '문의'
+              : `${option.price.toLocaleString()} 원`}
+          </div>
         </div>
         <div className="optionAdding">{option.description}</div>
       </div>
     );
   });
-  const renderedOptionNotice = (optionNotice
-    ? optionNotice.split('\n')
-    : []
+  const renderedOptionNotice = (
+    optionNotice ? optionNotice.split('\n') : []
   ).map(notice => {
     return (
       <div key={notice} className="itemNotice">

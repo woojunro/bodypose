@@ -9,7 +9,7 @@ class KakaoMap extends React.Component {
   }
 
   componentDidMount() {
-    const { currentLocation } = this.props;
+    const { currentLocation, studioName, hasOnlyOneBranch } = this.props;
     const { kakao } = window;
     kakao.maps.load(() => {
       const mapContainer = document.getElementById('map');
@@ -39,10 +39,14 @@ class KakaoMap extends React.Component {
 
           map.setCenter(coords);
 
+          const markerName = hasOnlyOneBranch
+            ? studioName
+            : `${studioName} ${currentLocation.value}`;
+
           // Set onClick of kakao map button
           this.kakaoMapButtonRef.current.onclick = () => {
             let url = 'https://map.kakao.com/link/map/';
-            url += currentLocation.value + ',';
+            url += markerName + ',';
             url += String(coords.getLat()) + ',';
             url += String(coords.getLng());
             window.open(url, '_blank');

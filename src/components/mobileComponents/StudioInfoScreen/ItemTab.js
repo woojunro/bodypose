@@ -9,31 +9,34 @@ const ItemTab = ({ currentStudio, products }) => {
   const [isHairOpen, setIsHairOpen] = useState(true);
   const [isOptionOpen, setIsOptionOpen] = useState(true);
 
+  const { studioProducts, hairMakeupShops, additionalProducts } = products;
+
   return (
     <div className="itemTab">
       <div className="totalItemContainer">
-        <PhotoItem
-          currentStudio={currentStudio}
-          products={products.studioProducts}
-          isPhotoItemOpen={isPhotoItemOpen}
-          setIsPhotoItemOpen={setIsPhotoItemOpen}
-        />
-        {products.hairMakeupShops && products.hairMakeupShops.length !== 0 && (
+        {studioProducts?.length > 0 && (
+          <PhotoItem
+            currentStudio={currentStudio}
+            products={studioProducts}
+            isPhotoItemOpen={isPhotoItemOpen}
+            setIsPhotoItemOpen={setIsPhotoItemOpen}
+          />
+        )}
+        {hairMakeupShops?.length > 0 && (
           <HairMakeup
-            shops={products.hairMakeupShops}
+            shops={hairMakeupShops}
             isHairOpen={isHairOpen}
             setIsHairOpen={setIsHairOpen}
           />
         )}
-        {products.additionalProducts &&
-          products.additionalProducts.length !== 0 && (
-            <OptionProduct
-              currentStudio={currentStudio}
-              products={products.additionalProducts}
-              isOptionOpen={isOptionOpen}
-              setIsOptionOpen={setIsOptionOpen}
-            />
-          )}
+        {additionalProducts?.length > 0 && (
+          <OptionProduct
+            currentStudio={currentStudio}
+            products={additionalProducts}
+            isOptionOpen={isOptionOpen}
+            setIsOptionOpen={setIsOptionOpen}
+          />
+        )}
       </div>
     </div>
   );

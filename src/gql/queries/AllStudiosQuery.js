@@ -9,17 +9,15 @@ export const ALL_STUDIOS_QUERY = gql`
         id
         name
         slug
+        tier
         coverPhotoUrl
+        heartCount
+        lowestPrice
+        isHearted
         branches {
           name
           address
         }
-        totalRating
-        reviewCount
-        lowestPrice
-        isHearted
-        premiumTier
-        heartCount
       }
     }
   }

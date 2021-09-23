@@ -28,7 +28,8 @@ export const SearchBar = ({ onSearchSubmit }) => {
             autoFocus={true}
             value={term}
             type="text"
-            onChange={(e) => setTerm(e.target.value)}
+            placeholder="이름으로 검색"
+            onChange={e => setTerm(e.target.value)}
           />
           <IoIosCloseCircleOutline
             onClick={() => setTerm('')}

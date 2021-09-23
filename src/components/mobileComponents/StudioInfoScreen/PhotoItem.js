@@ -1,5 +1,15 @@
 import React from 'react';
 import { IoMdArrowDropdown, IoMdArrowDropup } from 'react-icons/io';
+import {
+  ConceptCountTypes,
+  PeopleCountTypes,
+  PriceTypes,
+} from '../../../constants/studioProductTypes';
+import {
+  getConceptCountType,
+  getPeopleCountType,
+  getPriceType,
+} from '../../functions/Studio/GetStudioProductType';
 import './PhotoItem.css';
 
 const PhotoItem = ({
@@ -10,8 +20,9 @@ const PhotoItem = ({
 }) => {
   const indoor = products.filter(product => product.type === 'STUDIO');
   const outdoor = products.filter(product => product.type === 'OUTDOOR');
-  const indoorNotice = currentStudio.studioProductListDescription;
-  const outdoorNotice = currentStudio.outdoorProductListDescription;
+  const indoorNotice = currentStudio.info?.studioProduct;
+  const outdoorNotice = currentStudio.info?.outdoorProduct;
+
   const renderedArrow = () => {
     return isPhotoItemOpen ? (
       <IoMdArrowDropup fontSize="17px" />
@@ -20,95 +31,117 @@ const PhotoItem = ({
     );
   };
 
-  const splitMinMaxPeopleCount = stringToSplit => {
-    var arrayOfMinMax = stringToSplit.split('126');
-    return `${arrayOfMinMax[0]}~${arrayOfMinMax[1]}`;
+  const renderPeopleCount = (peopleCount, maxPeopleCount) => {
+    const type = getPeopleCountType(peopleCount, maxPeopleCount);
+    return type === PeopleCountTypes.SINGLE_VALUE
+      ? `${peopleCount}인 촬영`
+      : `${peopleCount}~${maxPeopleCount || ''}인 촬영`;
   };
 
-  const renderedItem = itemList =>
-    itemList.map(item => {
-      const peopleCountStr = String(item.peopleCount);
-      const conceptCountStr = String(item.conceptCount);
-      var minmaxPeopleCount = 0;
-      var minmaxConceptCount = 0;
-      var conceptNum;
-      if (item.conceptCount === 10000) {
-        conceptNum = '무제한';
-      } else {
-        conceptNum = item.conceptCount;
-      }
-      if (peopleCountStr.includes(126)) {
-        minmaxPeopleCount = splitMinMaxPeopleCount(peopleCountStr);
-      }
-      if (conceptCountStr.includes(126)) {
-        minmaxConceptCount = splitMinMaxPeopleCount(conceptCountStr);
-      }
+  const renderConceptCount = (conceptCount, maxConceptCount) => {
+    const type = getConceptCountType(conceptCount, maxConceptCount);
+    switch (type) {
+      case ConceptCountTypes.INFINITE:
+        return '무제한 컨셉';
+      case ConceptCountTypes.NO_EXPOSURE:
+        return '';
+      case ConceptCountTypes.SINGLE_VALUE:
+        return `${conceptCount}컨셉`;
+      case ConceptCountTypes.MULTI_VALUES:
+        return `${conceptCount}~${maxConceptCount || ''}컨셉`;
+      default:
+        return null;
+    }
+  };
+
+  const renderCutCount = (cutCount, isOriginalProvided) => {
+    const renderStrings = [];
+    if (cutCount > 0) renderStrings.push(`보정본 ${cutCount}컷`);
+    if (isOriginalProvided) renderStrings.push('원본 제공');
+    return renderStrings.join(', ');
+  };
+
+  const renderMinuteCount = minuteCount => {
+    if (!minuteCount) return null;
+    const hours = Math.floor(minuteCount / 60);
+    const minutes = minuteCount % 60;
+    const renderStrings = [];
+    if (hours > 0) renderStrings.push(`${hours}시간`);
+    if (minutes > 0) renderStrings.push(`${minutes}분`);
+    if (renderStrings.length > 0) renderStrings.push('내외');
+    return renderStrings.join(' ');
+  };
+
+  const renderCutAndMinute = (cutCount, isOriginalProvided, minuteCount) => {
+    const renderStrings = [];
+    const cut = renderCutCount(cutCount, isOriginalProvided);
+    const minute = renderMinuteCount(minuteCount);
+    if (cut) renderStrings.push(cut);
+    if (minute) renderStrings.push(minute);
+    return renderStrings.join(' | ');
+  };
+
+  const renderPrice = price => {
+    const type = getPriceType(price);
+    switch (type) {
+      case PriceTypes.NO_EXPOSURE:
+        return 'X';
+      case PriceTypes.CONTACT:
+        return '문의';
+      case PriceTypes.VALUE:
+        return price.toLocaleString();
+      default:
+        return null;
+    }
+  };
+
+  const renderProducts = products =>
+    products.map(product => {
+      const {
+        id,
+        title,
+        peopleCount,
+        maxPeopleCount,
+        conceptCount,
+        maxConceptCount,
+        cutCount,
+        minuteCount,
+        description,
+        weekdayPrice,
+        weekendPrice,
+        isOriginalProvided,
+      } = product;
+
       return (
-        <div key={`studioProduct-${item.id}`} className="photoItemContainer">
+        <div key={`studioProduct-${id}`} className="photoItemContainer">
           <div className="photoItemInfoContainer">
             <div className="photoItemTopPart">
               <div className="photoItemleftPart">
-                <div className="photoItemTitle">{item.title}</div>
+                <div className="photoItemTitle">{title}</div>
                 <div className="photoSpecific">
                   <div className="itemUpper">
-                    {item.conceptCount === 0
-                      ? peopleCountStr.includes(126)
-                        ? `${minmaxPeopleCount}인촬영`
-                        : `${item.peopleCount}인촬영 `
-                      : peopleCountStr.includes(126)
-                      ? conceptCountStr.includes(126)
-                        ? `${minmaxPeopleCount}인촬영 - ${minmaxConceptCount}컨셉`
-                        : `${minmaxPeopleCount}인촬영 - ${conceptNum}컨셉`
-                      : conceptCountStr.includes(126)
-                      ? `${item.peopleCount}인촬영 - ${minmaxConceptCount}컨셉`
-                      : `${item.peopleCount}인촬영 - ${conceptNum}컨셉`}
+                    {renderPeopleCount(peopleCount, maxPeopleCount)}
+                    {renderConceptCount(conceptCount, maxConceptCount) &&
+                      ` - ${renderConceptCount(conceptCount, maxConceptCount)}`}
                   </div>
-                  {currentStudio.isOriginalPhotoProvided ? (
-                    <div className="itemUnder">
-                      <span>
-                        {item.cutCount === 0
-                          ? `보정본+원본`
-                          : `보정본 ${item.cutCount}컷+원본`}
-                      </span>
-                      {item.minuteCount && (
-                        <span>
-                          {item.minuteCount % 60 === 0
-                            ? ` | ${item.minuteCount / 60}시간 내외`
-                            : item.minuteCount < 60
-                            ? ` | ${item.minuteCount}분 내외`
-                            : ` | ${Math.floor(item.minuteCount / 60)}시간 ${
-                                item.minuteCount % 60
-                              }분 내외`}
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="itemUnder">
-                      {item.cutCount === 0 ? null : `보정본 ${item.cutCount}컷`}
-                      {item.minuteCount && (
-                        <span>
-                          {item.minuteCount % 60 === 0
-                            ? ` | ${item.minuteCount / 60}시간 내외`
-                            : item.minuteCount < 60
-                            ? ` | ${item.minuteCount}분 내외`
-                            : ` | ${Math.floor(item.minuteCount / 60)}시간 ${
-                                item.minuteCount % 60
-                              }분 내외`}
-                        </span>
-                      )}
-                    </div>
-                  )}
+                  <div className="itemUnder">
+                    {renderCutAndMinute(
+                      cutCount,
+                      isOriginalProvided,
+                      minuteCount
+                    )}
+                  </div>
                 </div>
-                {item.description ? (
-                  <div className="photoItemBottomPart">{item.description}</div>
-                ) : null}
+                {description && (
+                  <div className="photoItemBottomPart">{description}</div>
+                )}
               </div>
               <div className="photoItemrightPart">
                 <div className="photoItemPrice">
-                  {item.weekdayPrice.toLocaleString()}
+                  {renderPrice(weekdayPrice)}
                 </div>
                 <div className="photoItemPrice">
-                  {item.weekendPrice.toLocaleString()}
+                  {renderPrice(weekendPrice)}
                 </div>
               </div>
             </div>
@@ -145,7 +178,7 @@ const PhotoItem = ({
       >
         촬영 상품 {renderedArrow()}
       </div>
-      {isPhotoItemOpen ? (
+      {isPhotoItemOpen && (
         <>
           {indoor.length !== 0 && (
             <>
@@ -153,12 +186,12 @@ const PhotoItem = ({
                 <div>스튜디오 상품</div>
                 <div className="dayContainer">
                   <div className="whichDay">
-                    <div>{currentStudio.weekdayPriceTag}</div>
-                    <div>{currentStudio.weekendPriceTag}</div>
+                    <div>{currentStudio.info?.weekdayPriceTag || '평일'}</div>
+                    <div>{currentStudio.info?.weekendPriceTag || '주말'}</div>
                   </div>
                 </div>
               </div>
-              <div>{renderedItem(indoor)}</div>
+              <div>{renderProducts(indoor)}</div>
               <div>{renderedIndoorNotice}</div>
             </>
           )}
@@ -167,16 +200,16 @@ const PhotoItem = ({
               <div className="placeText">
                 <div>아웃도어 상품</div>
                 <div className="whichDay">
-                  <div>{currentStudio.weekdayPriceTag}</div>
-                  <div>{currentStudio.weekendPriceTag}</div>
+                  <div>{currentStudio.info?.weekdayPriceTag || '평일'}</div>
+                  <div>{currentStudio.info?.weekendPriceTag || '주말'}</div>
                 </div>
               </div>
-              <div>{renderedItem(outdoor)}</div>
+              <div>{renderProducts(outdoor)}</div>
               <div>{renderedOutdoorNotice}</div>
             </>
           )}
         </>
-      ) : null}
+      )}
     </div>
   );
 };

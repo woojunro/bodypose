@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './StudioCard.css';
-import { IoHeart, IoHeartOutline, IoStar } from 'react-icons/io5';
-
+import { IoHeart, IoHeartOutline } from 'react-icons/io5';
 import { useHistory } from 'react-router-dom';
 import GetShortAdress from '../../functions/Studio/GetShortAdress';
 import { client, IsLoggedInVar } from '../../../apollo';
@@ -26,7 +25,7 @@ const StudioCard = ({
 }) => {
   const isLoggedIn = useReactiveVar(IsLoggedInVar);
   const history = useHistory();
-  const adress = GetShortAdress(location || '주소 없음');
+  const address = GetShortAdress(location || '주소 없음');
 
   const [isHearted, setIsHearted] = useState(Hearted);
 
@@ -124,7 +123,7 @@ const StudioCard = ({
             <div className="firstLine">
               <span>{title}</span>
             </div>
-            <div className="location">{adress}</div>
+            <div className="location">{address}</div>
             {/* <div className="thirdLine">
               <IoStar color="#FFD800" fontSize="17px" />
               {review === 0 ? (
@@ -148,11 +147,9 @@ const StudioCard = ({
             </div>
             <div className="lastLine">
               <span className="per">최저 가격</span>
-              {!price || price === 0 ? (
-                <span className="price">문의 바람</span>
-              ) : (
-                <span className="price">{`${price.toLocaleString()}원~`}</span>
-              )}
+              <span className="price">
+                {price ? `${price.toLocaleString()}원~` : '문의'}
+              </span>
             </div>
           </div>
         </div>

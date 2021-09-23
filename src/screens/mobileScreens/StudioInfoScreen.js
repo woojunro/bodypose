@@ -22,6 +22,7 @@ import {
 
 const StudioInfoScreen = () => {
   const { slug } = useParams();
+
   const { data, loading, refetch } = useQuery(STUDIO_QUERY, {
     variables: { slug },
     onCompleted: data => {
@@ -57,17 +58,18 @@ const StudioInfoScreen = () => {
         },
       });
     },
+    onError: () => history.push('/error'),
   });
+
   const history = useHistory();
-  const { data: studioData, loading: studioLoading } = useQuery(
-    ALL_STUDIOS_QUERY,
-    {
-      fetchPolicy: 'cache-and-network',
-    }
-  );
+
+  const { data: studioData, loading: studioLoading } =
+    useQuery(ALL_STUDIOS_QUERY);
 
   const [viewStudioInfo] = useMutation(VIEW_STUDIO_INFO_MUTATION);
+
   const [contactStudio] = useMutation(CONTACT_STUDIO_MUTATION);
+
   const onContactClick = contactType => {
     contactStudio({
       variables: {
@@ -84,14 +86,13 @@ const StudioInfoScreen = () => {
   const [offsetY, setOffsetY] = useState(0);
 
   const copyTextToClipboard = () => {
-    var dummy = document.createElement('input'),
-      text = window.location.href;
-
+    const dummy = document.createElement('input');
+    const text = window.location.href;
     document.body.appendChild(dummy);
     dummy.value = text;
     dummy.select();
     document.execCommand('copy');
-    document.body.removeChild(dummy);
+    dummy.remove();
   };
 
   useEffect(() => {
@@ -99,13 +100,9 @@ const StudioInfoScreen = () => {
   }, [slug]);
 
   useEffect(() => {
-    window.onscroll = () => {
-      setOffsetY(window.pageYOffset);
-    };
-    const cleanup = () => {
-      window.onscroll = () => {};
-    };
-    return cleanup;
+    const handleScroll = () => setOffsetY(window.scrollY);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   if (loading || studioLoading) {
@@ -116,8 +113,8 @@ const StudioInfoScreen = () => {
     );
   }
 
-  const studio = data ? data.studio.studio : null;
-  const products = data ? data.products : null;
+  const studio = data?.studio?.studio;
+  const products = data?.products;
 
   const renderedItem = () => {
     if (navigator === 'portfolio') {
@@ -134,7 +131,6 @@ const StudioInfoScreen = () => {
   return (
     <div>
       {offsetY > 200 && <ScrollToTopButton />}
-
       <BottomAlertDialog
         isOpen={isAlertOpen}
         setIsOpen={setIsAlertOpen}
