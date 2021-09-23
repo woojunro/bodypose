@@ -9,30 +9,32 @@ export const STUDIO_QUERY = gql`
         id
         name
         slug
+        tier
         logoUrl
-        contactUrl
-        reservationUrl
+        coverPhotoUrl
+        isHearted
         branches {
           name
           address
+          parkingInfo
         }
-        premiumTier
         heartCount
-        totalRating
-        reviewCount
-        isOriginalPhotoProvided
         lowestPrice
-        parkingInfoDescription
-        studioProductListDescription
-        outdoorProductListDescription
-        weekdayPriceTag
-        weekendPriceTag
-        additionalProductListDescription
-        isHearted
-        reservationInfoDescription
-        cancelInfoDescription
+        info {
+          contactUrl
+          reservationUrl
+          weekdayPriceTag
+          weekendPriceTag
+          studioProduct
+          outdoorProduct
+          additionalProduct
+          description
+          reservation
+          cancel
+        }
       }
     }
+
     products(input: { slug: $slug }) {
       ok
       error
@@ -41,12 +43,15 @@ export const STUDIO_QUERY = gql`
         type
         title
         peopleCount
+        maxPeopleCount
         conceptCount
+        maxConceptCount
         cutCount
         minuteCount
         description
         weekdayPrice
         weekendPrice
+        isOriginalProvided
       }
       hairMakeupShops {
         id

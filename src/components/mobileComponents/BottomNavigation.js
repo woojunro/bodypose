@@ -25,16 +25,14 @@ const BottomNavigation = ({ pageName }) => {
     {
       name: 'studios',
       title: '스튜디오',
-
       emptyIcon: Camera,
       seletecdIcon: CameraSelected,
-      pageTo: '/studioslocation',
+      pageTo: '/studios',
     },
 
     {
       name: 'concepts',
       title: '컨셉북',
-
       emptyIcon: Book,
       seletecdIcon: BookSelected,
       pageTo: '/concepts',
@@ -42,16 +40,13 @@ const BottomNavigation = ({ pageName }) => {
     {
       name: 'hearts',
       title: '찜',
-
       emptyIcon: Heart,
       seletecdIcon: HeartSelected,
       pageTo: '/hearts',
     },
-
     {
       name: 'users',
       title: '내정보',
-
       emptyIcon: User,
       seletecdIcon: UserSelected,
       pageTo: '/users',

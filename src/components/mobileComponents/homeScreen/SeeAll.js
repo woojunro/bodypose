@@ -9,7 +9,7 @@ import SeeAllStudio from '../../../materials/icons/SeeAllStudio.png';
 const SeeAll = () => {
   const history = useHistory();
   const items = [
-    { name: '스튜디오', icon: SeeAllStudio, pageTo: '/studioslocation' },
+    { name: '스튜디오', icon: SeeAllStudio, pageTo: '/studios' },
     { name: '컨셉', icon: SeeAllConcept, pageTo: '/concepts' },
     // { name: '리뷰', icon: SeeAllReview, pageTo: '/reviews' },
   ];

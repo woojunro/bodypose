@@ -10,14 +10,12 @@ export const MY_HEART_STUDIOS_QUERY = gql`
         name
         slug
         coverPhotoUrl
+        lowestPrice
+        isHearted
         branches {
           name
           address
         }
-        totalRating
-        reviewCount
-        lowestPrice
-        isHearted
       }
     }
   }

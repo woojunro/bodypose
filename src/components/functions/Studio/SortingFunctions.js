@@ -10,13 +10,12 @@ export const SortByHearts = studios => {
   });
   return copiedStudios;
 };
+
 //지역별로 소팅하기.
 export const SortByLocation = (studios, location) => {
   return studios.filter(studio => {
-    if (!studio.branches[0]) {
-      return false;
-    }
-    return studio.branches[0].address.startsWith(location);
+    if (!studio.branches.length) return false;
+    return studio.branches.some(branch => branch.address.startsWith(location));
   });
 };
 
@@ -54,28 +53,23 @@ export const SortByRating = studios => {
   return copiedStudios;
 };
 
+const isPremiumStudio = studio => studio.tier > 0;
+
 //노멀 스튜디오만 소팅하는 함수.
 export const SortNormal = studios => {
-  return studios.filter(studio => studio.premiumTier === 'NORMAL');
+  return studios.filter(studio => !isPremiumStudio(studio));
 };
 
 //프리미엄 스튜디오만 소팅하는 함수.
 export const SortPremium = studios => {
-  return studios.filter(studio =>
-    ['PREMIUM', 'SUPER_PREMIUM'].includes(studio.premiumTier)
-  );
+  return studios.filter(studio => isPremiumStudio(studio));
 };
 
 //프리미엄 스튜디오중 현재 스튜디오 빼고 소팅하는 함수.
 export const SortSeeMore = (studios, currentStudioName) => {
-  var premiumStudioList = [];
-  studios.map(studio => {
-    if (
-      studio.premium === '1' &&
-      studio.studioName !== currentStudioName.currentStudioName
-    )
-      premiumStudioList.push(studio);
-    return null;
-  });
-  return premiumStudioList;
+  const premiumStudioList = studios.filter(studio => isPremiumStudio(studio));
+  const filteredList = studios.filter(
+    studio => studio.name !== currentStudioName
+  );
+  return filteredList;
 };

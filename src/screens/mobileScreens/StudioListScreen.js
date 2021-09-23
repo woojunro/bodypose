@@ -12,39 +12,16 @@ import StudioListView from '../../components/mobileComponents/studioListScreen/S
 import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import './StudioListScreen.css';
+import LocationSelect from '../../components/mobileComponents/studioListScreen/LocationSelect';
 // import { getAdressByCoords } from '../../components/functions/GeoLocation';
 // import LoadingIcon from '../../components/mobileComponents/conceptListScreen/LoadingIcon';
-import { useHistory } from 'react-router-dom';
 
-const StudioListScreen = ({
-  // addr,
-  // setAddr,
-  // declineGPS,
-  // setDeclineGPS,
-  studiosLocation,
-  setStudioLocation,
-}) => {
-  const { data, loading, error } = useQuery(ALL_STUDIOS_QUERY, {
-    onCompleted: data => {
-      if (!data || !data.allStudios.studios) {
-        return;
-      }
-      setStudios(
-        SortingStudioFunction(
-          sortBy,
-          locationBy,
-          searchTerm,
-          data.allStudios.studios
-        )
-      );
-    },
-  });
+const StudioListScreen = () => {
+  const { data, loading, error } = useQuery(ALL_STUDIOS_QUERY);
   const [isSortByOpen, setIsSortByOpen] = useState(false);
   const [isLocationByOpen, setIsLocationByOpen] = useState(false);
   const [sortBy, setSortBy] = useState(STUDIO_SORT_OPTIONS[0]);
-  const [locationBy, setLocationBy] = useState(
-    studiosLocation ? studiosLocation : STUDIO_LOCATION_OPTIONS[0]
-  );
+  const [locationBy, setLocationBy] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [studios, setStudios] = useState([]);
   // const [geo, setGeo] = useState(addr);
@@ -81,32 +58,17 @@ const StudioListScreen = ({
   // }, [geo]);
 
   useEffect(() => {
-    if (data) {
+    if (data && locationBy) {
       setStudios(
         SortingStudioFunction(
           sortBy,
           locationBy,
           searchTerm,
-          data.allStudios.studios
+          data.allStudios.studios || []
         )
       );
     }
-  }, [sortBy, searchTerm]);
-
-  useEffect(() => {
-    setStudioLocation(locationBy);
-    if (data) {
-      setStudios(
-        SortingStudioFunction(
-          sortBy,
-          locationBy,
-          searchTerm,
-          data.allStudios.studios
-        )
-      );
-    }
-    console.log(1);
-  }, [locationBy]);
+  }, [sortBy, locationBy, searchTerm]);
 
   useEffect(() => {
     document.body.style.overflow =
@@ -131,7 +93,7 @@ const StudioListScreen = ({
         <div className="appLoader">
           <p>오류가 발생하였습니다. 다시 시도해주세요.</p>
         </div>
-      ) : (
+      ) : locationBy ? (
         <>
           <div className="contentsBox">
             <div className="buttonContainer">
@@ -155,8 +117,10 @@ const StudioListScreen = ({
               />
             </div>
           </div>
-          <StudioListView studioList={studios} />
+          <StudioListView studioList={studios} selectedLocation={locationBy} />
         </>
+      ) : (
+        <LocationSelect setStudiosLocation={setLocationBy} />
       )}
       <BottomNavigation pageName="studios" />
     </div>
