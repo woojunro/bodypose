@@ -14,7 +14,7 @@ const StudioLinks = ({ currentStudio, onContactClick }) => {
           className="contactLink"
           onClick={() => {
             onContactClick('CONTACT');
-            openInNewTab(currentStudio.contactUrl);
+            openInNewTab(currentStudio.info.contactUrl);
           }}
         >
           스튜디오 문의
@@ -23,7 +23,7 @@ const StudioLinks = ({ currentStudio, onContactClick }) => {
           className="reservationLink"
           onClick={() => {
             onContactClick('RESERVATION');
-            openInNewTab(currentStudio.reservationUrl);
+            openInNewTab(currentStudio.info.reservationUrl);
           }}
         >
           스튜디오 예약
