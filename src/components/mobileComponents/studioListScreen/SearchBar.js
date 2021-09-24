@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { IoIosSearch, IoIosCloseCircleOutline } from 'react-icons/io';
+import { useReactiveVar } from '@apollo/client';
+import { StudioLocationVar } from '../../../apollo';
+import { STUDIO_LOCATION_OPTIONS } from './SortingOptions';
 
 import './SearchBar.css';
 
 export const SearchBar = ({ onSearchSubmit }) => {
+  const location = useReactiveVar(StudioLocationVar);
   const [openSearch, setOpenSearch] = useState(false);
   const [term, setTerm] = useState('');
 
@@ -40,6 +44,7 @@ export const SearchBar = ({ onSearchSubmit }) => {
       <div>
         <IoIosSearch
           onClick={() => {
+            if (!location) StudioLocationVar(STUDIO_LOCATION_OPTIONS[0]);
             setOpenSearch(!openSearch);
           }}
           className="searchIcon"
