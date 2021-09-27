@@ -1,7 +1,10 @@
 .IETextContainer {
   margin-top: 50px;
 }
-
+.noIEimg {
+  margin-top: 10px;
+  width: 100%;
+}
 .IEText {
   background-color: lightgray;
   padding-top: 10px;
@@ -10,15 +13,4 @@
   padding-right: 10px;
   white-space: pre-wrap;
   font-size: medium;
-}
-.browserIcons {
-  width: 100%;
-  margin-top: 20px;
-  display: flex;
-  justify-content: space-around;
-}
-
-.browserIcons img {
-  width: 12%;
-  height: auto;
 }

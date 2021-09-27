@@ -1,12 +1,6 @@
 import React from 'react';
 import logoAndsymbol from '../../materials/로고+심볼.png';
 import './IEScreen.css';
-import noIE from '../../materials/noie.jpeg';
-import chromeLogo from '../../materials/chrome.jpg';
-import correctionArrow from '../../materials/correctionArrow.png';
-import safari from '../../materials/safari.png';
-import edge from '../../materials/edge.jpg';
-import opera from '../../materials/opera.png';
 
 const IEScreen = () => {
   const IEText =
@@ -27,22 +21,16 @@ const IEScreen = () => {
   const renderedIEText = () => {
     return <div className="IEText">{IEText}</div>;
   };
-  const renderedIcons = () => {
-    return (
-      <div className="browserIcons">
-        <img alt="no Internet Explorer" src={noIE} />
-        <img alt="change to" src={correctionArrow} />
-        <img alt="chrome" src={chromeLogo} />
-        <img alt="safari" src={safari} />
-        <img alt="edge" src={edge} /> <img alt="opera" src={opera} />
-      </div>
-    );
-  };
+
   return (
     <div>
       {Header()}
       <div className="IETextContainer">{renderedIEText()}</div>
-      {renderedIcons()}
+      <img
+        className="noIEimg"
+        src="https://storage.googleapis.com/bodypose-storage/hompage/no_ie_img.png"
+        alt="logos"
+      />
     </div>
   );
 };
