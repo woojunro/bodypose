@@ -11,7 +11,7 @@ const IEScreen = () => {
       <div>
         <div className="header">
           <div className="headerLogo">
-            <img src={logoAndsymbol} alt="BodyPose" />
+            <img src={logoAndsymbol} alt="BODYPOSE" />
           </div>
         </div>
         <div style={{ height: '50px' }} />
@@ -29,7 +29,7 @@ const IEScreen = () => {
       <img
         className="noIEimg"
         src="https://storage.googleapis.com/bodypose-storage/hompage/no_ie_img.png"
-        alt="logos"
+        alt="인터넷 익스플로러 미지원"
       />
     </div>
   );
