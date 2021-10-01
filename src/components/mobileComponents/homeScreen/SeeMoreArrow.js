@@ -2,6 +2,7 @@ import React from 'react';
 import './SeeMoreArrow.css';
 import { HiArrowRight } from 'react-icons/hi';
 import { useHistory } from 'react-router';
+import { StudioLocationVar } from '../../../apollo';
 
 const SeeMoreArrow = () => {
   const history = useHistory();
@@ -9,7 +10,8 @@ const SeeMoreArrow = () => {
     <div
       className="seeMoreStudioArrowContainer"
       onClick={() => {
-        history.push({ pathname: '/studios' });
+        StudioLocationVar(null);
+        history.push('/studios');
       }}
     >
       <div className="seeMoreStudioMain">
