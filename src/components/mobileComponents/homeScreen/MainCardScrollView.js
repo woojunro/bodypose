@@ -3,6 +3,7 @@ import MainCardM from './MainCardM';
 import './MainCardScrollView.css';
 import SemiTitle from './SemiTitle';
 import SortingStudioFunction from '../../functions/Studio/SortingStudioFunc';
+import SeeMoreArrow from './SeeMoreArrow';
 import {
   STUDIO_LOCATION_OPTIONS,
   STUDIO_SORT_OPTIONS,
@@ -33,7 +34,12 @@ const MainCardScrollView = ({ studios }) => {
     <div>
       <SemiTitle title="추천 스튜디오" pageTo="/studios" />
       <span className="mainScrollView">
-        <ul>{renderedStudio}</ul>
+        <ul>
+          {renderedStudio}
+          <li>
+            <SeeMoreArrow />
+          </li>
+        </ul>
       </span>
     </div>
   );
