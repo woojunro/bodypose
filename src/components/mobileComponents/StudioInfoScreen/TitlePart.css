@@ -9,6 +9,7 @@
 .studioLogo {
   width: 70px;
   border-radius: 50%;
+  border: 1px solid lightgray;
 }
 
 .stuioInfoTitle {
