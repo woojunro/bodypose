@@ -1,5 +1,5 @@
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString, Length } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { HairMakeupProduct } from './hair-makeup-product.entity';
@@ -26,24 +26,24 @@ export class HairMakeupShop extends CoreEntity {
   @IsEnum(ShopType)
   type: ShopType;
 
-  @Column()
+  @Column({ length: 30 })
   @Field(type => String)
-  @IsString()
+  @Length(1, 30)
   name: string;
 
   @Column({ nullable: true })
   @Field(type => String, { nullable: true })
   @IsOptional()
-  @IsString()
+  @Length(0, 255)
   contactInfo?: string;
 
-  @Column({ nullable: true })
+  @Column({ length: 100, nullable: true })
   @Field(type => String, { nullable: true })
   @IsOptional()
-  @IsString()
+  @Length(0, 100)
   address?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   @Field(type => String, { nullable: true })
   @IsOptional()
   @IsString()
@@ -56,6 +56,5 @@ export class HairMakeupShop extends CoreEntity {
   @ManyToOne(relation => Studio, studio => studio.hairMakeupShops, {
     onDelete: 'CASCADE',
   })
-  @Field(type => Studio)
   studio: Studio;
 }

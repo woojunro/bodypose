@@ -15,6 +15,7 @@ import { UploadsModule } from './uploads/uploads.module';
 import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import { NoticesModule } from './notices/notices.module';
 import { ENTITY_LIST } from './common/constants/entity-list.constant';
+import { InsightsModule } from './insights/insights.module';
 
 @Module({
   imports: [
@@ -45,6 +46,10 @@ import { ENTITY_LIST } from './common/constants/entity-list.constant';
         GOOGLE_CLOUD_PROJECT: Joi.string().required(),
         GCLOUD_STORAGE_BUCKET: Joi.string().required(),
         KAKAO_ADMIN_KEY: Joi.string().required(),
+        APPLE_LOGIN_P8_BASE64: Joi.string().required(),
+        APPLE_LOGIN_TEAM_ID: Joi.string().required(),
+        APPLE_LOGIN_KEY_ID: Joi.string().required(),
+        APPLE_LOGIN_CLIENT_ID: Joi.string().required(),
         GOOGLE_AUTH_CLIENT_ID: Joi.string().required(),
         GOOGLE_APPLICATION_CREDENTIALS:
           process.env.NODE_ENV === 'development'
@@ -66,6 +71,7 @@ import { ENTITY_LIST } from './common/constants/entity-list.constant';
             socketPath: `/cloudsql/${process.env.CLOUD_SQL_CONNECTION_NAME}`,
           },
           synchronize: false,
+          logging: false,
           entities: ENTITY_LIST,
           charset: 'utf8mb4',
         })
@@ -80,6 +86,7 @@ import { ENTITY_LIST } from './common/constants/entity-list.constant';
           logging: true,
           entities: ENTITY_LIST,
           charset: 'utf8mb4',
+          // dropSchema: true,
         }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
@@ -88,9 +95,14 @@ import { ENTITY_LIST } from './common/constants/entity-list.constant';
           return error;
         }
         const graphQLFormattedError: GraphQLFormattedError = {
-          message: error.name,
+          message: error.message,
         };
         return graphQLFormattedError;
+      },
+      context: ({ req, res }) => ({ req, res }),
+      cors: {
+        credentials: true,
+        origin: true,
       },
     }),
     AuthModule,
@@ -101,6 +113,7 @@ import { ENTITY_LIST } from './common/constants/entity-list.constant';
     PhotosModule,
     UploadsModule,
     NoticesModule,
+    InsightsModule,
   ],
   controllers: [],
   providers: [

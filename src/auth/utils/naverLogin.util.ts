@@ -1,5 +1,4 @@
 import got from 'got';
-import { Gender } from 'src/users/entities/user.entity';
 import { GetOAuthProfileWithAccessTokenOutput } from '../dtos/oauth.dto';
 
 export const getNaverProfileWithAccessToken = async (
@@ -16,14 +15,6 @@ export const getNaverProfileWithAccessToken = async (
       ok: true,
       profile: {
         socialId: profile.id,
-        nickname: profile.nickname,
-        profileImageUrl: profile.profile_image,
-        gender:
-          profile.gender === 'M'
-            ? Gender.MALE
-            : profile.gender === 'F'
-            ? Gender.FEMALE
-            : null,
         email: profile.email,
       },
     };

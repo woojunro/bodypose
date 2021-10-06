@@ -17,8 +17,6 @@ export const getGoogleProfileWithAccessToken = async (
         ok: true,
         profile: {
           socialId: payload.sub,
-          nickname: payload.name,
-          profileImageUrl: payload.picture,
           email: payload.email,
         },
       };

@@ -1,12 +1,5 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import {
-  BackgroundConcept,
-  CostumeConcept,
-  ObjectConcept,
-} from './entities/photo-concept.entity';
-import { StudioPhoto } from './entities/studio-photo.entity';
-import { UsersClickStudioPhotos } from './entities/users-click-studio-photos.entity';
 import { PhotosService } from './photos.service';
 import {
   PhotosResolver,
@@ -14,21 +7,12 @@ import {
 } from './photos.resolver';
 import { UsersModule } from 'src/users/users.module';
 import { StudiosModule } from 'src/studios/studios.module';
-import { ReviewPhoto } from './entities/review-photo.entity';
-import { UsersHeartStudioPhotos } from './entities/users-heart-studio-photos.entity';
 import { UploadsModule } from 'src/uploads/uploads.module';
+import { PHOTOS_SERVICE_ENTITIES } from 'src/common/constants/entity-list.constant';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      StudioPhoto,
-      BackgroundConcept,
-      CostumeConcept,
-      ObjectConcept,
-      UsersClickStudioPhotos,
-      ReviewPhoto,
-      UsersHeartStudioPhotos,
-    ]),
+    TypeOrmModule.forFeature([...PHOTOS_SERVICE_ENTITIES]),
     forwardRef(() => UsersModule),
     forwardRef(() => StudiosModule),
     forwardRef(() => UploadsModule),

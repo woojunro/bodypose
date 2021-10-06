@@ -1,84 +1,158 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Context,
+  GqlExecutionContext,
+  Mutation,
+  Query,
+  Resolver,
+} from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import { Roles } from 'src/auth/roles.decorator';
 import {
   CreateUserWithEmailInput,
   CreateUserWithEmailOutput,
-  CreateOrLoginUserWithOAuthInput,
-  CreateOrLoginUserWithOAuthOutput,
 } from './dtos/create-user.dto';
 import { DeleteUserOutput } from './dtos/delete-user.dto';
-import { GetMyProfileOutput } from './dtos/get-user.dto';
+import {
+  AdminUpdateProfileInput,
+  CreateProfileInput,
+  CreateProfileOutput,
+  DeleteProfileImageInput,
+  GetProfileInput,
+  GetProfileOutput,
+  UpdateProfileInput,
+  UpdateProfileOutput,
+} from './dtos/user-profile.dto';
 import {
   RequestPasswordResetInput,
   RequestPasswordResetOutput,
   UpdatePasswordInput,
   UpdatePasswordOutput,
 } from './dtos/update-password.dto';
-import {
-  UpdateNicknameInput,
-  UpdateNicknameOutput,
-} from './dtos/update-user.dto';
 import { VerifyUserInput, VerifyUserOutput } from './dtos/verify-user.dto';
-import { Role, User } from './entities/user.entity';
+import { UserType, User } from './entities/user.entity';
 import { UsersService } from './users.service';
+import { CoreOutput } from 'src/common/dtos/output.dto';
+import { LockUserInput, LockUserOutput } from './dtos/lock-user.dto';
+import { UpdateEmailInput, UpdateEmailOutput } from './dtos/update-email.dto';
+import { GetUserInfoInput, GetUserInfoOutput } from './dtos/get-user-info.dto';
+import { Partner } from './entities/partner.entity';
+import {
+  CreatePartnerInput,
+  CreatePartnerOutput,
+} from './dtos/create-partner.dto';
+import {
+  ChangePasswordInput,
+  ChangePasswordOutput,
+} from './dtos/change-password.dto';
+import {
+  GetPartnerInput,
+  GetPartnerOutput,
+  GetPartnersOutput,
+} from './dtos/get-partner.dto';
+import {
+  UpdatePartnerInput,
+  UpdatePartnerOutput,
+} from './dtos/update-partner.dto';
 
 @Resolver(of => User)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
-  @Query(returns => GetMyProfileOutput)
-  @Roles(Role.USER)
-  myProfile(@CurrentUser() user: User): Promise<GetMyProfileOutput> {
-    return this.usersService.getMyProfile(user);
+  @Query(returns => GetProfileOutput)
+  @Roles(UserType.USER, UserType.STUDIO, UserType.ADMIN)
+  userProfile(
+    @CurrentUser() user: User,
+    @Args('input') input: GetProfileInput,
+  ): Promise<GetProfileOutput> {
+    return this.usersService.getProfile(user, input);
+  }
+
+  @Query(returns => GetUserInfoOutput)
+  @Roles(UserType.USER, UserType.STUDIO, UserType.ADMIN)
+  userInfo(
+    @CurrentUser() user: User,
+    @Args('input') input: GetUserInfoInput,
+  ): Promise<GetUserInfoOutput> {
+    return this.usersService.getUserInfo(user, input);
   }
 
   // Public
   @Mutation(returns => CreateUserWithEmailOutput)
   createUserWithEmail(
     @Args('input') input: CreateUserWithEmailInput,
+    @Context() context: GqlExecutionContext,
   ): Promise<CreateUserWithEmailOutput> {
     return this.usersService.createUserWithEmail(input);
   }
 
-  // Public
-  @Mutation(returns => CreateOrLoginUserWithOAuthOutput)
-  createOrLoginUserWithOAuth(
-    @Args('input') input: CreateOrLoginUserWithOAuthInput,
-  ): Promise<CreateOrLoginUserWithOAuthOutput> {
-    return this.usersService.createOrLoginUserWithOAuth(input);
+  @Mutation(returns => CreateProfileOutput)
+  @Roles(UserType.USER)
+  createMyProfile(
+    @CurrentUser() user: User,
+    @Args('input') input: CreateProfileInput,
+  ): Promise<CreateProfileOutput> {
+    return this.usersService.createMyProfile(user, input);
   }
 
-  /* TBD
-  @Mutation(returns => UpdateUserProfileOutput)
-  @Roles(Role.USER)
+  @Mutation(returns => UpdateProfileOutput)
+  @Roles(UserType.USER)
   updateMyProfile(
     @CurrentUser() user: User,
-    @Args('input') input: UpdateUserProfileInput,
-  ): Promise<UpdateUserProfileOutput> {
-    return this.usersService.updateUserProfileById(user.id, input);
+    @Args('input') input: UpdateProfileInput,
+  ): Promise<UpdateProfileOutput> {
+    return this.usersService.updateMyProfile(user, input);
   }
-  */
+
+  @Mutation(returns => UpdateProfileOutput)
+  @Roles(UserType.ADMIN)
+  updateProfile(
+    @Args('input') input: AdminUpdateProfileInput,
+  ): Promise<UpdateProfileOutput> {
+    return this.usersService.updateProfile(input);
+  }
+
+  @Mutation(returns => UpdateProfileOutput)
+  @Roles(UserType.USER, UserType.ADMIN)
+  deleteProfileImage(
+    @CurrentUser() user: User,
+    @Args('input') input: DeleteProfileImageInput,
+  ) {
+    return this.usersService.deleteProfileImage(user, input);
+  }
 
   @Mutation(returns => DeleteUserOutput)
-  @Roles(Role.USER)
+  @Roles(UserType.USER)
   deleteMyAccount(@CurrentUser() user: User): Promise<DeleteUserOutput> {
     return this.usersService.deleteUserById(user.id);
+  }
+
+  @Roles(UserType.USER, UserType.ADMIN, UserType.STUDIO)
+  @Mutation(returns => UpdateEmailOutput)
+  updateEmail(
+    @Args('input') input: UpdateEmailInput,
+    @CurrentUser() user: User,
+  ): Promise<UpdateEmailOutput> {
+    return this.usersService.updateEmail(input, user);
   }
 
   // Public
   @Mutation(returns => VerifyUserOutput)
   verifyUser(@Args('input') input: VerifyUserInput): Promise<VerifyUserOutput> {
-    return this.usersService.verifyUser(input.code);
+    return this.usersService.verifyUser(input);
+  }
+
+  @Mutation(returns => CoreOutput)
+  resendVerificationMail(@CurrentUser() user: User): Promise<CoreOutput> {
+    return this.usersService.resendVerificationMail(user);
   }
 
   // Public
   @Mutation(returns => RequestPasswordResetOutput)
   requestPasswordReset(
-    @CurrentUser() user: User,
     @Args('input') input: RequestPasswordResetInput,
   ): Promise<RequestPasswordResetOutput> {
-    return this.usersService.requestPasswordReset(user, input);
+    return this.usersService.requestPasswordReset(input);
   }
 
   // Public
@@ -89,12 +163,55 @@ export class UsersResolver {
     return this.usersService.updatePassword(input);
   }
 
-  @Roles(Role.USER)
-  @Mutation(returns => UpdateNicknameOutput)
-  updateNickname(
+  @Mutation(returns => ChangePasswordOutput)
+  @Roles(UserType.STUDIO)
+  changePassword(
     @CurrentUser() user: User,
-    @Args('input') input: UpdateNicknameInput,
-  ): Promise<UpdateNicknameOutput> {
-    return this.usersService.updateNickname(user, input);
+    @Args('input') input: ChangePasswordInput,
+  ): Promise<ChangePasswordOutput> {
+    return this.usersService.changePassword(user, input);
+  }
+
+  @Mutation(returns => LockUserOutput)
+  @Roles(UserType.ADMIN)
+  lockUser(@Args('input') input: LockUserInput): Promise<LockUserOutput> {
+    return this.usersService.lockUser(input);
+  }
+}
+
+@Resolver(of => Partner)
+export class PartnersResolver {
+  constructor(private readonly usersService: UsersService) {}
+
+  // Public
+  @Mutation(returns => CreatePartnerOutput)
+  createPartner(
+    @Args('input') input: CreatePartnerInput,
+  ): Promise<CreatePartnerOutput> {
+    return this.usersService.createPartner(input);
+  }
+
+  @Query(returns => GetPartnerOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
+  partner(
+    @CurrentUser() user: User,
+    @Args('input', { nullable: true }) input?: GetPartnerInput,
+  ): Promise<GetPartnerOutput> {
+    return this.usersService.getPartner(user, input);
+  }
+
+  @Query(returns => GetPartnersOutput)
+  @Roles(UserType.ADMIN)
+  partners(): Promise<GetPartnersOutput> {
+    return this.usersService.getPartners();
+  }
+
+  @Mutation(returns => UpdatePartnerOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
+  updatePartner(
+    @CurrentUser() user: User,
+    @Args('input') input: UpdatePartnerInput,
+  ): Promise<UpdatePartnerOutput> {
+    return this.usersService.updatePartner(user, input);
   }
 }

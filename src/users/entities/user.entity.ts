@@ -1,141 +1,64 @@
-import { hash, compare } from 'bcrypt';
-import { InternalServerErrorException } from '@nestjs/common';
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
-import {
-  IsBoolean,
-  IsEmail,
-  IsEnum,
-  IsOptional,
-  IsString,
-  IsUrl,
-} from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
-import { UsersReviewStudios } from 'src/studios/entities/users-review-studios.entity';
+import {
+  Column,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
+import { UserProfile } from './user-profile.entity';
+import { UserOauth } from './user-oauth.entity';
+import { IsBoolean } from 'class-validator';
 
-export enum LoginMethod {
-  KAKAO = 'KAKAO',
-  NAVER = 'NAVER',
-  GOOGLE = 'GOOGLE',
-  EMAIL = 'EMAIL',
-}
-
-export enum Gender {
-  MALE = 'MALE',
-  FEMALE = 'FEMALE',
-}
-
-export enum Role {
+export enum UserType {
   USER = 'USER',
   STUDIO = 'STUDIO',
   ADMIN = 'ADMIN',
 }
 
-registerEnumType(LoginMethod, {
-  name: 'LoginMethod',
-});
-
-registerEnumType(Gender, {
-  name: 'Gender',
-});
-
-registerEnumType(Role, {
-  name: 'Role',
-});
+registerEnumType(UserType, { name: 'UserType' });
 
 @Entity()
 @ObjectType()
 export class User extends CoreEntity {
-  @Column({
-    type: 'enum',
-    enum: Role,
-  })
-  @Field(type => Role)
-  @IsEnum(Role)
-  role: Role;
+  @Column({ length: 10 })
+  @Field(type => UserType)
+  type: UserType;
 
-  @Column({
-    type: 'enum',
-    enum: LoginMethod,
-  })
-  @Field(type => LoginMethod)
-  @IsEnum(LoginMethod)
-  loginMethod: LoginMethod;
+  @Column({ length: 190, unique: true })
+  @Field(type => String)
+  email: string;
 
-  @Column({ nullable: true })
-  @Field(type => String, { nullable: true })
-  @IsOptional()
-  @IsString()
-  socialId?: string;
-
-  @Column({ nullable: true })
-  @Field(type => String, { nullable: true })
-  @IsOptional()
-  @IsEmail()
-  email?: string;
-
-  @Column({
-    nullable: true,
-    select: false,
-  })
-  @Field(type => String, { nullable: true })
-  @IsOptional()
-  @IsString()
+  @Column({ length: 100, nullable: true })
   password?: string;
 
-  @Column({ unique: true })
-  @Field(type => String)
-  @IsString()
-  nickname: string;
-
-  @Column({
-    type: 'enum',
-    enum: Gender,
-    nullable: true,
-  })
-  @Field(type => Gender, { nullable: true })
-  @IsOptional()
-  @IsEnum(Gender)
-  gender?: Gender;
-
-  @Column({ nullable: true })
-  @Field(type => String, { nullable: true })
-  @IsOptional()
-  @IsUrl()
-  profileImageUrl?: string;
+  @Column()
+  @Field(type => Boolean)
+  isVerified: boolean;
 
   @Column()
   @Field(type => Boolean)
   @IsBoolean()
-  isVerified: boolean;
+  isLocked: boolean;
 
-  @OneToMany(relation => UsersReviewStudios, review => review.user)
-  @Field(type => [UsersReviewStudios])
-  reviews: UsersReviewStudios[];
+  @Column({ type: 'datetime', nullable: true })
+  @Field(type => Date, { nullable: true })
+  lastLoginAt: Date;
 
-  @BeforeInsert()
-  @BeforeUpdate()
-  async hashPassword(): Promise<void> {
-    if (this.password) {
-      try {
-        this.password = await hash(this.password, 10);
-      } catch (e) {
-        console.log(e);
-        throw new InternalServerErrorException();
-      }
-    }
-  }
+  @DeleteDateColumn()
+  @Field(type => Date, { nullable: true })
+  deletedAt?: Date;
 
-  async checkPassword(password: string): Promise<boolean> {
-    if (this.password) {
-      try {
-        const isCorrect = await compare(password, this.password);
-        return isCorrect;
-      } catch (e) {
-        console.log(e);
-        throw new InternalServerErrorException();
-      }
-    }
-    return false;
-  }
+  @OneToOne(relation => UserProfile, profile => profile.user, {
+    onDelete: 'SET NULL',
+  })
+  @Field(type => UserProfile, { nullable: true })
+  @JoinColumn()
+  profile?: UserProfile;
+
+  @OneToMany(relation => UserOauth, oauth => oauth.user)
+  @Field(type => [UserOauth])
+  oauthList?: UserOauth[];
 }

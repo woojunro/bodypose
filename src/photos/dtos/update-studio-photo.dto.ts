@@ -5,6 +5,8 @@ import {
   PartialType,
   PickType,
 } from '@nestjs/graphql';
+import { Type } from 'class-transformer';
+import { ValidateNested } from 'class-validator';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { StudioPhoto } from '../entities/studio-photo.entity';
 import { CreateStudioPhotoInput } from './create-studio-photo.dto';
@@ -25,6 +27,8 @@ export class UpdateStudioPhotoInput extends PickType(
   ['id'],
   InputType,
 ) {
+  @ValidateNested()
+  @Type(() => UpdateStudioPhotoPayload)
   @Field(type => UpdateStudioPhotoPayload)
   payload: UpdateStudioPhotoPayload;
 }

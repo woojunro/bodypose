@@ -1,29 +1,22 @@
-import {
-  forwardRef,
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
+import {
+  CommonError,
+  INTERNAL_SERVER_ERROR,
+  UNEXPECTED_ERROR,
+} from 'src/common/constants/error.constant';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { ReviewPhoto } from 'src/photos/entities/review-photo.entity';
 import { PhotosService } from 'src/photos/photos.service';
 import { UploadsService } from 'src/uploads/uploads.service';
-import { Role, User } from 'src/users/entities/user.entity';
+import { UserType, User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import {
-  CreateBranchInput,
-  CreateBranchOutput,
-} from './dtos/create-branch.dto';
-import {
-  CreateStudioProductsInput,
-  CreateProductsOutput,
-  CreateAdditionalProductsInput,
-  CreateHairMakeupShopsInput,
-  CreateHairMakeupShopsOutput,
-} from './dtos/create-product.dto';
+  AssignStudioPartnerInput,
+  AssignStudioPartnerOutput,
+} from './dtos/assign-studio-partner.dto';
+import { ClickStudioReviewInput } from './dtos/click-studio-review.dto';
 import {
   CreateStudioReviewInput,
   CreateStudioReviewOutput,
@@ -36,7 +29,20 @@ import {
   DeleteStudioReviewInput,
   DeleteStudioReviewOutput,
 } from './dtos/delete-studio-review.dto';
+import {
+  GetAdditionalProductsInput,
+  GetAdditionalProductsOutput,
+} from './dtos/get-additional-products.dto';
+import {
+  GetHairMakeupShopsInput,
+  GetHairMakeupShopsOutput,
+} from './dtos/get-hair-makeup-shops.dto';
+import { GetMyStudiosOutput } from './dtos/get-my-studios.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
+import {
+  GetStudioProductsInput,
+  GetStudioProductsOutput,
+} from './dtos/get-studio-products.dto';
 import {
   GetAllStudioReviewsInput,
   GetStudioReviewsInput,
@@ -55,16 +61,29 @@ import {
   ReportStudioReviewOutput,
 } from './dtos/report-studio-review.dto';
 import {
-  UpdateBranchInput,
-  UpdateBranchOutput,
+  SetStudioPublicInput,
+  SetStudioPublicOutput,
+} from './dtos/set-studio-public.dto';
+import {
+  UpdateAdditionalProductsInput,
+  UpdateAdditionalProductsOutput,
+} from './dtos/update-additional-product.dto';
+import {
+  UpdateBranchesInput,
+  UpdateBranchesOutput,
 } from './dtos/update-branch.dto';
 import {
-  UpdateStudioProductsInput,
-  UpdateProductsOutput,
-  UpdateAdditionalProductsInput,
   UpdateHairMakeupShopsInput,
   UpdateHairMakeupShopsOutput,
-} from './dtos/update-product.dto';
+} from './dtos/update-hair-makeup-shop.dto';
+import {
+  UpdateStudioInfoInput,
+  UpdateStudioInfoOutput,
+} from './dtos/update-studio-info.dto';
+import {
+  UpdateStudioProductsInput,
+  UpdateStudioProductsOutput,
+} from './dtos/update-studio-product.dto';
 import {
   UpdateStudioInput,
   UpdateStudioOutput,
@@ -73,9 +92,9 @@ import { AdditionalProduct } from './entities/additional-product.entity';
 import { Branch } from './entities/branch.entity';
 import { HairMakeupProduct } from './entities/hair-makeup-product.entity';
 import { HairMakeupShop } from './entities/hair-makeup-shop.entity';
+import { StudioInfo } from './entities/studio-info.entity';
 import { StudioProduct } from './entities/studio-product.entity';
 import { Studio } from './entities/studio.entity';
-import { UsersClickStudios } from './entities/users-click-studios.entity';
 import { UsersHeartStudios } from './entities/users-heart-studios.entity';
 import { UsersReportStudioReviews } from './entities/users-report-studio-reviews.entity';
 import { UsersReviewStudios } from './entities/users-review-studios.entity';
@@ -85,6 +104,8 @@ export class StudiosService {
   constructor(
     @InjectRepository(Studio)
     private readonly studioRepository: Repository<Studio>,
+    @InjectRepository(StudioInfo)
+    private readonly studioInfoRepository: Repository<StudioInfo>,
     @InjectRepository(StudioProduct)
     private readonly studioProductRepository: Repository<StudioProduct>,
     @InjectRepository(Branch)
@@ -97,8 +118,6 @@ export class StudiosService {
     private readonly additionalProductRepository: Repository<AdditionalProduct>,
     @InjectRepository(UsersReviewStudios)
     private readonly studioReviewRepository: Repository<UsersReviewStudios>,
-    @InjectRepository(UsersClickStudios)
-    private readonly usersClickStudiosRepository: Repository<UsersClickStudios>,
     @InjectRepository(UsersHeartStudios)
     private readonly usersHeartStudiosRepository: Repository<UsersHeartStudios>,
     @InjectRepository(UsersReportStudioReviews)
@@ -111,14 +130,12 @@ export class StudiosService {
     private readonly uploadsService: UploadsService,
   ) {}
 
-  getStudioById(id: number): Promise<Studio> {
-    return this.studioRepository.findOne(
-      { id },
-      { relations: ['catchphrases'] },
-    );
+  async checkIfStudioExistsById(id: number): Promise<boolean> {
+    const studio = await this.studioRepository.findOne(id, { select: ['id'] });
+    return studio ? true : false;
   }
 
-  checkIfStudioExists(slug: string): Promise<Studio> {
+  checkIfStudioExistsBySlug(slug: string): Promise<Studio> {
     return this.studioRepository.findOne(
       { slug },
       { select: ['id', 'name', 'slug'] },
@@ -126,34 +143,81 @@ export class StudiosService {
   }
 
   getStudioBySlug(slug: string): Promise<Studio> {
-    return this.studioRepository.findOne(
-      { slug },
-      { relations: ['catchphrases'] },
-    );
+    return this.studioRepository.findOne({ slug });
   }
 
-  async createStudio(input: CreateStudioInput): Promise<CreateStudioOutput> {
+  checkIfSlugIsValid(slug: string): boolean {
+    return /^[a-z0-9](-?[a-z0-9])*$/g.test(slug);
+  }
+
+  async createStudio({
+    name,
+    slug,
+  }: CreateStudioInput): Promise<CreateStudioOutput> {
     try {
+      const isValid = this.checkIfSlugIsValid(slug);
+      if (!isValid) return CommonError('INVALID_SLUG');
       // Check duplicate studioSlug
-      const studioBySlug = await this.getStudioBySlug(input.slug);
-      if (studioBySlug) {
-        return {
-          ok: false,
-          error: 'DUPLICATE_STUDIO_SLUG',
-        };
-      }
+      const existingStudio = await this.checkIfStudioExistsBySlug(slug);
+      if (existingStudio) return CommonError('DUPLICATE_SLUG');
       // Create studio
-      const newStudio = this.studioRepository.create({ ...input });
-      // Save
-      const savedStudio = await this.studioRepository.save(newStudio);
+      const newStudio = this.studioRepository.create({ name, slug });
+      // Insert into studio table
+      const studio = await this.studioRepository.save(newStudio);
+      // Create studioInfo
+      const newInfo = this.studioInfoRepository.create({ studio });
+      const info = await this.studioInfoRepository.save(newInfo);
+      // return
+      studio.info = info;
       return {
         ok: true,
-        id: savedStudio.id,
-        slug: savedStudio.slug,
+        studio,
       };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
+    }
+  }
+
+  async assignStudioPartner({
+    studioSlug,
+    partnerEmail,
+  }: AssignStudioPartnerInput): Promise<AssignStudioPartnerOutput> {
+    try {
+      const studio = await this.studioRepository.findOne(
+        { slug: studioSlug },
+        { relations: ['partner'] },
+      );
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      if (studio.partner) return CommonError('ALREADY_ASSIGNED');
+      const partner = await this.usersService.getPartnerByEmail(partnerEmail);
+      if (!partner) return CommonError('PARTNER_NOT_FOUND');
+      // Assign partner and save
+      studio.partner = partner;
+      await this.studioRepository.save(studio);
+      // Unlock partner user
+      const { id } = partner.user;
+      await this.usersService.lockUser({ id, isLocked: false });
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  filterStudioQueryByUser(
+    query: SelectQueryBuilder<Studio>,
+    user: User,
+    studioAlias = 'studio',
+    partnerAlias = 'partner',
+  ): SelectQueryBuilder<Studio> {
+    switch (user?.type) {
+      case UserType.ADMIN:
+        return query;
+      case UserType.STUDIO:
+        return query.andWhere(`${partnerAlias}.userId = :id`, { id: user.id });
+      default:
+        return query.andWhere(`${studioAlias}.isPublic = true`);
     }
   }
 
@@ -162,41 +226,29 @@ export class StudiosService {
     { slug }: GetStudioInput,
   ): Promise<GetStudioOutput> {
     try {
-      let studio = await this.studioRepository.findOne(
-        { slug },
-        { relations: ['branches'] },
-      );
-      if (!studio.coverPhotoUrl && (!user || user.role !== Role.ADMIN))
-        studio = null;
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
-      // If logged in, check isHearted
-      let heart: UsersHeartStudios;
-      if (user) {
-        heart = await this.usersHeartStudiosRepository.findOne({
+      let query = await this.studioRepository
+        .createQueryBuilder('studio')
+        .leftJoinAndSelect('studio.branches', 'branch')
+        .leftJoinAndSelect('studio.info', 'info')
+        .leftJoin('studio.partner', 'partner')
+        .where('studio.slug = :slug', { slug });
+      query = this.filterStudioQueryByUser(query, user);
+      const studio = await query.getOne();
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      // If USER, check isHearted
+      let isHearted: boolean = null;
+      if (user?.type === UserType.USER) {
+        const heart = await this.usersHeartStudiosRepository.findOne({
           where: {
             user: user.id,
             studio: studio.id,
           },
         });
+        isHearted = Boolean(heart);
       }
-      // Click
-      const newClick = this.usersClickStudiosRepository.create({
-        studio,
-        user: user ? user : null,
-      });
-      this.usersClickStudiosRepository.save(newClick);
-      // Return
       return {
         ok: true,
-        studio: {
-          ...studio,
-          isHearted: Boolean(user) && Boolean(heart),
-        },
+        studio: { ...studio, isHearted },
       };
     } catch (e) {
       console.log(e);
@@ -206,37 +258,24 @@ export class StudiosService {
 
   async getAllStudios(user: User): Promise<GetStudiosOutput> {
     try {
-      const studios = await this.studioRepository.find({
-        relations: ['branches'],
-        select: [
-          'id',
-          'name',
-          'slug',
-          'heartCount',
-          'lowestPrice',
-          'reviewCount',
-          'totalRating',
-          'premiumTier',
-          'coverPhotoUrl',
-        ],
-      });
-      if (!studios) {
-        throw new InternalServerErrorException();
-      }
-      let heartStudios: UsersHeartStudios[] = [];
-      if (user) {
-        heartStudios = await this.usersHeartStudiosRepository.find({
-          where: { user: user.id },
-        });
-      }
-      const studiosWithIsHearted: StudioWithIsHearted[] = [];
-      for (const studio of studios) {
-        if (!studio.coverPhotoUrl && (!user || user.role !== Role.ADMIN))
-          continue;
-        studiosWithIsHearted.push({
+      const studios = await this.studioRepository
+        .createQueryBuilder('s')
+        .leftJoin('s.branches', 'b')
+        .addSelect(['b.name', 'b.address'])
+        .where('s.isPublic = true')
+        .getMany();
+      let studiosWithIsHearted: StudioWithIsHearted[];
+      if (user?.type === UserType.USER) {
+        const hearts = await this.usersHeartStudiosRepository.find({ user });
+        studiosWithIsHearted = studios.map(studio => ({
           ...studio,
-          isHearted: heartStudios.some(heart => heart.studioId === studio.id),
-        });
+          isHearted: hearts.some(heart => heart.studioId === studio.id),
+        }));
+      } else {
+        studiosWithIsHearted = studios.map(studio => ({
+          ...studio,
+          isHearted: null,
+        }));
       }
       return {
         ok: true,
@@ -248,20 +287,70 @@ export class StudiosService {
     }
   }
 
-  async updateStudio({
-    slug,
-    payload,
-  }: UpdateStudioInput): Promise<UpdateStudioOutput> {
+  async getMyStudios(user: User): Promise<GetMyStudiosOutput> {
+    try {
+      let studios: Studio[];
+      switch (user?.type) {
+        case UserType.ADMIN:
+          studios = await this.studioRepository.find();
+          break;
+        case UserType.STUDIO:
+          studios = await this.studioRepository
+            .createQueryBuilder('studio')
+            .leftJoin('studio.partner', 'partner')
+            .where('partner.userId = :id', { id: user.id })
+            .getMany();
+          break;
+        default:
+          studios = [];
+          break;
+      }
+      return { ok: true, studios };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async checkIfUserIsAdminOrOwner(id: number, user: User): Promise<boolean> {
+    switch (user?.type) {
+      case UserType.ADMIN:
+        return true;
+      case UserType.STUDIO:
+        const studio = await this.studioRepository
+          .createQueryBuilder('s')
+          .select('s.id')
+          .leftJoin('s.partner', 'p')
+          .where('s.id = :id', { id })
+          .andWhere('p.userId = :userId', { userId: user.id })
+          .getOne();
+        return Boolean(studio);
+      default:
+        return false;
+    }
+  }
+
+  async updateStudio(
+    user: User,
+    { slug, payload }: UpdateStudioInput,
+  ): Promise<UpdateStudioOutput> {
     try {
       const studio = await this.studioRepository.findOne({ slug });
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const valid = await this.checkIfUserIsAdminOrOwner(studio.id, user);
+      if (!valid) return CommonError('FORBIDDEN');
+      // Check slug
+      if (payload.slug) {
+        const isSlugValid = this.checkIfSlugIsValid(payload.slug);
+        if (!isSlugValid) return CommonError('INVALID_SLUG');
+        const existingStudio = await this.getStudioBySlug(payload.slug);
+        if (existingStudio && existingStudio.id !== studio.id) {
+          return CommonError('DUPLICATE_SLUG');
+        }
       }
-      const updatedStudio = { ...studio, ...payload };
-      await this.studioRepository.save(updatedStudio);
+      // Update
+      const studioToUpdate = { ...studio, ...payload };
+      await this.studioRepository.save(studioToUpdate);
       return { ok: true };
     } catch (e) {
       console.log(e);
@@ -269,88 +358,121 @@ export class StudiosService {
     }
   }
 
-  async createBranches({
-    studioSlug,
-    payload: payloadList,
-  }: CreateBranchInput): Promise<CreateBranchOutput> {
+  async updateStudioLogo(slug: string, url: string): Promise<string> {
     try {
-      if (payloadList.length === 0) {
-        return {
-          ok: false,
-          error: 'INVALID_PAYLOAD_LENGTH',
-        };
+      const { id } = await this.getStudioBySlug(slug);
+      const studioToUpdate = this.studioRepository.create({
+        id,
+        logoUrl: url,
+      });
+      const { logoUrl } = await this.studioRepository.save(studioToUpdate);
+      return logoUrl;
+    } catch (e) {
+      console.log(e);
+      return INTERNAL_SERVER_ERROR;
+    }
+  }
+
+  async updateStudioCoverPhoto(slug: string, url: string): Promise<string> {
+    try {
+      const { id } = await this.getStudioBySlug(slug);
+      const studioToUpdate = this.studioRepository.create({
+        id,
+        coverPhotoUrl: url,
+      });
+      const { coverPhotoUrl } = await this.studioRepository.save(
+        studioToUpdate,
+      );
+      return coverPhotoUrl;
+    } catch (e) {
+      console.log(e);
+      return INTERNAL_SERVER_ERROR;
+    }
+  }
+
+  async setStudioPublic(
+    user: User,
+    { slug, isPublic }: SetStudioPublicInput,
+  ): Promise<SetStudioPublicOutput> {
+    try {
+      const studio = await this.studioRepository.findOne({
+        where: { slug },
+        relations: ['branches', 'info', 'studioProducts', 'photos'],
+      });
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const valid = await this.checkIfUserIsAdminOrOwner(studio.id, user);
+      if (!valid) return CommonError('FORBIDDEN');
+
+      if (isPublic) {
+        // Validation
+        const errors: string[] = [];
+        if (!studio.logoUrl) errors.push('NO_STUDIO_LOGO');
+        if (!studio.coverPhotoUrl) errors.push('NO_STUDIO_COVER');
+        if (!studio.info.contactUrl) errors.push('NO_CONTACT_URL');
+        if (!studio.info.reservationUrl) errors.push('NO_RESERVATION_URL');
+        if (!studio.photos.length) errors.push('NO_STUDIO_PHOTOS');
+        if (!studio.studioProducts.length) errors.push('NO_STUDIO_PRODUCTS');
+        if (!studio.branches.length) errors.push('NO_STUDIO_BRANCHES');
+        if (errors.length) return CommonError(errors.join(','));
       }
-      const studio = await this.studioRepository.findOne({ slug: studioSlug });
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
-      const idList: number[] = [];
-      for (const payload of payloadList) {
-        const newBranch = this.branchRepository.create({ ...payload });
-        newBranch.studio = studio;
-        const { id } = await this.branchRepository.save(newBranch);
-        idList.push(id);
-      }
-      return {
-        ok: true,
-        idList,
-      };
+
+      const studioToUpdate = this.studioRepository.create({
+        id: studio.id,
+        isPublic,
+      });
+      await this.studioRepository.save(studioToUpdate);
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
     }
   }
 
-  async updateBranches({
-    studioSlug,
-    payload,
-  }: UpdateBranchInput): Promise<UpdateBranchOutput> {
+  async updateStudioInfo(
+    user: User,
+    { slug, payload }: UpdateStudioInfoInput,
+  ): Promise<UpdateStudioInfoOutput> {
     try {
-      if (payload.length === 0) {
-        return {
-          ok: false,
-          error: 'INVALID_PAYLOAD_LENGTH',
-        };
-      }
       const studio = await this.studioRepository.findOne(
-        { slug: studioSlug },
+        { slug },
+        { relations: ['info'] },
+      );
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const valid = await this.checkIfUserIsAdminOrOwner(studio.id, user);
+      if (!valid) return CommonError('FORBIDDEN');
+      const { info } = studio;
+      const infoToUpdate = { ...info, ...payload, studio };
+      await this.studioInfoRepository.save(infoToUpdate);
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async updateBranches(
+    user: User,
+    { slug, payload }: UpdateBranchesInput,
+  ): Promise<UpdateBranchesOutput> {
+    try {
+      const studio = await this.studioRepository.findOne(
+        { slug },
         { relations: ['branches'] },
       );
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const valid = await this.checkIfUserIsAdminOrOwner(studio.id, user);
+      if (!valid) return CommonError('FORBIDDEN');
       const { branches } = studio;
-      const idList: number[] = [];
-      // Overwrite
-      for (let i = 0; i < branches.length && i < payload.length; i++) {
-        const { name, address } = payload[i];
-        branches[i].name = name;
-        branches[i].address = address;
-        const { id } = await this.branchRepository.save(branches[i]);
-        idList.push(id);
-      }
-      if (branches.length > payload.length) {
-        for (let i = payload.length; i < branches.length; i++) {
-          await this.branchRepository.delete({ id: branches[i].id });
-        }
-      } else if (branches.length < payload.length) {
-        for (let i = branches.length; i < payload.length; i++) {
-          const newBranch = this.branchRepository.create({ ...payload[i] });
-          newBranch.studio = studio;
-          const { id } = await this.branchRepository.save(newBranch);
-          idList.push(id);
-        }
-      }
-      return {
-        ok: true,
-        idList,
-      };
+      // Delete all existing branches
+      const idsToDelete = branches.map(branch => branch.id);
+      if (idsToDelete.length) await this.branchRepository.delete(idsToDelete);
+      // Create new branches
+      const newBranches = payload.map(branch => ({
+        ...branch,
+        studio,
+      }));
+      await this.branchRepository.insert(newBranches);
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
@@ -395,289 +517,168 @@ export class StudiosService {
     }
   }
 
-  async createStudioProducts({
-    studioSlug,
-    products,
-  }: CreateStudioProductsInput): Promise<CreateProductsOutput> {
+  async getStudioProducts(
+    user: User,
+    { slug }: GetStudioProductsInput,
+  ): Promise<GetStudioProductsOutput> {
     try {
-      if (products.length === 0) {
-        return {
-          ok: false,
-          error: 'INVALID_PAYLOAD_LENGTH',
-        };
-      }
-      // Find studio
-      const studio = await this.studioRepository.findOne({ slug: studioSlug });
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
-      // Create and save products
-      const idList: number[] = [];
-      let lowestPrice = 0;
-      for (const product of products) {
-        const newProduct = this.studioProductRepository.create({ ...product });
-        newProduct.studio = studio;
-        const { id, weekdayPrice } = await this.studioProductRepository.save(
-          newProduct,
-        );
-        idList.push(id);
-        if (
-          lowestPrice === 0 ||
-          (weekdayPrice !== 0 && weekdayPrice < lowestPrice)
-        ) {
-          lowestPrice = weekdayPrice;
-        }
-      }
-      // Update lowestPrice
-      studio.lowestPrice = lowestPrice;
-      await this.studioRepository.save(studio);
-      // return idList
-      return {
-        ok: true,
-        idList,
-      };
+      let query = await this.studioRepository
+        .createQueryBuilder('studio')
+        .select('studio.id')
+        .leftJoinAndSelect('studio.studioProducts', 'studioProduct')
+        .leftJoin('studio.partner', 'partner')
+        .where('studio.slug = :slug', { slug });
+      query = this.filterStudioQueryByUser(query, user);
+      const studio = await query.getOne();
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const { studioProducts } = studio;
+      return { ok: true, studioProducts };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
     }
   }
 
-  async updateStudioProducts({
-    studioSlug,
-    products,
-  }: UpdateStudioProductsInput): Promise<UpdateProductsOutput> {
-    try {
-      if (products.length === 0) {
-        return {
-          ok: false,
-          error: 'INVALID_PAYLOAD_LENGTH',
-        };
+  getLowestPrice(lowestPrice: number, product: StudioProduct): number {
+    if (product.peopleCount !== product.maxPeopleCount) {
+      return lowestPrice;
+    }
+    const { weekdayPrice, weekendPrice } = product;
+    let ret = lowestPrice;
+    for (const price of [weekdayPrice, weekendPrice]) {
+      if (Number.isInteger(price) && price >= 0) {
+        if (ret == null) ret = price;
+        else if (price < ret) {
+          ret = price;
+        }
       }
+    }
+    return ret;
+  }
+
+  async updateStudioProducts(
+    user: User,
+    { slug, payload }: UpdateStudioProductsInput,
+  ): Promise<UpdateStudioProductsOutput> {
+    try {
       // Find studio
       const studio = await this.studioRepository.findOne(
-        { slug: studioSlug },
+        { slug },
         { relations: ['studioProducts'] },
       );
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const valid = await this.checkIfUserIsAdminOrOwner(studio.id, user);
+      if (!valid) return CommonError('FORBIDDEN');
       // Overwrite
       const { studioProducts: currentProducts } = studio;
-      const idList: number[] = [];
-      let lowestPrice = 0;
-      for (let i = 0; i < currentProducts.length && i < products.length; i++) {
-        currentProducts[i] = { ...currentProducts[i], ...products[i] };
-        const { id, weekdayPrice } = await this.studioProductRepository.save(
-          currentProducts[i],
+      let lowestPrice: number = null;
+      for (let i = 0; i < currentProducts.length && i < payload.length; i++) {
+        const productToUpdate = { ...currentProducts[i], ...payload[i] };
+        const product = await this.studioProductRepository.save(
+          productToUpdate,
         );
-        idList.push(id);
-        if (
-          lowestPrice === 0 ||
-          (weekdayPrice !== 0 && weekdayPrice < lowestPrice)
-        ) {
-          lowestPrice = weekdayPrice;
-        }
+        // Update lowestPrice
+        lowestPrice = this.getLowestPrice(lowestPrice, product);
       }
-      if (currentProducts.length > products.length) {
+      if (currentProducts.length > payload.length) {
         // Delete products that haven't been updated
-        for (let i = products.length; i < currentProducts.length; i++) {
-          await this.studioProductRepository.delete({
-            id: currentProducts[i].id,
-          });
+        const idsToDelete: number[] = [];
+        for (let i = payload.length; i < currentProducts.length; i++) {
+          idsToDelete.push(currentProducts[i].id);
         }
-      } else if (currentProducts.length < products.length) {
+        if (idsToDelete.length) {
+          await this.studioProductRepository.delete(idsToDelete);
+        }
+      } else if (currentProducts.length < payload.length) {
         // Add more products
-        for (let i = currentProducts.length; i < products.length; i++) {
+        for (let i = currentProducts.length; i < payload.length; i++) {
           const newProduct = this.studioProductRepository.create({
-            ...products[i],
+            ...payload[i],
           });
           newProduct.studio = studio;
-          const { id, weekdayPrice } = await this.studioProductRepository.save(
-            newProduct,
-          );
-          idList.push(id);
-          if (
-            lowestPrice === 0 ||
-            (weekdayPrice !== 0 && weekdayPrice < lowestPrice)
-          ) {
-            lowestPrice = weekdayPrice;
-          }
+          const product = await this.studioProductRepository.save(newProduct);
+          // Update lowestPrice
+          lowestPrice = this.getLowestPrice(lowestPrice, product);
         }
       }
       // Update lowestPrice
-      const { studioProducts, ...studioToUpdate } = studio;
-      studioToUpdate.lowestPrice = lowestPrice;
+      const studioToUpdate = this.studioRepository.create({
+        id: studio.id,
+        lowestPrice,
+      });
       await this.studioRepository.save(studioToUpdate);
-      return {
-        ok: true,
-        idList,
-      };
+      return { ok: true };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
     }
   }
 
-  async createAdditionalProducts({
-    studioSlug,
-    products,
-  }: CreateAdditionalProductsInput): Promise<CreateProductsOutput> {
+  async getAdditionalProducts(
+    user: User,
+    { slug }: GetAdditionalProductsInput,
+  ): Promise<GetAdditionalProductsOutput> {
     try {
-      if (products.length === 0) {
-        return {
-          ok: false,
-          error: 'INVALID_PAYLOAD_LENGTH',
-        };
-      }
-      // Find studio
-      const studio = await this.studioRepository.findOne({ slug: studioSlug });
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
-      // Create and save products
-      const idList: number[] = [];
-      for (const product of products) {
-        const newProduct = this.additionalProductRepository.create({
-          ...product,
-        });
-        newProduct.studio = studio;
-        const { id } = await this.additionalProductRepository.save(newProduct);
-        idList.push(id);
-      }
-      // Return idList
-      return {
-        ok: true,
-        idList,
-      };
+      let query = await this.studioRepository
+        .createQueryBuilder('studio')
+        .select('studio.id')
+        .leftJoinAndSelect('studio.additionalProducts', 'additionalProduct')
+        .leftJoin('studio.partner', 'partner')
+        .where('studio.slug = :slug', { slug });
+      query = this.filterStudioQueryByUser(query, user);
+      const studio = await query.getOne();
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const { additionalProducts } = studio;
+      return { ok: true, additionalProducts };
     } catch (e) {
       console.log(e);
       return UNEXPECTED_ERROR;
     }
   }
 
-  async updateAdditionalProducts({
-    studioSlug,
-    products,
-  }: UpdateAdditionalProductsInput): Promise<UpdateProductsOutput> {
+  async updateAdditionalProducts(
+    user: User,
+    { slug, payload }: UpdateAdditionalProductsInput,
+  ): Promise<UpdateAdditionalProductsOutput> {
     try {
-      let isDeletion = false;
-      if (products.length === 0) {
-        isDeletion = true;
-      }
       // Find studio
       const studio = await this.studioRepository.findOne(
-        { slug: studioSlug },
+        { slug },
         { relations: ['additionalProducts'] },
       );
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
-      // Delete
-      if (isDeletion) {
-        for (const product of studio.additionalProducts) {
-          await this.additionalProductRepository.delete({ id: product.id });
-        }
-        return { ok: true };
-      }
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const valid = await this.checkIfUserIsAdminOrOwner(studio.id, user);
+      if (!valid) return CommonError('FORBIDDEN');
       // Overwrite
       const { additionalProducts: currentProducts } = studio;
-      const idList: number[] = [];
-      for (let i = 0; i < currentProducts.length && i < products.length; i++) {
-        currentProducts[i] = { ...currentProducts[i], ...products[i] };
-        const { id } = await this.additionalProductRepository.save(
-          currentProducts[i],
-        );
-        idList.push(id);
+      const productsToSave: AdditionalProduct[] = [];
+      for (let i = 0; i < currentProducts.length && i < payload.length; i++) {
+        const product = this.additionalProductRepository.create({
+          ...currentProducts[i],
+          ...payload[i],
+        });
+        productsToSave.push(product);
       }
-      if (currentProducts.length > products.length) {
+      if (currentProducts.length > payload.length) {
         // Delete products that haven't been updated
-        for (let i = products.length; i < currentProducts.length; i++) {
-          await this.additionalProductRepository.delete({
-            id: currentProducts[i].id,
-          });
+        const idsToDelete: number[] = [];
+        for (let i = payload.length; i < currentProducts.length; i++) {
+          idsToDelete.push(currentProducts[i].id);
         }
-      } else if (currentProducts.length < products.length) {
+        if (idsToDelete.length) {
+          await this.additionalProductRepository.delete(idsToDelete);
+        }
+      } else if (currentProducts.length < payload.length) {
         // Add more products
-        for (let i = currentProducts.length; i < products.length; i++) {
+        for (let i = currentProducts.length; i < payload.length; i++) {
           const newProduct = this.additionalProductRepository.create({
-            ...products[i],
+            ...payload[i],
+            studio,
           });
-          newProduct.studio = studio;
-          const { id } = await this.additionalProductRepository.save(
-            newProduct,
-          );
-          idList.push(id);
+          productsToSave.push(newProduct);
         }
       }
-      // return
-      return {
-        ok: true,
-        idList,
-      };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
-  }
-
-  async createHairMakeupShops({
-    studioSlug,
-    shops,
-  }: CreateHairMakeupShopsInput): Promise<CreateHairMakeupShopsOutput> {
-    try {
-      // Validate shops
-      const INVALID_PAYLOAD_LENGTH = {
-        ok: false,
-        error: 'INVALID_PAYLOAD_LENGTH',
-      };
-      if (shops.length === 0) {
-        return INVALID_PAYLOAD_LENGTH;
-      }
-      // Find studio
-      const studio = await this.studioRepository.findOne(
-        { slug: studioSlug },
-        { relations: ['hairMakeupShops'] },
-      );
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
-      // Check if hairMakeupShops already exist
-      if (studio.hairMakeupShops.length !== 0) {
-        return {
-          ok: false,
-          error: 'HAIR_MAKEUP_SHOPS_ALREADY_EXIST',
-        };
-      }
-      // Create and save shops and products
-      for (const shop of shops) {
-        const { products, ...shopInfo } = shop;
-        const newShop = this.hairMakeupShopRepository.create({ ...shopInfo });
-        newShop.studio = studio;
-        const savedShop = await this.hairMakeupShopRepository.save(newShop);
-        for (const product of products) {
-          const newProduct = this.hairMakeupProductRepository.create({
-            ...product,
-          });
-          newProduct.shop = savedShop;
-          await this.hairMakeupProductRepository.save(newProduct);
-        }
-      }
-      // return
+      await this.additionalProductRepository.save(productsToSave);
       return { ok: true };
     } catch (e) {
       console.log(e);
@@ -685,97 +686,62 @@ export class StudiosService {
     }
   }
 
-  async updateHairMakeupShops({
-    studioSlug,
-    shops,
-  }: UpdateHairMakeupShopsInput): Promise<UpdateHairMakeupShopsOutput> {
+  async getHairMakeupShops(
+    user: User,
+    { slug }: GetHairMakeupShopsInput,
+  ): Promise<GetHairMakeupShopsOutput> {
     try {
-      let isDeletion = false;
-      if (shops.length === 0) {
-        isDeletion = true;
-      }
+      let query = await this.studioRepository
+        .createQueryBuilder('studio')
+        .select('studio.id')
+        .leftJoinAndSelect('studio.hairMakeupShops', 'shop')
+        .leftJoinAndSelect('shop.products', 'product')
+        .leftJoin('studio.partner', 'partner')
+        .where('studio.slug = :slug', { slug });
+      query = this.filterStudioQueryByUser(query, user);
+      const studio = await query.getOne();
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const { hairMakeupShops } = studio;
+      return { ok: true, hairMakeupShops };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async updateHairMakeupShops(
+    user: User,
+    { slug, payload }: UpdateHairMakeupShopsInput,
+  ): Promise<UpdateHairMakeupShopsOutput> {
+    try {
       // Find studio
       const studio = await this.studioRepository.findOne(
-        { slug: studioSlug },
+        { slug },
         { relations: ['hairMakeupShops', 'hairMakeupShops.products'] },
       );
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const valid = await this.checkIfUserIsAdminOrOwner(studio.id, user);
+      if (!valid) return CommonError('FORBIDDEN');
+      // Delete all existing shops
+      const idsToDelete = studio.hairMakeupShops.map(shop => shop.id);
+      if (idsToDelete.length) {
+        await this.hairMakeupShopRepository.delete(idsToDelete);
       }
-      // Delete all shops
-      if (isDeletion) {
-        for (const shop of studio.hairMakeupShops) {
-          await this.hairMakeupShopRepository.delete({ id: shop.id });
-        }
-        return { ok: true };
-      }
-      // Overwrite shops
-      for (
-        let i = 0;
-        i < shops.length && i < studio.hairMakeupShops.length;
-        i++
-      ) {
-        const currentShop = studio.hairMakeupShops[i];
-        const { products, ...shopInfo } = shops[i];
-        const updatedShop = await this.hairMakeupShopRepository.save({
-          ...currentShop,
-          ...shopInfo,
+      // Create new shops
+      for (const shop of payload) {
+        const { products, ...others } = shop;
+        let newShop = this.hairMakeupShopRepository.create({
+          ...others,
+          studio,
         });
-        // Overwrite products
-        for (
-          let j = 0;
-          j < products.length && j < updatedShop.products.length;
-          j++
-        ) {
-          const currentProduct = updatedShop.products[j];
-          await this.hairMakeupProductRepository.save({
-            ...currentProduct,
-            ...products[j],
-          });
-        }
-        if (updatedShop.products.length > products.length) {
-          // Delete the rest products
-          for (let j = products.length; j < updatedShop.products.length; j++) {
-            await this.hairMakeupProductRepository.delete({
-              id: updatedShop.products[j].id,
-            });
-          }
-        } else if (updatedShop.products.length < products.length) {
-          // Create new products
-          for (let j = updatedShop.products.length; j < products.length; j++) {
-            const newProduct = this.hairMakeupProductRepository.create({
-              ...products[j],
-            });
-            newProduct.shop = updatedShop;
-            await this.hairMakeupProductRepository.save(newProduct);
-          }
-        }
-      }
-      if (shops.length < studio.hairMakeupShops.length) {
-        // Delete the rest shops
-        for (let i = shops.length; i < studio.hairMakeupShops.length; i++) {
-          await this.hairMakeupShopRepository.delete({
-            id: studio.hairMakeupShops[i].id,
-          });
-        }
-      } else if (shops.length > studio.hairMakeupShops.length) {
-        // Create new shops
-        for (let i = studio.hairMakeupShops.length; i < shops.length; i++) {
-          const { products, ...shopInfo } = shops[i];
-          const newShop = this.hairMakeupShopRepository.create({ ...shopInfo });
-          newShop.studio = studio;
-          const savedShop = await this.hairMakeupShopRepository.save(newShop);
-          for (const product of products) {
-            const newProduct = this.hairMakeupProductRepository.create({
-              ...product,
-            });
-            newProduct.shop = savedShop;
-            await this.hairMakeupProductRepository.save(newProduct);
-          }
-        }
+        newShop = await this.hairMakeupShopRepository.save(newShop);
+        const newProducts = products.map(product =>
+          this.hairMakeupProductRepository.create({
+            ...product,
+            shop: newShop,
+          }),
+        );
+        await this.hairMakeupProductRepository.save(newProducts);
       }
       // return
       return { ok: true };
@@ -785,6 +751,7 @@ export class StudiosService {
     }
   }
 
+  /*
   async createStudioReview(
     user: User,
     { studioSlug, payload }: CreateStudioReviewInput,
@@ -805,25 +772,6 @@ export class StudiosService {
         photoUrls,
         thumbnailIndex,
       } = payload;
-      const INVALID_PAYLOAD: CoreOutput = {
-        ok: false,
-        error: 'INVALID_PAYLOAD',
-      };
-      if (rating < 1 || rating > 5) {
-        return INVALID_PAYLOAD;
-      }
-      if (!Number.isInteger(rating)) {
-        return INVALID_PAYLOAD;
-      }
-      if (text.length < 12) {
-        return INVALID_PAYLOAD;
-      }
-      if (photoUrls.length < 1 || photoUrls.length > 3) {
-        return INVALID_PAYLOAD;
-      }
-      if (thumbnailIndex < 0 || thumbnailIndex >= photoUrls.length) {
-        return INVALID_PAYLOAD;
-      }
       // Find studio
       const studio = await this.studioRepository.findOne({ slug: studioSlug });
       if (!studio) {
@@ -895,7 +843,9 @@ export class StudiosService {
         .createQueryBuilder('review')
         .leftJoin('review.studio', 'studio')
         .leftJoin('review.user', 'user')
-        .addSelect('user.nickname')
+        .addSelect(['user.id'])
+        .withDeleted()
+        .leftJoinAndSelect('user.profile', 'profile')
         .leftJoinAndSelect('review.photos', 'photo')
         .where('studio.slug = :studioSlug', { studioSlug })
         .andWhere('studio.coverPhotoUrl IS NOT NULL')
@@ -905,7 +855,7 @@ export class StudiosService {
         .getManyAndCount();
       // Make photos empty if isPhotoForProof is true
       reviews.forEach(review => {
-        if (user?.role !== Role.ADMIN && review.isPhotoForProof) {
+        if (user?.type !== UserType.ADMIN && review.isPhotoForProof) {
           review.photos = [];
         }
       });
@@ -933,7 +883,9 @@ export class StudiosService {
         .addSelect('studio.name')
         .addSelect('studio.slug')
         .leftJoin('review.user', 'user')
-        .addSelect('user.nickname')
+        .addSelect(['user.id'])
+        .withDeleted()
+        .leftJoinAndSelect('user.profile', 'profile')
         .leftJoinAndSelect('review.photos', 'photo')
         .where('studio.coverPhotoUrl IS NOT NULL')
         .orderBy('review.createdAt', 'DESC')
@@ -941,7 +893,7 @@ export class StudiosService {
         .take(reviewsPerPage)
         .getManyAndCount();
       reviews.forEach(review => {
-        if (user?.role !== Role.ADMIN && review.isPhotoForProof) {
+        if (user?.type !== UserType.ADMIN && review.isPhotoForProof) {
           review.photos = [];
         }
       });
@@ -962,7 +914,9 @@ export class StudiosService {
       const studioReviews = await this.studioReviewRepository
         .createQueryBuilder('review')
         .leftJoin('review.user', 'user')
-        .addSelect('user.nickname')
+        .addSelect(['user.id'])
+        .withDeleted()
+        .leftJoinAndSelect('user.profile', 'profile')
         .leftJoin('review.studio', 'studio')
         .addSelect('studio.name')
         .addSelect('studio.slug')
@@ -986,6 +940,25 @@ export class StudiosService {
     }
   }
 
+  async clickStudioReview({ id }: ClickStudioReviewInput): Promise<CoreOutput> {
+    try {
+      const review = await this.studioReviewRepository.findOne(id, {
+        select: ['id'],
+      });
+      if (!review) return CommonError('STUDIO_REVIEW_NOT_FOUND');
+      await this.studioReviewRepository
+        .createQueryBuilder('review')
+        .update(UsersReviewStudios)
+        .where({ id })
+        .set({ clickCount: () => 'clickCount + 1' })
+        .execute();
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
   async deleteStudioReview(
     user: User,
     { id }: DeleteStudioReviewInput,
@@ -1003,7 +976,7 @@ export class StudiosService {
         };
       }
       // Check if the user is admin or author
-      if (user.role !== Role.ADMIN && user.id !== review.user.id) {
+      if (user.type !== UserType.ADMIN && user.id !== review.user.id) {
         return {
           ok: false,
           error: 'UNAUTHORIZED',
@@ -1078,6 +1051,7 @@ export class StudiosService {
       return UNEXPECTED_ERROR;
     }
   }
+  */
 
   async heartStudio(
     user: User,
@@ -1087,14 +1061,9 @@ export class StudiosService {
       // 스튜디오 존재 여부 확인
       const studio = await this.studioRepository.findOne(
         { slug },
-        { select: ['id', 'heartCount'] },
+        { select: ['id'] },
       );
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
       // 이미 찜 되어 있는지 확인
       const isAlreadyHearted = await this.usersHeartStudiosRepository.findOne({
         where: {
@@ -1102,12 +1071,7 @@ export class StudiosService {
           studio: studio.id,
         },
       });
-      if (isAlreadyHearted) {
-        return {
-          ok: false,
-          error: 'ALREADY_HEARTED',
-        };
-      }
+      if (isAlreadyHearted) return CommonError('ALREADY_HEARTED');
       // 생성
       await this.usersHeartStudiosRepository.save(
         this.usersHeartStudiosRepository.create({
@@ -1116,8 +1080,12 @@ export class StudiosService {
         }),
       );
       // 스튜디오 heartCount 증가
-      studio.heartCount++;
-      await this.studioRepository.save(studio);
+      await this.studioRepository
+        .createQueryBuilder('studio')
+        .update(Studio)
+        .where({ id: studio.id })
+        .set({ heartCount: () => 'heartCount + 1' })
+        .execute();
       return { ok: true };
     } catch (e) {
       console.log(e);
@@ -1133,14 +1101,9 @@ export class StudiosService {
       // 스튜디오 존재 여부 확인
       const studio = await this.studioRepository.findOne(
         { slug },
-        { select: ['id', 'heartCount'] },
+        { select: ['id'] },
       );
-      if (!studio) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
       // 이미 찜 되어 있는지 확인
       const isAlreadyHearted = await this.usersHeartStudiosRepository.findOne({
         where: {
@@ -1148,19 +1111,18 @@ export class StudiosService {
           studio: studio.id,
         },
       });
-      if (!isAlreadyHearted) {
-        return {
-          ok: false,
-          error: 'ALREADY_DISHEARTED',
-        };
-      }
+      if (!isAlreadyHearted) return CommonError('ALREADY_DISHEARTED');
       // 삭제
       await this.usersHeartStudiosRepository.delete({
         id: isAlreadyHearted.id,
       });
       // 스튜디오 heartCount 감소
-      studio.heartCount--;
-      await this.studioRepository.save(studio);
+      await this.studioRepository
+        .createQueryBuilder('studio')
+        .update(Studio)
+        .where({ id: studio.id })
+        .set({ heartCount: () => 'heartCount - 1' })
+        .execute();
       return { ok: true };
     } catch (e) {
       console.log(e);
@@ -1170,20 +1132,18 @@ export class StudiosService {
 
   async getHeartStudios(user: User): Promise<GetStudiosOutput> {
     try {
-      const heartStudios = await this.usersHeartStudiosRepository.find({
-        relations: ['studio', 'studio.branches'],
-        where: { user: user.id },
-        order: { heartAt: 'DESC' },
-      });
-      const studios: StudioWithIsHearted[] = [];
-      for (const heartStudio of heartStudios) {
-        const { studio } = heartStudio;
-        if (!studio.coverPhotoUrl) continue;
-        studios.push({
-          ...studio,
-          isHearted: true,
-        });
-      }
+      const heartStudios = await this.usersHeartStudiosRepository
+        .createQueryBuilder('heart')
+        .leftJoinAndSelect('heart.studio', 'studio')
+        .leftJoinAndSelect('studio.branches', 'branch')
+        .where('heart.userId = :id', { id: user.id })
+        .andWhere('studio.isPublic = true')
+        .orderBy('heart.heartAt', 'DESC')
+        .getMany();
+      const studios: StudioWithIsHearted[] = heartStudios.map(heart => ({
+        ...heart.studio,
+        isHearted: true,
+      }));
       return {
         ok: true,
         studios,

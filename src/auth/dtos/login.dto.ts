@@ -1,15 +1,37 @@
-import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
-import { CoreOutput } from 'src/common/dtos/output.dto';
-import { CreateUserWithEmailInput } from 'src/users/dtos/create-user.dto';
+import {
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
+import { OAuthProvider } from 'src/users/entities/user-oauth.entity';
 
-@InputType()
-export class LoginWithEmailInput extends PickType(CreateUserWithEmailInput, [
-  'email',
-  'password',
-]) {}
+export class EmailLoginInput {
+  @IsEmail()
+  @MaxLength(190)
+  email: string;
 
-@ObjectType()
-export class LoginOutput extends CoreOutput {
-  @Field(type => String, { nullable: true })
-  token?: string;
+  @IsString()
+  @MinLength(8)
+  password: string;
+}
+
+export class SocialLoginInput {
+  @IsEnum(OAuthProvider)
+  provider: OAuthProvider;
+
+  @IsString()
+  accessToken: string;
+
+  @IsOptional()
+  @IsEmail()
+  @MaxLength(190)
+  email?: string;
+}
+
+export class LoginOutput {
+  access: string;
+  refresh: string;
 }

@@ -1,0 +1,56 @@
+2021-08-07 DEV
+
+query: CREATE TABLE `partner` (`id` int NOT NULL AUTO_INCREMENT, `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `email` varchar(190) NOT NULL, `name` varchar(30) NOT NULL, `phoneNumber` varchar(20) NOT NULL, `instagram` varchar(30) NOT NULL, `businessNumber` varchar(15) NOT NULL, `reqStudioName` varchar(15) NOT NULL, `userId` int NULL, UNIQUE INDEX `IDX_39ba44d32530f1c7076c182ebc` (`email`), UNIQUE INDEX `REL_17701946f05279c9fe1a05cccf` (`userId`), PRIMARY KEY (`id`)) ENGINE=InnoDB
+query: CREATE TABLE `studio_info` (`updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `contactUrl` text NULL, `reservationUrl` text NULL, `weekdayPriceTag` varchar(5) NOT NULL DEFAULT '평일', `weekendPriceTag` varchar(5) NOT NULL DEFAULT '주말', `studioProduct` text NULL, `outdoorProduct` text NULL, `additionalProduct` text NULL, `description` text NULL, `reservation` text NULL, `cancel` text NULL, `studioId` int NOT NULL, UNIQUE INDEX `REL_3c628ebe3d7a4e58abc4cc8ba9` (`studioId`), PRIMARY KEY (`studioId`)) ENGINE=InnoDB
+query: CREATE TABLE `studio` (`id` int NOT NULL AUTO_INCREMENT, `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `name` varchar(15) NOT NULL, `slug` varchar(20) NOT NULL, `isPublic` tinyint NOT NULL DEFAULT 0, `tier` int NOT NULL DEFAULT '0', `logoUrl` varchar(255) NULL, `coverPhotoUrl` varchar(255) NULL, `heartCount` int NOT NULL DEFAULT '0', `totalRating` int NOT NULL DEFAULT '0', `reviewCount` int NOT NULL DEFAULT '0', `lowestPrice` int NULL, `partnerId` int NULL, UNIQUE INDEX `IDX_1db94f17c34b0ca277c4b1799b` (`slug`), PRIMARY KEY (`id`)) ENGINE=InnoDB
+query: ALTER TABLE `partner` ADD CONSTRAINT `FK_17701946f05279c9fe1a05cccf5` FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+query: ALTER TABLE `studio_info` ADD CONSTRAINT `FK_3c628ebe3d7a4e58abc4cc8ba9e` FOREIGN KEY (`studioId`) REFERENCES `studio`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+query: ALTER TABLE `studio` ADD CONSTRAINT `FK_c3225d87566bd792e75005e6b50` FOREIGN KEY (`partnerId`) REFERENCES `partner`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+query: COMMIT
+
+2021-08-16 DEV
+
+query: ALTER TABLE `branch` ADD `parkingInfo` text NULL
+query: ALTER TABLE `branch` DROP COLUMN `name`
+query: ALTER TABLE `branch` ADD `name` varchar(10) NOT NULL
+query: ALTER TABLE `branch` DROP COLUMN `address`
+query: ALTER TABLE `branch` ADD `address` varchar(100) NOT NULL
+
+2021-08-19 DEV
+
+query: ALTER TABLE `studio_product` ADD `maxPeopleCount` int NULL
+query: ALTER TABLE `studio_product` ADD `maxConceptCount` int NULL
+query: ALTER TABLE `studio_product` DROP COLUMN `title`
+query: ALTER TABLE `studio_product` ADD `title` varchar(25) NOT NULL
+query: ALTER TABLE `studio_product` CHANGE `conceptCount` `conceptCount` int NULL
+query: ALTER TABLE `studio_product` CHANGE `weekdayPrice` `weekdayPrice` int NULL
+query: ALTER TABLE `studio_product` CHANGE `weekendPrice` `weekendPrice` int NULL
+query: ALTER TABLE `studio_product` ADD `isOriginalProvided` tinyint NOT NULL
+
+2021-08-23 DEV
+
+query: ALTER TABLE `additional_product` DROP COLUMN `title`
+query: ALTER TABLE `additional_product` ADD `title` varchar(50) NOT NULL
+query: ALTER TABLE `additional_product` CHANGE `price` `price` int NULL
+
+2021-08-24 DEV
+
+query: ALTER TABLE `hair_makeup_product` DROP COLUMN `title`
+query: ALTER TABLE `hair_makeup_product` ADD `title` varchar(50) NOT NULL
+query: ALTER TABLE `hair_makeup_shop` DROP COLUMN `name`
+query: ALTER TABLE `hair_makeup_shop` ADD `name` varchar(20) NOT NULL
+query: ALTER TABLE `hair_makeup_shop` DROP COLUMN `address`
+query: ALTER TABLE `hair_makeup_shop` ADD `address` varchar(100) NULL
+query: ALTER TABLE `hair_makeup_shop` DROP COLUMN `productListDescription`
+query: ALTER TABLE `hair_makeup_shop` ADD `productListDescription` text NULL
+
+2021-08-26 DEV
+
+query: ALTER TABLE `partner` ADD `emailAgreedAt` datetime NULL
+query: ALTER TABLE `partner` ADD `smsAgreedAt` datetime NULL
+
+2021-08-29 DEV
+
+query: CREATE TABLE `partners_notice` (`id` int NOT NULL AUTO_INCREMENT, `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `title` varchar(100) NOT NULL, `content` text NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB
+query: ALTER TABLE `notice` DROP COLUMN `title`
+query: ALTER TABLE `notice` ADD `title` varchar(100) NOT NULL

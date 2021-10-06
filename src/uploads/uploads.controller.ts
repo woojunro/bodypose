@@ -2,22 +2,26 @@ import {
   Body,
   Controller,
   Post,
+  UploadedFile,
   UploadedFiles,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
   FileFieldsInterceptor,
+  FileInterceptor,
   FilesInterceptor,
 } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
-import { CurrentRestUser } from 'src/auth/current-user.decorator';
-import { RestJwtAuthGuard } from 'src/auth/rest-jwt-auth.guard';
-import { RestRoles } from 'src/auth/roles.decorator';
+import { CurrentUser } from 'src/auth/current-user.decorator';
+import { Roles } from 'src/auth/roles.decorator';
+import { PhotoConcept } from 'src/photos/entities/photo-concept.entity';
 import { CreateStudioReviewOutput } from 'src/studios/dtos/create-studio-review.dto';
-import { Role, User } from 'src/users/entities/user.entity';
+import { UserType, User } from 'src/users/entities/user.entity';
+import { ONE_MEGABYTE_IN_BYTES } from './constants/file-size.constant';
+import { UploadFileOutput } from './dtos/upload-file.dto';
 import {
-  UploadPhotoDto,
+  UploadStudioPhotoDto,
+  UploadStudioPortfolioPhotoDto,
   UploadStudioReviewDto,
 } from './dtos/upload-studio-photo.dto';
 import { UploadsService } from './uploads.service';
@@ -27,9 +31,9 @@ import { imageFileFilter } from './utils/file-upload';
 export class UploadsController {
   constructor(private readonly uploadsService: UploadsService) {}
 
+  /*
   @Post('studio-review')
-  @RestRoles(Role.USER)
-  @UseGuards(RestJwtAuthGuard)
+  @Roles(UserType.USER)
   @UseInterceptors(
     FilesInterceptor('photos', 3, {
       storage: memoryStorage(),
@@ -39,17 +43,17 @@ export class UploadsController {
       fileFilter: imageFileFilter,
     }),
   )
-  async uploadReviewPhotos(
+  async uploadReviewReview(
     @UploadedFiles() photos,
     @Body() body: UploadStudioReviewDto,
-    @CurrentRestUser() user: User,
+    @CurrentUser() user: User,
   ): Promise<CreateStudioReviewOutput> {
     return this.uploadsService.uploadStudioReview(photos, body, user);
   }
+  */
 
   @Post('studio-photo')
-  @RestRoles(Role.ADMIN)
-  @UseGuards(RestJwtAuthGuard)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -58,17 +62,70 @@ export class UploadsController {
       ],
       {
         storage: memoryStorage(),
-        limits: {
-          fileSize: 1 * 1024 * 1024, // 1MB
-        },
+        limits: { fileSize: ONE_MEGABYTE_IN_BYTES },
         fileFilter: imageFileFilter,
       },
     ),
   )
   async uploadStudioPhoto(
+    @CurrentUser() user: User,
     @UploadedFiles() photos,
-    @Body() body: UploadPhotoDto,
+    @Body() body: UploadStudioPortfolioPhotoDto,
   ) {
-    return this.uploadsService.uploadStudioPhoto(photos, body);
+    return this.uploadsService.uploadStudioPhoto(user, photos, body);
   }
+
+  @Post('studio-logo')
+  @Roles(UserType.ADMIN, UserType.STUDIO)
+  @UseInterceptors(
+    FileInterceptor('logo', {
+      storage: memoryStorage(),
+      limits: { fileSize: ONE_MEGABYTE_IN_BYTES },
+      fileFilter: imageFileFilter,
+    }),
+  )
+  async uploadStudioLogo(
+    @CurrentUser() user: User,
+    @UploadedFile() logo,
+    @Body() body: UploadStudioPhotoDto,
+  ): Promise<UploadFileOutput> {
+    return this.uploadsService.uploadStudioLogo(user, logo, body);
+  }
+
+  @Post('studio-cover')
+  @Roles(UserType.ADMIN, UserType.STUDIO)
+  @UseInterceptors(
+    FileInterceptor('cover', {
+      storage: memoryStorage(),
+      limits: { fileSize: ONE_MEGABYTE_IN_BYTES },
+      fileFilter: imageFileFilter,
+    }),
+  )
+  async uploadStudioCoverPhoto(
+    @CurrentUser() user: User,
+    @UploadedFile() cover,
+    @Body() body: UploadStudioPhotoDto,
+  ): Promise<UploadFileOutput> {
+    return this.uploadsService.uploadStudioCoverPhoto(user, cover, body);
+  }
+
+  /*
+  @Post('profile-image')
+  @Roles(UserType.USER, UserType.STUDIO)
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: memoryStorage(),
+      limits: {
+        fileSize: 1 * 1024 * 1024,
+      },
+      fileFilter: imageFileFilter,
+    }),
+  )
+  async uploadProfileImage(
+    @CurrentUser() user: User,
+    @UploadedFile() profileImage: Express.Multer.File,
+  ) {
+    return this.uploadsService.uploadProfileImage(user, profileImage);
+  }
+  */
 }

@@ -1,5 +1,5 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { IsInt, IsOptional, Length, Min } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { Studio } from './studio.entity';
@@ -7,26 +7,26 @@ import { Studio } from './studio.entity';
 @Entity()
 @ObjectType()
 export class AdditionalProduct extends CoreEntity {
-  @Column()
+  @Column({ length: 50 })
   @Field(type => String)
-  @IsString()
+  @Length(1, 50)
   title: string;
 
   @Column({ nullable: true })
   @Field(type => String, { nullable: true })
   @IsOptional()
-  @IsString()
+  @Length(0, 255)
   description?: string;
 
-  @Column()
-  @Field(type => Int)
+  @Column({ nullable: true })
+  @Field(type => Int, { nullable: true })
+  @IsOptional()
   @IsInt()
   @Min(0)
-  price: number;
+  price?: number;
 
   @ManyToOne(relation => Studio, studio => studio.additionalProducts, {
     onDelete: 'CASCADE',
   })
-  @Field(type => Studio)
   studio: Studio;
 }

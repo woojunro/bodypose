@@ -1,19 +1,17 @@
-import { Field, InputType, Int, ObjectType, PickType } from '@nestjs/graphql';
+import { Field, InputType, ObjectType, PickType } from '@nestjs/graphql';
+import { IsEmail, IsOptional } from 'class-validator';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { Studio } from '../entities/studio.entity';
 
 @InputType()
 export class CreateStudioInput extends PickType(
   Studio,
-  ['name', 'slug', 'contactUrl', 'reservationUrl', 'isOriginalPhotoProvided'],
+  ['name', 'slug'],
   InputType,
 ) {}
 
 @ObjectType()
 export class CreateStudioOutput extends CoreOutput {
-  @Field(type => Int, { nullable: true })
-  id?: number;
-
-  @Field(type => String, { nullable: true })
-  slug?: string;
+  @Field(type => Studio, { nullable: true })
+  studio?: Studio;
 }

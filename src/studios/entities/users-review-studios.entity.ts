@@ -30,15 +30,11 @@ export class UsersReviewStudios extends CoreEntity {
   @MinLength(12)
   text: string;
 
-  @ManyToOne(relation => User, user => user.reviews, {
-    onDelete: 'SET NULL',
-  })
+  @ManyToOne(relation => User, { onDelete: 'SET NULL' })
   @Field(type => User)
   user: User;
 
-  @ManyToOne(relation => Studio, studio => studio.reviews, {
-    onDelete: 'CASCADE',
-  })
+  @ManyToOne(relation => Studio, { onDelete: 'CASCADE' })
   @Field(type => Studio)
   studio: Studio;
 
@@ -58,4 +54,8 @@ export class UsersReviewStudios extends CoreEntity {
   @OneToMany(relation => ReviewPhoto, photo => photo.review)
   @Field(type => [ReviewPhoto])
   photos: ReviewPhoto[];
+
+  @Column({ type: 'int', default: 0 })
+  @Field(type => Int)
+  clickCount: number;
 }

@@ -7,8 +7,8 @@ export class GetStudioInput extends PickType(Studio, ['slug'], InputType) {}
 
 @ObjectType()
 export class StudioWithIsHearted extends Studio {
-  @Field(type => Boolean)
-  isHearted: boolean;
+  @Field(type => Boolean, { nullable: true })
+  isHearted?: boolean;
 }
 
 @ObjectType()

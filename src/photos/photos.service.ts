@@ -5,17 +5,22 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UNEXPECTED_ERROR } from 'src/common/constants/error.constant';
+import {
+  CommonError,
+  UNEXPECTED_ERROR,
+} from 'src/common/constants/error.constant';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { StudiosService } from 'src/studios/studios.service';
 import { UploadsService } from 'src/uploads/uploads.service';
-import { Role, User } from 'src/users/entities/user.entity';
+import { UserType, User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
-import { FindOneOptions, IsNull, Not, Repository } from 'typeorm';
 import {
-  ClickStudioPhotoInput,
-  ClickStudioPhotoOutput,
-} from './dtos/click-studio-photo.dto';
+  FindOneOptions,
+  IsNull,
+  Not,
+  Repository,
+  SelectQueryBuilder,
+} from 'typeorm';
 import {
   CreatePhotoConceptInput,
   CreatePhotoConceptOutput,
@@ -39,6 +44,9 @@ import {
   GetStudioPhotosInput,
   GetStudioPhotosOutput,
   GetMyHeartStudioPhotosInput,
+  StudioPhotoWithIsHearted,
+  GetStudioPhotoInput,
+  GetStudioPhotoOutput,
 } from './dtos/get-studio-photo.dto';
 import {
   HeartStudioPhotoInput,
@@ -60,7 +68,6 @@ import {
 } from './entities/photo-concept.entity';
 import { ReviewPhoto } from './entities/review-photo.entity';
 import { StudioPhoto } from './entities/studio-photo.entity';
-import { UsersClickStudioPhotos } from './entities/users-click-studio-photos.entity';
 import { UsersHeartStudioPhotos } from './entities/users-heart-studio-photos.entity';
 
 @Injectable()
@@ -74,8 +81,6 @@ export class PhotosService {
     private readonly costumeConceptRepository: Repository<CostumeConcept>,
     @InjectRepository(ObjectConcept)
     private readonly objectConceptRepository: Repository<ObjectConcept>,
-    @InjectRepository(UsersClickStudioPhotos)
-    private readonly usersClickStudioPhotosRepository: Repository<UsersClickStudioPhotos>,
     @InjectRepository(ReviewPhoto)
     private readonly reviewPhotoRepository: Repository<ReviewPhoto>,
     @InjectRepository(UsersHeartStudioPhotos)
@@ -87,6 +92,56 @@ export class PhotosService {
     @Inject(forwardRef(() => UploadsService))
     private readonly uploadsService: UploadsService,
   ) {}
+
+  async getStudioPhoto(
+    user: User,
+    { id }: GetStudioPhotoInput,
+  ): Promise<GetStudioPhotoOutput> {
+    try {
+      let query = this.studioPhotoRepository
+        .createQueryBuilder('photo')
+        .leftJoin('photo.studio', 'studio')
+        .leftJoin('studio.partner', 'partner')
+        .leftJoinAndSelect('photo.backgroundConcepts', 'backgroundConcept')
+        .leftJoinAndSelect('photo.costumeConcepts', 'costumeConcept')
+        .leftJoinAndSelect('photo.objectConcepts', 'objectConcept')
+        .where('photo.id = :id', { id });
+      query = this.filterStudioPhotoQueryByUser(query, user);
+      const photo = await query.getOne();
+      if (!photo) return CommonError('STUDIO_PHOTO_NOT_FOUND');
+      return { ok: true, photo };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async checkIfStudioPhotoExists(id: number): Promise<StudioPhoto> {
+    const studioPhoto = await this.studioPhotoRepository
+      .createQueryBuilder('p')
+      .select('p.id')
+      .innerJoin('p.studio', 's')
+      .addSelect('s.id')
+      .where('p.id = :id', { id })
+      .getOne();
+    return studioPhoto;
+  }
+
+  filterStudioPhotoQueryByUser(
+    query: SelectQueryBuilder<StudioPhoto>,
+    user: User,
+    studioAlias = 'studio',
+    partnerAlias = 'partner',
+  ): SelectQueryBuilder<StudioPhoto> {
+    switch (user?.type) {
+      case UserType.ADMIN:
+        return query;
+      case UserType.STUDIO:
+        return query.andWhere(`${partnerAlias}.userId = :id`, { id: user.id });
+      default:
+        return query.andWhere(`${studioAlias}.isPublic = true`);
+    }
+  }
 
   async getAllStudioPhotos(
     user: User,
@@ -102,74 +157,66 @@ export class PhotosService {
         objectConceptSlugs,
       } = input;
 
-      let query = this.studioPhotoRepository.createQueryBuilder('photo');
-      query = query.leftJoinAndSelect('photo.studio', 'studio');
+      let query = this.studioPhotoRepository
+        .createQueryBuilder('photo')
+        .leftJoinAndSelect('photo.studio', 'studio')
+        .leftJoin('studio.partner', 'partner')
+        .where({ gender: gender ? gender : Not(IsNull()) });
 
       if (backgroundConceptSlugs.length !== 0) {
-        query = query.leftJoin('photo.backgroundConcepts', 'backgroundConcept');
+        query = query
+          .leftJoin('photo.backgroundConcepts', 'backgroundConcept')
+          .andWhere('backgroundConcept.slug IN (:bgSlugs)', {
+            bgSlugs: backgroundConceptSlugs,
+          });
       }
       if (costumeConceptSlugs.length !== 0) {
-        query = query.leftJoin('photo.costumeConcepts', 'costumeConcept');
+        query = query
+          .leftJoin('photo.costumeConcepts', 'costumeConcept')
+          .andWhere('costumeConcept.slug IN (:costumeSlugs)', {
+            costumeSlugs: costumeConceptSlugs,
+          });
       }
       if (objectConceptSlugs.length !== 0) {
-        query = query.leftJoin('photo.objectConcepts', 'objectConcept');
+        query = query
+          .leftJoin('photo.objectConcepts', 'objectConcept')
+          .andWhere('objectConcept.slug IN (:objectSlugs)', {
+            objectSlugs: objectConceptSlugs,
+          });
       }
 
-      const [photos, count] = await query
-        .where({ gender: gender ? gender : Not(IsNull()) })
-        .andWhere('studio.coverPhotoUrl IS NOT NULL')
-        .andWhere(
-          backgroundConceptSlugs.length !== 0
-            ? 'backgroundConcept.slug IN (:bgSlugs)'
-            : '1=1',
-          { bgSlugs: backgroundConceptSlugs },
-        )
-        .andWhere(
-          costumeConceptSlugs.length !== 0
-            ? 'costumeConcept.slug IN (:costumeSlugs)'
-            : '1=1',
-          { costumeSlugs: costumeConceptSlugs },
-        )
-        .andWhere(
-          objectConceptSlugs.length !== 0
-            ? 'objectConcept.slug IN (:objectSlugs)'
-            : '1=1',
-          { objectSlugs: objectConceptSlugs },
-        )
+      query = this.filterStudioPhotoQueryByUser(query, user);
+      const [studioPhotos, count] = await query
         .orderBy('photo.substr', 'ASC')
         .addOrderBy('photo.id', 'DESC')
         .skip((page - 1) * take)
         .take(take)
         .getManyAndCount();
 
-      let heartPhotos: UsersHeartStudioPhotos[] = [];
-      if (user) {
-        const photoIds = photos.map(photo => photo.id);
-        const query = this.usersHeartStudioPhotosRepository
-          .createQueryBuilder('heart')
-          .select(['heart.id'])
-          .leftJoin('heart.user', 'user')
-          .leftJoin('heart.studioPhoto', 'photo')
-          .addSelect(['photo.id'])
-          .where('user.id = :id', { id: user.id });
-
-        if (photoIds.length > 0) {
-          heartPhotos = await query
-            .andWhere('photo.id IN (:photoIds)', { photoIds })
+      let photos: StudioPhotoWithIsHearted[] = [];
+      if (user?.type === UserType.USER) {
+        const photoIds = studioPhotos.map(photo => photo.id);
+        let hearts: UsersHeartStudioPhotos[] = [];
+        if (photoIds.length) {
+          hearts = await this.usersHeartStudioPhotosRepository
+            .createQueryBuilder('heart')
+            .where('heart.userId = :id', { id: user.id })
+            .andWhere('heart.studioPhotoId IN (:photoIds)', { photoIds })
             .getMany();
         }
+        photos = studioPhotos.map(photo => ({
+          ...photo,
+          isHearted: hearts.some(heart => heart.studioPhotoId === photo.id),
+        }));
+      } else {
+        photos = studioPhotos.map(photo => ({ ...photo, isHearted: null }));
       }
 
       // return
       return {
         ok: true,
         totalPages: Math.ceil(count / take),
-        photos: photos.map(photo => ({
-          ...photo,
-          isHearted: heartPhotos.some(
-            heart => heart.studioPhoto.id === photo.id,
-          ),
-        })),
+        photos,
       };
     } catch (e) {
       console.log(e);
@@ -183,47 +230,41 @@ export class PhotosService {
   ): Promise<GetStudioPhotosOutput> {
     try {
       const photosPerPage = 24;
-      const [photos, count] = await this.studioPhotoRepository
+      let query = this.studioPhotoRepository
         .createQueryBuilder('photo')
-        .leftJoinAndSelect('photo.studio', 'studio')
+        .leftJoin('photo.studio', 'studio')
+        .leftJoin('studio.partner', 'partner')
         .where({ gender: gender ? gender : Not(IsNull()) })
-        .andWhere(
-          user && user.role === Role.ADMIN
-            ? '1=1'
-            : 'studio.coverPhotoUrl IS NOT NULL',
-        )
-        .andWhere('studio.slug = :slug', { slug: studioSlug })
+        .andWhere('studio.slug = :slug', { slug: studioSlug });
+      query = this.filterStudioPhotoQueryByUser(query, user);
+      const [studioPhotos, count] = await query
         .orderBy('photo.id', 'DESC')
         .take(photosPerPage)
         .skip((page - 1) * photosPerPage)
         .getManyAndCount();
 
-      let heartPhotos: UsersHeartStudioPhotos[] = [];
-      if (user) {
-        const photoIds = photos.map(photo => photo.id);
-        const query = this.usersHeartStudioPhotosRepository
-          .createQueryBuilder('heart')
-          .select(['heart.id'])
-          .leftJoin('heart.user', 'user')
-          .leftJoin('heart.studioPhoto', 'photo')
-          .addSelect(['photo.id'])
-          .where('user.id = :id', { id: user.id });
-
-        if (photoIds.length > 0) {
-          heartPhotos = await query
-            .andWhere('photo.id IN (:photoIds)', { photoIds })
+      let photos: StudioPhotoWithIsHearted[] = [];
+      if (user?.type === UserType.USER) {
+        const photoIds = studioPhotos.map(photo => photo.id);
+        let hearts: UsersHeartStudioPhotos[] = [];
+        if (photoIds.length) {
+          hearts = await this.usersHeartStudioPhotosRepository
+            .createQueryBuilder('heart')
+            .where('heart.userId = :id', { id: user.id })
+            .andWhere('heart.studioPhotoId IN (:photoIds)', { photoIds })
             .getMany();
         }
+        photos = studioPhotos.map(photo => ({
+          ...photo,
+          isHearted: hearts.some(heart => heart.studioPhotoId === photo.id),
+        }));
+      } else {
+        photos = studioPhotos.map(photo => ({ ...photo, isHearted: null }));
       }
 
       return {
         ok: true,
-        photos: photos.map(photo => ({
-          ...photo,
-          isHearted: heartPhotos.some(
-            heart => heart.studioPhoto.id === photo.id,
-          ),
-        })),
+        photos,
         totalPages: Math.ceil(count / photosPerPage),
       };
     } catch (e) {
@@ -467,25 +508,20 @@ export class PhotosService {
         objectConceptSlugs,
       } = input;
       // Get studio by slug
-      const studioBySlug = await this.studiosService.getStudioBySlug(
+      const studio = await this.studiosService.checkIfStudioExistsBySlug(
         studioSlug,
       );
-      if (!studioBySlug) {
-        return {
-          ok: false,
-          error: 'STUDIO_NOT_FOUND',
-        };
-      }
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
       // Create a photo
       const newPhoto = this.studioPhotoRepository.create({
-        studio: studioBySlug,
+        studio,
         gender,
+        thumbnailUrl,
+        originalUrl,
         backgroundConcepts: [],
         costumeConcepts: [],
         objectConcepts: [],
       });
-      newPhoto.thumbnailUrl = thumbnailUrl;
-      newPhoto.originalUrl = originalUrl;
       // Attach Concepts
       for (const slug of backgroundConceptSlugs) {
         const { ok, error } = await this.attachPhotoConcept(
@@ -493,9 +529,7 @@ export class PhotosService {
           slug,
           PhotoConceptType.BACKGROUND,
         );
-        if (!ok) {
-          return { ok, error };
-        }
+        if (!ok) return { ok, error };
       }
       for (const slug of costumeConceptSlugs) {
         const { ok, error } = await this.attachPhotoConcept(
@@ -503,9 +537,7 @@ export class PhotosService {
           slug,
           PhotoConceptType.COSTUME,
         );
-        if (!ok) {
-          return { ok, error };
-        }
+        if (!ok) return { ok, error };
       }
       for (const slug of objectConceptSlugs) {
         const { ok, error } = await this.attachPhotoConcept(
@@ -513,9 +545,7 @@ export class PhotosService {
           slug,
           PhotoConceptType.OBJECT,
         );
-        if (!ok) {
-          return { ok, error };
-        }
+        if (!ok) return { ok, error };
       }
       // Save
       const createdPhoto = await this.studioPhotoRepository.save(newPhoto);
@@ -529,35 +559,34 @@ export class PhotosService {
     }
   }
 
-  async updateStudioPhoto({
-    id,
-    payload: {
-      gender,
-      backgroundConceptSlugs,
-      costumeConceptSlugs,
-      objectConceptSlugs,
-    },
-  }: UpdateStudioPhotoInput): Promise<UpdateStudioPhotoOutput> {
+  async updateStudioPhoto(
+    user: User,
+    {
+      id,
+      payload: {
+        gender,
+        backgroundConceptSlugs,
+        costumeConceptSlugs,
+        objectConceptSlugs,
+      },
+    }: UpdateStudioPhotoInput,
+  ): Promise<UpdateStudioPhotoOutput> {
     try {
-      const photo = await this.studioPhotoRepository.findOne(
-        { id },
-        {
-          relations: [
-            'backgroundConcepts',
-            'costumeConcepts',
-            'objectConcepts',
-          ],
-        },
+      const existingStudioPhoto = await this.studioPhotoRepository
+        .createQueryBuilder('photo')
+        .leftJoin('photo.studio', 'studio')
+        .addSelect('studio.id')
+        .where('photo.id = :id', { id })
+        .getOne();
+      if (!existingStudioPhoto) return CommonError('STUDIO_PHOTO_NOT_FOUND');
+      const valid = await this.studiosService.checkIfUserIsAdminOrOwner(
+        existingStudioPhoto.studio.id,
+        user,
       );
-      if (!photo) {
-        return {
-          ok: false,
-          error: 'STUDIO_PHOTO_NOT_FOUND',
-        };
-      }
-      if (gender) {
-        photo.gender = gender;
-      }
+      if (!valid) return CommonError('INVALID');
+      // Update
+      const photo = this.studioPhotoRepository.create({ id });
+      if (gender) photo.gender = gender;
       if (backgroundConceptSlugs) {
         photo.backgroundConcepts = [];
         for (const slug of backgroundConceptSlugs) {
@@ -566,9 +595,7 @@ export class PhotosService {
             slug,
             PhotoConceptType.BACKGROUND,
           );
-          if (!ok) {
-            return { ok, error };
-          }
+          if (!ok) return { ok, error };
         }
       }
       if (costumeConceptSlugs) {
@@ -579,9 +606,7 @@ export class PhotosService {
             slug,
             PhotoConceptType.COSTUME,
           );
-          if (!ok) {
-            return { ok, error };
-          }
+          if (!ok) return { ok, error };
         }
       }
       if (objectConceptSlugs) {
@@ -592,9 +617,7 @@ export class PhotosService {
             slug,
             PhotoConceptType.OBJECT,
           );
-          if (!ok) {
-            return { ok, error };
-          }
+          if (!ok) return { ok, error };
         }
       }
       const studioPhoto = await this.studioPhotoRepository.save(photo);
@@ -608,64 +631,31 @@ export class PhotosService {
     }
   }
 
-  async deleteStudioPhoto({
-    id,
-    studioSlug,
-  }: DeleteStudioPhotoInput): Promise<DeleteStudioPhotoOutput> {
+  async deleteStudioPhoto(
+    user: User,
+    { id }: DeleteStudioPhotoInput,
+  ): Promise<DeleteStudioPhotoOutput> {
     try {
       const photo = await this.studioPhotoRepository.findOne(
         { id },
         { relations: ['studio'] },
       );
-      if (!photo) {
-        return {
-          ok: false,
-          error: 'PHOTO_NOT_FOUND',
-        };
-      }
-      if (photo.studio.slug !== studioSlug) {
-        return {
-          ok: false,
-          error: 'INVALID_STUDIO_SLUG',
-        };
-      }
-      await this.studioPhotoRepository.delete({ id });
-      // Delete photos in storage
+      if (!photo) return CommonError('STUDIO_PHOTO_NOT_FOUND');
+      const valid = await this.studiosService.checkIfUserIsAdminOrOwner(
+        photo.studio.id,
+        user,
+      );
+      if (!valid) return CommonError('INVALID');
+      // Delete
+      await this.studioPhotoRepository.delete(id);
       const thumbnailPhoto = photo.thumbnailUrl.substring(
         photo.thumbnailUrl.indexOf('studio-photos'),
       );
       const originalPhoto = photo.originalUrl.substring(
         photo.originalUrl.indexOf('studio-photos'),
       );
-      await this.uploadsService.deleteFile(thumbnailPhoto);
-      await this.uploadsService.deleteFile(originalPhoto);
-      return { ok: true };
-    } catch (e) {
-      console.log(e);
-      return UNEXPECTED_ERROR;
-    }
-  }
-
-  async clickStudioPhoto(
-    { id }: ClickStudioPhotoInput,
-    user: User,
-  ): Promise<ClickStudioPhotoOutput> {
-    try {
-      const photo = await this.studioPhotoRepository.findOne(
-        { id },
-        { select: ['id'] },
-      );
-      if (!photo) {
-        return {
-          ok: false,
-          error: 'PHOTO_NOT_FOUND',
-        };
-      }
-      // Create and Save UsersClickStudioPhotos
-      const newClick = this.usersClickStudioPhotosRepository.create();
-      newClick.studioPhoto = photo;
-      newClick.user = user ? user : null;
-      this.usersClickStudioPhotosRepository.save(newClick);
+      this.uploadsService.deleteFile(thumbnailPhoto);
+      this.uploadsService.deleteFile(originalPhoto);
       return { ok: true };
     } catch (e) {
       console.log(e);
@@ -684,36 +674,29 @@ export class PhotosService {
     { id }: HeartStudioPhotoInput,
   ): Promise<HeartStudioPhotoOutput> {
     try {
-      const photo = await this.studioPhotoRepository.findOne(
-        { id },
-        { select: ['id', 'heartCount'] },
-      );
-      if (!photo) {
-        return {
-          ok: false,
-          error: 'STUDIO_PHOTO_NOT_FOUND',
-        };
-      }
+      const photo = await this.studioPhotoRepository.findOne(id, {
+        select: ['id'],
+      });
+      if (!photo) return CommonError('STUDIO_PHOTO_NOT_FOUND');
       const isAlreadyHearted = await this.usersHeartStudioPhotosRepository.findOne(
         {
           user: { id: user.id },
           studioPhoto: { id: photo.id },
         },
       );
-      if (isAlreadyHearted) {
-        return {
-          ok: false,
-          error: 'ALREADY_HEARTED',
-        };
-      }
+      if (isAlreadyHearted) return CommonError('ALREADY_HEARTED');
       await this.usersHeartStudioPhotosRepository.save(
         this.usersHeartStudioPhotosRepository.create({
           user: { id: user.id },
-          studioPhoto: { id: photo.id },
+          studioPhoto: { id },
         }),
       );
-      photo.heartCount++;
-      await this.studioPhotoRepository.save(photo);
+      await this.studioPhotoRepository
+        .createQueryBuilder('photo')
+        .update(StudioPhoto)
+        .where({ id })
+        .set({ heartCount: () => 'heartCount + 1' })
+        .execute();
       return { ok: true, id };
     } catch (e) {
       console.log(e);
@@ -726,29 +709,22 @@ export class PhotosService {
     { id }: HeartStudioPhotoInput,
   ): Promise<HeartStudioPhotoOutput> {
     try {
-      const photo = await this.studioPhotoRepository.findOne(
-        { id },
-        { select: ['id', 'heartCount'] },
-      );
-      if (!photo) {
-        return {
-          ok: false,
-          error: 'STUDIO_PHOTO_NOT_FOUND',
-        };
-      }
+      const photo = await this.studioPhotoRepository.findOne(id, {
+        select: ['id'],
+      });
+      if (!photo) return CommonError('STUDIO_PHOTO_NOT_FOUND');
       const heart = await this.usersHeartStudioPhotosRepository.findOne({
         user: { id: user.id },
-        studioPhoto: { id: photo.id },
+        studioPhoto: { id },
       });
-      if (!heart) {
-        return {
-          ok: false,
-          error: 'ALREADY_DISHEARTED',
-        };
-      }
+      if (!heart) return CommonError('ALREADY_DISHEARTED');
       await this.usersHeartStudioPhotosRepository.delete({ id: heart.id });
-      photo.heartCount--;
-      await this.studioPhotoRepository.save(photo);
+      await this.studioPhotoRepository
+        .createQueryBuilder('photo')
+        .update(StudioPhoto)
+        .where({ id })
+        .set({ heartCount: () => 'heartCount - 1' })
+        .execute();
       return { ok: true, id };
     } catch (e) {
       console.log(e);
@@ -764,12 +740,10 @@ export class PhotosService {
       const photosPerPage = 24;
       const [hearts, count] = await this.usersHeartStudioPhotosRepository
         .createQueryBuilder('heart')
-        .select(['heart.id', 'heart.heartAt'])
-        .leftJoin('heart.user', 'user')
         .leftJoinAndSelect('heart.studioPhoto', 'photo')
         .leftJoinAndSelect('photo.studio', 'studio')
-        .where('user.id = :id', { id: user.id })
-        .andWhere('studio.coverPhotoUrl IS NOT NULL')
+        .where('heart.userId = :id', { id: user.id })
+        .andWhere('studio.isPublic = true')
         .orderBy('heart.heartAt', 'DESC')
         .skip((page - 1) * photosPerPage)
         .take(photosPerPage)

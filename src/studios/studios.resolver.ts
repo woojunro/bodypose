@@ -1,22 +1,13 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import { Roles } from 'src/auth/roles.decorator';
-import { Role, User } from 'src/users/entities/user.entity';
+import { CoreOutput } from 'src/common/dtos/output.dto';
+import { UserType, User } from 'src/users/entities/user.entity';
 import {
-  CreateBranchInput,
-  CreateBranchOutput,
-} from './dtos/create-branch.dto';
-import {
-  CreateStudioProductsInput,
-  CreateProductsOutput,
-  CreateAdditionalProductsInput,
-  CreateHairMakeupShopsInput,
-  CreateHairMakeupShopsOutput,
-} from './dtos/create-product.dto';
-import {
-  CreateStudioReviewInput,
-  CreateStudioReviewOutput,
-} from './dtos/create-studio-review.dto';
+  AssignStudioPartnerInput,
+  AssignStudioPartnerOutput,
+} from './dtos/assign-studio-partner.dto';
+import { ClickStudioReviewInput } from './dtos/click-studio-review.dto';
 import {
   CreateStudioInput,
   CreateStudioOutput,
@@ -25,7 +16,20 @@ import {
   DeleteStudioReviewInput,
   DeleteStudioReviewOutput,
 } from './dtos/delete-studio-review.dto';
+import {
+  GetAdditionalProductsInput,
+  GetAdditionalProductsOutput,
+} from './dtos/get-additional-products.dto';
+import {
+  GetHairMakeupShopsInput,
+  GetHairMakeupShopsOutput,
+} from './dtos/get-hair-makeup-shops.dto';
+import { GetMyStudiosOutput } from './dtos/get-my-studios.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
+import {
+  GetStudioProductsInput,
+  GetStudioProductsOutput,
+} from './dtos/get-studio-products.dto';
 import {
   GetAllStudioReviewsInput,
   GetStudioReviewsInput,
@@ -42,16 +46,29 @@ import {
   ReportStudioReviewOutput,
 } from './dtos/report-studio-review.dto';
 import {
-  UpdateBranchInput,
-  UpdateBranchOutput,
+  SetStudioPublicInput,
+  SetStudioPublicOutput,
+} from './dtos/set-studio-public.dto';
+import {
+  UpdateAdditionalProductsInput,
+  UpdateAdditionalProductsOutput,
+} from './dtos/update-additional-product.dto';
+import {
+  UpdateBranchesInput,
+  UpdateBranchesOutput,
 } from './dtos/update-branch.dto';
 import {
-  UpdateStudioProductsInput,
-  UpdateProductsOutput,
-  UpdateAdditionalProductsInput,
-  UpdateHairMakeupShopsOutput,
   UpdateHairMakeupShopsInput,
-} from './dtos/update-product.dto';
+  UpdateHairMakeupShopsOutput,
+} from './dtos/update-hair-makeup-shop.dto';
+import {
+  UpdateStudioInfoInput,
+  UpdateStudioInfoOutput,
+} from './dtos/update-studio-info.dto';
+import {
+  UpdateStudioProductsInput,
+  UpdateStudioProductsOutput,
+} from './dtos/update-studio-product.dto';
 import {
   UpdateStudioInput,
   UpdateStudioOutput,
@@ -81,36 +98,62 @@ export class StudiosResolver {
     return this.studiosService.getAllStudios(user);
   }
 
+  @Query(returns => GetMyStudiosOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
+  myStudios(@CurrentUser() user: User): Promise<GetMyStudiosOutput> {
+    return this.studiosService.getMyStudios(user);
+  }
+
   @Mutation(returns => CreateStudioOutput)
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN)
   createStudio(
     @Args('input') input: CreateStudioInput,
   ): Promise<CreateStudioOutput> {
     return this.studiosService.createStudio(input);
   }
 
+  @Mutation(returns => AssignStudioPartnerOutput)
+  @Roles(UserType.ADMIN)
+  assignStudioPartner(
+    @Args('input') input: AssignStudioPartnerInput,
+  ): Promise<AssignStudioPartnerOutput> {
+    return this.studiosService.assignStudioPartner(input);
+  }
+
   @Mutation(returns => UpdateStudioOutput)
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
   updateStudio(
+    @CurrentUser() user: User,
     @Args('input') input: UpdateStudioInput,
   ): Promise<UpdateStudioOutput> {
-    return this.studiosService.updateStudio(input);
+    return this.studiosService.updateStudio(user, input);
   }
 
-  @Mutation(returns => CreateBranchOutput)
-  @Roles(Role.ADMIN)
-  createBranches(
-    @Args('input') input: CreateBranchInput,
-  ): Promise<CreateBranchOutput> {
-    return this.studiosService.createBranches(input);
+  @Mutation(returns => SetStudioPublicOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
+  setStudioPublic(
+    @CurrentUser() user: User,
+    @Args('input') input: SetStudioPublicInput,
+  ): Promise<SetStudioPublicOutput> {
+    return this.studiosService.setStudioPublic(user, input);
   }
 
-  @Mutation(returns => UpdateBranchOutput)
-  @Roles(Role.ADMIN)
+  @Mutation(returns => UpdateStudioInfoOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
+  updateStudioInfo(
+    @CurrentUser() user: User,
+    @Args('input') input: UpdateStudioInfoInput,
+  ): Promise<UpdateStudioInfoOutput> {
+    return this.studiosService.updateStudioInfo(user, input);
+  }
+
+  @Mutation(returns => UpdateBranchesOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
   updateBranches(
-    @Args('input') input: UpdateBranchInput,
-  ): Promise<UpdateBranchOutput> {
-    return this.studiosService.updateBranches(input);
+    @CurrentUser() user: User,
+    @Args('input') input: UpdateBranchesInput,
+  ): Promise<UpdateBranchesOutput> {
+    return this.studiosService.updateBranches(user, input);
   }
 }
 
@@ -124,55 +167,62 @@ export class ProductResolver {
     return this.studiosService.getProducts(input);
   }
 
-  @Mutation(returns => CreateProductsOutput)
-  @Roles(Role.ADMIN)
-  createStudioProducts(
-    @Args('input') input: CreateStudioProductsInput,
-  ): Promise<CreateProductsOutput> {
-    return this.studiosService.createStudioProducts(input);
+  // Public
+  @Query(returns => GetStudioProductsOutput)
+  studioProducts(
+    @CurrentUser() user: User,
+    @Args('input') input: GetStudioProductsInput,
+  ): Promise<GetStudioProductsOutput> {
+    return this.studiosService.getStudioProducts(user, input);
   }
 
-  @Mutation(returns => UpdateProductsOutput)
-  @Roles(Role.ADMIN)
+  @Mutation(returns => UpdateStudioProductsOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
   updateStudioProducts(
+    @CurrentUser() user: User,
     @Args('input') input: UpdateStudioProductsInput,
-  ): Promise<UpdateProductsOutput> {
-    return this.studiosService.updateStudioProducts(input);
+  ): Promise<UpdateStudioProductsOutput> {
+    return this.studiosService.updateStudioProducts(user, input);
   }
 
-  @Mutation(returns => CreateProductsOutput)
-  @Roles(Role.ADMIN)
-  createAdditionalProducts(
-    @Args('input') input: CreateAdditionalProductsInput,
-  ): Promise<CreateProductsOutput> {
-    return this.studiosService.createAdditionalProducts(input);
+  // Public
+  @Query(returns => GetAdditionalProductsOutput)
+  additionalProducts(
+    @CurrentUser() user: User,
+    @Args('input') input: GetAdditionalProductsInput,
+  ): Promise<GetAdditionalProductsOutput> {
+    return this.studiosService.getAdditionalProducts(user, input);
   }
 
-  @Mutation(returns => UpdateProductsOutput)
-  @Roles(Role.ADMIN)
+  @Mutation(returns => UpdateAdditionalProductsOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
   updateAdditionalProducts(
+    @CurrentUser() user: User,
     @Args('input') input: UpdateAdditionalProductsInput,
-  ): Promise<UpdateProductsOutput> {
-    return this.studiosService.updateAdditionalProducts(input);
+  ): Promise<UpdateAdditionalProductsOutput> {
+    return this.studiosService.updateAdditionalProducts(user, input);
   }
 
-  @Mutation(returns => CreateHairMakeupShopsOutput)
-  @Roles(Role.ADMIN)
-  createHairMakeupShops(
-    @Args('input') input: CreateHairMakeupShopsInput,
-  ): Promise<CreateHairMakeupShopsOutput> {
-    return this.studiosService.createHairMakeupShops(input);
+  // Public
+  @Query(returns => GetHairMakeupShopsOutput)
+  hairMakeupShops(
+    @CurrentUser() user: User,
+    @Args('input') input: GetHairMakeupShopsInput,
+  ): Promise<GetHairMakeupShopsOutput> {
+    return this.studiosService.getHairMakeupShops(user, input);
   }
 
   @Mutation(returns => UpdateHairMakeupShopsOutput)
-  @Roles(Role.ADMIN)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
   updateHairMakeupShops(
+    @CurrentUser() user: User,
     @Args('input') input: UpdateHairMakeupShopsInput,
   ): Promise<UpdateHairMakeupShopsOutput> {
-    return this.studiosService.updateHairMakeupShops(input);
+    return this.studiosService.updateHairMakeupShops(user, input);
   }
 }
 
+/*
 @Resolver(of => UsersReviewStudios)
 export class StudioReviewResolver {
   constructor(private readonly studiosService: StudiosService) {}
@@ -196,17 +246,21 @@ export class StudioReviewResolver {
   }
 
   @Query(returns => GetStudioReviewsOutput)
-  @Roles(Role.USER)
+  @Roles(UserType.USER)
   myStudioReviews(@CurrentUser() user: User): Promise<GetStudioReviewsOutput> {
     return this.studiosService.getMyStudioReviews(user);
   }
 
-  /*
-  리뷰 작성 API는 사진 업로드 관계로 uploads에서 담당
-  */
+  // Public
+  @Mutation(returns => CoreOutput)
+  clickStudioReview(
+    @Args('input') input: ClickStudioReviewInput,
+  ): Promise<CoreOutput> {
+    return this.studiosService.clickStudioReview(input);
+  }
 
   @Mutation(returns => DeleteStudioReviewOutput)
-  @Roles(Role.USER, Role.ADMIN)
+  @Roles(UserType.USER, UserType.ADMIN)
   deleteStudioReview(
     @CurrentUser() user: User,
     @Args('input') input: DeleteStudioReviewInput,
@@ -223,19 +277,20 @@ export class StudioReviewResolver {
     return this.studiosService.reportStudioReview(user, input);
   }
 }
+*/
 
 @Resolver(of => UsersHeartStudios)
 export class UsersHeartStudiosResolver {
   constructor(private readonly studiosService: StudiosService) {}
 
   @Query(returns => GetStudiosOutput)
-  @Roles(Role.USER)
+  @Roles(UserType.USER)
   myHeartStudios(@CurrentUser() user: User): Promise<GetStudiosOutput> {
     return this.studiosService.getHeartStudios(user);
   }
 
   @Mutation(returns => HeartStudioOutput)
-  @Roles(Role.USER)
+  @Roles(UserType.USER)
   heartStudio(
     @CurrentUser() user: User,
     @Args('input') input: HeartStudioInput,
@@ -244,7 +299,7 @@ export class UsersHeartStudiosResolver {
   }
 
   @Mutation(returns => HeartStudioOutput)
-  @Roles(Role.USER)
+  @Roles(UserType.USER)
   disheartStudio(
     @CurrentUser() user: User,
     @Args('input') input: HeartStudioInput,
