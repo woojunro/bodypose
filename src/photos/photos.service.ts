@@ -209,7 +209,7 @@ export class PhotosService {
           isHearted: hearts.some(heart => heart.studioPhotoId === photo.id),
         }));
       } else {
-        photos = photos.map(photo => ({ ...photo, isHearted: null }));
+        photos = studioPhotos.map(photo => ({ ...photo, isHearted: null }));
       }
 
       // return

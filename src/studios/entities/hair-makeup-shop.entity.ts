@@ -26,9 +26,9 @@ export class HairMakeupShop extends CoreEntity {
   @IsEnum(ShopType)
   type: ShopType;
 
-  @Column({ length: 20 })
+  @Column({ length: 30 })
   @Field(type => String)
-  @Length(1, 20)
+  @Length(1, 30)
   name: string;
 
   @Column({ nullable: true })

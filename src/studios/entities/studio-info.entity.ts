@@ -12,7 +12,10 @@ import { Studio } from './studio.entity';
 @Entity()
 @ObjectType()
 export class StudioInfo {
-  @OneToOne(relation => Studio, studio => studio.info, { primary: true })
+  @OneToOne(relation => Studio, studio => studio.info, {
+    primary: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   studio: Studio;
 
