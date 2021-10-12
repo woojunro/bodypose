@@ -1153,4 +1153,22 @@ export class StudiosService {
       return UNEXPECTED_ERROR;
     }
   }
+
+  incrementPhotoCount(id: number) {
+    this.studioRepository
+      .createQueryBuilder()
+      .update()
+      .set({ photoCount: () => 'photoCount + 1' })
+      .where('id = :id', { id })
+      .execute();
+  }
+
+  decrementPhotoCount(id: number) {
+    this.studioRepository
+      .createQueryBuilder()
+      .update()
+      .set({ photoCount: () => 'photoCount - 1' })
+      .where('id = :id', { id })
+      .execute();
+  }
 }

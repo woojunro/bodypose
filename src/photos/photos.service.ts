@@ -549,6 +549,8 @@ export class PhotosService {
       }
       // Save
       const createdPhoto = await this.studioPhotoRepository.save(newPhoto);
+      // Increment photoCount
+      this.studiosService.incrementPhotoCount(studio.id);
       return {
         ok: true,
         studioPhoto: createdPhoto,
@@ -648,6 +650,9 @@ export class PhotosService {
       if (!valid) return CommonError('INVALID');
       // Delete
       await this.studioPhotoRepository.delete(id);
+      // Decrement photoCount
+      this.studiosService.decrementPhotoCount(photo.studio.id);
+      // Delete photos uploaded to cloud storage
       const thumbnailPhoto = photo.thumbnailUrl.substring(
         photo.thumbnailUrl.indexOf('studio-photos'),
       );
