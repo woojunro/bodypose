@@ -113,4 +113,8 @@ export class Studio extends CoreEntity {
   // 포트폴리오 사진 목록
   @OneToMany(relation => StudioPhoto, photo => photo.studio)
   photos: StudioPhoto[];
+
+  // 포트폴리오 사진 갯수 (score 계산용)
+  @Column({ type: 'int', default: 0 })
+  photoCount: number;
 }
