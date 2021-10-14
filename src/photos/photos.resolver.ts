@@ -14,6 +14,10 @@ import {
   DeleteStudioPhotoInput,
   DeleteStudioPhotoOutput,
 } from './dtos/delete-studio-photo.dto';
+import {
+  GetConceptBookPhotosInput,
+  GetConceptBookPhotosOutput,
+} from './dtos/get-concept-book-photo.dto';
 import { GetAllPhotoConceptsOutput } from './dtos/get-photo-concept.dto';
 import {
   GetAllStudioPhotosInput,
@@ -60,6 +64,15 @@ export class PhotosResolver {
     @Args('input') input: GetAllStudioPhotosInput,
   ): Promise<GetAllStudioPhotosOutput> {
     return this.photosService.getAllStudioPhotos(user, input);
+  }
+
+  // Public
+  @Query(returns => GetConceptBookPhotosOutput)
+  conceptBookPhotos(
+    @CurrentUser() user: User,
+    @Args('input') input: GetConceptBookPhotosInput,
+  ): Promise<GetConceptBookPhotosOutput> {
+    return this.photosService.getConceptBookPhotos(user, input);
   }
 
   // Public
