@@ -128,6 +128,12 @@ const StudioInfoScreen = () => {
     }
   };
 
+  //이전이 스튜디오였다면 string으로 저장
+  let prevPath;
+  if (history.location.state?.previousPath) {
+    prevPath = history.location.state?.previousPath;
+  }
+
   return (
     <div>
       {offsetY > 200 && <ScrollToTopButton />}
@@ -137,6 +143,7 @@ const StudioInfoScreen = () => {
         dialog="주소가 복사되었습니다."
       />
       <HeaderBar
+        previousPath={prevPath}
         currentStudio={studio}
         copyTextToClipboard={copyTextToClipboard}
         setIsAlertOpen={setIsAlertOpen}

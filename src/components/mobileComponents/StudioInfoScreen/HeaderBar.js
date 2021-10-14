@@ -10,13 +10,21 @@ import {
   HEART_STUDIO_MUTATION,
 } from '../../../gql/mutations/HeartStudioMutation';
 
-const HeaderBar = ({ currentStudio, copyTextToClipboard, setIsAlertOpen }) => {
+const HeaderBar = ({
+  previousPath,
+  currentStudio,
+  copyTextToClipboard,
+  setIsAlertOpen,
+}) => {
   const [isHearted, setIsHearted] = useState(currentStudio.isHearted);
   const isLoggedIn = useReactiveVar(IsLoggedInVar);
   const history = useHistory();
 
+  ///studios에서 왔다면 replace 해주기.
   const gobackFunction = () => {
-    if (history.location.state) {
+    if (previousPath && previousPath === '/studios') {
+      history.replace(previousPath);
+    } else if (previousPath && previousPath !== '/studios') {
       history.goBack();
     } else {
       history.push('/');
