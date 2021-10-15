@@ -10,6 +10,7 @@ import {
   UNEXPECTED_ERROR,
 } from 'src/common/constants/error.constant';
 import { CoreOutput } from 'src/common/dtos/output.dto';
+import { Studio } from 'src/studios/entities/studio.entity';
 import { StudiosService } from 'src/studios/studios.service';
 import { UploadsService } from 'src/uploads/uploads.service';
 import { UserType, User } from 'src/users/entities/user.entity';
@@ -37,6 +38,10 @@ import {
   DeleteStudioPhotoInput,
   DeleteStudioPhotoOutput,
 } from './dtos/delete-studio-photo.dto';
+import {
+  GetConceptBookPhotosInput,
+  GetConceptBookPhotosOutput,
+} from './dtos/get-concept-book-photo.dto';
 import { GetAllPhotoConceptsOutput } from './dtos/get-photo-concept.dto';
 import {
   GetAllStudioPhotosInput,
@@ -69,6 +74,7 @@ import {
 import { ReviewPhoto } from './entities/review-photo.entity';
 import { StudioPhoto } from './entities/studio-photo.entity';
 import { UsersHeartStudioPhotos } from './entities/users-heart-studio-photos.entity';
+import { getConceptBookOrderScore } from './utils/score';
 
 @Injectable()
 export class PhotosService {
@@ -220,6 +226,120 @@ export class PhotosService {
       };
     } catch (e) {
       console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getConceptBookPhotos(
+    user: User,
+    {
+      page,
+      take,
+      gender,
+      backgroundConceptSlugs,
+      costumeConceptSlugs,
+      objectConceptSlugs,
+      randomSeed,
+    }: GetConceptBookPhotosInput,
+  ): Promise<GetConceptBookPhotosOutput> {
+    const STUDIO_PHOTO_ALIAS = 'p';
+    const STUDIO_ALIAS = 's';
+
+    // construct querybuilder
+    let query = this.studioPhotoRepository
+      .createQueryBuilder(STUDIO_PHOTO_ALIAS)
+      .leftJoin(`${STUDIO_PHOTO_ALIAS}.studio`, STUDIO_ALIAS)
+      .where(`${STUDIO_ALIAS}.isPublic = true`);
+
+    // filter gender
+    if (gender) {
+      query = query.andWhere(`${STUDIO_PHOTO_ALIAS}.gender = :gender`, {
+        gender,
+      });
+    }
+
+    // filter concepts
+    if (backgroundConceptSlugs.length > 0) {
+      query = query
+        .leftJoin(`${STUDIO_PHOTO_ALIAS}.backgroundConcepts`, 'bg')
+        .andWhere('bg.slug IN (:bgSlugs)', {
+          bgSlugs: backgroundConceptSlugs,
+        });
+    }
+    if (costumeConceptSlugs.length > 0) {
+      query = query
+        .leftJoin(`${STUDIO_PHOTO_ALIAS}.costumeConcepts`, 'cos')
+        .andWhere('cos.slug IN (:costumeSlugs)', {
+          costumeSlugs: costumeConceptSlugs,
+        });
+    }
+    if (objectConceptSlugs.length > 0) {
+      query = query
+        .leftJoin(`${STUDIO_PHOTO_ALIAS}.objectConcepts`, 'obj')
+        .andWhere('obj.slug IN (:objectSlugs)', {
+          objectSlugs: objectConceptSlugs,
+        });
+    }
+
+    // select
+    const studioPhotoSelects: (keyof StudioPhoto)[] = [
+      'id',
+      'thumbnailUrl',
+      'originalUrl',
+    ];
+    const studioSelects: (keyof Studio)[] = ['name', 'slug', 'photoCount'];
+    const selects = [
+      ...studioPhotoSelects.map(field => `${STUDIO_PHOTO_ALIAS}.${field}`),
+      ...studioSelects.map(field => `${STUDIO_ALIAS}.${field}`),
+    ];
+
+    // ordering
+    const score = getConceptBookOrderScore(
+      STUDIO_PHOTO_ALIAS,
+      STUDIO_ALIAS,
+      randomSeed,
+    );
+
+    try {
+      // execute query
+      const [studioPhotos, count] = await query
+        .select(selects)
+        .addSelect(score, 'score')
+        .orderBy('score', 'DESC')
+        .skip((page - 1) * take)
+        .take(take)
+        .getManyAndCount();
+
+      // calculate total pages
+      const totalPages = Math.ceil(count / take);
+
+      // check if the photos are hearted by the user
+      if (user?.type === UserType.USER) {
+        const photoIds = studioPhotos.map(photo => photo.id);
+        const hearts = await this.usersHeartStudioPhotosRepository
+          .createQueryBuilder('h')
+          .where('h.userId = :id', { id: user.id })
+          .andWhere('h.studioPhotoId IN (:photoIds)', { photoIds })
+          .getMany();
+        return {
+          ok: true,
+          totalPages,
+          photos: studioPhotos.map(photo => ({
+            ...photo,
+            isHearted: hearts.some(x => x.studioPhotoId === photo.id),
+          })),
+        };
+      } else {
+        return {
+          ok: true,
+          totalPages,
+          photos: studioPhotos.map(photo => ({
+            ...photo,
+            isHearted: null,
+          })),
+        };
+      }
+    } catch (e) {
       return UNEXPECTED_ERROR;
     }
   }
