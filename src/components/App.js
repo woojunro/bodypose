@@ -35,6 +35,8 @@ import LogoutScreen from '../screens/mobileScreens/LogoutScreen';
 import { createBrowserHistory } from 'history';
 import { logout } from './functions/Login/Logout';
 import { clearCache } from '../apollo';
+import ColumnListScreen from '../screens/mobileScreens/column/column-list-screen';
+import ColumnScreen from '../screens/mobileScreens/column/column-screen';
 
 const App = () => {
   const history = createBrowserHistory();
@@ -90,6 +92,9 @@ const App = () => {
           <Route exact path="/hearts" component={HeartScreenM} />
           <Route exact path="/notices" component={NoticeListScreenM} />
           <Route path="/notices/:noticeId" component={NoticeScreenM} />
+
+          <Route exact path="/columns" component={ColumnListScreen} />
+          <Route path="/columns/:columnId" component={ColumnScreen} />
           <Route exact path="/login" component={LoginScreenM} />
           <Route
             path="/login/:provider/callback"

@@ -1,0 +1,32 @@
+.column-navigator {
+  display: flex;
+  width: 100%;
+}
+
+.column-navigator-type-selected {
+  width: 33%;
+  display: flex;
+  justify-content: center;
+  border: 1px solid white;
+  border-left: 1px solid var(--color-line);
+  border-right: 1px solid var(--color-line);
+
+  padding: 10px 0 10px 0;
+
+  font-size: 14px;
+  color: var(--color-showMore);
+  cursor: pointer;
+}
+
+.column-navigator-type-unselected {
+  background-color: var(--color-greyBox);
+  width: 33%;
+  display: flex;
+  justify-content: center;
+  border: 1px solid var(--color-line);
+  padding: 10px 0 10px 0;
+
+  font-size: 14px;
+  color: var(--color-showMore);
+  cursor: pointer;
+}
