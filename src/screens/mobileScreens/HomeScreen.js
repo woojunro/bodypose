@@ -23,6 +23,7 @@ import {
 } from '../../constants/numOfPhotos';
 import { randomPage } from '../../components/functions/Concept/randomPages';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
+import HomeColumnList from '../../components/mobileComponents/homeScreen/home-column-list';
 
 const take = 8;
 
@@ -116,7 +117,8 @@ const HomeScreen = () => {
         <>
           <AdTapCarousel />
           <MainCardScrollView studios={studioData.allStudios.studios} />
-          <SeeAll />
+          {/* <SeeAll /> */}
+          <HomeColumnList />
           <FemaleConcepts concepts={femaleData.allStudioPhotos.photos} />
           <MaleConcepts concepts={maleData.allStudioPhotos.photos} />
           <CoupleConcepts concepts={coupleData.allStudioPhotos.photos} />
