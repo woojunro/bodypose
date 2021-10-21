@@ -27,7 +27,7 @@ const ColumnScreen = () => {
         <ColumnTitle data={columnData} />
         <ColumnMain data={columnData} />
         <ColumnEnding />
-        <ColumnShowMore columnId={columnId} />
+        {/* <ColumnShowMore columnId={columnId} /> */}
       </div>
     </>
   );
