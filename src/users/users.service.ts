@@ -275,13 +275,10 @@ export class UsersService {
   }
 
   async updateLastLoginAt(id: number): Promise<void> {
-    const user = await this.userRepository.findOne(
-      { id },
-      { select: ['id', 'lastLoginAt', 'deletedAt'], withDeleted: true },
-    );
-    user.lastLoginAt = new Date();
-    user.deletedAt = null;
-    this.userRepository.save(user);
+    this.userRepository.update(id, {
+      lastLoginAt: new Date(),
+      deletedAt: null,
+    });
   }
 
   async getUserInfo(

@@ -58,3 +58,44 @@ query: ALTER TABLE `notice` ADD `title` varchar(100) NOT NULL
 2021-10-12 DEV
 
 query: ALTER TABLE `studio` ADD `photoCount` int NOT NULL DEFAULT '0'
+
+----- APPLIED -----
+
+2021-10-21 DEV
+
+query: ALTER TABLE `photos_background_concepts` DROP FOREIGN KEY `FK_947bf1452fb08a568813e9c6386`
+query: ALTER TABLE `photos_background_concepts` DROP FOREIGN KEY `FK_a19781f5611bd383f1253415fc8`
+query: ALTER TABLE `photos_costume_concepts` DROP FOREIGN KEY `FK_3b04c3e42e939770e2e539b27d9`
+query: ALTER TABLE `photos_costume_concepts` DROP FOREIGN KEY `FK_da25ccbcf471dc39e75a7398d93`
+query: ALTER TABLE `photos_object_concepts` DROP FOREIGN KEY `FK_68e068f53c8e5ae892fba3cf2d7`
+query: ALTER TABLE `photos_object_concepts` DROP FOREIGN KEY `FK_b32eabf25259b4293ba1f385bc5`
+query: ALTER TABLE `user_profile` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `user_oauth` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `user` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `password_reset` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `verification` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `background_concept` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `costume_concept` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `object_concept` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `studio_photo` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `partner` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `additional_product` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `branch` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `catchphrase` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `hair_makeup_product` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `hair_makeup_shop` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `studio_info` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `studio_product` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `studio` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `users_review_studios` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `review_photo` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `users_report_studio_reviews` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `refresh_token` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `notice` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `partners_notice` CHANGE `updatedAt` `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+query: ALTER TABLE `photos_background_concepts` ADD CONSTRAINT `FK_a19781f5611bd383f1253415fc8` FOREIGN KEY (`studioPhotoId`) REFERENCES `studio_photo`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+query: ALTER TABLE `photos_background_concepts` ADD CONSTRAINT `FK_947bf1452fb08a568813e9c6386` FOREIGN KEY (`backgroundConceptId`) REFERENCES `background_concept`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+query: ALTER TABLE `photos_costume_concepts` ADD CONSTRAINT `FK_da25ccbcf471dc39e75a7398d93` FOREIGN KEY (`studioPhotoId`) REFERENCES `studio_photo`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+query: ALTER TABLE `photos_costume_concepts` ADD CONSTRAINT `FK_3b04c3e42e939770e2e539b27d9` FOREIGN KEY (`costumeConceptId`) REFERENCES `costume_concept`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+query: ALTER TABLE `photos_object_concepts` ADD CONSTRAINT `FK_b32eabf25259b4293ba1f385bc5` FOREIGN KEY (`studioPhotoId`) REFERENCES `studio_photo`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+query: ALTER TABLE `photos_object_concepts` ADD CONSTRAINT `FK_68e068f53c8e5ae892fba3cf2d7` FOREIGN KEY (`objectConceptId`) REFERENCES `object_concept`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
