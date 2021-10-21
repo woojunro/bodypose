@@ -17,7 +17,10 @@ const ColumnListElement = ({ columnData }) => {
   return (
     <div
       className="column-list-element"
-      onClick={() => history.push(`/columns/${columnData.id}`)}
+      onClick={() => {
+        history.push(`/columns/${columnData.id}`);
+        window.scrollTo(0, 0);
+      }}
     >
       <img
         src={columnData.img}

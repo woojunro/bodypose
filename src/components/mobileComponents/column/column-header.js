@@ -8,10 +8,13 @@ const ColumnHeader = () => {
   return (
     <>
       <div className="column-header">
+        {/* 매거진 리스트면 홈으로, 매거진 읽는 중이라면 리스트로 보내기 */}
         <FiArrowLeft
           className="column-header-arrow"
           onClick={() => {
-            history.goBack();
+            window.location.pathname === '/columns'
+              ? history.push('/')
+              : history.push('/columns');
           }}
         />
         <div className="column-header-title">매거진</div>

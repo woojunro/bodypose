@@ -10,6 +10,7 @@ import './column-screen.css';
 
 const ColumnScreen = () => {
   const { columnId } = useParams();
+
   //id에 맞는 칼럼 불러오기.
   const columnData =
     columnId === '18'

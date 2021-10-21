@@ -112,7 +112,6 @@ const StudioCard = ({
             pathname: `/studios/${name}`,
             state: { previousPath: history.location.pathname },
           });
-          window.scrollTo(0, 0);
         }}
       >
         <div className="studioImg">

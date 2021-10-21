@@ -8,7 +8,7 @@ const HomeColumnList = () => {
   const latestColumns = training_column_db.slice(0, 2);
 
   const RenderedColumns = latestColumns.map((column, idx) => {
-    return <ColumnListElement columnData={column} />;
+    return <ColumnListElement columnData={column} key={idx} />;
   });
   return (
     <div>
