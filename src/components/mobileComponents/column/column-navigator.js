@@ -2,6 +2,7 @@ import React from 'react';
 import './column-navigator.css';
 
 const ColumnCategory = [
+  { category: 'all', title: '전체' },
   { category: 'training', title: '트레이닝' },
   { category: 'nutrition', title: '식단' },
   { category: 'photo', title: '촬영팁' },

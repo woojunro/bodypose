@@ -1,5 +1,4 @@
 .column-title-container {
-  display: flex;
   font-size: 14px;
   padding-bottom: 10px;
   border-bottom: 1px solid gray;
@@ -10,7 +9,8 @@
   margin-right: 5px;
 }
 .column-title {
-  margin-left: 5px;
+  margin-top: 5px;
+  font-size: 15px;
 }
 .column-writer-container {
   margin-top: 10px;

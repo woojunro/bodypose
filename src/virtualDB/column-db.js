@@ -9,15 +9,13 @@ export const training_column_db = [
   {
     id: 18,
     category: 'training',
-    title: '필라테스로 바디프로필 찍기',
+    title: '일이삼사오육칠팔구십일이삼사오육칠팔구십일이삼',
     img: Exercise,
     logo: Logo,
-    writer: '바디포즈',
+    writer: '스튜디오까르보나라',
     updateDate: '2021-10-11',
     toLink: 'https://bodypose.co.kr',
     toLinkImg: ToLink,
-    type: 'html',
-    description: 'html이었다잇',
   },
   {
     id: 17,
@@ -29,9 +27,7 @@ export const training_column_db = [
     updateDate: '2021-10-09',
     toLink: 'https://bodypose.co.kr',
     toLinkImg: ToLink,
-    type: 'card-news',
     cardNews: [Bed, Exercise, man, tennis],
-    description: '사진들을 보고 공부하세요',
   },
   {
     id: 16,
@@ -42,12 +38,10 @@ export const training_column_db = [
     writer: '바디포즈',
     updateDate: '2021-10-08',
 
-    type: 'video',
     video: [
       'https://www.youtube.com/watch?v=tYHgOCT68VE',
       'https://www.youtube.com/watch?v=tIdtmy3gXkU',
     ],
-    description: '위의 영상들을 보고 느낀점이 있으셨나요? ^^',
   },
   {
     id: 15,
@@ -71,7 +65,6 @@ export const training_column_db = [
     updateDate: '2021-10-03',
     toLink: 'https://bodypose.co.kr',
     toLinkImg: ToLink,
-    type: 'html',
   },
   {
     id: 13,
@@ -83,7 +76,6 @@ export const training_column_db = [
     updateDate: '2021-10-01',
     toLink: 'https://bodypose.co.kr',
     toLinkImg: ToLink,
-    type: 'card-news',
   },
 ];
 
@@ -98,7 +90,6 @@ export const nutrition_column_db = [
     updateDate: '2021-10-11',
     toLink: 'https://bodypose.co.kr',
     toLinkImg: ToLink,
-    type: 'html',
   },
   {
     id: 11,
@@ -110,7 +101,6 @@ export const nutrition_column_db = [
     updateDate: '2021-10-09',
     toLink: 'https://bodypose.co.kr',
     toLinkImg: ToLink,
-    type: 'card-news',
   },
   {
     id: 10,
@@ -122,7 +112,6 @@ export const nutrition_column_db = [
     updateDate: '2021-10-08',
     toLink: 'https://bodypose.co.kr',
     toLinkImg: ToLink,
-    type: 'video',
   },
   {
     id: 9,
@@ -134,7 +123,6 @@ export const nutrition_column_db = [
     updateDate: '2021-10-05',
     toLink: 'https://bodypose.co.kr',
     toLinkImg: ToLink,
-    type: 'html',
   },
   {
     id: 8,
@@ -146,7 +134,6 @@ export const nutrition_column_db = [
     updateDate: '2021-10-03',
     toLink: 'https://bodypose.co.kr',
     toLinkImg: ToLink,
-    type: 'card-news',
   },
   {
     id: 7,
@@ -158,7 +145,6 @@ export const nutrition_column_db = [
     updateDate: '2021-10-01',
     toLink: 'https://bodypose.co.kr',
     toLinkImg: ToLink,
-    type: 'video',
   },
   {
     id: 6,
@@ -170,7 +156,6 @@ export const nutrition_column_db = [
     updateDate: '2021-10-01',
     toLink: 'https://bodypose.co.kr',
     toLinkImg: ToLink,
-    type: 'card-news',
   },
   {
     id: 5,
@@ -182,7 +167,6 @@ export const nutrition_column_db = [
     updateDate: '2021-10-01',
     toLink: 'https://bodypose.co.kr',
     toLinkImg: ToLink,
-    type: 'html',
   },
 ];
 
@@ -197,7 +181,6 @@ export const photo_column_db = [
     updateDate: '2021-10-03',
     toLink: 'https://bodypose.co.kr',
     toLinkImg: ToLink,
-    type: 'card-news',
   },
   {
     id: 3,
@@ -209,7 +192,6 @@ export const photo_column_db = [
     updateDate: '2021-10-01',
     toLink: 'https://bodypose.co.kr',
     toLinkImg: ToLink,
-    type: 'card-news',
   },
   {
     id: 2,
@@ -221,7 +203,6 @@ export const photo_column_db = [
     updateDate: '2021-10-01',
     toLink: 'https://bodypose.co.kr',
     toLinkImg: ToLink,
-    type: 'html',
   },
   {
     id: 1,
@@ -233,6 +214,5 @@ export const photo_column_db = [
     updateDate: '2021-10-01',
     toLink: 'https://bodypose.co.kr',
     toLinkImg: ToLink,
-    type: 'card-news',
   },
 ];

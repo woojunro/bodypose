@@ -1,7 +1,9 @@
 import React from 'react';
 import { useParams } from 'react-router';
+import ColumnEnding from '../../../components/mobileComponents/column/column-ending';
 import ColumnHeader from '../../../components/mobileComponents/column/column-header';
 import ColumnMain from '../../../components/mobileComponents/column/column-main';
+import ColumnShowMore from '../../../components/mobileComponents/column/column-show-more';
 import ColumnTitle from '../../../components/mobileComponents/column/column-title';
 import { training_column_db } from '../../../virtualDB/column-db';
 import './column-screen.css';
@@ -23,6 +25,8 @@ const ColumnScreen = () => {
       <div className="column-screen">
         <ColumnTitle data={columnData} />
         <ColumnMain data={columnData} />
+        <ColumnEnding />
+        <ColumnShowMore columnId={columnId} />
       </div>
     </>
   );

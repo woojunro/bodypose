@@ -14,7 +14,6 @@ const ColumnTitle = ({ data }) => {
     <>
       <div className="column-title-container">
         <div className="column-category">{renderedCategory(data.category)}</div>
-        <div>|</div>
         <div className="column-title">{data.title}</div>
       </div>
       <div className="column-writer-container">

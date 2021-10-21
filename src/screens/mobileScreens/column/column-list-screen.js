@@ -12,7 +12,7 @@ import {
 import ColumnList from '../../../components/mobileComponents/column/column-list';
 
 const ColumnListScreen = () => {
-  const [columnCategory, setColumnCategory] = useState('training');
+  const [columnCategory, setColumnCategory] = useState('all');
   const [columnData, setColumnData] = useState([]);
   const [pageNum, setPageNum] = useState(1);
   //전체 칼럼 갯수 몇개인가.
@@ -20,9 +20,11 @@ const ColumnListScreen = () => {
   //뒤에 더 불러올 칼럼이 있으면 true 아니면 false
   const [isMoreColumns, setIsMoreColumns] = useState(false);
 
-  //칼럼 5개 불러오는 함수.
+  //초기 칼럼 5개 불러오기.
   useEffect(() => {
-    if (columnCategory === 'training') {
+    if (columnCategory === 'all') {
+      setColumnData(nutrition_column_db.slice(pageNum - 1, pageNum + 4));
+    } else if (columnCategory === 'training') {
       setColumnData(training_column_db.slice(pageNum - 1, pageNum + 4));
     } else if (columnCategory === 'nutrition') {
       setColumnData(nutrition_column_db.slice(pageNum - 1, pageNum + 4));
