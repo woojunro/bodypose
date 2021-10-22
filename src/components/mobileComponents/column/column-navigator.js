@@ -9,7 +9,9 @@ const ColumnCategory = [
 ];
 
 const ColumnNavigator = ({ columnCategory, setColumnCategory }) => {
-  const RenderedCategories = ColumnCategory.map(category => {
+  //카테고리 불러오기.
+  const categories = ColumnCategory;
+  const RenderedCategories = categories.map(category => {
     if (category.category === columnCategory) {
       return (
         <div key={category.category} className="column-navigator-type-selected">

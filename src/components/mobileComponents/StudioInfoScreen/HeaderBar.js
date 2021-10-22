@@ -22,12 +22,10 @@ const HeaderBar = ({
 
   ///studios에서 왔다면 replace 해주기.
   const gobackFunction = () => {
-    if (previousPath && previousPath === '/studios') {
+    if (previousPath) {
       history.replace(previousPath);
-    } else if (previousPath && previousPath !== '/studios') {
-      history.goBack();
     } else {
-      history.push('/');
+      history.replace('/');
     }
   };
 
