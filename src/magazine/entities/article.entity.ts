@@ -1,9 +1,18 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { IsUrl, Length } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+} from 'typeorm';
 import { ArticleCategory } from './article-category.entity';
 import { Editor } from './editor.entity';
+import * as sanitizeHtml from 'sanitize-html';
 
 @Entity()
 @ObjectType()
@@ -36,4 +45,23 @@ export class Article extends CoreEntity {
   @ManyToOne(relation => Editor, { onDelete: 'RESTRICT' })
   @Field(type => Editor)
   author: Editor;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  sanitizeContent(): void {
+    if (this.content) {
+      this.content = sanitizeHtml(this.content, {
+        allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+          'img',
+          'oembed',
+        ]),
+        allowedAttributes: {
+          '*': ['class', 'style'],
+          a: ['href', 'target', 'rel'],
+          oembed: ['url'],
+          img: ['src'],
+        },
+      });
+    }
+  }
 }

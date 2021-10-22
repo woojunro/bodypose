@@ -9,16 +9,19 @@ import { Repository } from 'typeorm';
 import {
   ARTICLE_CATEGORY_NOT_FOUND,
   EDITOR_NOT_FOUND,
+  NO_ARTICLE_CATEGORIES,
 } from './constants/error.constant';
 import { AllArticleCategoriesOutput } from './dtos/all-article-categories.dto';
 import { AllEditorsOutput } from './dtos/all-editors.dto';
 import { CreateArticleCategoryInput } from './dtos/create-article-category.dto';
+import { CreateArticleInput } from './dtos/create-article.dto';
 import { CreateEditorInput } from './dtos/create-editor.dto';
 import { DeleteArticleCategoryInput } from './dtos/delete-article-category.dto';
 import { DeleteEditorInput } from './dtos/delete-editor.dto';
 import { UpdateArticleCategoryInput } from './dtos/update-article-category.dto';
 import { UpdateEditorInput } from './dtos/update-editor.dto';
 import { ArticleCategory } from './entities/article-category.entity';
+import { Article } from './entities/article.entity';
 import { Editor } from './entities/editor.entity';
 
 @Injectable()
@@ -29,8 +32,12 @@ export class MagazineService {
 
     @InjectRepository(Editor)
     private readonly editorRepository: Repository<Editor>,
+
+    @InjectRepository(Article)
+    private readonly articleRepository: Repository<Article>,
   ) {}
 
+  // ArticleCategory CRUD
   async createArticleCategory({
     name,
     order,
@@ -83,6 +90,7 @@ export class MagazineService {
     }
   }
 
+  // Editor CRUD
   async createEditor({
     name,
     logoUrl,
@@ -129,6 +137,39 @@ export class MagazineService {
       await this.editorRepository.delete(id);
       return { ok: true };
     } catch (e) {
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  // Article CRUD
+  async createArticle({
+    title,
+    thumbnailUrl,
+    content,
+    authorId,
+    categoryIds,
+  }: CreateArticleInput): Promise<CoreOutput> {
+    try {
+      const newArticle = this.articleRepository.create({
+        title,
+        thumbnailUrl,
+        content,
+      });
+      // Find author
+      const author = await this.editorRepository.findOne(authorId);
+      if (!author) return CommonError(EDITOR_NOT_FOUND);
+      newArticle.author = author;
+      // Find categories and attach them to newArticle
+      const categories = await this.articleCategoryRepository.findByIds(
+        categoryIds,
+      );
+      if (categories.length === 0) return CommonError(NO_ARTICLE_CATEGORIES);
+      newArticle.categories = categories;
+      // Save
+      await this.articleRepository.save(newArticle);
+      return { ok: true };
+    } catch (e) {
+      console.log(e);
       return UNEXPECTED_ERROR;
     }
   }

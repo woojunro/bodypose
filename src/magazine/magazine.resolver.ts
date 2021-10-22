@@ -5,6 +5,7 @@ import { UserType } from 'src/users/entities/user.entity';
 import { AllArticleCategoriesOutput } from './dtos/all-article-categories.dto';
 import { AllEditorsOutput } from './dtos/all-editors.dto';
 import { CreateArticleCategoryInput } from './dtos/create-article-category.dto';
+import { CreateArticleInput } from './dtos/create-article.dto';
 import { CreateEditorInput } from './dtos/create-editor.dto';
 import { DeleteArticleCategoryInput } from './dtos/delete-article-category.dto';
 import { DeleteEditorInput } from './dtos/delete-editor.dto';
@@ -68,5 +69,11 @@ export class MagazineResolver {
   @Roles(UserType.ADMIN)
   deleteEditor(@Args('input') input: DeleteEditorInput): Promise<CoreOutput> {
     return this.magazineService.deleteEditor(input);
+  }
+
+  @Mutation(returns => CoreOutput)
+  @Roles(UserType.ADMIN)
+  createArticle(@Args('input') input: CreateArticleInput): Promise<CoreOutput> {
+    return this.magazineService.createArticle(input);
   }
 }
