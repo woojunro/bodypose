@@ -1,33 +1,35 @@
 import Bed from './bed.jpg';
 import Exercise from './exercise.jpg';
+import Posing from './기본 포징.png';
 import man from './man.jpg';
 import tennis from './tennis.jpg';
 import ToLink from './toOpenKakao.png';
 import Logo from './logo.png';
-
+import Wedidit from './wedidit.png';
+import ToStudio from './toStudio.png';
+import Wedidit1 from './wedidit1.png';
 export const training_column_db = [
   {
     id: 18,
-    category: 'training',
-    title: '일이삼사오육칠팔구십일이삼사오육칠팔구십일이삼',
-    img: Exercise,
-    logo: Logo,
-    writer: '스튜디오까르보나라',
+    category: 'photo',
+    title: '포징의 기본기, 스탠다드한 포징',
+    img: Wedidit1,
+    logo: Wedidit,
+    writer: '위디딧',
     updateDate: '2021-10-11',
     toLink: 'https://bodypose.co.kr',
-    toLinkImg: ToLink,
+    toLinkImg: ToStudio,
   },
   {
     id: 17,
-    category: 'training',
-    title: '휴식의 중요성',
-    img: Bed,
-    logo: Logo,
-    writer: '바디포즈',
+    category: 'photo',
+    title: '포징의 기본기, 스탠다드한 포징',
+    img: Posing,
+    logo: Wedidit,
+    writer: '위디딧',
     updateDate: '2021-10-09',
     toLink: 'https://bodypose.co.kr',
-    toLinkImg: ToLink,
-    cardNews: [Bed, Exercise, man, tennis],
+    toLinkImg: ToStudio,
   },
   {
     id: 16,

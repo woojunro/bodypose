@@ -11,6 +11,7 @@ const ColumnCategory = [
 const ColumnNavigator = ({ columnCategory, setColumnCategory }) => {
   //카테고리 불러오기.
   const categories = ColumnCategory;
+
   const RenderedCategories = categories.map(category => {
     if (category.category === columnCategory) {
       return (
