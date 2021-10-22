@@ -39,6 +39,7 @@ import { clearCache } from '../apollo';
 const App = () => {
   const history = createBrowserHistory();
   const [isAppLoading, setIsAppLoading] = useState(true);
+
   // 현재 위치
   // const [currentAddr, setCurrentAddr] = useState();
   // const [declineGPS, setDeclineGPS] = useState();
