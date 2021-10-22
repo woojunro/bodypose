@@ -29,7 +29,7 @@ const AdTap = () => {
       return (
         <div className="adTap">
           <img
-            className="ad"
+            className="appAdTap"
             alt="바디프로필의 모든 정보 바디포즈"
             src={HOMESCREEN_AD_URL[0].url}
             onClick={
