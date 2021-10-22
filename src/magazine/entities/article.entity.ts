@@ -1,30 +1,22 @@
-import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { IsEnum, IsUrl, Length } from 'class-validator';
+import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { IsUrl, Length } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
+import { ArticleCategory } from './article-category.entity';
 import { Editor } from './editor.entity';
-
-// Only two characters
-export enum ArticleCategory {
-  TRAINING,
-  NUTRITION,
-  SHOOTING_TIP,
-}
-
-registerEnumType(ArticleCategory, { name: 'ArticleCategory' });
 
 @Entity()
 @ObjectType()
 export class Article extends CoreEntity {
-  @Column({ type: 'int' })
-  @Field(type => ArticleCategory)
-  @IsEnum(ArticleCategory)
-  category: ArticleCategory;
-
   @Column({ length: 20 })
   @Field(type => String)
   @Length(1, 20)
   title: string;
+
+  @ManyToMany(relation => ArticleCategory)
+  @JoinTable()
+  @Field(type => [ArticleCategory])
+  categories: ArticleCategory[];
 
   @Column({ length: 255 })
   @Field(type => String)
@@ -41,7 +33,7 @@ export class Article extends CoreEntity {
   @Field(type => Int)
   viewCount: number;
 
-  @ManyToOne(relation => Editor)
+  @ManyToOne(relation => Editor, { onDelete: 'RESTRICT' })
   @Field(type => Editor)
   author: Editor;
 }

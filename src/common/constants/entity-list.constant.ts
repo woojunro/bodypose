@@ -30,6 +30,7 @@ import { UserOauth } from 'src/users/entities/user-oauth.entity';
 import { UserProfile } from 'src/users/entities/user-profile.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Verification } from 'src/users/entities/verification.entity';
+import MAGAZINE_ENTITIES from 'src/magazine/entities/entities';
 
 export const LOG_ENTITIES = [
   LogOriginalStudioPhoto,
@@ -81,4 +82,5 @@ export const ENTITY_LIST = [
   ...PHOTOS_SERVICE_ENTITIES,
   ...NOTICES_SERVICE_ENTITIES,
   ...LOG_ENTITIES,
+  ...MAGAZINE_ENTITIES,
 ];
