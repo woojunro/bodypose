@@ -32,6 +32,7 @@ import {
   AUTHOR_ALIAS,
   CATEGORY_ALIAS,
 } from './constants/db-alias.constant';
+import { UpdateArticleInput } from './dtos/update-article.dto';
 
 @Injectable()
 export class MagazineService {
@@ -227,14 +228,43 @@ export class MagazineService {
   }
 
   async getArticle({ id }: ArticleInput): Promise<ArticleOutput> {
-    const article = await this.articleRepository
-      .createQueryBuilder(ARTICLE_ALIAS)
-      .addSelect(`${ARTICLE_ALIAS}.content`)
-      .leftJoinAndSelect(`${ARTICLE_ALIAS}.categories`, CATEGORY_ALIAS)
-      .leftJoinAndSelect(`${ARTICLE_ALIAS}.author`, AUTHOR_ALIAS)
-      .where(`${ARTICLE_ALIAS}.id = :id`, { id })
-      .getOne();
-    if (!article) return CommonError(ARTICLE_NOT_FOUND);
-    return { ok: true, article };
+    try {
+      const article = await this.articleRepository
+        .createQueryBuilder(ARTICLE_ALIAS)
+        .addSelect(`${ARTICLE_ALIAS}.content`)
+        .leftJoinAndSelect(`${ARTICLE_ALIAS}.categories`, CATEGORY_ALIAS)
+        .leftJoinAndSelect(`${ARTICLE_ALIAS}.author`, AUTHOR_ALIAS)
+        .where(`${ARTICLE_ALIAS}.id = :id`, { id })
+        .getOne();
+      if (!article) return CommonError(ARTICLE_NOT_FOUND);
+      return { ok: true, article };
+    } catch (e) {
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async updateArticle({
+    id,
+    categoryIds,
+    ...payload
+  }: UpdateArticleInput): Promise<CoreOutput> {
+    try {
+      // check if the article exists
+      let article = await this.articleRepository.findOne(id);
+      if (!article) return CommonError(ARTICLE_NOT_FOUND);
+      article = { ...article, ...payload };
+      // attach categories
+      if (categoryIds?.length) {
+        const categories = await this.articleCategoryRepository.findByIds(
+          categoryIds,
+        );
+        if (categories.length > 0) article.categories = categories;
+      }
+      // update and response
+      await this.articleRepository.save(article);
+      return { ok: true };
+    } catch (e) {
+      return UNEXPECTED_ERROR;
+    }
   }
 }

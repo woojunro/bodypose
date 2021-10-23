@@ -12,6 +12,7 @@ import { CreateEditorInput } from './dtos/create-editor.dto';
 import { DeleteArticleCategoryInput } from './dtos/delete-article-category.dto';
 import { DeleteEditorInput } from './dtos/delete-editor.dto';
 import { UpdateArticleCategoryInput } from './dtos/update-article-category.dto';
+import { UpdateArticleInput } from './dtos/update-article.dto';
 import { UpdateEditorInput } from './dtos/update-editor.dto';
 import { MagazineService } from './magazine.service';
 
@@ -89,5 +90,11 @@ export class MagazineResolver {
   @Query(returns => ArticleOutput)
   article(@Args('input') input: ArticleInput): Promise<ArticleOutput> {
     return this.magazineService.getArticle(input);
+  }
+
+  @Mutation(returns => CoreOutput)
+  @Roles(UserType.ADMIN)
+  updateArticle(@Args('input') input: UpdateArticleInput): Promise<CoreOutput> {
+    return this.magazineService.updateArticle(input);
   }
 }
