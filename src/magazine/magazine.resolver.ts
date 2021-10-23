@@ -4,6 +4,7 @@ import { CoreOutput } from 'src/common/dtos/output.dto';
 import { UserType } from 'src/users/entities/user.entity';
 import { AllArticleCategoriesOutput } from './dtos/all-article-categories.dto';
 import { AllEditorsOutput } from './dtos/all-editors.dto';
+import { ArticleInput, ArticleOutput } from './dtos/article.dto';
 import { ArticlesInput, ArticlesOutput } from './dtos/articles.dto';
 import { CreateArticleCategoryInput } from './dtos/create-article-category.dto';
 import { CreateArticleInput } from './dtos/create-article.dto';
@@ -82,5 +83,11 @@ export class MagazineResolver {
   @Query(returns => ArticlesOutput)
   articles(@Args('input') input: ArticlesInput): Promise<ArticlesOutput> {
     return this.magazineService.getArticles(input);
+  }
+
+  // Public
+  @Query(returns => ArticleOutput)
+  article(@Args('input') input: ArticleInput): Promise<ArticleOutput> {
+    return this.magazineService.getArticle(input);
   }
 }

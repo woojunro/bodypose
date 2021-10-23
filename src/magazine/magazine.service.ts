@@ -9,6 +9,7 @@ import { CoreOutput } from 'src/common/dtos/output.dto';
 import { Repository } from 'typeorm';
 import {
   ARTICLE_CATEGORY_NOT_FOUND,
+  ARTICLE_NOT_FOUND,
   EDITOR_NOT_FOUND,
   NO_ARTICLE_CATEGORIES,
 } from './constants/error.constant';
@@ -25,6 +26,12 @@ import { UpdateEditorInput } from './dtos/update-editor.dto';
 import { ArticleCategory } from './entities/article-category.entity';
 import { Article } from './entities/article.entity';
 import { Editor } from './entities/editor.entity';
+import { ArticleInput, ArticleOutput } from './dtos/article.dto';
+import {
+  ARTICLE_ALIAS,
+  AUTHOR_ALIAS,
+  CATEGORY_ALIAS,
+} from './constants/db-alias.constant';
 
 @Injectable()
 export class MagazineService {
@@ -171,7 +178,6 @@ export class MagazineService {
       await this.articleRepository.save(newArticle);
       return { ok: true };
     } catch (e) {
-      console.log(e);
       return UNEXPECTED_ERROR;
     }
   }
@@ -182,40 +188,53 @@ export class MagazineService {
     categoryId,
     authorId,
   }: ArticlesInput): Promise<ArticlesOutput> {
-    // query builder
-    const ARTICLE_ALIAS = 'article';
-    const CATEGORY_ALIAS = 'category';
-    let qb = this.articleRepository
+    try {
+      // query builder
+      let qb = this.articleRepository
+        .createQueryBuilder(ARTICLE_ALIAS)
+        .leftJoinAndSelect(`${ARTICLE_ALIAS}.categories`, CATEGORY_ALIAS)
+        .leftJoinAndSelect(`${ARTICLE_ALIAS}.author`, AUTHOR_ALIAS)
+        .where('1=1');
+      // filter by category
+      if (categoryId) {
+        qb = qb.andWhere(`${CATEGORY_ALIAS}.id = :categoryId`, { categoryId });
+      }
+      // filter by author
+      if (authorId) {
+        qb = qb.andWhere(`${ARTICLE_ALIAS}.authorId = :authorId`, { authorId });
+      }
+      // paginate query and execute
+      const paginator = buildPaginator({
+        entity: Article,
+        paginationKeys: ['id'],
+        query: {
+          limit: 10,
+          beforeCursor,
+          afterCursor,
+        },
+      });
+      const { data, cursor } = await paginator.paginate(qb);
+      // response
+      return {
+        ok: true,
+        articles: data,
+        beforeCursor: cursor.beforeCursor,
+        afterCursor: cursor.afterCursor,
+      };
+    } catch (e) {
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getArticle({ id }: ArticleInput): Promise<ArticleOutput> {
+    const article = await this.articleRepository
       .createQueryBuilder(ARTICLE_ALIAS)
+      .addSelect(`${ARTICLE_ALIAS}.content`)
       .leftJoinAndSelect(`${ARTICLE_ALIAS}.categories`, CATEGORY_ALIAS)
-      .leftJoinAndSelect(`${ARTICLE_ALIAS}.author`, 'author')
-      .where('1=1');
-    // filter by category
-    if (categoryId) {
-      qb = qb.andWhere(`${CATEGORY_ALIAS}.id = :categoryId`, { categoryId });
-    }
-    // filter by author
-    if (authorId) {
-      qb = qb.andWhere(`${ARTICLE_ALIAS}.authorId = :authorId`, { authorId });
-    }
-
-    // paginate query and execute
-    const paginator = buildPaginator({
-      entity: Article,
-      paginationKeys: ['id'],
-      query: {
-        limit: 10,
-        beforeCursor,
-        afterCursor,
-      },
-    });
-    const { data, cursor } = await paginator.paginate(qb);
-
-    return {
-      ok: true,
-      articles: data,
-      beforeCursor: cursor.beforeCursor,
-      afterCursor: cursor.afterCursor,
-    };
+      .leftJoinAndSelect(`${ARTICLE_ALIAS}.author`, AUTHOR_ALIAS)
+      .where(`${ARTICLE_ALIAS}.id = :id`, { id })
+      .getOne();
+    if (!article) return CommonError(ARTICLE_NOT_FOUND);
+    return { ok: true, article };
   }
 }
