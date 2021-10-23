@@ -33,6 +33,7 @@ import {
   CATEGORY_ALIAS,
 } from './constants/db-alias.constant';
 import { UpdateArticleInput } from './dtos/update-article.dto';
+import { DeleteArticleInput } from './dtos/delete-article.dto';
 
 @Injectable()
 export class MagazineService {
@@ -262,6 +263,17 @@ export class MagazineService {
       }
       // update and response
       await this.articleRepository.save(article);
+      return { ok: true };
+    } catch (e) {
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async deleteArticle({ id }: DeleteArticleInput): Promise<CoreOutput> {
+    try {
+      const article = await this.articleRepository.findOne(id);
+      if (!article) return CommonError(ARTICLE_NOT_FOUND);
+      await this.articleRepository.delete(id);
       return { ok: true };
     } catch (e) {
       return UNEXPECTED_ERROR;
