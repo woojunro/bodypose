@@ -1,5 +1,5 @@
 import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
-import { Min } from 'class-validator';
+import { IsOptional, Min } from 'class-validator';
 import {
   CursorPaginationInput,
   CursorPaginationOutput,
@@ -9,10 +9,12 @@ import { Article } from '../entities/article.entity';
 @InputType()
 export class ArticlesInput extends CursorPaginationInput {
   @Field(type => Int, { nullable: true })
+  @IsOptional()
   @Min(1)
   categoryId?: number;
 
   @Field(type => Int, { nullable: true })
+  @IsOptional()
   @Min(1)
   authorId?: number;
 }

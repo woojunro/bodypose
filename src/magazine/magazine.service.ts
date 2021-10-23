@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { buildPaginator } from 'typeorm-cursor-pagination';
 import {
   CommonError,
   UNEXPECTED_ERROR,
@@ -13,6 +14,7 @@ import {
 } from './constants/error.constant';
 import { AllArticleCategoriesOutput } from './dtos/all-article-categories.dto';
 import { AllEditorsOutput } from './dtos/all-editors.dto';
+import { ArticlesInput, ArticlesOutput } from './dtos/articles.dto';
 import { CreateArticleCategoryInput } from './dtos/create-article-category.dto';
 import { CreateArticleInput } from './dtos/create-article.dto';
 import { CreateEditorInput } from './dtos/create-editor.dto';
@@ -172,5 +174,48 @@ export class MagazineService {
       console.log(e);
       return UNEXPECTED_ERROR;
     }
+  }
+
+  async getArticles({
+    beforeCursor,
+    afterCursor,
+    categoryId,
+    authorId,
+  }: ArticlesInput): Promise<ArticlesOutput> {
+    // query builder
+    const ARTICLE_ALIAS = 'article';
+    const CATEGORY_ALIAS = 'category';
+    let qb = this.articleRepository
+      .createQueryBuilder(ARTICLE_ALIAS)
+      .leftJoinAndSelect(`${ARTICLE_ALIAS}.categories`, CATEGORY_ALIAS)
+      .leftJoinAndSelect(`${ARTICLE_ALIAS}.author`, 'author')
+      .where('1=1');
+    // filter by category
+    if (categoryId) {
+      qb = qb.andWhere(`${CATEGORY_ALIAS}.id = :categoryId`, { categoryId });
+    }
+    // filter by author
+    if (authorId) {
+      qb = qb.andWhere(`${ARTICLE_ALIAS}.authorId = :authorId`, { authorId });
+    }
+
+    // paginate query and execute
+    const paginator = buildPaginator({
+      entity: Article,
+      paginationKeys: ['id'],
+      query: {
+        limit: 10,
+        beforeCursor,
+        afterCursor,
+      },
+    });
+    const { data, cursor } = await paginator.paginate(qb);
+
+    return {
+      ok: true,
+      articles: data,
+      beforeCursor: cursor.beforeCursor,
+      afterCursor: cursor.afterCursor,
+    };
   }
 }
