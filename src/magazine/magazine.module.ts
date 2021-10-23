@@ -7,5 +7,6 @@ import { MagazineService } from './magazine.service';
 @Module({
   imports: [TypeOrmModule.forFeature([...ENTITIES])],
   providers: [MagazineResolver, MagazineService],
+  exports: [MagazineService],
 })
 export class MagazineModule {}

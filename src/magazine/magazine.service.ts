@@ -244,6 +244,15 @@ export class MagazineService {
     }
   }
 
+  incrementArticleViewCount(id: number): void {
+    this.articleRepository
+      .createQueryBuilder()
+      .update()
+      .set({ viewCount: () => 'viewCount + 1' })
+      .where('id = :id', { id })
+      .execute();
+  }
+
   async updateArticle({
     id,
     categoryIds,
