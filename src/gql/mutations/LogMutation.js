@@ -26,3 +26,12 @@ export const CONTACT_STUDIO_MUTATION = gql`
     }
   }
 `;
+
+export const VIEW_ARTICLE = gql`
+  mutation ViewArticle($input: ViewArticleInput!) {
+    viewArticle(input: $input) {
+      ok
+      error
+    }
+  }
+`;

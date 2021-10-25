@@ -1,53 +1,79 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ColumnHeader from '../../../components/mobileComponents/column/column-header';
 import ColumnNavigator from '../../../components/mobileComponents/column/column-navigator';
 import './column-list-screen.css';
-
-//가상 DB
-import {
-  nutrition_column_db,
-  photo_column_db,
-  training_column_db,
-} from '../../../virtualDB/column-db';
+import { GET_ALL_ARTICLE_CATEGORIES } from '../../../gql/queries/AllArticleCategoriesQuery';
 import ColumnList from '../../../components/mobileComponents/column/column-list';
+import { useQuery } from '@apollo/client';
+import AppLoadingScreen from '../../../components/mobileComponents/AppLoadingScreen';
+import { GET_ARTICLES } from '../../../gql/queries/ArticlesQuery';
 
 const ColumnListScreen = () => {
-  const [columnCategory, setColumnCategory] = useState('all');
-  const [columnData, setColumnData] = useState([]);
-  const [pageNum, setPageNum] = useState(1);
-  //전체 칼럼 갯수 몇개인가.
-  const [totalColumnCount, setTotalColumnCount] = useState();
-  //뒤에 더 불러올 칼럼이 있으면 true 아니면 false
-  const [isMoreColumns, setIsMoreColumns] = useState(false);
+  const {
+    data,
+    loading,
+    error: categoriesError,
+  } = useQuery(GET_ALL_ARTICLE_CATEGORIES);
 
-  //초기 칼럼 5개 불러오기.
-  useEffect(() => {
-    if (columnCategory === 'all') {
-      setColumnData(nutrition_column_db.slice(pageNum - 1, pageNum + 4));
-    } else if (columnCategory === 'training') {
-      setColumnData(training_column_db.slice(pageNum - 1, pageNum + 4));
-    } else if (columnCategory === 'nutrition') {
-      setColumnData(nutrition_column_db.slice(pageNum - 1, pageNum + 4));
-    } else {
-      setColumnData(photo_column_db.slice(pageNum - 1, pageNum + 3));
-    }
-  }, [columnCategory]);
+  const [categoryId, setCategoryId] = useState(null);
+
+  const changeCategoryId = id => {
+    setColumnData([]);
+    setCategoryId(id);
+  };
+
+  const [columnData, setColumnData] = useState([]);
+  const [hasMore, setHasMore] = useState(false);
+
+  const {
+    data: articlesData,
+    error,
+    refetch,
+  } = useQuery(GET_ARTICLES, {
+    variables: { input: { categoryId, afterCursor: null } },
+    notifyOnNetworkStatusChange: true,
+    onCompleted: data => {
+      const { articles, afterCursor } = data.articles;
+      setColumnData([...columnData, ...articles]);
+      setHasMore(Boolean(afterCursor));
+    },
+  });
 
   //칼럼 추가로 불러오는 함수.
-  const FetchMoreData = () => {};
+  const fetchMore = () => {
+    const afterCursor = articlesData?.articles?.afterCursor;
+    if (!afterCursor) {
+      setHasMore(false);
+      return;
+    }
+    refetch({ input: { categoryId, afterCursor } });
+  };
 
-  return (
+  return loading ? (
+    <div className="appFullScreenCenter">
+      <AppLoadingScreen />
+    </div>
+  ) : (
     <div>
       <ColumnHeader />
-      <ColumnNavigator
-        columnCategory={columnCategory}
-        setColumnCategory={setColumnCategory}
-      />
-      <ColumnList
-        datas={columnData}
-        fetchMoreData={FetchMoreData}
-        hasMore={isMoreColumns}
-      />
+      {error || categoriesError ? (
+        <div className="appLoader">
+          <p>오류가 발생하였습니다. 다시 시도해주세요.</p>
+        </div>
+      ) : (
+        <>
+          <ColumnNavigator
+            categoryId={categoryId}
+            setCategoryId={changeCategoryId}
+            categories={data.allArticleCategories.categories}
+          />
+          <ColumnList
+            list={columnData}
+            fetchMoreData={fetchMore}
+            hasMore={hasMore}
+          />
+        </>
+      )}
     </div>
   );
 };

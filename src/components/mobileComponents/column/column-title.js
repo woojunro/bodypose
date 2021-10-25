@@ -1,28 +1,22 @@
 import './column-title.css';
+import { formatDateToString } from '../../functions/formatDateToString';
 
-const renderedCategory = category => {
-  if (category === 'training') {
-    return '트레이닝';
-  } else if (category === 'nutrition') {
-    return '식단';
-  } else {
-    return '촬영팁';
-  }
-};
 const ColumnTitle = ({ data }) => {
   return (
     <>
       <div className="column-title-container">
-        <div className="column-category">{renderedCategory(data.category)}</div>
-        <div className="column-title">{data.title}</div>
+        <div className="column-category">
+          {(data?.categories || []).map(c => c.name).join(', ')}
+        </div>
+        <div className="column-title">{data?.title}</div>
       </div>
       <div className="column-writer-container">
         <div className="column-writer-data">
-          {data.logo && <img src={data.logo} alt="logo" />}
-          {data.writer && <div className="column-writer">{data.writer}</div>}
+          <img src={data?.author?.logoUrl} alt="logo" />
+          <div className="column-writer">{data?.author?.name}</div>
         </div>
         <div className="column-update-date">
-          {data.updateDate && data.updateDate}
+          {formatDateToString(data?.createdAt)}
         </div>
       </div>
     </>

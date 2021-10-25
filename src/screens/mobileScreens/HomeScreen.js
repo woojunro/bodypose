@@ -24,6 +24,7 @@ import {
 import { randomPage } from '../../components/functions/Concept/randomPages';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import HomeColumnList from '../../components/mobileComponents/homeScreen/home-column-list';
+import { GET_ARTICLES } from '../../gql/queries/ArticlesQuery';
 
 const take = 8;
 
@@ -43,6 +44,13 @@ const HomeScreen = () => {
     loading: studioLoading,
     error: studioError,
   } = useQuery(ALL_STUDIOS_QUERY);
+  const {
+    data: articlesData,
+    loading: articlesLoading,
+    error: articlesError,
+  } = useQuery(GET_ARTICLES, {
+    variables: { input: { categoryId: null } },
+  });
   const {
     data: femaleData,
     loading: femaleLoading,
@@ -96,9 +104,15 @@ const HomeScreen = () => {
     maleLoading ||
     coupleLoading ||
     noticesLoading ||
-    studioLoading;
+    studioLoading ||
+    articlesLoading;
   const isError =
-    femaleError || maleError || coupleError || noticesError || studioError;
+    femaleError ||
+    maleError ||
+    coupleError ||
+    noticesError ||
+    studioError ||
+    articlesError;
 
   useEffect(() => {
     document.body.style.overflow = 'auto';
@@ -118,7 +132,7 @@ const HomeScreen = () => {
           <AdTapCarousel />
           <MainCardScrollView studios={studioData.allStudios.studios} />
           <SeeAll />
-          <HomeColumnList />
+          <HomeColumnList columns={articlesData.articles.articles} />
           <FemaleConcepts concepts={femaleData.allStudioPhotos.photos} />
           <MaleConcepts concepts={maleData.allStudioPhotos.photos} />
           <CoupleConcepts concepts={coupleData.allStudioPhotos.photos} />

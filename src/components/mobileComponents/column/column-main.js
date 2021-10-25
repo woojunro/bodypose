@@ -5,10 +5,12 @@ import ColumnToStudio from './column-to-studio';
 const ColumnMain = ({ data }) => {
   return (
     <div className="column-main">
-      <ColumnHtml data={data} />
+      <ColumnHtml content={data?.content} />
       <div className="column-main-bottom">
         {/*data에 studioSlug 있으면 띄우기 */}
-        {data.studioSlug && <ColumnToStudio studioSlug={'wedidit'} />}
+        {data?.author?.studioSlug && (
+          <ColumnToStudio studioSlug={data?.author?.studioSlug} />
+        )}
       </div>
     </div>
   );

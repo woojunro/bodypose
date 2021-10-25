@@ -27,7 +27,7 @@ const SeeAll = () => {
     {
       name: '매거진',
       icon: SeeAllMagazine,
-      onClick: () => history.push('/columns'),
+      onClick: () => history.push('/magazine'),
     },
     // { name: '리뷰', icon: SeeAllReview, pageTo: '/reviews' },
   ];

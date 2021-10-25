@@ -1,37 +1,43 @@
 import React from 'react';
 import './column-navigator.css';
 
-const ColumnCategory = [
-  { category: 'all', title: '전체' },
-  { category: 'before-body-profile', title: '비포 바프' },
-  { category: 'after-body-profile', title: '애프터 바프' },
-  { category: 'diet', title: '다이어트' },
-  { category: 'photo', title: '바프 촬영팁' },
-];
+const ColumnNavigator = ({ categoryId, setCategoryId, categories = [] }) => {
+  const allCategoryName = 'ALL';
+  const isAllCategorySelected = categoryId === null;
 
-const ColumnNavigator = ({ columnCategory, setColumnCategory }) => {
-  //카테고리 불러오기.
-  const categories = ColumnCategory;
+  const categoryList = [...categories]
+    .sort((a, b) => a.order - b.order)
+    .filter(c => c.id === 4); // 촬영팁만
 
-  const RenderedCategories = categories.map(category => {
-    if (category.category === columnCategory) {
-      return (
-        <div key={category.category} className="column-navigator-type-selected">
-          {category.title}
+  return (
+    <div className="column-navigator">
+      {isAllCategorySelected ? (
+        <div className="column-navigator-type-selected">{allCategoryName}</div>
+      ) : (
+        <div
+          className="column-navigator-type-unselected"
+          onClick={() => setCategoryId(null)}
+        >
+          {allCategoryName}
         </div>
-      );
-    }
-    return (
-      <div
-        key={category.category}
-        className="column-navigator-type-unselected"
-        onClick={() => setColumnCategory(category.category)}
-      >
-        {category.title}
-      </div>
-    );
-  });
-  return <div className="column-navigator">{RenderedCategories}</div>;
+      )}
+      {categoryList.map(category =>
+        categoryId === category.id ? (
+          <div key={category.id} className="column-navigator-type-selected">
+            {category.name}
+          </div>
+        ) : (
+          <div
+            key={category.id}
+            className="column-navigator-type-unselected"
+            onClick={() => setCategoryId(category.id)}
+          >
+            {category.name}
+          </div>
+        )
+      )}
+    </div>
+  );
 };
 
 export default ColumnNavigator;

@@ -1,34 +1,47 @@
+import { useMutation, useQuery } from '@apollo/client';
 import React from 'react';
-import { useParams } from 'react-router';
-import ColumnEnding from '../../../components/mobileComponents/column/column-ending';
+import { useHistory, useParams } from 'react-router';
+import AppLoadingScreen from '../../../components/mobileComponents/AppLoadingScreen';
 import ColumnHeader from '../../../components/mobileComponents/column/column-header';
 import ColumnMain from '../../../components/mobileComponents/column/column-main';
-import ColumnShowMore from '../../../components/mobileComponents/column/column-show-more';
 import ColumnTitle from '../../../components/mobileComponents/column/column-title';
-import { training_column_db } from '../../../virtualDB/column-db';
+import ColumnLowMenu from '../../../components/mobileComponents/column/column-low-menu';
+import { VIEW_ARTICLE } from '../../../gql/mutations/LogMutation';
+import { GET_ARTICLE } from '../../../gql/queries/ArticleQuery';
 import './column-screen.css';
 
 const ColumnScreen = () => {
   const { columnId } = useParams();
+  const history = useHistory();
 
-  //id에 맞는 칼럼 불러오기.
-  const columnData =
-    columnId === '18'
-      ? training_column_db[0]
-      : columnId === '17'
-      ? training_column_db[1]
-      : training_column_db[2];
+  const [viewArticle] = useMutation(VIEW_ARTICLE);
 
-  return (
+  const { data, loading } = useQuery(GET_ARTICLE, {
+    variables: { id: Number(columnId) },
+    onCompleted: data => {
+      if (!data.article.ok) history.goBack();
+      else {
+        viewArticle({
+          variables: { input: { articleId: Number(columnId), source: 'ETC' } },
+        });
+      }
+    },
+    onError: () => history.goBack(),
+  });
+
+  return loading ? (
+    <div className="appFullScreenCenter">
+      <AppLoadingScreen />
+    </div>
+  ) : (
     <>
       <ColumnHeader />
-
       <div className="column-screen">
-        <ColumnTitle data={columnData} />
-        <ColumnMain data={columnData} />
-        <ColumnEnding />
+        <ColumnTitle data={data?.article?.article} />
+        <ColumnMain data={data?.article?.article} />
         {/* <ColumnShowMore columnId={columnId} /> */}
       </div>
+      <ColumnLowMenu />
     </>
   );
 };

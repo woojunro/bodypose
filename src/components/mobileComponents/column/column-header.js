@@ -12,9 +12,9 @@ const ColumnHeader = () => {
         <FiArrowLeft
           className="column-header-arrow"
           onClick={() => {
-            window.location.pathname === '/columns'
+            window.location.pathname === '/magazine'
               ? history.push('/')
-              : history.push('/columns');
+              : history.push('/magazine');
           }}
         />
         <div className="column-header-title">매거진</div>
