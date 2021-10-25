@@ -6,7 +6,7 @@ import {
   OmitType,
   PickType,
 } from '@nestjs/graphql';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString, Max, Min } from 'class-validator';
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import {
   PaginationInput,
@@ -37,6 +37,11 @@ export class GetStudioPhotosInput extends PaginationInput {
   @Field(type => String)
   @IsString()
   studioSlug: string;
+
+  @Field(type => Int, { defaultValue: 24 })
+  @Min(1)
+  @Max(24)
+  take?: number;
 
   @Field(type => PhotoGender, { nullable: true })
   @IsOptional()

@@ -197,7 +197,6 @@ export class AuthService {
         refresh,
       };
     } catch (e) {
-      console.log(e);
       this.clearAllAuthCookies(res);
       throw new UnauthorizedException();
     }

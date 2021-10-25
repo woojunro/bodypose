@@ -4,7 +4,7 @@ import { LogEntity } from './log.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Studio } from 'src/studios/entities/studio.entity';
 
-export enum ViewSource {
+export enum StudioInfoViewSource {
   STUDIO_LIST = 'STUDIO_LIST',
   STUDIO_PHOTO = 'STUDIO_PHOTO',
   STUDIO_REVIEW = 'STUDIO_REVIEW',
@@ -12,12 +12,12 @@ export enum ViewSource {
   ETC = 'ETC',
 }
 
-registerEnumType(ViewSource, { name: 'ViewSource' });
+registerEnumType(StudioInfoViewSource, { name: 'StudioInfoViewSource' });
 
 @Entity()
 export class LogStudioInfoView extends LogEntity {
   @Column({ type: 'varchar', length: 20 })
-  source: ViewSource;
+  source: StudioInfoViewSource;
 
   @ManyToOne(relation => User, { nullable: true, onDelete: 'SET NULL' })
   user?: User;

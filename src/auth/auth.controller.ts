@@ -39,7 +39,7 @@ export class AuthController {
     return this.authService.socialLogin(input, res);
   }
 
-  @Post('/login/partners')
+  @Post('login/partners')
   @HttpCode(200)
   partnersLogin(
     @Body() input: EmailLoginInput,

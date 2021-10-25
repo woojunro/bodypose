@@ -111,7 +111,7 @@ export class PhotosService {
         .leftJoinAndSelect('photo.backgroundConcepts', 'backgroundConcept')
         .leftJoinAndSelect('photo.costumeConcepts', 'costumeConcept')
         .leftJoinAndSelect('photo.objectConcepts', 'objectConcept')
-        .where('photo.id = :id', { id });
+        .where('photo.id = :photoId', { photoId: id });
       query = this.filterStudioPhotoQueryByUser(query, user);
       const photo = await query.getOne();
       if (!photo) return CommonError('STUDIO_PHOTO_NOT_FOUND');
@@ -346,21 +346,25 @@ export class PhotosService {
 
   async getStudioPhotos(
     user: User,
-    { studioSlug, gender, page }: GetStudioPhotosInput,
+    { studioSlug, gender, page, take }: GetStudioPhotosInput,
   ): Promise<GetStudioPhotosOutput> {
     try {
-      const photosPerPage = 24;
       let query = this.studioPhotoRepository
         .createQueryBuilder('photo')
         .leftJoin('photo.studio', 'studio')
         .leftJoin('studio.partner', 'partner')
-        .where({ gender: gender ? gender : Not(IsNull()) })
-        .andWhere('studio.slug = :slug', { slug: studioSlug });
+        .where('studio.slug = :slug', { slug: studioSlug });
+
+      // filter by gender
+      if (gender) {
+        query = query.andWhere('photo.gender = :gender', { gender });
+      }
+
       query = this.filterStudioPhotoQueryByUser(query, user);
       const [studioPhotos, count] = await query
         .orderBy('photo.id', 'DESC')
-        .take(photosPerPage)
-        .skip((page - 1) * photosPerPage)
+        .take(take)
+        .skip((page - 1) * take)
         .getManyAndCount();
 
       let photos: StudioPhotoWithIsHearted[] = [];
@@ -385,7 +389,7 @@ export class PhotosService {
       return {
         ok: true,
         photos,
-        totalPages: Math.ceil(count / photosPerPage),
+        totalPages: Math.ceil(count / take),
       };
     } catch (e) {
       console.log(e);

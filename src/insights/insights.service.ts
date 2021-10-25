@@ -5,6 +5,7 @@ import {
   UNEXPECTED_ERROR,
 } from 'src/common/constants/error.constant';
 import { CoreOutput } from 'src/common/dtos/output.dto';
+import { MagazineService } from 'src/magazine/magazine.service';
 import { PhotosService } from 'src/photos/photos.service';
 import { StudiosService } from 'src/studios/studios.service';
 import { User } from 'src/users/entities/user.entity';
@@ -14,7 +15,9 @@ import {
   StudioContactType,
 } from './dtos/contact-studio.dto';
 import { ExposeOriginalStudioPhotoInput } from './dtos/expose-original-studio-photo.dto';
+import { ViewArticleInput } from './dtos/view-article.dto';
 import { ViewStudioInfoInput } from './dtos/view-studio-info.dto';
+import { LogArticleView } from './entities/log-article-view.entity';
 import { LogOriginalStudioPhoto } from './entities/log-original-studio-photo.entity';
 import { LogStudioContact } from './entities/log-studio-contact.entity';
 import { LogStudioInfoView } from './entities/log-studio-info-view.entity';
@@ -25,16 +28,27 @@ export class InsightsService {
   constructor(
     @InjectRepository(LogOriginalStudioPhoto)
     private readonly logOriginalStudioPhotoRepository: Repository<LogOriginalStudioPhoto>,
+
     @InjectRepository(LogStudioInfoView)
     private readonly logStudioInfoViewRepository: Repository<LogStudioInfoView>,
+
     @InjectRepository(LogStudioContact)
     private readonly logStudioContactRepository: Repository<LogStudioContact>,
+
     @InjectRepository(LogStudioReservation)
     private readonly logStudioReservationRepository: Repository<LogStudioReservation>,
+
+    @InjectRepository(LogArticleView)
+    private readonly logArticleViewRepository: Repository<LogArticleView>,
+
     @Inject(forwardRef(() => PhotosService))
     private readonly photosService: PhotosService,
+
     @Inject(forwardRef(() => StudiosService))
     private readonly studiosService: StudiosService,
+
+    @Inject(MagazineService)
+    private readonly magazineService: MagazineService,
   ) {}
 
   async exposeOriginalStudioPhoto(
@@ -110,5 +124,19 @@ export class InsightsService {
       console.log(e);
       return UNEXPECTED_ERROR;
     }
+  }
+
+  async viewArticle(
+    user: User,
+    { articleId, source }: ViewArticleInput,
+  ): Promise<CoreOutput> {
+    const newLog = this.logArticleViewRepository.create({
+      user,
+      article: { id: articleId },
+      source,
+    });
+    await this.logArticleViewRepository.insert(newLog);
+    await this.magazineService.incrementArticleViewCount(articleId);
+    return { ok: true };
   }
 }

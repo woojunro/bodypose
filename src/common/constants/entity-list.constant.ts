@@ -1,8 +1,4 @@
 import { RefreshToken } from 'src/auth/entities/refresh-token.entity';
-import { LogOriginalStudioPhoto } from 'src/insights/entities/log-original-studio-photo.entity';
-import { LogStudioContact } from 'src/insights/entities/log-studio-contact.entity';
-import { LogStudioInfoView } from 'src/insights/entities/log-studio-info-view.entity';
-import { LogStudioReservation } from 'src/insights/entities/log-studio-reservation.entity';
 import { Notice } from 'src/notices/entity/notice.entity';
 import { PartnersNotice } from 'src/notices/entity/partners-notice.entity';
 import {
@@ -30,13 +26,8 @@ import { UserOauth } from 'src/users/entities/user-oauth.entity';
 import { UserProfile } from 'src/users/entities/user-profile.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Verification } from 'src/users/entities/verification.entity';
-
-export const LOG_ENTITIES = [
-  LogOriginalStudioPhoto,
-  LogStudioInfoView,
-  LogStudioContact,
-  LogStudioReservation,
-];
+import MAGAZINE_ENTITIES from 'src/magazine/entities/entities';
+import INSIGHTS_ENTITIES from 'src/insights/entities/entities';
 
 export const USERS_SERVICE_ENTITIES = [
   User,
@@ -80,5 +71,6 @@ export const ENTITY_LIST = [
   ...STUDIOS_SERVICE_ENTITIES,
   ...PHOTOS_SERVICE_ENTITIES,
   ...NOTICES_SERVICE_ENTITIES,
-  ...LOG_ENTITIES,
+  ...INSIGHTS_ENTITIES,
+  ...MAGAZINE_ENTITIES,
 ];
