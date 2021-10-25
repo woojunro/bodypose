@@ -41,6 +41,7 @@ import ColumnScreen from '../screens/mobileScreens/column/column-screen';
 const App = () => {
   const history = createBrowserHistory();
   const [isAppLoading, setIsAppLoading] = useState(true);
+
   // 현재 위치
   // const [currentAddr, setCurrentAddr] = useState();
   // const [declineGPS, setDeclineGPS] = useState();
