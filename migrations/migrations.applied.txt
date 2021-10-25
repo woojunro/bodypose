@@ -59,8 +59,6 @@ query: ALTER TABLE `notice` ADD `title` varchar(100) NOT NULL
 
 query: ALTER TABLE `studio` ADD `photoCount` int NOT NULL DEFAULT '0'
 
------ APPLIED -----
-
 2021-10-21 DEV
 
 query: ALTER TABLE `photos_background_concepts` DROP FOREIGN KEY `FK_947bf1452fb08a568813e9c6386`
@@ -102,16 +100,18 @@ query: ALTER TABLE `photos_object_concepts` ADD CONSTRAINT `FK_68e068f53c8e5ae89
 
 2021-10-22 DEV
 
-query: CREATE TABLE `article_category` (`id` int NOT NULL AUTO_INCREMENT, `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `name` varchar(10) NOT NULL, `order` int NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB
-query: CREATE TABLE `editor` (`id` int NOT NULL AUTO_INCREMENT, `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `name` varchar(15) NOT NULL, `logoUrl` varchar(255) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB
-query: CREATE TABLE `article` (`id` int NOT NULL AUTO_INCREMENT, `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `title` varchar(20) NOT NULL, `thumbnailUrl` varchar(255) NOT NULL, `content` mediumtext NOT NULL, `viewCount` int NOT NULL DEFAULT '0', `authorId` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB
-query: CREATE TABLE `article_categories_article_category` (`articleId` int NOT NULL, `articleCategoryId` int NOT NULL, INDEX `IDX_9d4d3664d87a060100eb384573` (`articleId`), INDEX `IDX_a83b474a12abc6fee6c2eb6e6e` (`articleCategoryId`), PRIMARY KEY (`articleId`, `articleCategoryId`)) ENGINE=InnoDB
-query: ALTER TABLE `article` ADD CONSTRAINT `FK_a9c5f4ec6cceb1604b4a3c84c87` FOREIGN KEY (`authorId`) REFERENCES `editor`(`id`) ON DELETE RESTRICT ON UPDATE NO ACTION
-query: ALTER TABLE `article_categories_article_category` ADD CONSTRAINT `FK_9d4d3664d87a060100eb3845731` FOREIGN KEY (`articleId`) REFERENCES `article`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
-query: ALTER TABLE `article_categories_article_category` ADD CONSTRAINT `FK_a83b474a12abc6fee6c2eb6e6ee` FOREIGN KEY (`articleCategoryId`) REFERENCES `article_category`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+query: CREATE TABLE `article_category` (`id` int NOT NULL AUTO_INCREMENT, `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `name` varchar(10) NOT NULL, `order` int NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;
+query: CREATE TABLE `editor` (`id` int NOT NULL AUTO_INCREMENT, `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `name` varchar(15) NOT NULL, `logoUrl` varchar(255) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;
+query: CREATE TABLE `article` (`id` int NOT NULL AUTO_INCREMENT, `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `title` varchar(20) NOT NULL, `thumbnailUrl` varchar(255) NOT NULL, `content` mediumtext NOT NULL, `viewCount` int NOT NULL DEFAULT '0', `authorId` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;
+query: CREATE TABLE `article_categories_article_category` (`articleId` int NOT NULL, `articleCategoryId` int NOT NULL, INDEX `IDX_9d4d3664d87a060100eb384573` (`articleId`), INDEX `IDX_a83b474a12abc6fee6c2eb6e6e` (`articleCategoryId`), PRIMARY KEY (`articleId`, `articleCategoryId`)) ENGINE=InnoDB;
+query: ALTER TABLE `article` ADD CONSTRAINT `FK_a9c5f4ec6cceb1604b4a3c84c87` FOREIGN KEY (`authorId`) REFERENCES `editor`(`id`) ON DELETE RESTRICT ON UPDATE NO ACTION;
+query: ALTER TABLE `article_categories_article_category` ADD CONSTRAINT `FK_9d4d3664d87a060100eb3845731` FOREIGN KEY (`articleId`) REFERENCES `article`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+query: ALTER TABLE `article_categories_article_category` ADD CONSTRAINT `FK_a83b474a12abc6fee6c2eb6e6ee` FOREIGN KEY (`articleCategoryId`) REFERENCES `article_category`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 2021-10-23 DEV
 
-query: CREATE TABLE `log_article_view` (`id` bigint NOT NULL AUTO_INCREMENT, `timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `source` varchar(2) NOT NULL, `userId` int NULL, `articleId` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB
-query: ALTER TABLE `log_article_view` ADD CONSTRAINT `FK_8f28788958b00a46bdafe1b395e` FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON DELETE SET NULL ON UPDATE NO ACTION
-query: ALTER TABLE `log_article_view` ADD CONSTRAINT `FK_a473e112e6dd782ee8812e79528` FOREIGN KEY (`articleId`) REFERENCES `article`(`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+query: CREATE TABLE `log_article_view` (`id` bigint NOT NULL AUTO_INCREMENT, `timestamp` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `source` varchar(2) NOT NULL, `userId` int NULL, `articleId` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;
+query: ALTER TABLE `log_article_view` ADD CONSTRAINT `FK_8f28788958b00a46bdafe1b395e` FOREIGN KEY (`userId`) REFERENCES `user`(`id`) ON DELETE SET NULL ON UPDATE NO ACTION;
+query: ALTER TABLE `log_article_view` ADD CONSTRAINT `FK_a473e112e6dd782ee8812e79528` FOREIGN KEY (`articleId`) REFERENCES `article`(`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+
+----- APPLIED -----

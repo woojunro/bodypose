@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { IsUrl, Length } from 'class-validator';
+import { IsOptional, IsUrl, Length } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Column, Entity } from 'typeorm';
 
@@ -16,4 +16,10 @@ export class Editor extends CoreEntity {
   @IsUrl()
   @Length(1, 255)
   logoUrl: string;
+
+  @Column({ length: 20, nullable: true })
+  @Field(type => String, { nullable: true })
+  @IsOptional()
+  @Length(1, 20)
+  studioSlug?: string;
 }

@@ -4,6 +4,6 @@ import { Editor } from '../entities/editor.entity';
 @InputType()
 export class CreateEditorInput extends PickType(
   Editor,
-  ['name', 'logoUrl'],
+  ['name', 'logoUrl', 'studioSlug'],
   InputType,
 ) {}
