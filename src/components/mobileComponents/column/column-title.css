@@ -1,19 +1,20 @@
 .column-title-container {
   font-size: 14px;
-  padding-bottom: 10px;
+  padding-bottom: 5px;
   border-bottom: 1px solid gray;
 }
 
 .column-category {
   color: red;
   margin-right: 5px;
+  font-size: 9px;
 }
 .column-title {
   margin-top: 5px;
   font-size: 15px;
 }
 .column-writer-container {
-  margin-top: 10px;
+  margin-top: 5px;
 
   display: flex;
   justify-content: space-between;
@@ -28,15 +29,15 @@
 .column-writer-data img {
   border-radius: 50%;
   border: lightgray 1px solid;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 .column-writer {
   margin-left: 5px;
-  font-size: 13px;
+  font-size: 10px;
 }
 
 .column-update-date {
-  font-size: 13px;
+  font-size: 10px;
   color: gray;
 }

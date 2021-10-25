@@ -24,15 +24,16 @@
 .column-list-element-category {
   color: red;
   margin-right: 5px;
+  font-size: 10px;
 }
 .column-list-element-title {
   display: flex;
-  margin-top: 11px;
+  margin-top: 5px;
   font-size: 15px;
 }
 
 .column-list-element-data-bottom {
-  margin-top: 7px;
+  margin-top: 2px;
   display: flex;
   align-items: center;
 }
@@ -42,13 +43,14 @@
 }
 
 .column-list-element-logo {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   border: 1px solid lightgray;
 
   border-radius: 50%;
 }
 .column-list-element-writer {
+  font-size: 10px;
   margin-left: 5px;
 }
