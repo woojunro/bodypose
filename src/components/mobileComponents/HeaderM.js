@@ -46,6 +46,16 @@ const Header = ({ pageName }) => {
       </div>
     );
   }
+  if (pageName === 'columns') {
+    return (
+      <div>
+        <div className="header">
+          <span className="headerTitle">칼럼</span>
+        </div>
+        <div style={{ height: '50px' }} />
+      </div>
+    );
+  }
   return <div>ho</div>;
 };
 

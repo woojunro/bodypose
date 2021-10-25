@@ -1,0 +1,16 @@
+.column-list-endmessage {
+  width: 100%;
+  height: 70px;
+  background-color: var(--color-greyBox);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.column-list-logo {
+  height: 40%;
+}
+
+.column-list-endmessage img {
+  height: 100%;
+}
