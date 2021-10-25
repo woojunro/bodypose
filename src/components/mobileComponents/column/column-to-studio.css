@@ -1,0 +1,21 @@
+.column-to-studio {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.column-to-studio-button {
+  width: 80%;
+  height: 40px;
+  border-radius: 5px;
+  background: var(--color-chocolate);
+  font-size: 15px;
+  font-weight: normal;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  cursor: pointer;
+  margin-top: 5px;
+}

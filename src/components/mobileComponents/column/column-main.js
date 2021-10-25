@@ -1,16 +1,14 @@
 import ColumnHtml from './column-html';
 import './column-main.css';
-import ColumnToLink from './column-to-link';
+import ColumnToStudio from './column-to-studio';
 
 const ColumnMain = ({ data }) => {
   return (
     <div className="column-main">
       <ColumnHtml data={data} />
       <div className="column-main-bottom">
-        {/*여긴 쓸모 없으면 버리기 */}
-        {/* {data.toLink && (
-          <ColumnToLink toLink={data.toLink} toImg={data.toLinkImg} />
-        )} */}
+        {/*data에 studioSlug 있으면 띄우기 */}
+        {data.studioSlug && <ColumnToStudio studioSlug={'wedidit'} />}
       </div>
     </div>
   );

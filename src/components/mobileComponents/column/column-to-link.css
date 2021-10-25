@@ -1,9 +1,0 @@
-.column-to-link {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.column-to-link img {
-  cursor: pointer;
-}
