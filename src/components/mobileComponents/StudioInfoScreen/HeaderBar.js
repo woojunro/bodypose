@@ -22,7 +22,7 @@ const HeaderBar = ({
 
   ///studios에서 왔다면 replace 해주기.
   const gobackFunction = () => {
-    if (previousPath.includes('/studios/')) {
+    if (previousPath && previousPath.includes('/studios/')) {
       history.replace('/studios');
     } else if (previousPath) {
       history.replace(previousPath);

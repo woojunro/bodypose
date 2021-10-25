@@ -3,9 +3,10 @@ import './column-navigator.css';
 
 const ColumnCategory = [
   { category: 'all', title: '전체' },
-  { category: 'training', title: '트레이닝' },
-  { category: 'nutrition', title: '식단' },
-  { category: 'photo', title: '촬영팁' },
+  { category: 'before-body-profile', title: '비포 바프' },
+  { category: 'after-body-profile', title: '애프터 바프' },
+  { category: 'diet', title: '다이어트' },
+  { category: 'photo', title: '바프 촬영팁' },
 ];
 
 const ColumnNavigator = ({ columnCategory, setColumnCategory }) => {
