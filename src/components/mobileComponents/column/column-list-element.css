@@ -9,6 +9,7 @@
   width: 100%;
   border-radius: 20px;
   border: 1px solid lightgray;
+  box-shadow: 1px 2px 6px lightgray;
 }
 .column-list-element-data {
   margin-top: 10px;
