@@ -3,8 +3,10 @@ import { HOMESCREEN_AD_URL } from '../../../constants/urls';
 import 'react-responsive-carousel/lib/styles/carousel.min.css'; // requires a loader
 import { Carousel } from 'react-responsive-carousel';
 import './AdTabCarousel.css';
+import { useHistory } from 'react-router';
 
 const AdTap = () => {
+  const history = useHistory();
   const adTabitems = HOMESCREEN_AD_URL.map(item => {
     return (
       <div key={item.url} className="adTap">
@@ -45,12 +47,19 @@ const AdTap = () => {
     } else {
       return (
         <Carousel
+          className="adTap"
           autoPlay={true}
           infiniteLoop={true}
           showStatus={false}
           showThumbs={false}
           interval={5000}
           showArrows={false}
+          //링크 바디포즈로 시작하면 현재창에서 열고 아니면 외부에서 열기
+          onClickItem={(index, item) => {
+            HOMESCREEN_AD_URL[index].link.startsWith('http')
+              ? window.open(HOMESCREEN_AD_URL[index].link, '_blank')
+              : history.push(HOMESCREEN_AD_URL[index].link);
+          }}
         >
           {adTabitems}
         </Carousel>

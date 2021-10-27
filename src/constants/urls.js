@@ -6,6 +6,10 @@ export const HTTP_PROTOCOL = isDevUrl ? 'http' : 'https';
 
 export const HOMESCREEN_AD_URL = [
   {
+    url: 'https://storage.googleapis.com/bodypose-storage/ads/magazine%20ad.png',
+    link: '/magazine',
+  },
+  {
     url: 'https://storage.googleapis.com/bodypose-storage/ads/app%20download.png',
     link: 'http://onelink.to/q7jy6s',
   },
