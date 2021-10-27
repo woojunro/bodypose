@@ -6,7 +6,7 @@ export const HTTP_PROTOCOL = isDevUrl ? 'http' : 'https';
 
 export const HOMESCREEN_AD_URL = [
   {
-    url: 'https://storage.googleapis.com/bodypose-storage/ads/magazine%20ad.png',
+    url: 'https://storage.googleapis.com/bodypose-storage/ads/magazine%20ad%20sq.png',
     link: '/magazine',
   },
   {
