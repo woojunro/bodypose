@@ -13,4 +13,5 @@ export const STUDIO_LOCATION_OPTIONS = [
   { name: '부산', title: '부산' },
   { name: '대구', title: '대구' },
   { name: '천안', title: '천안' },
+  { name: '제주', title: '제주' },
 ];
