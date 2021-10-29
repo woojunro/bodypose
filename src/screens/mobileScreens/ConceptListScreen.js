@@ -12,6 +12,8 @@ import { useQuery } from '@apollo/client';
 import { ALL_STUDIO_PHOTOS_QUERY } from '../../gql/queries/StudioPhotoQuery';
 import { randomPage } from '../../components/functions/Concept/randomPages';
 import shuffle from '../../components/functions/Shuffle';
+import PullToRefresh from 'react-simple-pull-to-refresh';
+
 const genderOptions = [null, 'MALE', 'FEMALE', 'COUPLE'];
 
 const ConceptListScreen = () => {
@@ -168,47 +170,54 @@ const ConceptListScreen = () => {
             setHasMore={setHasMore}
           />
         ) : null}
-        <TopNavigator
-          options={genderOptions}
-          selectedGender={selectedGender}
-          setGender={setSelectedGender}
-          setHasMore={setHasMore}
-        />
-        <InfiniteScroll
-          dataLength={data?.allStudioPhotos?.photos?.length || 0}
-          next={fetchMoreData}
-          hasMore={hasMore}
-          loader={<LoadingIcon />}
-          endMessage={
-            <div className="endMessageContainer">
-              <div>모든 사진을 불러왔습니다.</div>
-            </div>
-          }
+        <PullToRefresh
+          onRefresh={() => {
+            window.location.reload();
+          }}
         >
-          <div className="totalConcept">
-            {(data?.allStudioPhotos?.photos || []).map((concept, idx) => (
-              <ConceptListCard
-                key={`concept-list-${concept.id}-${idx}`}
-                conceptNum={idx}
-                src={concept.thumbnailUrl}
-                setThisPhoto={() => handlePhotoNum(idx)}
-                openModal={openModal}
-              />
-            ))}
-            {!data?.allStudioPhotos?.photos
-              ? null
-              : data.allStudioPhotos.photos.length % 3 === 0
-              ? null
-              : [...Array(3 - (data.allStudioPhotos.photos.length % 3))].map(
-                  (_, idx) => (
-                    <div
-                      key={`concept-blank-${idx}`}
-                      className="concepListCardContainer"
-                    />
-                  )
-                )}
-          </div>
-        </InfiniteScroll>
+          <TopNavigator
+            options={genderOptions}
+            selectedGender={selectedGender}
+            setGender={setSelectedGender}
+            setHasMore={setHasMore}
+          />
+          <InfiniteScroll
+            dataLength={data?.allStudioPhotos?.photos?.length || 0}
+            next={fetchMoreData}
+            hasMore={hasMore}
+            loader={<LoadingIcon />}
+            endMessage={
+              <div className="endMessageContainer">
+                <div>모든 사진을 불러왔습니다.</div>
+              </div>
+            }
+          >
+            <div className="totalConcept">
+              {(data?.allStudioPhotos?.photos || []).map((concept, idx) => (
+                <ConceptListCard
+                  key={`concept-list-${concept.id}-${idx}`}
+                  conceptNum={idx}
+                  src={concept.thumbnailUrl}
+                  setThisPhoto={() => handlePhotoNum(idx)}
+                  openModal={openModal}
+                />
+              ))}
+              {!data?.allStudioPhotos?.photos
+                ? null
+                : data.allStudioPhotos.photos.length % 3 === 0
+                ? null
+                : [...Array(3 - (data.allStudioPhotos.photos.length % 3))].map(
+                    (_, idx) => (
+                      <div
+                        key={`concept-blank-${idx}`}
+                        className="concepListCardContainer"
+                      />
+                    )
+                  )}
+            </div>
+          </InfiniteScroll>
+        </PullToRefresh>
+
         {isModalOpen ? (
           <ConceptModal
             close={closeModal}

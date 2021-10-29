@@ -25,6 +25,7 @@ import { randomPage } from '../../components/functions/Concept/randomPages';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import HomeColumnList from '../../components/mobileComponents/homeScreen/home-column-list';
 import { GET_ARTICLES } from '../../gql/queries/ArticlesQuery';
+import PullToRefresh from 'react-simple-pull-to-refresh';
 
 const take = 8;
 
@@ -128,7 +129,11 @@ const HomeScreen = () => {
       ) : isError ? (
         <AppErrorScreen />
       ) : (
-        <>
+        <PullToRefresh
+          onRefresh={() => {
+            window.location.reload();
+          }}
+        >
           <AdTapCarousel />
           <MainCardScrollView studios={studioData.allStudios.studios} />
           <SeeAll />
@@ -138,7 +143,7 @@ const HomeScreen = () => {
           <CoupleConcepts concepts={coupleData.allStudioPhotos.photos} />
           <NoticeBox notices={noticesData.notices.notices} />
           <Footer />
-        </>
+        </PullToRefresh>
       )}
       <BottomNavigation pageName="home" />
     </div>

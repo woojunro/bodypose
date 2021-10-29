@@ -19,6 +19,7 @@ import {
   StudioSortByVar,
 } from '../../apollo';
 import SortingStudioFunction from '../../components/functions/Studio/SortingStudioFunction';
+import PullToRefresh from 'react-simple-pull-to-refresh';
 
 const StudioListScreen = () => {
   const { data, loading, error } = useQuery(ALL_STUDIOS_QUERY);
@@ -43,6 +44,10 @@ const StudioListScreen = () => {
   const studioList = locationBy
     ? SortingStudioFunction(studios, sortBy, locationBy, searchKeyword)
     : [];
+
+  const handleRefresh = () => {
+    window.location.reload();
+  };
 
   return (
     <div className="studioListScreen">
@@ -86,10 +91,12 @@ const StudioListScreen = () => {
               />
             </div>
           </div>
-          <StudioListView
-            studioList={studioList}
-            selectedLocation={locationBy}
-          />
+          <PullToRefresh onRefresh={handleRefresh}>
+            <StudioListView
+              studioList={studioList}
+              selectedLocation={locationBy}
+            />
+          </PullToRefresh>
         </>
       ) : (
         <LocationSelect setStudiosLocation={StudioLocationVar} />
