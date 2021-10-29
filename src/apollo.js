@@ -9,10 +9,15 @@ import { onError } from '@apollo/client/link/error';
 import { refreshAccessToken } from './components/functions/Common/refreshAccessToken';
 import { BASE_URL } from './constants/urls';
 import { Observable } from 'apollo-link';
+import { STUDIO_SORT_OPTIONS } from './components/mobileComponents/studioListScreen/SortingOptions';
 
+// 로그인 여부
 export const IsLoggedInVar = makeVar(false);
 
+// 스튜디오 리스트
 export const StudioLocationVar = makeVar(null);
+export const StudioSortByVar = makeVar(STUDIO_SORT_OPTIONS[0]);
+export const StudioListVar = makeVar([]);
 
 const httpLink = createHttpLink({
   uri: `${BASE_URL}/graphql`,

@@ -1,20 +1,11 @@
 import React, { useState } from 'react';
 import StudioCard from './StudioCard';
 import './SeeMoreStudio.css';
-import SortingStudioFunction from '../../functions/Studio/SortingStudioFunc';
-import {
-  STUDIO_LOCATION_OPTIONS,
-  STUDIO_SORT_OPTIONS,
-} from '../studioListScreen/SortingOptions';
+import { MakingStudioList } from '../../functions/Studio/MakingStudioList';
 
 const SeeMoreStudio = ({ currentStudioName, studioList }) => {
   const [studiosToBeRendered] = useState(
-    SortingStudioFunction(
-      STUDIO_SORT_OPTIONS[0],
-      STUDIO_LOCATION_OPTIONS[0],
-      '',
-      studioList
-    )
+    MakingStudioList(studioList)
       .filter(studio => studio.name !== currentStudioName)
       .slice(0, 4)
   );
