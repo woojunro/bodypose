@@ -32,7 +32,7 @@ const HeartConcepts = () => {
       return;
     }
 
-    if (page >= data.allStudioPhotos.totalPages) {
+    if (page >= data.myHeartStudioPhotos.totalPages) {
       setHasMore(false);
       return;
     }
@@ -43,7 +43,7 @@ const HeartConcepts = () => {
         if (!fetchMoreResult?.myHeartStudioPhotos.photos) return prev;
         return Object.assign({}, prev, {
           ...prev,
-          allStudioPhotos: {
+          myHeartStudioPhotos: {
             ...prev.myHeartStudioPhotos,
             photos: [
               ...prev.myHeartStudioPhotos.photos,
@@ -104,14 +104,14 @@ const HeartConcepts = () => {
             ? null
             : data.myHeartStudioPhotos.photos.length % 3 === 0
             ? null
-            : [
-                ...Array(3 - (data.myHeartStudioPhotos.photos.length % 3)),
-              ].map((_, idx) => (
-                <div
-                  key={`concept-blank-${idx}`}
-                  className="concepListCardContainer"
-                />
-              ))}
+            : [...Array(3 - (data.myHeartStudioPhotos.photos.length % 3))].map(
+                (_, idx) => (
+                  <div
+                    key={`concept-blank-${idx}`}
+                    className="concepListCardContainer"
+                  />
+                )
+              )}
         </div>
       </InfiniteScroll>
       {isModalOpen &&
