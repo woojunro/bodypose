@@ -96,6 +96,10 @@ const StudioInfoScreen = () => {
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     setNavigator('portfolio');
   }, [slug]);
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import HeaderM from '../../components/mobileComponents/HeaderM';
 import AdTapCarousel from '../../components/mobileComponents/homeScreen/AdTabCarousel';
 import MainCardScrollView from '../../components/mobileComponents/homeScreen/MainCardScrollView';
@@ -25,7 +25,6 @@ import { randomPage } from '../../components/functions/Concept/randomPages';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import HomeColumnList from '../../components/mobileComponents/homeScreen/home-column-list';
 import { GET_ARTICLES } from '../../gql/queries/ArticlesQuery';
-import PullToRefresh from 'react-simple-pull-to-refresh';
 
 const take = 8;
 
@@ -115,10 +114,6 @@ const HomeScreen = () => {
     studioError ||
     articlesError;
 
-  useEffect(() => {
-    document.body.style.overflow = 'auto';
-  }, []);
-
   return (
     <div>
       <HeaderM pageName="home" />
@@ -129,11 +124,7 @@ const HomeScreen = () => {
       ) : isError ? (
         <AppErrorScreen />
       ) : (
-        <PullToRefresh
-          onRefresh={() => {
-            window.location.reload();
-          }}
-        >
+        <>
           <AdTapCarousel />
           <MainCardScrollView studios={studioData.allStudios.studios} />
           <SeeAll />
@@ -143,7 +134,7 @@ const HomeScreen = () => {
           <CoupleConcepts concepts={coupleData.allStudioPhotos.photos} />
           <NoticeBox notices={noticesData.notices.notices} />
           <Footer />
-        </PullToRefresh>
+        </>
       )}
       <BottomNavigation pageName="home" />
     </div>

@@ -19,10 +19,10 @@ import {
   StudioSortByVar,
 } from '../../apollo';
 import SortingStudioFunction from '../../components/functions/Studio/SortingStudioFunction';
-import PullToRefresh from 'react-simple-pull-to-refresh';
+import PullToRefresh from '../../components/mobileComponents/PullToRefresh';
 
 const StudioListScreen = () => {
-  const { data, loading, error } = useQuery(ALL_STUDIOS_QUERY);
+  const { data, loading, error, refetch } = useQuery(ALL_STUDIOS_QUERY);
   const [isSortByOpen, setIsSortByOpen] = useState(false);
   const [isLocationByOpen, setIsLocationByOpen] = useState(false);
   const sortBy = useReactiveVar(StudioSortByVar);
@@ -45,8 +45,11 @@ const StudioListScreen = () => {
     ? SortingStudioFunction(studios, sortBy, locationBy, searchKeyword)
     : [];
 
-  const handleRefresh = () => {
-    window.location.reload();
+  const handleRefresh = async () => {
+    const { data } = await refetch();
+    if (data?.allStudios?.ok) {
+      StudioListVar(MakingStudioList(data?.allStudios?.studios || []));
+    }
   };
 
   return (
