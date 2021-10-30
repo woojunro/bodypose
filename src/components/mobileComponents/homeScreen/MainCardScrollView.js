@@ -2,20 +2,11 @@ import React from 'react';
 import MainCardM from './MainCardM';
 import './MainCardScrollView.css';
 import SemiTitle from './SemiTitle';
-import SortingStudioFunction from '../../functions/Studio/SortingStudioFunc';
+import { MakingStudioList } from '../../functions/Studio/MakingStudioList';
 import SeeMoreArrow from './SeeMoreArrow';
-import {
-  STUDIO_LOCATION_OPTIONS,
-  STUDIO_SORT_OPTIONS,
-} from '../studioListScreen/SortingOptions';
 
 const MainCardScrollView = ({ studios }) => {
-  const renderedStudio = SortingStudioFunction(
-    STUDIO_SORT_OPTIONS[0],
-    STUDIO_LOCATION_OPTIONS[0],
-    '',
-    studios
-  )
+  const renderedStudio = MakingStudioList(studios)
     .slice(0, 6)
     .map(studio => {
       return (

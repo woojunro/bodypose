@@ -12,6 +12,7 @@ import { useQuery } from '@apollo/client';
 import { ALL_STUDIO_PHOTOS_QUERY } from '../../gql/queries/StudioPhotoQuery';
 import { randomPage } from '../../components/functions/Concept/randomPages';
 import shuffle from '../../components/functions/Shuffle';
+
 const genderOptions = [null, 'MALE', 'FEMALE', 'COUPLE'];
 
 const ConceptListScreen = () => {

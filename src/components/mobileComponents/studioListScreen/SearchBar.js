@@ -22,7 +22,8 @@ export const SearchBar = ({ onSearchSubmit }) => {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [term, openSearch]);
+  }, [term, openSearch, onSearchSubmit]);
+
   return (
     <div className="searchField">
       {openSearch ? (

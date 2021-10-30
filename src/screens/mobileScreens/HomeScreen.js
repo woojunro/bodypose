@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import HeaderM from '../../components/mobileComponents/HeaderM';
 import AdTapCarousel from '../../components/mobileComponents/homeScreen/AdTabCarousel';
 import MainCardScrollView from '../../components/mobileComponents/homeScreen/MainCardScrollView';
@@ -113,10 +113,6 @@ const HomeScreen = () => {
     noticesError ||
     studioError ||
     articlesError;
-
-  useEffect(() => {
-    document.body.style.overflow = 'auto';
-  }, []);
 
   return (
     <div>

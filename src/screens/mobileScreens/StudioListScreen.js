@@ -1,6 +1,7 @@
+import './StudioListScreen.css';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import React, { useState, useEffect } from 'react';
-import SortingStudioFunction from '../../components/functions/Studio/SortingStudioFunc';
+import { MakingStudioList } from '../../components/functions/Studio/MakingStudioList';
 import BottomNavigation from '../../components/mobileComponents/BottomNavigation';
 import { SearchBar } from '../../components/mobileComponents/studioListScreen/SearchBar';
 import SortButton from '../../components/mobileComponents/studioListScreen/SortButton';
@@ -11,77 +12,52 @@ import {
 import StudioListView from '../../components/mobileComponents/studioListScreen/StudioListView';
 import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
-import './StudioListScreen.css';
 import LocationSelect from '../../components/mobileComponents/studioListScreen/LocationSelect';
-import { StudioLocationVar } from '../../apollo';
-// import { getAdressByCoords } from '../../components/functions/GeoLocation';
-// import LoadingIcon from '../../components/mobileComponents/conceptListScreen/LoadingIcon';
+import {
+  StudioListVar,
+  StudioLocationVar,
+  StudioSortByVar,
+} from '../../apollo';
+import SortingStudioFunction from '../../components/functions/Studio/SortingStudioFunction';
+import PullToRefresh from '../../components/mobileComponents/PullToRefresh';
 
 const StudioListScreen = () => {
-  const { data, loading, error } = useQuery(ALL_STUDIOS_QUERY);
+  const { data, loading, error, refetch } = useQuery(ALL_STUDIOS_QUERY);
   const [isSortByOpen, setIsSortByOpen] = useState(false);
   const [isLocationByOpen, setIsLocationByOpen] = useState(false);
-  const [sortBy, setSortBy] = useState(STUDIO_SORT_OPTIONS[0]);
+  const sortBy = useReactiveVar(StudioSortByVar);
   const locationBy = useReactiveVar(StudioLocationVar);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [studios, setStudios] = useState([]);
-  // const [geo, setGeo] = useState(addr);
-  // const [isLoadingGPS, setIsLoadingGPS] = useState(false);
-
-  //현재 좌표
-  // getLocation(setLocation);
-
-  // useEffect(() => {
-  //   if (declineGPS) {
-  //     setIsLoadingGPS(false);
-  //   } else if (!geo) {
-  //     setIsLoadingGPS(true);
-  //     getAdressByCoords(setGeo, setDeclineGPS, setIsLoadingGPS);
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   //로케이션이 불려왔으면.
-  //   if (geo) {
-  //     setAddr(geo);
-  //     if (geo.startsWith('서울')) {
-  //       setLocationBy(STUDIO_LOCATION_OPTIONS[1]);
-  //     } else if (geo.startsWith('경기')) {
-  //       setLocationBy(STUDIO_LOCATION_OPTIONS[2]);
-  //     } else if (geo.startsWith('부산')) {
-  //       setLocationBy(STUDIO_LOCATION_OPTIONS[2]);
-  //     } else if (geo.startsWith('대구')) {
-  //       setLocationBy(STUDIO_LOCATION_OPTIONS[3]);
-  //     } else if (geo.startsWith('천안')) {
-  //       setLocationBy(STUDIO_LOCATION_OPTIONS[4]);
-  //     }
-  //   }
-  // }, [geo]);
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const studios = useReactiveVar(StudioListVar);
 
   useEffect(() => {
-    if (data && locationBy) {
-      setStudios(
-        SortingStudioFunction(
-          sortBy,
-          locationBy,
-          searchTerm,
-          data.allStudios.studios || []
-        )
-      );
+    if (studios.length === 0) {
+      StudioListVar(MakingStudioList(data?.allStudios?.studios || []));
     }
-  }, [sortBy, locationBy, searchTerm]);
+  }, [studios, data]);
 
   useEffect(() => {
     document.body.style.overflow =
       isSortByOpen || isLocationByOpen ? 'hidden' : 'auto';
   }, [isSortByOpen, isLocationByOpen]);
 
+  const studioList = locationBy
+    ? SortingStudioFunction(studios, sortBy, locationBy, searchKeyword)
+    : [];
+
+  const handleRefresh = async () => {
+    const { data } = await refetch();
+    if (data?.allStudios?.ok) {
+      StudioListVar(MakingStudioList(data?.allStudios?.studios || []));
+    }
+  };
+
   return (
     <div className="studioListScreen">
       <div>
         <div className="header">
           <span className="headerTitle">스튜디오</span>
-          <SearchBar onSearchSubmit={setSearchTerm} />
+          <SearchBar onSearchSubmit={setSearchKeyword} />
         </div>
         <div style={{ height: '50px' }} />
       </div>
@@ -104,7 +80,7 @@ const StudioListScreen = () => {
                 close={() => setIsSortByOpen(false)}
                 closeAnother={() => setIsLocationByOpen(false)}
                 options={STUDIO_SORT_OPTIONS}
-                setOption={setSortBy}
+                setOption={StudioSortByVar}
                 selectedOption={sortBy}
               />
               <SortButton
@@ -118,7 +94,12 @@ const StudioListScreen = () => {
               />
             </div>
           </div>
-          <StudioListView studioList={studios} selectedLocation={locationBy} />
+          <PullToRefresh onRefresh={handleRefresh}>
+            <StudioListView
+              studioList={studioList}
+              selectedLocation={locationBy}
+            />
+          </PullToRefresh>
         </>
       ) : (
         <LocationSelect setStudiosLocation={StudioLocationVar} />
