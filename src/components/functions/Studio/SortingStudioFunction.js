@@ -32,7 +32,7 @@ const SortingStudioFunction = (
 
   if (searchKeyword.length > 0) {
     sortedStudio = sortedStudio.filter(studio =>
-      studio.name.includes(searchKeyword.toLowerCase())
+      studio.name.toLowerCase().includes(searchKeyword.toLowerCase())
     );
   }
 
