@@ -19,6 +19,19 @@ export const StudioLocationVar = makeVar(null);
 export const StudioSortByVar = makeVar(STUDIO_SORT_OPTIONS[0]);
 export const StudioListVar = makeVar([]);
 
+// 컨셉북 (0 ~ 10000 정수)
+export const ConceptBookInitialPageVar = makeVar(-1);
+export const ConceptBookRandomSeedVar = makeVar(
+  Math.floor(Math.random() * 10001)
+);
+export const ConceptBookPageListVar = makeVar(new Set());
+export const ConceptBookGenderVar = makeVar(null);
+export const ConceptBookConceptsVar = makeVar({
+  bgConcept: [],
+  costumeConcept: [],
+  objectConcept: [],
+});
+
 const httpLink = createHttpLink({
   uri: `${BASE_URL}/graphql`,
   credentials: 'include',

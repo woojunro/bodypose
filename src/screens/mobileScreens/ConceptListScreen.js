@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import BottomNavigation from '../../components/mobileComponents/BottomNavigation';
 import TopNavigator from '../../components/mobileComponents/conceptListScreen/TopNavigator';
+import PullToRefresh from '../../components/mobileComponents/PullToRefresh';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ConceptListCard from '../../components/mobileComponents/conceptListScreen/ConceptListCard';
 import ConceptModal from '../../components/mobileComponents/conceptListScreen/ConceptModal';
@@ -8,53 +9,64 @@ import SelectionModal from '../../components/mobileComponents/conceptListScreen/
 import './ConceptListScreen.css';
 import LoadingIcon from '../../components/mobileComponents/conceptListScreen/LoadingIcon';
 import { FaSlidersH } from 'react-icons/fa';
-import { useQuery } from '@apollo/client';
-import { ALL_STUDIO_PHOTOS_QUERY } from '../../gql/queries/StudioPhotoQuery';
-import { randomPage } from '../../components/functions/Concept/randomPages';
+import { useQuery, useReactiveVar } from '@apollo/client';
+import { GET_CONCEPT_BOOK_PHOTOS } from '../../gql/queries/StudioPhotoQuery';
 import shuffle from '../../components/functions/Shuffle';
+import {
+  ConceptBookConceptsVar,
+  ConceptBookGenderVar,
+  ConceptBookInitialPageVar,
+  ConceptBookPageListVar,
+  ConceptBookRandomSeedVar,
+} from '../../apollo';
+import { normalRandom } from '../../components/functions/Concept/normalRandom';
 
 const genderOptions = [null, 'MALE', 'FEMALE', 'COUPLE'];
 
 const ConceptListScreen = () => {
-  const [initialPage, setInitialPage] = useState(1);
-  const [isPageInitialized, setIsPageInitialized] = useState(false);
-  const [pageList, setPageList] = useState([]);
-  const [selectedGender, setSelectedGender] = useState(genderOptions[0]);
-  const [selectedConcepts, setSelectedConcepts] = useState({
-    bgConcept: [],
-    costumeConcept: [],
-    objectConcept: [],
-  });
+  const randomSeed = useReactiveVar(ConceptBookRandomSeedVar);
+  const initialPage = useReactiveVar(ConceptBookInitialPageVar);
+  const pageList = useReactiveVar(ConceptBookPageListVar);
+  const selectedGender = useReactiveVar(ConceptBookGenderVar);
+  const selectedConcepts = useReactiveVar(ConceptBookConceptsVar);
   const [hasMore, setHasMore] = useState(true);
 
-  const { data, loading, fetchMore } = useQuery(ALL_STUDIO_PHOTOS_QUERY, {
-    fetchPolicy: 'network-only',
-    notifyOnNetworkStatusChange: true,
-    variables: {
-      page: initialPage,
-      gender: selectedGender,
-      backgroundConceptSlugs: selectedConcepts.bgConcept,
-      costumeConceptSlugs: selectedConcepts.costumeConcept,
-      objectConceptSlugs: selectedConcepts.objectConcept,
-    },
-    onCompleted: data => {
-      if (!data.allStudioPhotos.ok) {
-        setHasMore(false);
-      } else {
-        if (data.allStudioPhotos.totalPages <= 1) {
+  const { data, error, loading, fetchMore } = useQuery(
+    GET_CONCEPT_BOOK_PHOTOS,
+    {
+      notifyOnNetworkStatusChange: true,
+      variables: {
+        input: {
+          page: initialPage === -1 ? 1 : initialPage,
+          gender: selectedGender,
+          backgroundConceptSlugs: selectedConcepts.bgConcept,
+          costumeConceptSlugs: selectedConcepts.costumeConcept,
+          objectConceptSlugs: selectedConcepts.objectConcept,
+          randomSeed,
+        },
+      },
+      onCompleted: data => {
+        const { ok, totalPages } = data.conceptBookPhotos;
+        if (!ok) {
           setHasMore(false);
         } else {
-          if (!isPageInitialized) {
-            const newPage = randomPage(data.allStudioPhotos.totalPages - 1);
-            setInitialPage(newPage);
-            setPageList([newPage]);
-            setIsPageInitialized(true);
+          if (totalPages <= 1) {
+            setHasMore(false);
+          } else {
+            if (initialPage === -1) {
+              let newPage = 0;
+              while (newPage < 1 || newPage > totalPages) {
+                newPage = normalRandom();
+              }
+              ConceptBookInitialPageVar(newPage);
+              ConceptBookPageListVar(new Set([newPage]));
+            }
           }
         }
-      }
-    },
-    onError: () => setHasMore(false),
-  });
+      },
+      onError: () => setHasMore(false),
+    }
+  );
 
   const [isSelectionOpen, setIsSelectionOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -73,7 +85,7 @@ const ConceptListScreen = () => {
   };
 
   const handleConcepts = object => {
-    setSelectedConcepts(object);
+    ConceptBookConceptsVar(object);
   };
 
   useEffect(() => {
@@ -82,59 +94,65 @@ const ConceptListScreen = () => {
   }, [isSelectionOpen, isModalOpen]);
 
   useEffect(() => {
-    setInitialPage(1);
-    setIsPageInitialized(false);
+    ConceptBookInitialPageVar(-1);
+    ConceptBookPageListVar(new Set());
   }, [selectedConcepts, selectedGender]);
 
   const fetchMoreData = () => {
-    if (!data || !hasMore) {
+    if (!hasMore || error) {
       return;
     }
-    if (!data.allStudioPhotos) return;
 
-    if (pageList.length >= data.allStudioPhotos.totalPages) {
+    const totalPages = data?.conceptBookPhotos?.totalPages;
+    if (!totalPages) return;
+
+    if (pageList.size >= totalPages) {
       setHasMore(false);
       return;
     }
 
     let newPage;
     for (;;) {
-      newPage = randomPage(data.allStudioPhotos.totalPages);
-      if (!pageList.includes(newPage)) break;
+      newPage = normalRandom();
+      if (newPage > totalPages || pageList.has(newPage)) {
+        // continue
+      } else break;
     }
 
     fetchMore({
       variables: {
-        page: newPage,
-        gender: selectedGender,
-        backgroundConceptSlugs: selectedConcepts.bgConcept,
-        costumeConceptSlugs: selectedConcepts.costumeConcept,
-        objectConceptSlugs: selectedConcepts.objectConcept,
+        input: {
+          page: newPage,
+          gender: selectedGender,
+          backgroundConceptSlugs: selectedConcepts.bgConcept,
+          costumeConceptSlugs: selectedConcepts.costumeConcept,
+          objectConceptSlugs: selectedConcepts.objectConcept,
+          randomSeed,
+        },
       },
       updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult?.allStudioPhotos.photos) return prev;
+        if (!fetchMoreResult?.conceptBookPhotos.photos) return prev;
         return Object.assign({}, prev, {
           ...prev,
-          allStudioPhotos: {
-            ...prev.allStudioPhotos,
+          conceptBookPhotos: {
+            ...prev.conceptBookPhotos,
             photos: [
-              ...prev.allStudioPhotos.photos,
-              ...shuffle(fetchMoreResult.allStudioPhotos.photos),
+              ...prev.conceptBookPhotos.photos,
+              ...shuffle(fetchMoreResult.conceptBookPhotos.photos),
             ],
           },
         });
       },
     });
 
-    setPageList([...pageList, newPage]);
+    ConceptBookPageListVar(new Set([...Array.from(pageList), newPage]));
   };
 
   useEffect(() => {
-    if (!data || !data.allStudioPhotos || !data.allStudioPhotos.photos) {
-      return;
-    }
-
-    if (selectedPhotoNum >= data.allStudioPhotos.photos.length - 3) {
+    if (
+      selectedPhotoNum >=
+      (data?.conceptBookPhotos?.photos?.length || Number.POSITIVE_INFINITY) - 3
+    ) {
       fetchMoreData();
     }
   }, [selectedPhotoNum]);
@@ -150,7 +168,6 @@ const ConceptListScreen = () => {
               onClick={() => setIsSelectionOpen(!isSelectionOpen)}
             >
               <span className="sortIconText">필터</span>
-
               <FaSlidersH />
             </span>
           </div>
@@ -158,49 +175,52 @@ const ConceptListScreen = () => {
         </div>
         {isSelectionOpen ? (
           <SelectionModal
-            close={() => {
-              setIsSelectionOpen(false);
-            }}
+            close={() => setIsSelectionOpen(false)}
             selectedBgConcepts={selectedConcepts.bgConcept}
             selectedCostumeConcepts={selectedConcepts.costumeConcept}
             selectedObjectConcepts={selectedConcepts.objectConcept}
             setSelection={handleConcepts}
-            setPageList={setPageList}
             setHasMore={setHasMore}
           />
         ) : null}
         <TopNavigator
           options={genderOptions}
           selectedGender={selectedGender}
-          setGender={setSelectedGender}
+          setGender={ConceptBookGenderVar}
           setHasMore={setHasMore}
         />
-        <InfiniteScroll
-          dataLength={data?.allStudioPhotos?.photos?.length || 0}
-          next={fetchMoreData}
-          hasMore={hasMore}
-          loader={<LoadingIcon />}
-          endMessage={
-            <div className="endMessageContainer">
-              <div>모든 사진을 불러왔습니다.</div>
-            </div>
-          }
+        <PullToRefresh
+          onRefresh={async () => {
+            ConceptBookRandomSeedVar(Math.floor(Math.random() * 10001));
+            ConceptBookInitialPageVar(-1);
+            ConceptBookPageListVar(new Set());
+            setHasMore(true);
+          }}
         >
-          <div className="totalConcept">
-            {(data?.allStudioPhotos?.photos || []).map((concept, idx) => (
-              <ConceptListCard
-                key={`concept-list-${concept.id}-${idx}`}
-                conceptNum={idx}
-                src={concept.thumbnailUrl}
-                setThisPhoto={() => handlePhotoNum(idx)}
-                openModal={openModal}
-              />
-            ))}
-            {!data?.allStudioPhotos?.photos
-              ? null
-              : data.allStudioPhotos.photos.length % 3 === 0
-              ? null
-              : [...Array(3 - (data.allStudioPhotos.photos.length % 3))].map(
+          <InfiniteScroll
+            dataLength={data?.conceptBookPhotos?.photos?.length || 0}
+            next={fetchMoreData}
+            hasMore={hasMore}
+            loader={<LoadingIcon />}
+            endMessage={
+              <div className="endMessageContainer">
+                <div>모든 사진을 불러왔습니다.</div>
+              </div>
+            }
+          >
+            <div className="totalConcept">
+              {(data?.conceptBookPhotos?.photos || []).map((concept, idx) => (
+                <ConceptListCard
+                  key={`concept-book-photo-${concept.id}-${idx}`}
+                  conceptNum={idx}
+                  src={concept.thumbnailUrl}
+                  setThisPhoto={() => handlePhotoNum(idx)}
+                  openModal={openModal}
+                />
+              ))}
+              {data?.conceptBookPhotos?.photos &&
+                data.conceptBookPhotos.photos.length % 3 !== 0 &&
+                [...Array(3 - (data.conceptBookPhotos.photos.length % 3))].map(
                   (_, idx) => (
                     <div
                       key={`concept-blank-${idx}`}
@@ -208,20 +228,21 @@ const ConceptListScreen = () => {
                     />
                   )
                 )}
-          </div>
-        </InfiniteScroll>
-        {isModalOpen ? (
+            </div>
+          </InfiniteScroll>
+        </PullToRefresh>
+        {isModalOpen && (
           <ConceptModal
             close={closeModal}
-            id={data.allStudioPhotos.photos[selectedPhotoNum].id}
+            id={data.conceptBookPhotos.photos[selectedPhotoNum].id}
             setThisPhoto={handlePhotoNum}
             selectedPhotoNum={selectedPhotoNum}
             isFinalPhoto={
-              selectedPhotoNum >= data.allStudioPhotos.photos.length - 1
+              selectedPhotoNum >= data.conceptBookPhotos.photos.length - 1
             }
             whileFetching={loading}
           />
-        ) : null}
+        )}
         <BottomNavigation pageName="concepts" />
       </div>
     </div>

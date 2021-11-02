@@ -63,7 +63,7 @@ const Modal = ({
         },
       },
     });
-  }, [id]);
+  }, [id, exposeOriginalStudioPhoto]);
 
   //뒤로가기 기능.
   window.addEventListener('popstate', function (e) {

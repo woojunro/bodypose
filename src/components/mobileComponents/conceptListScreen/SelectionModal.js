@@ -10,7 +10,6 @@ const Modal = ({
   selectedBgConcepts,
   selectedCostumeConcepts,
   selectedObjectConcepts,
-  setPageList,
   setHasMore,
 }) => {
   const [selectedConcepts, setSelectedConcepts] = useState({
@@ -65,9 +64,10 @@ const Modal = ({
                           key={`filter-${option.slug}`}
                           className="selectedOptionContainer"
                           onClick={() => {
-                            const newBgConcept = selectedConcepts.bgConcept.filter(
-                              bg => option.slug !== bg
-                            );
+                            const newBgConcept =
+                              selectedConcepts.bgConcept.filter(
+                                bg => option.slug !== bg
+                              );
                             setSelectedConcepts({
                               ...selectedConcepts,
                               bgConcept: newBgConcept,
@@ -123,9 +123,10 @@ const Modal = ({
                           key={`filter-${option.slug}`}
                           className="selectedOptionContainer"
                           onClick={() => {
-                            const newCosConcept = selectedConcepts.costumeConcept.filter(
-                              cos => option.slug !== cos
-                            );
+                            const newCosConcept =
+                              selectedConcepts.costumeConcept.filter(
+                                cos => option.slug !== cos
+                              );
                             setSelectedConcepts({
                               ...selectedConcepts,
                               costumeConcept: newCosConcept,
@@ -181,9 +182,10 @@ const Modal = ({
                           key={`filter-${option.slug}`}
                           className="selectedOptionContainer"
                           onClick={() => {
-                            const newObjConcept = selectedConcepts.objectConcept.filter(
-                              obj => option.slug !== obj
-                            );
+                            const newObjConcept =
+                              selectedConcepts.objectConcept.filter(
+                                obj => option.slug !== obj
+                              );
                             setSelectedConcepts({
                               ...selectedConcepts,
                               objectConcept: newObjConcept,
@@ -218,7 +220,6 @@ const Modal = ({
                   className="selectCompleteButton"
                   onClick={() => {
                     setSelection(selectedConcepts);
-                    setPageList([1]);
                     setHasMore(true);
                     close();
                   }}
