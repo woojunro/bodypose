@@ -1,5 +1,5 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 import {
   CommonError,
   UNEXPECTED_ERROR,
@@ -9,12 +9,13 @@ import { MagazineService } from 'src/magazine/magazine.service';
 import { PhotosService } from 'src/photos/photos.service';
 import { StudiosService } from 'src/studios/studios.service';
 import { User } from 'src/users/entities/user.entity';
-import { Repository } from 'typeorm';
+import { Connection, Repository } from 'typeorm';
 import {
   ContactStudioInput,
   StudioContactType,
 } from './dtos/contact-studio.dto';
 import { ExposeOriginalStudioPhotoInput } from './dtos/expose-original-studio-photo.dto';
+import { GetStatsInput, GetStatsOutput, Stat, StatType } from './dtos/stat.dto';
 import { ViewArticleInput } from './dtos/view-article.dto';
 import { ViewStudioInfoInput } from './dtos/view-studio-info.dto';
 import { LogArticleView } from './entities/log-article-view.entity';
@@ -22,10 +23,14 @@ import { LogOriginalStudioPhoto } from './entities/log-original-studio-photo.ent
 import { LogStudioContact } from './entities/log-studio-contact.entity';
 import { LogStudioInfoView } from './entities/log-studio-info-view.entity';
 import { LogStudioReservation } from './entities/log-studio-reservation.entity';
+import { getWeeklyStatsSQLQuery } from './utils/weekly-stats-query.util';
 
 @Injectable()
 export class InsightsService {
   constructor(
+    @InjectConnection()
+    private readonly connection: Connection,
+
     @InjectRepository(LogOriginalStudioPhoto)
     private readonly logOriginalStudioPhotoRepository: Repository<LogOriginalStudioPhoto>,
 
@@ -50,6 +55,52 @@ export class InsightsService {
     @Inject(MagazineService)
     private readonly magazineService: MagazineService,
   ) {}
+
+  async getWeeklyStats(
+    user: User,
+    { studioSlug, type }: GetStatsInput,
+  ): Promise<GetStatsOutput> {
+    // authorization
+    const studio = await this.studiosService.checkIfStudioExistsBySlug(
+      studioSlug,
+    );
+    if (!studio) return CommonError('STUDIO_NOT_FOUND');
+    const valid = await this.studiosService.checkIfUserIsAdminOrOwner(
+      studio.id,
+      user,
+    );
+    if (!valid) return CommonError('INVALID');
+
+    // execute query
+    let repo: Repository<any>;
+    switch (type) {
+      case StatType.ORIGINAL_PHOTO_VIEW:
+        repo = this.logOriginalStudioPhotoRepository;
+        break;
+      case StatType.STUDIO_CONTACT:
+        repo = this.logStudioContactRepository;
+        break;
+      case StatType.STUDIO_INFO_VIEW:
+        repo = this.logStudioInfoViewRepository;
+        break;
+      case StatType.STUDIO_RESERVATION:
+        repo = this.logStudioReservationRepository;
+        break;
+      default:
+        throw new Error('Invalid stat type');
+    }
+
+    const tableName = repo.metadata.tableName;
+    const query = getWeeklyStatsSQLQuery(tableName);
+    const queryResult = await this.connection.query(query, [studio.id]);
+
+    const stats: Stat[] = queryResult.map(row => ({
+      datetime: new Date(row.week_beginning),
+      count: Number(row.count),
+    }));
+
+    return { ok: true, stats };
+  }
 
   async exposeOriginalStudioPhoto(
     user: User,
