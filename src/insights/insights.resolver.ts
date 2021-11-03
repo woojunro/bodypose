@@ -24,6 +24,16 @@ export class InsightsResolver {
     return this.insightsService.getWeeklyStats(user, input);
   }
 
+  // 통계 쿼리 (monthly)
+  @Query(returns => GetStatsOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
+  monthlyStats(
+    @CurrentUser() user: User,
+    @Args('input') input: GetStatsInput,
+  ): Promise<GetStatsOutput> {
+    return this.insightsService.getMonthlyStats(user, input);
+  }
+
   // 컨셉북에서 원본 사진 노출 (thumbnail 클릭)
   @Mutation(returns => CoreOutput)
   exposeOriginalStudioPhoto(

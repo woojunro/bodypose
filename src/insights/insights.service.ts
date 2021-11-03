@@ -7,6 +7,7 @@ import {
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { MagazineService } from 'src/magazine/magazine.service';
 import { PhotosService } from 'src/photos/photos.service';
+import { Studio } from 'src/studios/entities/studio.entity';
 import { StudiosService } from 'src/studios/studios.service';
 import { User } from 'src/users/entities/user.entity';
 import { Connection, Repository } from 'typeorm';
@@ -23,6 +24,7 @@ import { LogOriginalStudioPhoto } from './entities/log-original-studio-photo.ent
 import { LogStudioContact } from './entities/log-studio-contact.entity';
 import { LogStudioInfoView } from './entities/log-studio-info-view.entity';
 import { LogStudioReservation } from './entities/log-studio-reservation.entity';
+import { getMonthlyStatsSQLQuery } from './utils/monthly-stats-query.util';
 import { getWeeklyStatsSQLQuery } from './utils/weekly-stats-query.util';
 
 @Injectable()
@@ -56,22 +58,29 @@ export class InsightsService {
     private readonly magazineService: MagazineService,
   ) {}
 
-  async getWeeklyStats(
+  private async authorizeAccess(
     user: User,
-    { studioSlug, type }: GetStatsInput,
-  ): Promise<GetStatsOutput> {
-    // authorization
-    const studio = await this.studiosService.checkIfStudioExistsBySlug(
-      studioSlug,
-    );
-    if (!studio) return CommonError('STUDIO_NOT_FOUND');
-    const valid = await this.studiosService.checkIfUserIsAdminOrOwner(
-      studio.id,
-      user,
-    );
-    if (!valid) return CommonError('INVALID');
+    studioSlug: string,
+  ): Promise<CoreOutput & { studio?: Studio }> {
+    try {
+      const studio = await this.studiosService.checkIfStudioExistsBySlug(
+        studioSlug,
+      );
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const valid = await this.studiosService.checkIfUserIsAdminOrOwner(
+        studio.id,
+        user,
+      );
+      if (!valid) return CommonError('INVALID');
 
-    // execute query
+      // authorized
+      return { ok: true, studio };
+    } catch (e) {
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  private getLoggingTableName(type: StatType): string {
     let repo: Repository<any>;
     switch (type) {
       case StatType.ORIGINAL_PHOTO_VIEW:
@@ -90,16 +99,61 @@ export class InsightsService {
         throw new Error('Invalid stat type');
     }
 
-    const tableName = repo.metadata.tableName;
-    const query = getWeeklyStatsSQLQuery(tableName);
-    const queryResult = await this.connection.query(query, [studio.id]);
+    return repo.metadata.tableName;
+  }
 
-    const stats: Stat[] = queryResult.map(row => ({
-      datetime: new Date(row.week_beginning),
-      count: Number(row.count),
-    }));
+  async getWeeklyStats(
+    user: User,
+    { studioSlug, type }: GetStatsInput,
+  ): Promise<GetStatsOutput> {
+    try {
+      const { ok, error, studio } = await this.authorizeAccess(
+        user,
+        studioSlug,
+      );
+      if (!ok) return CommonError(error);
 
-    return { ok: true, stats };
+      const tableName = this.getLoggingTableName(type);
+      const query = getWeeklyStatsSQLQuery(tableName);
+      const queryResult = await this.connection.query(query, [studio.id]);
+
+      return {
+        ok: true,
+        stats: queryResult.map(row => ({
+          datetime: new Date(row.week_beginning),
+          count: Number(row.count),
+        })),
+      };
+    } catch (e) {
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getMonthlyStats(
+    user: User,
+    { studioSlug, type }: GetStatsInput,
+  ): Promise<GetStatsOutput> {
+    try {
+      const { ok, error, studio } = await this.authorizeAccess(
+        user,
+        studioSlug,
+      );
+      if (!ok) return CommonError(error);
+
+      const tableName = this.getLoggingTableName(type);
+      const query = getMonthlyStatsSQLQuery(tableName);
+      const queryResult = await this.connection.query(query, [studio.id]);
+
+      return {
+        ok: true,
+        stats: queryResult.map(row => ({
+          datetime: new Date(row.month_beginning),
+          count: Number(row.count),
+        })),
+      };
+    } catch (e) {
+      return UNEXPECTED_ERROR;
+    }
   }
 
   async exposeOriginalStudioPhoto(
