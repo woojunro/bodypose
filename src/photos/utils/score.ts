@@ -10,13 +10,13 @@ export const getConceptBookOrderScore = (
   const fragments: string[] = [];
 
   // newer photos
-  fragments.push(`log(4, ${studioPhotoAlias}.id)`);
+  fragments.push(`log(4, ${studioPhotoAlias}.id + 3)`);
 
   // division
   fragments.push(' / ');
 
   // a little more prob for studios with less photos (newer studios)
-  fragments.push(`log(3, ${studioAlias}.photoCount)`);
+  fragments.push(`log(3, ${studioAlias}.photoCount + 3)`);
 
   // scaling
   fragments.push(' / 100');
