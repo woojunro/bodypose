@@ -1,5 +1,5 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 import {
   CommonError,
   UNEXPECTED_ERROR,
@@ -7,14 +7,20 @@ import {
 import { CoreOutput } from 'src/common/dtos/output.dto';
 import { MagazineService } from 'src/magazine/magazine.service';
 import { PhotosService } from 'src/photos/photos.service';
+import { Studio } from 'src/studios/entities/studio.entity';
 import { StudiosService } from 'src/studios/studios.service';
 import { User } from 'src/users/entities/user.entity';
-import { Repository } from 'typeorm';
+import { Connection, Repository } from 'typeorm';
 import {
   ContactStudioInput,
   StudioContactType,
 } from './dtos/contact-studio.dto';
 import { ExposeOriginalStudioPhotoInput } from './dtos/expose-original-studio-photo.dto';
+import {
+  GetMonthlyTopStudioPhotosInput,
+  GetTopStudioPhotosOutput,
+} from './dtos/monthly-top-studio-photos.dto';
+import { GetStatsInput, GetStatsOutput, Stat, StatType } from './dtos/stat.dto';
 import { ViewArticleInput } from './dtos/view-article.dto';
 import { ViewStudioInfoInput } from './dtos/view-studio-info.dto';
 import { LogArticleView } from './entities/log-article-view.entity';
@@ -22,10 +28,19 @@ import { LogOriginalStudioPhoto } from './entities/log-original-studio-photo.ent
 import { LogStudioContact } from './entities/log-studio-contact.entity';
 import { LogStudioInfoView } from './entities/log-studio-info-view.entity';
 import { LogStudioReservation } from './entities/log-studio-reservation.entity';
+import { getMonthlyStatsSQLQuery } from './utils/monthly-stats-query.util';
+import {
+  getTopHeartStudioPhotosSQLQuery,
+  getTopOriginalViewStudioPhotosSQLQuery,
+} from './utils/top-studio-photos-query.util';
+import { getWeeklyStatsSQLQuery } from './utils/weekly-stats-query.util';
 
 @Injectable()
 export class InsightsService {
   constructor(
+    @InjectConnection()
+    private readonly connection: Connection,
+
     @InjectRepository(LogOriginalStudioPhoto)
     private readonly logOriginalStudioPhotoRepository: Repository<LogOriginalStudioPhoto>,
 
@@ -50,6 +65,153 @@ export class InsightsService {
     @Inject(MagazineService)
     private readonly magazineService: MagazineService,
   ) {}
+
+  private async authorizeAccess(
+    user: User,
+    studioSlug: string,
+  ): Promise<CoreOutput & { studio?: Studio }> {
+    try {
+      const studio = await this.studiosService.checkIfStudioExistsBySlug(
+        studioSlug,
+      );
+      if (!studio) return CommonError('STUDIO_NOT_FOUND');
+      const valid = await this.studiosService.checkIfUserIsAdminOrOwner(
+        studio.id,
+        user,
+      );
+      if (!valid) return CommonError('INVALID');
+
+      // authorized
+      return { ok: true, studio };
+    } catch (e) {
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  private getLoggingTableName(type: StatType): string {
+    let repo: Repository<any>;
+    switch (type) {
+      case StatType.ORIGINAL_PHOTO_VIEW:
+        repo = this.logOriginalStudioPhotoRepository;
+        break;
+      case StatType.STUDIO_CONTACT:
+        repo = this.logStudioContactRepository;
+        break;
+      case StatType.STUDIO_INFO_VIEW:
+        repo = this.logStudioInfoViewRepository;
+        break;
+      case StatType.STUDIO_RESERVATION:
+        repo = this.logStudioReservationRepository;
+        break;
+      default:
+        throw new Error('Invalid stat type');
+    }
+
+    return repo.metadata.tableName;
+  }
+
+  async getWeeklyStats(
+    user: User,
+    { studioSlug, type }: GetStatsInput,
+  ): Promise<GetStatsOutput> {
+    try {
+      const { ok, error, studio } = await this.authorizeAccess(
+        user,
+        studioSlug,
+      );
+      if (!ok) return CommonError(error);
+
+      const tableName = this.getLoggingTableName(type);
+      const query = getWeeklyStatsSQLQuery(tableName);
+      const queryResult = await this.connection.query(query, [studio.id]);
+
+      return {
+        ok: true,
+        stats: queryResult.map(row => ({
+          datetime: new Date(row.week_beginning),
+          count: Number(row.count),
+        })),
+      };
+    } catch (e) {
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getMonthlyStats(
+    user: User,
+    { studioSlug, type }: GetStatsInput,
+  ): Promise<GetStatsOutput> {
+    try {
+      const { ok, error, studio } = await this.authorizeAccess(
+        user,
+        studioSlug,
+      );
+      if (!ok) return CommonError(error);
+
+      const tableName = this.getLoggingTableName(type);
+      const query = getMonthlyStatsSQLQuery(tableName);
+      const queryResult = await this.connection.query(query, [studio.id]);
+
+      return {
+        ok: true,
+        stats: queryResult.map(row => ({
+          datetime: new Date(row.month_beginning),
+          count: Number(row.count),
+        })),
+      };
+    } catch (e) {
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getMonthlyTopOriginalViewStudioPhotos(
+    user: User,
+    { studioSlug, year, month }: GetMonthlyTopStudioPhotosInput,
+  ): Promise<GetTopStudioPhotosOutput> {
+    try {
+      const { ok, error, studio } = await this.authorizeAccess(
+        user,
+        studioSlug,
+      );
+      if (!ok) return CommonError(error);
+
+      const tableName = this.getLoggingTableName(StatType.ORIGINAL_PHOTO_VIEW);
+      const query = getTopOriginalViewStudioPhotosSQLQuery(tableName);
+      const params = [studio.id, year, month];
+      const queryResult = await this.connection.query(query, params);
+
+      return {
+        ok: true,
+        studioPhotos: queryResult.map(row => ({
+          id: Number(row.studio_photo_id),
+          count: Number(row.view_count),
+        })),
+      };
+    } catch (e) {
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getMonthlyTopHeartStudioPhotos(
+    user: User,
+    { studioSlug, year, month }: GetMonthlyTopStudioPhotosInput,
+  ): Promise<GetTopStudioPhotosOutput> {
+    const { ok, error, studio } = await this.authorizeAccess(user, studioSlug);
+    if (!ok) return CommonError(error);
+
+    const tableName = this.photosService.getStudioPhotoHeartTableName();
+    const query = getTopHeartStudioPhotosSQLQuery(tableName);
+    const params = [studio.id, year, month];
+    const queryResult = await this.connection.query(query, params);
+
+    return {
+      ok: true,
+      studioPhotos: queryResult.map(row => ({
+        id: Number(row.studio_photo_id),
+        count: Number(row.heart_count),
+      })),
+    };
+  }
 
   async exposeOriginalStudioPhoto(
     user: User,
