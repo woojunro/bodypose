@@ -29,7 +29,10 @@ import { LogStudioContact } from './entities/log-studio-contact.entity';
 import { LogStudioInfoView } from './entities/log-studio-info-view.entity';
 import { LogStudioReservation } from './entities/log-studio-reservation.entity';
 import { getMonthlyStatsSQLQuery } from './utils/monthly-stats-query.util';
-import { getTopOriginalViewStudioPhotosSQLQuery } from './utils/top-studio-photos-query.util';
+import {
+  getTopHeartStudioPhotosSQLQuery,
+  getTopOriginalViewStudioPhotosSQLQuery,
+} from './utils/top-studio-photos-query.util';
 import { getWeeklyStatsSQLQuery } from './utils/weekly-stats-query.util';
 
 @Injectable()
@@ -187,6 +190,27 @@ export class InsightsService {
     } catch (e) {
       return UNEXPECTED_ERROR;
     }
+  }
+
+  async getMonthlyTopHeartStudioPhotos(
+    user: User,
+    { studioSlug, year, month }: GetMonthlyTopStudioPhotosInput,
+  ): Promise<GetTopStudioPhotosOutput> {
+    const { ok, error, studio } = await this.authorizeAccess(user, studioSlug);
+    if (!ok) return CommonError(error);
+
+    const tableName = this.photosService.getStudioPhotoHeartTableName();
+    const query = getTopHeartStudioPhotosSQLQuery(tableName);
+    const params = [studio.id, year, month];
+    const queryResult = await this.connection.query(query, params);
+
+    return {
+      ok: true,
+      studioPhotos: queryResult.map(row => ({
+        id: Number(row.studio_photo_id),
+        count: Number(row.heart_count),
+      })),
+    };
   }
 
   async exposeOriginalStudioPhoto(

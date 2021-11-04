@@ -51,6 +51,16 @@ export class InsightsResolver {
     );
   }
 
+  // 찜 상위 사진 id 목록 (monthly)
+  @Query(returns => GetTopStudioPhotosOutput)
+  @Roles(UserType.ADMIN, UserType.STUDIO)
+  monthlyTopHeartStudioPhotos(
+    @CurrentUser() user: User,
+    @Args('input') input: GetMonthlyTopStudioPhotosInput,
+  ): Promise<GetTopStudioPhotosOutput> {
+    return this.insightsService.getMonthlyTopHeartStudioPhotos(user, input);
+  }
+
   // 컨셉북에서 원본 사진 노출 (thumbnail 클릭)
   @Mutation(returns => CoreOutput)
   exposeOriginalStudioPhoto(

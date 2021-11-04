@@ -18,4 +18,5 @@ export const getWeeklyStatsSQLQuery = (tableName: string) => `
     week_beginning
   ORDER BY
     week_beginning
+  ;
 `;
