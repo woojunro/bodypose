@@ -16,6 +16,10 @@ import {
   StudioContactType,
 } from './dtos/contact-studio.dto';
 import { ExposeOriginalStudioPhotoInput } from './dtos/expose-original-studio-photo.dto';
+import {
+  GetMonthlyTopStudioPhotosInput,
+  GetTopStudioPhotosOutput,
+} from './dtos/monthly-top-studio-photos.dto';
 import { GetStatsInput, GetStatsOutput, Stat, StatType } from './dtos/stat.dto';
 import { ViewArticleInput } from './dtos/view-article.dto';
 import { ViewStudioInfoInput } from './dtos/view-studio-info.dto';
@@ -25,6 +29,7 @@ import { LogStudioContact } from './entities/log-studio-contact.entity';
 import { LogStudioInfoView } from './entities/log-studio-info-view.entity';
 import { LogStudioReservation } from './entities/log-studio-reservation.entity';
 import { getMonthlyStatsSQLQuery } from './utils/monthly-stats-query.util';
+import { getTopOriginalViewStudioPhotosSQLQuery } from './utils/top-studio-photos-query.util';
 import { getWeeklyStatsSQLQuery } from './utils/weekly-stats-query.util';
 
 @Injectable()
@@ -149,6 +154,34 @@ export class InsightsService {
         stats: queryResult.map(row => ({
           datetime: new Date(row.month_beginning),
           count: Number(row.count),
+        })),
+      };
+    } catch (e) {
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getMonthlyTopOriginalViewStudioPhotos(
+    user: User,
+    { studioSlug, year, month }: GetMonthlyTopStudioPhotosInput,
+  ): Promise<GetTopStudioPhotosOutput> {
+    try {
+      const { ok, error, studio } = await this.authorizeAccess(
+        user,
+        studioSlug,
+      );
+      if (!ok) return CommonError(error);
+
+      const tableName = this.getLoggingTableName(StatType.ORIGINAL_PHOTO_VIEW);
+      const query = getTopOriginalViewStudioPhotosSQLQuery(tableName);
+      const params = [studio.id, year, month];
+      const queryResult = await this.connection.query(query, params);
+
+      return {
+        ok: true,
+        studioPhotos: queryResult.map(row => ({
+          id: Number(row.studio_photo_id),
+          count: Number(row.view_count),
         })),
       };
     } catch (e) {
