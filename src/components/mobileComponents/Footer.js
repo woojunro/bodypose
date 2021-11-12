@@ -58,6 +58,7 @@ const Footer = () => {
           />
           <div>에프먼스</div>
           <div>대표 : 김재승</div>
+          <div>사업자등록번호 : 405-25-01435</div>
           <div className="contacts">
             <div className="contactText">Contact :</div>
             <div
