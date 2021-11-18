@@ -78,8 +78,9 @@ const Footer = () => {
             >
               help@fmonth.com
             </div>
-            <div className="contactDivider">|</div>
-            <div>010-6464-6301</div>
+          </div>
+          <div className="contacts">
+            <div className="contactText">고객센터 연락처 : 010-6464-6301</div>
           </div>
         </div>
         <div className="footerRightContainer">
