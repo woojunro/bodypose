@@ -78,6 +78,8 @@ const Footer = () => {
             >
               help@fmonth.com
             </div>
+            <div className="contactDivider">|</div>
+            <div>010-6464-6301</div>
           </div>
         </div>
         <div className="footerRightContainer">
