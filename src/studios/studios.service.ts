@@ -312,7 +312,10 @@ export class StudiosService {
     }
   }
 
-  async checkIfUserIsAdminOrOwner(id: number, user: User): Promise<boolean> {
+  async checkIfUserIsAdminOrOwner(
+    studioId: number,
+    user: User,
+  ): Promise<boolean> {
     switch (user?.type) {
       case UserType.ADMIN:
         return true;
@@ -321,7 +324,7 @@ export class StudiosService {
           .createQueryBuilder('s')
           .select('s.id')
           .leftJoin('s.partner', 'p')
-          .where('s.id = :id', { id })
+          .where('s.id = :studioId', { studioId })
           .andWhere('p.userId = :userId', { userId: user.id })
           .getOne();
         return Boolean(studio);

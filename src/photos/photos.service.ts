@@ -798,6 +798,10 @@ export class PhotosService {
     );
   }
 
+  getStudioPhotoHeartTableName(): string {
+    return this.usersHeartStudioPhotosRepository.metadata.tableName;
+  }
+
   async heartStudioPhoto(
     user: User,
     { id }: HeartStudioPhotoInput,
