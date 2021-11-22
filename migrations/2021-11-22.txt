@@ -1,0 +1,1 @@
+query: ALTER TABLE `article` MODIFY `title` varchar(30) NOT NULL

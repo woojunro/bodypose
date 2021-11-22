@@ -9,9 +9,9 @@ import { Editor } from './editor.entity';
 @Entity()
 @ObjectType()
 export class Article extends CoreEntity {
-  @Column({ length: 20 })
+  @Column({ length: 30 })
   @Field(type => String)
-  @Length(1, 20)
+  @Length(1, 30)
   title: string;
 
   @ManyToMany(relation => ArticleCategory)
