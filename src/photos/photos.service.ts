@@ -112,7 +112,13 @@ export class PhotosService {
         .leftJoinAndSelect('photo.costumeConcepts', 'costumeConcept')
         .leftJoinAndSelect('photo.objectConcepts', 'objectConcept')
         .where('photo.id = :photoId', { photoId: id });
-      query = this.filterStudioPhotoQueryByUser(query, user);
+
+      // STUDIO, ADMIN: every access
+      // others: only public
+      if (user?.type !== UserType.STUDIO && user?.type !== UserType.ADMIN) {
+        query = this.filterStudioPhotoQueryByUser(query, user);
+      }
+
       const photo = await query.getOne();
       if (!photo) return CommonError('STUDIO_PHOTO_NOT_FOUND');
       return { ok: true, photo };
