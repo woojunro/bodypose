@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import HeaderM from '../../components/mobileComponents/HeaderM';
 import AdTapCarousel from '../../components/mobileComponents/homeScreen/AdTabCarousel';
 import MainCardScrollView from '../../components/mobileComponents/homeScreen/MainCardScrollView';
