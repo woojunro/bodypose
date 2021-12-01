@@ -25,6 +25,7 @@ import { randomPage } from '../../components/functions/Concept/randomPages';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import HomeColumnList from '../../components/mobileComponents/homeScreen/home-column-list';
 import { GET_ARTICLES } from '../../gql/queries/ArticlesQuery';
+import './HomeScreen.css';
 
 const take = 8;
 

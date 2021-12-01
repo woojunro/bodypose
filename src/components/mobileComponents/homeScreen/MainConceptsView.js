@@ -20,17 +20,21 @@ const MainConceptsView = ({ ConceptsList, semiTitle }) => {
     });
   if (!isWide) {
     return (
-      <div className="mainConcpetsView">
-        <SemiTitle title={semiTitle} pageTo="/concepts" />
-        <ul> {renderedConceptsList(ConceptsList.slice(0, 2))}</ul>
-        <ul> {renderedConceptsList(ConceptsList.slice(2, 4))}</ul>
+      <div className="mainContainer">
+        <div className="mainConcpetsView">
+          <SemiTitle title={semiTitle} pageTo="/concepts" />
+          <ul> {renderedConceptsList(ConceptsList.slice(0, 2))}</ul>
+          <ul> {renderedConceptsList(ConceptsList.slice(2, 4))}</ul>
+        </div>
       </div>
     );
   }
   return (
-    <div className="mainConcpetsView">
-      <SemiTitle title={semiTitle} pageTo="/concepts" />
-      <ul> {renderedConceptsList(ConceptsList.slice(0, 4))}</ul>
+    <div className="mainContainer">
+      <div className="mainConcpetsView">
+        <SemiTitle title={semiTitle} pageTo="/concepts" />
+        <ul> {renderedConceptsList(ConceptsList.slice(0, 4))}</ul>
+      </div>
     </div>
   );
 };

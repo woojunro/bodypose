@@ -7,7 +7,7 @@ const ColumnNavigator = ({ categoryId, setCategoryId, categories = [] }) => {
 
   const categoryList = [...categories]
     .sort((a, b) => a.order - b.order)
-    .filter(c => c.id === 4); // 촬영팁만
+    .filter(c => c.id === 4 || c.id === 1); // 촬영팁만
 
   return (
     <div className="column-navigator">

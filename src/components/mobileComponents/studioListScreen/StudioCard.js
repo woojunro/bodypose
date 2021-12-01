@@ -104,26 +104,27 @@ const StudioCard = ({
   };
 
   return (
-    <div className="totalContainer">
-      <div
-        className="studioCardContainer"
-        onClick={() => {
-          history.push({
-            pathname: `/studios/${name}`,
-            state: { previousPath: history.location.pathname },
-          });
-        }}
-      >
-        <div className="studioImg">
-          <img src={mainPhoto} alt={title} />
-        </div>
-        <div className="cardInfo">
-          <div className="upper">
-            <div className="firstLine">
-              <span>{title}</span>
-            </div>
-            <div className="location">{address}</div>
-            {/* <div className="thirdLine">
+    <div className="studioCardTotalContainer">
+      <div className="totalContainer">
+        <div
+          className="studioCardContainer"
+          onClick={() => {
+            history.push({
+              pathname: `/studios/${name}`,
+              state: { previousPath: history.location.pathname },
+            });
+          }}
+        >
+          <div className="studioImg">
+            <img src={mainPhoto} alt={title} />
+          </div>
+          <div className="cardInfo">
+            <div className="upper">
+              <div className="firstLine">
+                <span>{title}</span>
+              </div>
+              <div className="location">{address}</div>
+              {/* <div className="thirdLine">
               <IoStar color="#FFD800" fontSize="17px" />
               {review === 0 ? (
                 <span className="noReviewSpan">리뷰 없음</span>
@@ -134,38 +135,39 @@ const StudioCard = ({
                 </>
               )}
             </div> */}
-          </div>
-          <div className="lower">
-            <div className="eventLine">
-              {isEvent ? (
-                <span>
-                  <span className="percent">{percent}</span>
-                  <span className="originalPrice">{originalPrice}</span>
-                </span>
-              ) : null}
             </div>
-            <div className="lastLine">
-              <span className="per">최저 가격</span>
-              <span className="price">
-                {price ? `${price.toLocaleString()}원~` : '문의'}
-              </span>
+            <div className="lower">
+              <div className="eventLine">
+                {isEvent ? (
+                  <span>
+                    <span className="percent">{percent}</span>
+                    <span className="originalPrice">{originalPrice}</span>
+                  </span>
+                ) : null}
+              </div>
+              <div className="lastLine">
+                <span className="per">최저 가격</span>
+                <span className="price">
+                  {price ? `${price.toLocaleString()}원~` : '문의'}
+                </span>
+              </div>
             </div>
           </div>
         </div>
+        {isHearted ? (
+          <IoHeart
+            onClick={ChangeHeart}
+            className="cardSelectedHeart"
+            fontSize="20px"
+          />
+        ) : (
+          <IoHeartOutline
+            onClick={ChangeHeart}
+            className="cardHeart"
+            fontSize="20px"
+          />
+        )}
       </div>
-      {isHearted ? (
-        <IoHeart
-          onClick={ChangeHeart}
-          className="cardSelectedHeart"
-          fontSize="20px"
-        />
-      ) : (
-        <IoHeartOutline
-          onClick={ChangeHeart}
-          className="cardHeart"
-          fontSize="20px"
-        />
-      )}
     </div>
   );
 };

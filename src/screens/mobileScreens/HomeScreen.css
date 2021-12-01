@@ -1,0 +1,9 @@
+.mainContainer {
+  /* background-color: white; */
+  /* border-top: var(--color-line) 1px solid;
+  border-bottom: var(--color-line) 1px solid; */
+
+  margin-top: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}

@@ -44,9 +44,11 @@ const SeeAll = () => {
   });
 
   return (
-    <div className="seeAll">
+    <div className="mainContainer">
       <div className="seeAllTitle">모아보기</div>
-      <ul>{renderedItems}</ul>
+      <div className="seeAll">
+        <ul>{renderedItems}</ul>
+      </div>
     </div>
   );
 };

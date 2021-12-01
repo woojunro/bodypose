@@ -4,4 +4,5 @@
 }
 .adTap {
   cursor: pointer;
+  border-bottom: var(--color-line) 1px solid;
 }

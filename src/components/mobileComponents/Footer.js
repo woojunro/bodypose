@@ -2,6 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { PRIVACY_NOTICE_ID, TEMRS_NOTICE_ID } from '../../constants/noticeIds';
 import './Footer.css';
+import partners from '../../materials/partners.png';
 
 const Footer = () => {
   const openInNewTab = url => {
@@ -33,19 +34,12 @@ const Footer = () => {
           개인정보처리방침
         </div>
         <div className="footerText">|</div>
-        <div
-          className="footerText"
-          onClick={() => openInNewTab('https://pf.kakao.com/_xbxoHEs')}
-        >
-          고객센터
-        </div>
-        <div className="footerText">|</div>
 
         <div
           className="footerText"
-          onClick={() => openInNewTab('https://pf.kakao.com/_xbxoHEs')}
+          onClick={() => openInNewTab('https://partners.bodypose.co.kr')}
         >
-          입점문의
+          바디포즈 파트너스 입점문의
         </div>
       </div>
       <div className="footerInfo">

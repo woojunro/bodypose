@@ -6,6 +6,7 @@
   --color-chocolate: #1c1c1c;
   --color-loginGray: #afafaf;
   --color-heartColor: #ff5858;
+  --color-bgColor: #f9f9f9;
 }
 
 html {
@@ -27,6 +28,7 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: thin;
   scrollbar-color: lightgray transparent;
+  background-color: var(--color-bgColor);
 }
 
 [role='navigation'] {

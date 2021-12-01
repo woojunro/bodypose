@@ -1,13 +1,24 @@
+.studioCardTotalContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
 .totalContainer {
   position: relative;
   flex: 0 0 auto;
+  width: 98%;
   min-width: 320px;
   display: block;
   cursor: pointer;
   padding-top: 10px;
-  padding-bottom: 10px;
+  padding-bottom: 0px;
 }
 .studioCardContainer {
+  box-shadow: 1px 2px 6px lightgray;
+  background-color: white;
+  border-radius: 5px;
+  padding: 15px 0 15px 0;
   display: flex;
   justify-content: space-around;
   align-items: center;

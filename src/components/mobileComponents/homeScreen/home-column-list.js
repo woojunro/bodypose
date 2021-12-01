@@ -9,7 +9,7 @@ const HomeColumnList = ({ columns = [] }) => {
     return <ColumnListElement columnData={column} key={column.id} />;
   });
   return (
-    <div>
+    <div className="mainContainer">
       <SemiTitle title="매거진" pageTo="/magazine" />
       {RenderedColumns}
     </div>

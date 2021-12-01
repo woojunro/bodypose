@@ -22,7 +22,7 @@ const MainCardScrollView = ({ studios }) => {
     });
 
   return (
-    <div>
+    <div className="mainContainer">
       <SemiTitle title="추천 스튜디오" pageTo="/studios" />
       <span className="mainScrollView">
         <ul>
