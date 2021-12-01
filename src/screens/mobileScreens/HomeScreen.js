@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import HeaderM from '../../components/mobileComponents/HeaderM';
 import AdTapCarousel from '../../components/mobileComponents/homeScreen/AdTabCarousel';
 import MainCardScrollView from '../../components/mobileComponents/homeScreen/MainCardScrollView';
+import NewStudioScrollView from '../../components/mobileComponents/homeScreen/NewStudioScrollView';
 import SeeAll from '../../components/mobileComponents/homeScreen/SeeAll';
 import BottomNavigation from '../../components/mobileComponents/BottomNavigation';
 import {
@@ -23,6 +24,7 @@ import {
 } from '../../constants/numOfPhotos';
 import { randomPage } from '../../components/functions/Concept/randomPages';
 import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
+import { NEW_STUDIOS_QUERY } from '../../gql/queries/NewStudiosQuery';
 import HomeColumnList from '../../components/mobileComponents/homeScreen/home-column-list';
 import { GET_ARTICLES } from '../../gql/queries/ArticlesQuery';
 import './HomeScreen.css';
@@ -30,6 +32,10 @@ import './HomeScreen.css';
 const take = 8;
 
 const HomeScreen = () => {
+  const [createdAt, setCreatedAt] = useState(
+    new Date().setMonth(new Date().getMonth() - 2)
+  );
+
   const [randomFemalePage] = useState(
     randomPage(Math.floor(FEMALE_PHOTOS_NUM / take))
   );
@@ -45,6 +51,17 @@ const HomeScreen = () => {
     loading: studioLoading,
     error: studioError,
   } = useQuery(ALL_STUDIOS_QUERY);
+  const {
+    data: newStudiosData,
+    loading: newStudiosLoading,
+    error: newStudiosError,
+  } = useQuery(NEW_STUDIOS_QUERY, {
+    variables: {
+      input: {
+        createdAt,
+      },
+    },
+  });
   const {
     data: articlesData,
     loading: articlesLoading,
@@ -106,6 +123,7 @@ const HomeScreen = () => {
     coupleLoading ||
     noticesLoading ||
     studioLoading ||
+    newStudiosLoading ||
     articlesLoading;
   const isError =
     femaleError ||
@@ -113,6 +131,7 @@ const HomeScreen = () => {
     coupleError ||
     noticesError ||
     studioError ||
+    newStudiosError ||
     articlesError;
 
   return (
@@ -127,8 +146,9 @@ const HomeScreen = () => {
       ) : (
         <>
           <AdTapCarousel />
-          <MainCardScrollView studios={studioData.allStudios.studios} />
+          <MainCardScrollView studios={studioData.allStudios.studios} />{' '}
           <SeeAll />
+          <NewStudioScrollView studios={newStudiosData.newStudios.studios} />
           <HomeColumnList columns={articlesData.articles.articles} />
           <FemaleConcepts concepts={femaleData.allStudioPhotos.photos} />
           <MaleConcepts concepts={maleData.allStudioPhotos.photos} />
