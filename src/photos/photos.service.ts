@@ -236,7 +236,7 @@ export class PhotosService {
     }
   }
 
-  async getConceptBookPhotos(
+  async getSpecialConceptBookPhotos(
     user: User,
     {
       page,

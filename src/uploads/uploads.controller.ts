@@ -106,7 +106,11 @@ export class UploadsController {
     @UploadedFile() cover,
     @Body() body: UploadStudioPhotoDto,
   ): Promise<UploadFileOutput> {
-    return this.uploadsService.uploadStudioCoverPhoto(user, cover, body);
+    try {
+      return this.uploadsService.uploadStudioCoverPhoto(user, cover, body);
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   /*

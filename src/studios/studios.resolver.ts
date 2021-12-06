@@ -98,8 +98,13 @@ export class StudiosResolver {
 
   // Public
   @Query(returns => GetStudiosOutput)
-  allStudios(@CurrentUser() user: User): Promise<GetStudiosOutput> {
-    return this.studiosService.getAllStudios(user);
+  allPremiumStudios(@CurrentUser() user: User): Promise<GetStudiosOutput> {
+    return this.studiosService.getAllPremiumStudios(user);
+  }
+
+  @Query(returns => GetStudiosOutput)
+  allSpecialStudios(@CurrentUser() user: User): Promise<GetStudiosOutput> {
+    return this.studiosService.getAllSpecialStudios(user);
   }
 
   // Public
