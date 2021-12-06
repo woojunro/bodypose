@@ -68,11 +68,20 @@ export class PhotosResolver {
 
   // Public
   @Query(returns => GetConceptBookPhotosOutput)
-  specialConceptBookPhotos(
+  premiumConceptBookPhotos(
     @CurrentUser() user: User,
     @Args('input') input: GetConceptBookPhotosInput,
   ): Promise<GetConceptBookPhotosOutput> {
-    return this.photosService.getSpecialConceptBookPhotos(user, input);
+    return this.photosService.getPremiumConceptBookPhotos(user, input);
+  }
+
+  // Public
+  @Query(returns => GetConceptBookPhotosOutput)
+  allConceptBookPhotos(
+    @CurrentUser() user: User,
+    @Args('input') input: GetConceptBookPhotosInput,
+  ): Promise<GetConceptBookPhotosOutput> {
+    return this.photosService.getAllConceptBookPhotos(user, input);
   }
 
   // Public

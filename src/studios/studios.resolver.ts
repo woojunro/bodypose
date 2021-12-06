@@ -95,13 +95,17 @@ export class StudiosResolver {
   ): Promise<GetStudioOutput> {
     return this.studiosService.getStudio(user, input);
   }
-
+  // Public
+  @Query(returns => GetStudiosOutput)
+  allStudios(@CurrentUser() user: User): Promise<GetStudiosOutput> {
+    return this.studiosService.getAllStudios(user);
+  }
   // Public
   @Query(returns => GetStudiosOutput)
   allPremiumStudios(@CurrentUser() user: User): Promise<GetStudiosOutput> {
     return this.studiosService.getAllPremiumStudios(user);
   }
-
+  //Public
   @Query(returns => GetStudiosOutput)
   allSpecialStudios(@CurrentUser() user: User): Promise<GetStudiosOutput> {
     return this.studiosService.getAllSpecialStudios(user);

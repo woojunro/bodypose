@@ -260,6 +260,36 @@ export class StudiosService {
     }
   }
 
+  async getAllStudios(user: User): Promise<GetStudiosOutput> {
+    try {
+      const studios = await this.studioRepository
+        .createQueryBuilder('s')
+        .leftJoin('s.branches', 'b')
+        .addSelect(['b.name', 'b.address'])
+        .where('s.isPublic = true')
+        .getMany();
+      let studiosWithIsHearted: StudioWithIsHearted[];
+      if (user?.type === UserType.USER) {
+        const hearts = await this.usersHeartStudiosRepository.find({ user });
+        studiosWithIsHearted = studios.map(studio => ({
+          ...studio,
+          isHearted: hearts.some(heart => heart.studioId === studio.id),
+        }));
+      } else {
+        studiosWithIsHearted = studios.map(studio => ({
+          ...studio,
+          isHearted: null,
+        }));
+      }
+      return {
+        ok: true,
+        studios: studiosWithIsHearted,
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
   async getAllPremiumStudios(user: User): Promise<GetStudiosOutput> {
     try {
       const studios = await this.studioRepository
