@@ -14,3 +14,16 @@
   justify-content: center;
   font-size: 15px;
 }
+.studio-list-premium-studio-container {
+  padding: 15px 15px 5px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.studio-list-premium-studio {
+  font-size: 14px;
+}
+.studio-list-sponsored {
+  font-size: 10px;
+  color: gray;
+}

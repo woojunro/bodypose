@@ -13,7 +13,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client';
 import { STUDIO_QUERY } from '../../gql/queries/StudioQuery';
 import AppLoadingScreen from '../../components/mobileComponents/AppLoadingScreen';
-import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
+import { ALL_PREMIUM_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import ScrollToTopButton from '../../components/mobileComponents/ScrollToTopButton';
 import {
   CONTACT_STUDIO_MUTATION,
@@ -63,8 +63,9 @@ const StudioInfoScreen = () => {
 
   const history = useHistory();
 
-  const { data: studioData, loading: studioLoading } =
-    useQuery(ALL_STUDIOS_QUERY);
+  const { data: studioData, loading: studioLoading } = useQuery(
+    ALL_PREMIUM_STUDIOS_QUERY
+  );
 
   const [viewStudioInfo] = useMutation(VIEW_STUDIO_INFO_MUTATION);
 
@@ -162,7 +163,7 @@ const StudioInfoScreen = () => {
       {renderedItem()}
       <SeeMoreStudio
         currentStudioName={studio.name}
-        studioList={studioData.allStudios.studios}
+        studioList={studioData.allPremiumStudios.studios}
       />
     </div>
   );

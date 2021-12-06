@@ -17,7 +17,8 @@ export const IsLoggedInVar = makeVar(false);
 // 스튜디오 리스트
 export const StudioLocationVar = makeVar(null);
 export const StudioSortByVar = makeVar(STUDIO_SORT_OPTIONS[0]);
-export const StudioListVar = makeVar([]);
+export const PremiumStudioListVar = makeVar([]);
+export const SpecialStudioListVar = makeVar([]);
 
 // 컨셉북 (0 ~ 10000 정수)
 export const ConceptBookInitialPageVar = makeVar(-1);
