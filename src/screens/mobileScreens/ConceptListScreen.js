@@ -226,32 +226,33 @@ const ConceptListScreen = () => {
             setHasMore(true);
           }}
         >
-          <div className="totalConcept">
-            {(premiumData?.premiumConceptBookPhotos?.photos || []).map(
-              (concept, idx) => (
-                <ConceptListCard
-                  key={`concept-book-photo-${concept.id}-${idx}`}
-                  conceptNum={idx}
-                  src={concept.thumbnailUrl}
-                  setThisPhoto={() => handlePhotoNum(idx)}
-                  openModal={openModal}
-                />
-              )
-            )}
-            {premiumData?.premiumConceptBookPhotos?.photos &&
-              premiumData.premiumConceptBookPhotos.photos.length % 3 !== 0 &&
-              [
-                ...Array(
-                  3 - (premiumData.premiumConceptBookPhotos.photos.length % 3)
-                ),
-              ].map((_, idx) => (
-                <div
-                  key={`concept-blank-${idx}`}
-                  className="concepListCardContainer"
-                />
-              ))}
-          </div>
-
+          {premiumData?.premiumConceptBookPhotos?.photos && (
+            <div className="totalConcept">
+              {(premiumData?.premiumConceptBookPhotos?.photos || []).map(
+                (concept, idx) => (
+                  <ConceptListCard
+                    key={`concept-book-photo-${concept.id}-${idx}`}
+                    conceptNum={idx}
+                    src={concept.thumbnailUrl}
+                    setThisPhoto={() => handlePhotoNum(idx)}
+                    openModal={openModal}
+                  />
+                )
+              )}
+              {premiumData?.premiumConceptBookPhotos?.photos &&
+                premiumData.premiumConceptBookPhotos.photos.length % 3 !== 0 &&
+                [
+                  ...Array(
+                    3 - (premiumData.premiumConceptBookPhotos.photos.length % 3)
+                  ),
+                ].map((_, idx) => (
+                  <div
+                    key={`concept-blank-${idx}`}
+                    className="concepListCardContainer"
+                  />
+                ))}
+            </div>
+          )}
           <InfiniteScroll
             dataLength={specialData?.allConceptBookPhotos?.photos?.length || 0}
             next={fetchMoreData}
@@ -270,9 +271,11 @@ const ConceptListScreen = () => {
                     key={`concept-book-photo-${concept.id}-${idx}`}
                     conceptNum={idx + PREMIUM_PHOTOS_NUM}
                     src={concept.thumbnailUrl}
-                    setThisPhoto={() =>
-                      handlePhotoNum(idx + PREMIUM_PHOTOS_NUM)
-                    }
+                    setThisPhoto={() => {
+                      premiumData?.premiumConceptBookPhotos.photos.length >= 1
+                        ? handlePhotoNum(idx + PREMIUM_PHOTOS_NUM)
+                        : handlePhotoNum(idx);
+                    }}
                     openModal={openModal}
                   />
                 )
@@ -296,18 +299,24 @@ const ConceptListScreen = () => {
           <ConceptModal
             close={closeModal}
             id={
-              selectedPhotoNum < PREMIUM_PHOTOS_NUM
-                ? premiumData.premiumConceptBookPhotos.photos[selectedPhotoNum]
-                    .id
-                : specialData.allConceptBookPhotos.photos[
-                    selectedPhotoNum - PREMIUM_PHOTOS_NUM
-                  ].id
+              premiumData?.premiumConceptBookPhotos.photos.length >= 1
+                ? selectedPhotoNum < PREMIUM_PHOTOS_NUM
+                  ? premiumData.premiumConceptBookPhotos.photos[
+                      selectedPhotoNum
+                    ].id
+                  : specialData.allConceptBookPhotos.photos[
+                      selectedPhotoNum - PREMIUM_PHOTOS_NUM
+                    ].id
+                : specialData.allConceptBookPhotos.photos[selectedPhotoNum].id
             }
             setThisPhoto={handlePhotoNum}
             selectedPhotoNum={selectedPhotoNum}
             isFinalPhoto={
-              selectedPhotoNum - PREMIUM_PHOTOS_NUM >=
-              specialData.allConceptBookPhotos.photos.length - 1
+              premiumData?.premiumConceptBookPhotos.photos.length >= 1
+                ? selectedPhotoNum - PREMIUM_PHOTOS_NUM >=
+                  specialData.allConceptBookPhotos.photos.length - 1
+                : selectedPhotoNum >=
+                  specialData.allConceptBookPhotos.photos.length - 1
             }
             whileFetching={specialLoading}
           />

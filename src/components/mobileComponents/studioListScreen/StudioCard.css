@@ -52,8 +52,8 @@
 .cardHeart {
   font-size: 24px;
   position: absolute;
-  top: 9%;
-  left: 88%;
+  top: 12%;
+  left: 90%;
   cursor: pointer;
 }
 .cardSelectedHeart {
@@ -61,8 +61,8 @@
 
   font-size: 23px;
   position: absolute;
-  top: 9%;
-  left: 88%;
+  top: 12%;
+  left: 90%;
   color: var(--color-heartColor);
 }
 
