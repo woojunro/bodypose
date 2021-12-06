@@ -11,7 +11,7 @@ import { PhotosService } from 'src/photos/photos.service';
 import { UploadsService } from 'src/uploads/uploads.service';
 import { UserType, User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
-import { Repository, SelectQueryBuilder } from 'typeorm';
+import { MoreThan, Repository, SelectQueryBuilder } from 'typeorm';
 import {
   AssignStudioPartnerInput,
   AssignStudioPartnerOutput,
@@ -38,6 +38,10 @@ import {
   GetHairMakeupShopsOutput,
 } from './dtos/get-hair-makeup-shops.dto';
 import { GetMyStudiosOutput } from './dtos/get-my-studios.dto';
+import {
+  GetNewStudiosInput,
+  GetNewStudiosOutput,
+} from './dtos/get-new-studios.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
   GetStudioProductsInput,
@@ -280,6 +284,89 @@ export class StudiosService {
       return {
         ok: true,
         studios: studiosWithIsHearted,
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+  async getAllPremiumStudios(user: User): Promise<GetStudiosOutput> {
+    try {
+      const studios = await this.studioRepository
+        .createQueryBuilder('s')
+        .leftJoin('s.branches', 'b')
+        .addSelect(['b.name', 'b.address'])
+        .where('s.isPublic = true && s.tier=1')
+        .getMany();
+      let studiosWithIsHearted: StudioWithIsHearted[];
+      if (user?.type === UserType.USER) {
+        const hearts = await this.usersHeartStudiosRepository.find({ user });
+        studiosWithIsHearted = studios.map(studio => ({
+          ...studio,
+          isHearted: hearts.some(heart => heart.studioId === studio.id),
+        }));
+      } else {
+        studiosWithIsHearted = studios.map(studio => ({
+          ...studio,
+          isHearted: null,
+        }));
+      }
+      return {
+        ok: true,
+        studios: studiosWithIsHearted,
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getAllSpecialStudios(user: User): Promise<GetStudiosOutput> {
+    try {
+      const studios = await this.studioRepository
+        .createQueryBuilder('s')
+        .leftJoin('s.branches', 'b')
+        .addSelect(['b.name', 'b.address'])
+        .where('s.isPublic = true && s.tier=0')
+        .getMany();
+      let studiosWithIsHearted: StudioWithIsHearted[];
+      if (user?.type === UserType.USER) {
+        const hearts = await this.usersHeartStudiosRepository.find({ user });
+        studiosWithIsHearted = studios.map(studio => ({
+          ...studio,
+          isHearted: hearts.some(heart => heart.studioId === studio.id),
+        }));
+      } else {
+        studiosWithIsHearted = studios.map(studio => ({
+          ...studio,
+          isHearted: null,
+        }));
+      }
+      return {
+        ok: true,
+        studios: studiosWithIsHearted,
+      };
+    } catch (e) {
+      console.log(e);
+      return UNEXPECTED_ERROR;
+    }
+  }
+
+  async getNewStudios({
+    createdAt,
+  }: GetNewStudiosInput): Promise<GetNewStudiosOutput> {
+    try {
+      console.log(typeof createdAt);
+      const studios = await this.studioRepository.find({
+        where: {
+          isPublic: true,
+          createdAt: MoreThan(createdAt),
+        },
+      });
+
+      return {
+        ok: true,
+        studios,
       };
     } catch (e) {
       console.log(e);

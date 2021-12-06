@@ -25,6 +25,10 @@ import {
   GetHairMakeupShopsOutput,
 } from './dtos/get-hair-makeup-shops.dto';
 import { GetMyStudiosOutput } from './dtos/get-my-studios.dto';
+import {
+  GetNewStudiosInput,
+  GetNewStudiosOutput,
+} from './dtos/get-new-studios.dto';
 import { GetProductsInput, GetProductsOutput } from './dtos/get-product.dto';
 import {
   GetStudioProductsInput,
@@ -91,11 +95,28 @@ export class StudiosResolver {
   ): Promise<GetStudioOutput> {
     return this.studiosService.getStudio(user, input);
   }
-
   // Public
   @Query(returns => GetStudiosOutput)
   allStudios(@CurrentUser() user: User): Promise<GetStudiosOutput> {
     return this.studiosService.getAllStudios(user);
+  }
+  // Public
+  @Query(returns => GetStudiosOutput)
+  allPremiumStudios(@CurrentUser() user: User): Promise<GetStudiosOutput> {
+    return this.studiosService.getAllPremiumStudios(user);
+  }
+  //Public
+  @Query(returns => GetStudiosOutput)
+  allSpecialStudios(@CurrentUser() user: User): Promise<GetStudiosOutput> {
+    return this.studiosService.getAllSpecialStudios(user);
+  }
+
+  // Public
+  @Query(returns => GetNewStudiosOutput)
+  newStudios(
+    @Args('input') input: GetNewStudiosInput,
+  ): Promise<GetNewStudiosOutput> {
+    return this.studiosService.getNewStudios(input);
   }
 
   @Query(returns => GetMyStudiosOutput)
