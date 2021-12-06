@@ -36,9 +36,9 @@ export const ALL_STUDIO_PHOTOS_QUERY = gql`
   }
 `;
 
-export const GET_CONCEPT_BOOK_PHOTOS = gql`
-  query GetConceptBookPhotos($input: GetConceptBookPhotosInput!) {
-    conceptBookPhotos(input: $input) {
+export const GET_SPECIAL_CONCEPT_BOOK_PHOTOS = gql`
+  query GetSpecialConceptBookPhotos($input: GetConceptBookPhotosInput!) {
+    specialConceptBookPhotos(input: $input) {
       ok
       error
       totalPages

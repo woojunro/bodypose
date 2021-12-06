@@ -10,7 +10,7 @@ import './ConceptListScreen.css';
 import LoadingIcon from '../../components/mobileComponents/conceptListScreen/LoadingIcon';
 import { FaSlidersH } from 'react-icons/fa';
 import { useQuery, useReactiveVar } from '@apollo/client';
-import { GET_CONCEPT_BOOK_PHOTOS } from '../../gql/queries/StudioPhotoQuery';
+import { GET_SPECIAL_CONCEPT_BOOK_PHOTOS } from '../../gql/queries/StudioPhotoQuery';
 import shuffle from '../../components/functions/Shuffle';
 import {
   ConceptBookConceptsVar,
@@ -31,42 +31,44 @@ const ConceptListScreen = () => {
   const selectedConcepts = useReactiveVar(ConceptBookConceptsVar);
   const [hasMore, setHasMore] = useState(true);
 
-  const { data, error, loading, fetchMore } = useQuery(
-    GET_CONCEPT_BOOK_PHOTOS,
-    {
-      notifyOnNetworkStatusChange: true,
-      variables: {
-        input: {
-          page: initialPage === -1 ? 1 : initialPage,
-          gender: selectedGender,
-          backgroundConceptSlugs: selectedConcepts.bgConcept,
-          costumeConceptSlugs: selectedConcepts.costumeConcept,
-          objectConceptSlugs: selectedConcepts.objectConcept,
-          randomSeed,
-        },
+  const {
+    data: specialData,
+    error,
+    loading,
+    fetchMore,
+  } = useQuery(GET_SPECIAL_CONCEPT_BOOK_PHOTOS, {
+    notifyOnNetworkStatusChange: true,
+    variables: {
+      input: {
+        page: initialPage === -1 ? 1 : initialPage,
+        gender: selectedGender,
+        backgroundConceptSlugs: selectedConcepts.bgConcept,
+        costumeConceptSlugs: selectedConcepts.costumeConcept,
+        objectConceptSlugs: selectedConcepts.objectConcept,
+        randomSeed,
       },
-      onCompleted: data => {
-        const { ok, totalPages } = data.conceptBookPhotos;
-        if (!ok) {
+    },
+    onCompleted: specialData => {
+      const { ok, totalPages } = specialData.specialConceptBookPhotos;
+      if (!ok) {
+        setHasMore(false);
+      } else {
+        if (totalPages <= 1) {
           setHasMore(false);
         } else {
-          if (totalPages <= 1) {
-            setHasMore(false);
-          } else {
-            if (initialPage === -1) {
-              let newPage = 0;
-              while (newPage < 1 || newPage > totalPages) {
-                newPage = normalRandom();
-              }
-              ConceptBookInitialPageVar(newPage);
-              ConceptBookPageListVar(new Set([newPage]));
+          if (initialPage === -1) {
+            let newPage = 0;
+            while (newPage < 1 || newPage > totalPages) {
+              newPage = normalRandom();
             }
+            ConceptBookInitialPageVar(newPage);
+            ConceptBookPageListVar(new Set([newPage]));
           }
         }
-      },
-      onError: () => setHasMore(false),
-    }
-  );
+      }
+    },
+    onError: () => setHasMore(false),
+  });
 
   const [isSelectionOpen, setIsSelectionOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -103,7 +105,7 @@ const ConceptListScreen = () => {
       return;
     }
 
-    const totalPages = data?.conceptBookPhotos?.totalPages;
+    const totalPages = specialData?.specialConceptBookPhotos?.totalPages;
     if (!totalPages) return;
 
     if (pageList.size >= totalPages) {
@@ -131,14 +133,14 @@ const ConceptListScreen = () => {
         },
       },
       updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult?.conceptBookPhotos.photos) return prev;
+        if (!fetchMoreResult?.specialConceptBookPhotos.photos) return prev;
         return Object.assign({}, prev, {
           ...prev,
-          conceptBookPhotos: {
-            ...prev.conceptBookPhotos,
+          specialConceptBookPhotos: {
+            ...prev.specialConceptBookPhotos,
             photos: [
-              ...prev.conceptBookPhotos.photos,
-              ...shuffle(fetchMoreResult.conceptBookPhotos.photos),
+              ...prev.specialConceptBookPhotos.photos,
+              ...shuffle(fetchMoreResult.specialConceptBookPhotos.photos),
             ],
           },
         });
@@ -151,7 +153,9 @@ const ConceptListScreen = () => {
   useEffect(() => {
     if (
       selectedPhotoNum >=
-      (data?.conceptBookPhotos?.photos?.length || Number.POSITIVE_INFINITY) - 3
+      (specialData?.specialConceptBookPhotos?.photos?.length ||
+        Number.POSITIVE_INFINITY) -
+        3
     ) {
       fetchMoreData();
     }
@@ -198,7 +202,9 @@ const ConceptListScreen = () => {
           }}
         >
           <InfiniteScroll
-            dataLength={data?.conceptBookPhotos?.photos?.length || 0}
+            dataLength={
+              specialData?.specialConceptBookPhotos?.photos?.length || 0
+            }
             next={fetchMoreData}
             hasMore={hasMore}
             loader={<LoadingIcon />}
@@ -209,36 +215,43 @@ const ConceptListScreen = () => {
             }
           >
             <div className="totalConcept">
-              {(data?.conceptBookPhotos?.photos || []).map((concept, idx) => (
-                <ConceptListCard
-                  key={`concept-book-photo-${concept.id}-${idx}`}
-                  conceptNum={idx}
-                  src={concept.thumbnailUrl}
-                  setThisPhoto={() => handlePhotoNum(idx)}
-                  openModal={openModal}
-                />
-              ))}
-              {data?.conceptBookPhotos?.photos &&
-                data.conceptBookPhotos.photos.length % 3 !== 0 &&
-                [...Array(3 - (data.conceptBookPhotos.photos.length % 3))].map(
-                  (_, idx) => (
-                    <div
-                      key={`concept-blank-${idx}`}
-                      className="concepListCardContainer"
-                    />
-                  )
-                )}
+              {(specialData?.specialConceptBookPhotos?.photos || []).map(
+                (concept, idx) => (
+                  <ConceptListCard
+                    key={`concept-book-photo-${concept.id}-${idx}`}
+                    conceptNum={idx}
+                    src={concept.thumbnailUrl}
+                    setThisPhoto={() => handlePhotoNum(idx)}
+                    openModal={openModal}
+                  />
+                )
+              )}
+              {specialData?.specialConceptBookPhotos?.photos &&
+                specialData.specialConceptBookPhotos.photos.length % 3 !== 0 &&
+                [
+                  ...Array(
+                    3 - (specialData.specialConceptBookPhotos.photos.length % 3)
+                  ),
+                ].map((_, idx) => (
+                  <div
+                    key={`concept-blank-${idx}`}
+                    className="concepListCardContainer"
+                  />
+                ))}
             </div>
           </InfiniteScroll>
         </PullToRefresh>
         {isModalOpen && (
           <ConceptModal
             close={closeModal}
-            id={data.conceptBookPhotos.photos[selectedPhotoNum].id}
+            id={
+              specialData.specialConceptBookPhotos.photos[selectedPhotoNum].id
+            }
             setThisPhoto={handlePhotoNum}
             selectedPhotoNum={selectedPhotoNum}
             isFinalPhoto={
-              selectedPhotoNum >= data.conceptBookPhotos.photos.length - 1
+              selectedPhotoNum >=
+              specialData.specialConceptBookPhotos.photos.length - 1
             }
             whileFetching={loading}
           />
