@@ -10,7 +10,10 @@ import './ConceptListScreen.css';
 import LoadingIcon from '../../components/mobileComponents/conceptListScreen/LoadingIcon';
 import { FaSlidersH } from 'react-icons/fa';
 import { useQuery, useReactiveVar } from '@apollo/client';
-import { GET_SPECIAL_CONCEPT_BOOK_PHOTOS } from '../../gql/queries/StudioPhotoQuery';
+import {
+  GET_SPECIAL_CONCEPT_BOOK_PHOTOS,
+  GET_PREMIUM_CONCEPT_BOOK_PHOTOS,
+} from '../../gql/queries/StudioPhotoQuery';
 import shuffle from '../../components/functions/Shuffle';
 import {
   ConceptBookConceptsVar,
@@ -20,6 +23,7 @@ import {
   ConceptBookRandomSeedVar,
 } from '../../apollo';
 import { normalRandom } from '../../components/functions/Concept/normalRandom';
+import { PREMIUM_PHOTOS_NUM } from '../../constants/numOfPhotos';
 
 const genderOptions = [null, 'MALE', 'FEMALE', 'COUPLE'];
 
@@ -33,8 +37,8 @@ const ConceptListScreen = () => {
 
   const {
     data: specialData,
-    error,
-    loading,
+    error: specialError,
+    loading: specialLoading,
     fetchMore,
   } = useQuery(GET_SPECIAL_CONCEPT_BOOK_PHOTOS, {
     notifyOnNetworkStatusChange: true,
@@ -69,6 +73,29 @@ const ConceptListScreen = () => {
     },
     onError: () => setHasMore(false),
   });
+  const {
+    data: premiumData,
+    error: premiumError,
+    loading: premiumLoading,
+  } = useQuery(GET_PREMIUM_CONCEPT_BOOK_PHOTOS, {
+    notifyOnNetworkStatusChange: true,
+    variables: {
+      input: {
+        page: initialPage === -1 ? 1 : initialPage,
+        take: PREMIUM_PHOTOS_NUM,
+        gender: selectedGender,
+        backgroundConceptSlugs: selectedConcepts.bgConcept,
+        costumeConceptSlugs: selectedConcepts.costumeConcept,
+        objectConceptSlugs: selectedConcepts.objectConcept,
+        randomSeed,
+      },
+    },
+    onCompleted: data => {
+      console.log(data);
+    },
+
+    onError: () => setHasMore(false),
+  });
 
   const [isSelectionOpen, setIsSelectionOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -101,7 +128,7 @@ const ConceptListScreen = () => {
   }, [selectedConcepts, selectedGender]);
 
   const fetchMoreData = () => {
-    if (!hasMore || error) {
+    if (!hasMore || specialError || premiumError) {
       return;
     }
 
@@ -152,7 +179,7 @@ const ConceptListScreen = () => {
 
   useEffect(() => {
     if (
-      selectedPhotoNum >=
+      selectedPhotoNum - PREMIUM_PHOTOS_NUM >=
       (specialData?.specialConceptBookPhotos?.photos?.length ||
         Number.POSITIVE_INFINITY) -
         3
@@ -201,6 +228,32 @@ const ConceptListScreen = () => {
             setHasMore(true);
           }}
         >
+          <div className="totalConcept">
+            {(premiumData?.premiumConceptBookPhotos?.photos || []).map(
+              (concept, idx) => (
+                <ConceptListCard
+                  key={`concept-book-photo-${concept.id}-${idx}`}
+                  conceptNum={idx}
+                  src={concept.thumbnailUrl}
+                  setThisPhoto={() => handlePhotoNum(idx)}
+                  openModal={openModal}
+                />
+              )
+            )}
+            {premiumData?.premiumConceptBookPhotos?.photos &&
+              premiumData.premiumConceptBookPhotos.photos.length % 3 !== 0 &&
+              [
+                ...Array(
+                  3 - (premiumData.premiumConceptBookPhotos.photos.length % 3)
+                ),
+              ].map((_, idx) => (
+                <div
+                  key={`concept-blank-${idx}`}
+                  className="concepListCardContainer"
+                />
+              ))}
+          </div>
+
           <InfiniteScroll
             dataLength={
               specialData?.specialConceptBookPhotos?.photos?.length || 0
@@ -219,9 +272,11 @@ const ConceptListScreen = () => {
                 (concept, idx) => (
                   <ConceptListCard
                     key={`concept-book-photo-${concept.id}-${idx}`}
-                    conceptNum={idx}
+                    conceptNum={idx + PREMIUM_PHOTOS_NUM}
                     src={concept.thumbnailUrl}
-                    setThisPhoto={() => handlePhotoNum(idx)}
+                    setThisPhoto={() =>
+                      handlePhotoNum(idx + PREMIUM_PHOTOS_NUM)
+                    }
                     openModal={openModal}
                   />
                 )
@@ -245,15 +300,20 @@ const ConceptListScreen = () => {
           <ConceptModal
             close={closeModal}
             id={
-              specialData.specialConceptBookPhotos.photos[selectedPhotoNum].id
+              selectedPhotoNum < PREMIUM_PHOTOS_NUM
+                ? premiumData.premiumConceptBookPhotos.photos[selectedPhotoNum]
+                    .id
+                : specialData.specialConceptBookPhotos.photos[
+                    selectedPhotoNum - PREMIUM_PHOTOS_NUM
+                  ].id
             }
             setThisPhoto={handlePhotoNum}
             selectedPhotoNum={selectedPhotoNum}
             isFinalPhoto={
-              selectedPhotoNum >=
+              selectedPhotoNum - PREMIUM_PHOTOS_NUM >=
               specialData.specialConceptBookPhotos.photos.length - 1
             }
-            whileFetching={loading}
+            whileFetching={specialLoading}
           />
         )}
         <BottomNavigation pageName="concepts" />

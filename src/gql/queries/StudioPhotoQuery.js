@@ -35,6 +35,25 @@ export const ALL_STUDIO_PHOTOS_QUERY = gql`
     }
   }
 `;
+export const GET_PREMIUM_CONCEPT_BOOK_PHOTOS = gql`
+  query GetPremiumConceptBookPhotos($input: GetConceptBookPhotosInput!) {
+    premiumConceptBookPhotos(input: $input) {
+      ok
+      error
+      totalPages
+      photos {
+        id
+        thumbnailUrl
+        originalUrl
+        studio {
+          name
+          slug
+        }
+        isHearted
+      }
+    }
+  }
+`;
 
 export const GET_SPECIAL_CONCEPT_BOOK_PHOTOS = gql`
   query GetSpecialConceptBookPhotos($input: GetConceptBookPhotosInput!) {
