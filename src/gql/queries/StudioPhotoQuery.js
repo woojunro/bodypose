@@ -55,9 +55,9 @@ export const GET_PREMIUM_CONCEPT_BOOK_PHOTOS = gql`
   }
 `;
 
-export const GET_SPECIAL_CONCEPT_BOOK_PHOTOS = gql`
-  query GetSpecialConceptBookPhotos($input: GetConceptBookPhotosInput!) {
-    specialConceptBookPhotos(input: $input) {
+export const GET_ALL_CONCEPT_BOOK_PHOTOS = gql`
+  query GetAllConceptBookPhotos($input: GetConceptBookPhotosInput!) {
+    allConceptBookPhotos(input: $input) {
       ok
       error
       totalPages

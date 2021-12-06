@@ -23,7 +23,7 @@ import {
   MALE_PHOTOS_NUM,
 } from '../../constants/numOfPhotos';
 import { randomPage } from '../../components/functions/Concept/randomPages';
-import { ALL_PREMIUM_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
+import { ALL_STUDIOS_QUERY } from '../../gql/queries/AllStudiosQuery';
 import { NEW_STUDIOS_QUERY } from '../../gql/queries/NewStudiosQuery';
 import HomeColumnList from '../../components/mobileComponents/homeScreen/home-column-list';
 import { GET_ARTICLES } from '../../gql/queries/ArticlesQuery';
@@ -50,7 +50,9 @@ const HomeScreen = () => {
     data: studioData,
     loading: studioLoading,
     error: studioError,
-  } = useQuery(ALL_PREMIUM_STUDIOS_QUERY);
+  } = useQuery(ALL_STUDIOS_QUERY, {
+    onCompleted: data => {},
+  });
   const {
     data: newStudiosData,
     loading: newStudiosLoading,
@@ -146,9 +148,7 @@ const HomeScreen = () => {
       ) : (
         <>
           <AdTapCarousel />
-          <MainCardScrollView
-            studios={studioData.allPremiumStudios.studios}
-          />{' '}
+          <MainCardScrollView studios={studioData.allStudios.studios} />
           <SeeAll />
           <NewStudioScrollView studios={newStudiosData.newStudios.studios} />
           <HomeColumnList columns={articlesData.articles.articles} />

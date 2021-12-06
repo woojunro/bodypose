@@ -11,7 +11,7 @@ import LoadingIcon from '../../components/mobileComponents/conceptListScreen/Loa
 import { FaSlidersH } from 'react-icons/fa';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import {
-  GET_SPECIAL_CONCEPT_BOOK_PHOTOS,
+  GET_ALL_CONCEPT_BOOK_PHOTOS,
   GET_PREMIUM_CONCEPT_BOOK_PHOTOS,
 } from '../../gql/queries/StudioPhotoQuery';
 import shuffle from '../../components/functions/Shuffle';
@@ -40,7 +40,7 @@ const ConceptListScreen = () => {
     error: specialError,
     loading: specialLoading,
     fetchMore,
-  } = useQuery(GET_SPECIAL_CONCEPT_BOOK_PHOTOS, {
+  } = useQuery(GET_ALL_CONCEPT_BOOK_PHOTOS, {
     notifyOnNetworkStatusChange: true,
     variables: {
       input: {
@@ -53,7 +53,7 @@ const ConceptListScreen = () => {
       },
     },
     onCompleted: specialData => {
-      const { ok, totalPages } = specialData.specialConceptBookPhotos;
+      const { ok, totalPages } = specialData.allConceptBookPhotos;
       if (!ok) {
         setHasMore(false);
       } else {
@@ -90,9 +90,7 @@ const ConceptListScreen = () => {
         randomSeed,
       },
     },
-    onCompleted: data => {
-      console.log(data);
-    },
+    onCompleted: data => {},
 
     onError: () => setHasMore(false),
   });
@@ -132,7 +130,7 @@ const ConceptListScreen = () => {
       return;
     }
 
-    const totalPages = specialData?.specialConceptBookPhotos?.totalPages;
+    const totalPages = specialData?.allConceptBookPhotos?.totalPages;
     if (!totalPages) return;
 
     if (pageList.size >= totalPages) {
@@ -160,14 +158,14 @@ const ConceptListScreen = () => {
         },
       },
       updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult?.specialConceptBookPhotos.photos) return prev;
+        if (!fetchMoreResult?.allConceptBookPhotos.photos) return prev;
         return Object.assign({}, prev, {
           ...prev,
-          specialConceptBookPhotos: {
-            ...prev.specialConceptBookPhotos,
+          allConceptBookPhotos: {
+            ...prev.allConceptBookPhotos,
             photos: [
-              ...prev.specialConceptBookPhotos.photos,
-              ...shuffle(fetchMoreResult.specialConceptBookPhotos.photos),
+              ...prev.allConceptBookPhotos.photos,
+              ...shuffle(fetchMoreResult.allConceptBookPhotos.photos),
             ],
           },
         });
@@ -180,7 +178,7 @@ const ConceptListScreen = () => {
   useEffect(() => {
     if (
       selectedPhotoNum - PREMIUM_PHOTOS_NUM >=
-      (specialData?.specialConceptBookPhotos?.photos?.length ||
+      (specialData?.allConceptBookPhotos?.photos?.length ||
         Number.POSITIVE_INFINITY) -
         3
     ) {
@@ -255,9 +253,7 @@ const ConceptListScreen = () => {
           </div>
 
           <InfiniteScroll
-            dataLength={
-              specialData?.specialConceptBookPhotos?.photos?.length || 0
-            }
+            dataLength={specialData?.allConceptBookPhotos?.photos?.length || 0}
             next={fetchMoreData}
             hasMore={hasMore}
             loader={<LoadingIcon />}
@@ -268,7 +264,7 @@ const ConceptListScreen = () => {
             }
           >
             <div className="totalConcept">
-              {(specialData?.specialConceptBookPhotos?.photos || []).map(
+              {(specialData?.allConceptBookPhotos?.photos || []).map(
                 (concept, idx) => (
                   <ConceptListCard
                     key={`concept-book-photo-${concept.id}-${idx}`}
@@ -281,11 +277,11 @@ const ConceptListScreen = () => {
                   />
                 )
               )}
-              {specialData?.specialConceptBookPhotos?.photos &&
-                specialData.specialConceptBookPhotos.photos.length % 3 !== 0 &&
+              {specialData?.allConceptBookPhotos?.photos &&
+                specialData.allConceptBookPhotos.photos.length % 3 !== 0 &&
                 [
                   ...Array(
-                    3 - (specialData.specialConceptBookPhotos.photos.length % 3)
+                    3 - (specialData.allConceptBookPhotos.photos.length % 3)
                   ),
                 ].map((_, idx) => (
                   <div
@@ -303,7 +299,7 @@ const ConceptListScreen = () => {
               selectedPhotoNum < PREMIUM_PHOTOS_NUM
                 ? premiumData.premiumConceptBookPhotos.photos[selectedPhotoNum]
                     .id
-                : specialData.specialConceptBookPhotos.photos[
+                : specialData.allConceptBookPhotos.photos[
                     selectedPhotoNum - PREMIUM_PHOTOS_NUM
                   ].id
             }
@@ -311,7 +307,7 @@ const ConceptListScreen = () => {
             selectedPhotoNum={selectedPhotoNum}
             isFinalPhoto={
               selectedPhotoNum - PREMIUM_PHOTOS_NUM >=
-              specialData.specialConceptBookPhotos.photos.length - 1
+              specialData.allConceptBookPhotos.photos.length - 1
             }
             whileFetching={specialLoading}
           />

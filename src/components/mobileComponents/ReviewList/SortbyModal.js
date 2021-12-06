@@ -18,7 +18,6 @@ const Modal = ({
   };
   const renderedOptions = options.map(option => {
     if (option.title === selected.title) {
-      console.log(option.title, selected.title);
       return (
         <div key={option.title} className="selectedBox">
           <div>{option.title}</div> <IoIosCheckmark fontSize="30px" />

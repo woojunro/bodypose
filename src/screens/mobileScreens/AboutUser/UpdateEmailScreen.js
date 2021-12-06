@@ -35,7 +35,6 @@ const UpdateEmailScreen = () => {
     UPDATE_EMAIL_MUTATION,
     {
       onCompleted: data => {
-        console.log(data);
         const { ok, error } = data.updateEmail;
         if (ok) {
           refetch();
