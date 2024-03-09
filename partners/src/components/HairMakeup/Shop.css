@@ -1,0 +1,57 @@
+.hairMakeupContainer {
+  padding-left: 3px;
+  padding-right: 3px;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.hairTitleContainer {
+  margin-bottom: 10px;
+}
+
+.hairItemContainer {
+  width: 350px;
+  margin-left: 3px;
+  margin-right: 3px;
+  padding-right: 7px;
+
+  padding-top: 15px;
+  padding-bottom: 15px;
+  border-top: lightgray 1px solid;
+}
+
+.hairItemLastContainer {
+  border-bottom: lightgray 1px solid;
+}
+
+.hairTitle {
+  font-size: 13px;
+  font-weight: bold;
+}
+.hairPrice {
+  margin-top: 5px;
+  font-size: 12px;
+  display: flex;
+}
+
+.hairAdding {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 11px;
+  white-space: pre-wrap;
+  line-height: 1.5em;
+  font-size: 10px;
+}
+
+.shopListEditContainer {
+  margin-left: 20px;
+  display: flex;
+}
+
+.shopListEdit {
+  font-size: 15px;
+  color: gray;
+  margin-left: 20px;
+  cursor: pointer;
+}

@@ -1,0 +1,15 @@
+.withdrawContainer {
+  display: flex;
+  padding: 30px;
+  align-items: baseline;
+}
+
+.withdrawTitle {
+  width: 265px;
+}
+
+.withdrawButton {
+  font-size: 15px;
+  color: gray;
+  cursor: pointer;
+}

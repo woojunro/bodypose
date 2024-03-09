@@ -1,0 +1,20 @@
+.noticeNameContainer {
+  margin-top: 20px;
+  background-color: white;
+  border-radius: 5px;
+}
+.noticeName {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 25px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+
+  align-items: baseline;
+}
+.toNoticeScreen {
+  color: gray;
+  cursor: pointer;
+  font-size: 14px;
+  margin-right: 20px;
+}

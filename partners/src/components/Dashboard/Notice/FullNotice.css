@@ -1,0 +1,6 @@
+.fullNoticeContainer {
+  padding: 30px;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  line-height: 1.5em;
+}

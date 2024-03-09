@@ -1,0 +1,83 @@
+.joinScreenContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.joinScreen {
+  width: 700px;
+}
+
+.joinLogo {
+  margin-top: 40px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.joinLogoText {
+  margin-top: 30px;
+  margin-left: 5px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.joinLogo img {
+  height: 60px;
+}
+.joinInformationConainer {
+  display: flex;
+  justify-content: center;
+}
+.joinDescription {
+  border: solid 1px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  border-radius: 10px;
+  background-color: white;
+  margin-bottom: 20px;
+  font-size: 15px;
+  width: 530px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.joinInfoBox {
+  padding-top: 10px;
+  padding-bottom: 20px;
+  margin-bottom: 25px;
+  width: 100%;
+  background-color: white;
+  border-radius: 5px;
+  border: solid 1px rgba(0, 0, 0, 0.2);
+}
+
+.passwordWarning {
+  color: var(--color-red);
+  font-size: 11px;
+  margin-left: 2px;
+}
+
+.joinButtonContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.agreeContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  align-items: center;
+  color: var(--color-subBlack);
+}
+.mustText {
+  color: var(--color-red);
+  margin-right: 5px;
+}
+.linkText {
+  cursor: pointer;
+  border-bottom: 1px solid gray;
+  color: black;
+}

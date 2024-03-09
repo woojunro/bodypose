@@ -1,0 +1,10 @@
+.menubar {
+  position: fixed;
+  width: 180px;
+  top: 0;
+  bottom: 0;
+  overflow-y: scroll;
+  background-color: var(--color-menubar);
+  margin-top: 45px;
+  padding-top: 10px;
+}

@@ -1,0 +1,44 @@
+{
+  "name": "bodypose-app",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@invertase/react-native-apple-authentication": "^2.1.2",
+    "@react-native-community/masked-view": "^0.1.11",
+    "@react-native-google-signin/google-signin": "^6.0.1",
+    "@react-native-seoul/kakao-login": "^3.3.3",
+    "@react-native-seoul/naver-login": "^2.1.0",
+    "@react-navigation/native": "^5.9.4",
+    "@react-navigation/stack": "^5.14.5",
+    "axios": "^0.21.1",
+    "react": "17.0.1",
+    "react-native": "0.64.2",
+    "react-native-bootsplash": "^3.2.4",
+    "react-native-gesture-handler": "^1.10.3",
+    "react-native-reanimated": "^2.2.0",
+    "react-native-safe-area-context": "^3.2.0",
+    "react-native-screens": "^3.4.0",
+    "react-native-webview": "^11.6.5"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.14.6",
+    "@babel/runtime": "^7.14.6",
+    "@bam.tech/react-native-make": "^3.0.3",
+    "@react-native-community/eslint-config": "^3.0.0",
+    "babel-jest": "^27.0.6",
+    "eslint": "^7.30.0",
+    "jest": "^27.0.6",
+    "metro-react-native-babel-preset": "^0.66.1",
+    "react-test-renderer": "17.0.1"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}

@@ -1,0 +1,90 @@
+.photoItemTotal {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid lightgray;
+}
+
+.photoItemContainer {
+  padding-right: 7px;
+  padding-top: 13px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid lightgray;
+}
+
+.photoItemTitle {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.photoItemInfoContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 450px;
+}
+
+.photoItemTopPart {
+  align-items: center;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.itemUpper {
+  margin-top: 6px;
+  font-size: 11px;
+}
+
+.itemUnder {
+  margin-top: 5px;
+  font-size: 10px;
+}
+
+.photoItemRightPart {
+  font-size: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.photoItemPrice {
+  margin-left: 5px;
+  display: flex;
+  width: 60px;
+  justify-content: flex-end;
+}
+
+.photoItemBottomPart {
+  color: var(--color-footer);
+  font-size: 9px;
+  margin-top: 5px;
+}
+
+.itemNotice {
+  font-size: 10px;
+  margin-top: 3px;
+  margin-left: -3px;
+  padding-left: 1px;
+}
+
+.itemOption {
+  margin-left: 25px;
+  color: gray;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.itemOrderDescription {
+  margin-left: 45px;
+  font-size: 13px;
+}
+
+.orderIconContainer {
+  margin-left: 10px;
+}
+
+.orderIcon {
+  margin-left: 5px;
+  transform: scale(1, 1.5);
+  cursor: pointer;
+}

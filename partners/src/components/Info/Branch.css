@@ -1,0 +1,17 @@
+.branchesContainer {
+  padding: 30px 0px 20px 30px;
+}
+
+.addNewBranch {
+  margin-left: 150px;
+  width: 200px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+}
+
+.addNewBranchIcon {
+  font-size: 20px;
+  margin-right: 8px;
+}

@@ -1,0 +1,27 @@
+.dashboardBranchItemContainer {
+  padding: 20px 0px 5px 25px;
+  font-size: 16px;
+  display: flex;
+}
+
+.dashboardBranchItems {
+  margin-left: 50px;
+}
+
+.dashboardBranchData {
+  display: flex;
+  margin-bottom: 15px;
+}
+
+.dashboardBranchName {
+  width: 150px;
+  margin-right: 20px;
+}
+
+.dashboardBranchAddress {
+  color: var(--color-subBlack);
+}
+
+.noBranches {
+  margin-bottom: 15px;
+}

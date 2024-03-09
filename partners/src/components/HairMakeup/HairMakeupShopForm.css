@@ -1,0 +1,63 @@
+.hairshopBoxTitle {
+  display: flex;
+  padding: 25px 25px 25px 25px;
+  align-items: baseline;
+  border-bottom: var(--color-linecolor) 1px solid;
+}
+
+.hairshopTitleDesc {
+  font-size: 15px;
+  color: gray;
+  margin-left: 35px;
+}
+.shopInputContainer {
+  margin-top: 30px;
+  margin-left: 30px;
+  display: flex;
+}
+.shopInputName {
+  font-size: 16px;
+  padding-left: 10px;
+  width: 140px;
+  height: 30px;
+}
+
+.shopTypeInput {
+  width: 110px;
+  height: 30px;
+  font-size: 15px;
+  padding-left: 2px;
+}
+
+.shopInputContactInfo {
+  width: 440px;
+  height: 25px;
+  font-size: 15px;
+  padding-left: 10px;
+}
+
+.shopProductList {
+  font-size: 16px;
+  margin-top: 30px;
+}
+.addShopProduct {
+  display: flex;
+  align-items: center;
+  color: gray;
+  margin-top: 10px;
+  cursor: pointer;
+}
+.addShopProductIcon {
+  font-size: 19px;
+}
+
+.addShopProductText {
+  margin-left: 10px;
+  font-size: 15px;
+}
+
+.shopDescriptionInput {
+  font-family: inherit;
+  width: 550px;
+  height: 100px;
+}

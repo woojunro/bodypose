@@ -1,0 +1,14 @@
+.statsChartContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 40px;
+}
+
+.statsChart {
+  width: 90%;
+  height: 250px;
+  background-color: white;
+  padding: 10px 20px 10px 20px;
+  border-radius: 10px;
+}

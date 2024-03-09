@@ -1,0 +1,39 @@
+.productListTitleLine {
+  display: flex;
+  align-items: baseline;
+  border-bottom: 1px solid gray;
+}
+.productListTitleLine {
+  padding: 25px 25px 25px 25px;
+}
+
+.productListDescription {
+  margin-left: 25px;
+  font-size: 15px;
+  color: gray;
+}
+.productContainer {
+  margin-left: 50px;
+  margin-top: 20px;
+}
+.productTitleTag {
+  display: flex;
+}
+.productsTitle {
+  width: 340px;
+  padding-bottom: 5px;
+}
+
+.weekTags {
+  width: 110px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: gray;
+  padding-bottom: 5px;
+}
+
+.productLists {
+  margin-left: 50px;
+  padding-bottom: 10px;
+}

@@ -1,0 +1,13 @@
+.loginButton {
+  width: 100%;
+  background-color: var(--color-button);
+  width: 100%;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  color: white;
+  align-items: center;
+  font-size: 18px;
+  margin-top: 10px;
+  cursor: pointer;
+}

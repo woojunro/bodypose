@@ -1,0 +1,15 @@
+.otherStatsContainer {
+  margin-top: 50px;
+  margin-bottom: 20px;
+}
+.otherStatsTitle {
+  margin-left: 20px;
+
+  font-size: 20px;
+}
+
+.otherStatsCardContainer {
+  margin-top: 30px;
+  display: flex;
+  width: 100%;
+}

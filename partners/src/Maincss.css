@@ -1,0 +1,37 @@
+.Dashboard {
+  margin-left: 200px;
+  display: flex;
+  font-size: 18px;
+}
+
+.partnersMainPartContainer {
+  width: 100%;
+  min-width: 900px;
+  display: flex;
+  justify-content: center;
+}
+
+.partnersMainPart {
+  width: 95%;
+}
+
+.boxTitle {
+  display: flex;
+  padding: 25px 25px 25px 25px;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: var(--color-linecolor) 1px solid;
+}
+
+.gotoPage {
+  font-size: 14px;
+  color: gray;
+  cursor: pointer;
+}
+
+.fullSizeBox {
+  width: 100%;
+  background-color: white;
+  border-radius: 5px;
+  margin-top: 20px;
+}

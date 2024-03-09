@@ -1,0 +1,46 @@
+.headerContainer {
+  height: 45px;
+  width: 100%;
+  background-color: var(--color-header);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  z-index: 1;
+}
+.headerBlankBox {
+  height: 45px;
+}
+
+.headerContainer img {
+  width: auto;
+  height: 25px;
+}
+
+.logoPart {
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  color: white;
+  font-size: 9px;
+  cursor: pointer;
+}
+.partnersText {
+  margin-top: 7px;
+  margin-left: 2px;
+}
+
+.headerRight {
+  color: white;
+  font-size: 9px;
+  font-weight: 300;
+  margin-right: 20px;
+  cursor: pointer;
+}
+.headerStudioName {
+  color: white;
+  font-size: 9px;
+  font-weight: 300;
+  margin-right: 20px;
+  cursor: pointer;
+}

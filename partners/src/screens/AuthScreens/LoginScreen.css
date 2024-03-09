@@ -1,0 +1,98 @@
+.loginScreen {
+  display: flex;
+  justify-content: center;
+  padding-top: 90px;
+}
+.loginScreenContainer {
+  width: 450px;
+}
+.loginLogo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.loginLogo img {
+  height: 70px;
+}
+
+.loginDescription {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 35px;
+
+  margin-top: 25px;
+  font-size: 14px;
+  color: gray;
+}
+
+.loginBox {
+  margin-top: 35px;
+}
+.noIDPassword {
+  margin-top: 5px;
+  color: var(--color-red);
+  font-size: 13px;
+}
+.loginOptionButtons {
+  margin-top: 13px;
+  width: 100%;
+  display: flex;
+  font-size: 13px;
+  color: gray;
+  align-items: center;
+}
+
+.findIdModal {
+  width: 450px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+.findIdTitle {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.findIdText {
+  height: 35px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 14px;
+}
+.findIdConfirmButton {
+  margin-bottom: -15px;
+  background-color: var(--color-button);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  height: 35px;
+  color: white;
+  cursor: pointer;
+}
+
+.service-download {
+  display: flex;
+  align-items: center;
+  border: none;
+  padding: 15px;
+  margin-left: 35px;
+  background-color: var(--color-button);
+  color: white;
+  border-radius: 5px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.service-download-button {
+  margin-left: 10px;
+  font-size: 20px;
+}

@@ -1,0 +1,63 @@
+.photoStatsContainer {
+  padding-bottom: 30px;
+}
+.weekNavigator {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 10px;
+}
+
+.photoStatsMyStudio {
+  margin-left: 20px;
+  margin-top: 30px;
+  font-size: 20px;
+}
+
+.selectedDuration {
+  padding-top: 15px;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 10px;
+  font-size: 15px;
+}
+.unselectedDuration {
+  font-size: 15px;
+  padding-top: 15px;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 10px;
+  background-color: rgb(235, 235, 235);
+  border-left: 1px lightgray solid;
+  border-right: 1px lightgray solid;
+  border-bottom: 1px lightgray solid;
+  cursor: pointer;
+}
+
+.PhotoCardContainer {
+  display: flex;
+  padding-top: 20px;
+  margin-top: 10px;
+}
+
+.totalPhotoCountContainer {
+  margin-left: 40px;
+  margin-top: 25px;
+}
+.currentDateText {
+  font-size: 15px;
+  margin-left: 5px;
+}
+.totalPhotoCounts {
+  display: flex;
+  align-items: baseline;
+  font-size: 17px;
+}
+
+.PhotoCountsNumber {
+  margin-left: 10px;
+  margin-right: 5px;
+  font-size: 22px;
+  font-weight: bold;
+}

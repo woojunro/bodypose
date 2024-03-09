@@ -1,0 +1,49 @@
+.statsNavigatorContainer {
+  display: flex;
+  background-color: white;
+}
+
+.statsNavigator {
+  display: flex;
+  font-size: 16px;
+}
+
+.selectedStats {
+  width: 150px;
+  display: flex;
+  justify-content: center;
+  padding-top: 10px;
+  padding-bottom: 8px;
+  border-top: black 2px solid;
+  border-left: black 2px solid;
+  border-right: black 2px solid;
+  cursor: pointer;
+  background-color: var(--color-background);
+}
+
+.unselectedStats {
+  width: 150px;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 6px;
+  border-bottom: black 2px solid;
+  padding-top: 11px;
+  cursor: pointer;
+  border-top: gray 1px solid;
+  border-left: gray 1px solid;
+  border-right: gray 1px solid;
+}
+
+.navigatorLeftBox {
+  width: 20px;
+  border-bottom: black 2px solid;
+}
+
+.navigatorRightBox {
+  padding-top: 12px;
+  border-bottom: black 2px solid;
+  padding-bottom: 5px;
+  width: -moz-calc(100% - 320px);
+  width: -webkit-calc(100% - 320px);
+  width: calc(100% - 320px);
+}

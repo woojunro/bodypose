@@ -1,0 +1,22 @@
+.photoGrid {
+  width: 303px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.photoGridElement {
+  background-color: var(--color-linecolor);
+  width: 100px;
+  height: 115px;
+  object-fit: cover;
+  margin-left: 1px;
+  margin-bottom: 1px;
+}
+
+.photoGridClickableElement {
+  cursor: pointer;
+}
+
+.photoGridEmptyElement {
+  background-color: white;
+}

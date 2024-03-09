@@ -1,0 +1,18 @@
+.setLinkTitle {
+  width: 250px;
+}
+.linkTypeSelector {
+  margin-left: 15px;
+  font-size: 14px;
+}
+.linkInput {
+  border: 1px solid var(--color-linecolor);
+  width: 400px;
+  font-size: 14px;
+}
+.linkPreview {
+  margin-left: 30px;
+  color: gray;
+  font-size: 14px;
+  cursor: pointer;
+}

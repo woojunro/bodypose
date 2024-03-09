@@ -1,0 +1,58 @@
+.photoStatBox {
+  width: 28%;
+  max-width: 300px;
+  margin-left: 40px;
+  background-color: white;
+  border-radius: 10px;
+  padding-bottom: 10px;
+}
+
+.photoClicks {
+  margin-top: 20px;
+  padding-right: 10px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+}
+
+.cardContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.statCard {
+  position: relative;
+  overflow: hidden;
+  width: 180px;
+  height: 225px;
+  flex: 0 0 auto;
+}
+
+.statCard img {
+  width: 180px;
+  height: 225px;
+  object-fit: cover;
+}
+
+.photoStatBoxTitlecontainer {
+  margin-bottom: 20px;
+}
+.photoStatBoxTitle {
+  margin-left: 20px;
+  margin-top: 20px;
+}
+
+.photoStatBoxDescription {
+  margin-left: 20px;
+  margin-top: 5px;
+  font-size: 14px;
+  color: gray;
+}
+
+.clickNumber {
+  color: var(--color-blue);
+  font-weight: bold;
+  font-size: 20px;
+  margin-left: 10px;
+  margin-right: 5px;
+}

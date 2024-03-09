@@ -1,0 +1,48 @@
+.fullNoticeBox {
+  width: 100%;
+  background-color: white;
+  border-radius: 5px;
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+.noticeContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.noticeList {
+  padding-left: 25px;
+  padding-right: 25px;
+  height: 90%;
+}
+
+.NoticeLine {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 25px;
+  cursor: pointer;
+}
+
+.NoticeItemTitle {
+  width: 80%;
+  font-size: 16px;
+}
+
+.noticePageContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  font-size: 16px;
+  align-items: center;
+}
+
+.noticePageArrow {
+  font-size: 22px;
+  margin-right: 3px;
+  cursor: pointer;
+}

@@ -1,0 +1,40 @@
+.shopProductLine {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.shopProductTitle {
+  height: 30px;
+  width: 180px;
+  font-size: 17px;
+  padding-left: 10px;
+}
+
+.shopProductLineText {
+  margin-left: 30px;
+  margin-right: 30px;
+  font-size: 16px;
+}
+
+.shopProductPrice {
+  height: 25px;
+  width: 230px;
+  font-size: 16px;
+  padding-left: 10px;
+}
+.deleteShopProduct {
+  margin-left: 20px;
+  color: gray;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.shopProductTitleText {
+  width: 184px;
+  margin-left: 11px;
+  font-size: 17px;
+}
+.shopProductPriceText {
+  width: 247px;
+}

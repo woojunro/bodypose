@@ -1,0 +1,17 @@
+.changeInfoContainer {
+  display: flex;
+  margin-left: 285px;
+  align-items: baseline;
+}
+.changeInput {
+  font-size: 18px;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+
+.changeDiscription {
+  font-size: 15px;
+  margin-left: 20px;
+  color: gray;
+}

@@ -1,0 +1,37 @@
+.addPhotoContainer {
+  padding: 30px 0px 30px 30px;
+}
+.addPhotoLine {
+  display: flex;
+  margin-bottom: 30px;
+  align-items: center;
+}
+.addPhotoTitle {
+  width: 200px;
+}
+.addPhotoDiscription {
+  color: gray;
+  margin-top: 5px;
+  font-size: 15px;
+}
+.thumbnailPic {
+  min-height: 200px;
+}
+.thumbnailPic img {
+  width: 210px;
+  height: 280px;
+  object-fit: contain;
+}
+.photoOptions {
+  width: 630px;
+  line-height: 30px;
+  font-size: 16px;
+}
+.option {
+  display: inline-block;
+  margin-right: 20px;
+}
+.optionCheckBox {
+  margin-right: 10px;
+  transform: scale(1.5);
+}

@@ -1,0 +1,50 @@
+.footerContainer {
+  margin: 50px -25px 25px -25px;
+  font-size: 12px;
+  color: gray;
+}
+.footerLinkLine {
+  display: flex;
+  padding: 5px 60px 5px 0px;
+  justify-content: flex-end;
+
+  border-top: var(--color-linecolor) 1px solid;
+  border-bottom: var(--color-linecolor) 1px solid;
+}
+
+.footerLink {
+  margin-left: 30px;
+}
+.footerMainContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 25px;
+}
+.footerMain {
+  width: 80%;
+  display: flex;
+}
+.footerMain img {
+  width: 170px;
+  height: 40px;
+  margin-right: 20px;
+}
+
+.footerAboutCompany {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  line-height: 1.5em;
+  margin-top: 10px;
+}
+
+.companyContact {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  text-align: end;
+}
+
+.footerLink {
+  cursor: pointer;
+}

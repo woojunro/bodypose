@@ -1,0 +1,28 @@
+.messageInfoContainer {
+  padding: 30px 30px 30px 30px;
+}
+.SMSContainer {
+  display: flex;
+  margin-bottom: 40px;
+}
+.messageTitle {
+  width: 265px;
+}
+.measageData {
+  font-size: 16px;
+}
+.messageButtons {
+  margin-top: 10px;
+  width: 150px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.messageDiscription {
+  margin-top: 10px;
+  font-size: 15px;
+  color: gray;
+}
+.emailContainer {
+  display: flex;
+}

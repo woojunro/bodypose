@@ -1,0 +1,22 @@
+.unableJoinButton {
+  height: 50px;
+  background-color: lightgray;
+  width: 120px;
+  margin-bottom: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: gray;
+}
+.ableJoinButton {
+  height: 50px;
+  background-color: var(--color-button);
+  width: 120px;
+  margin-bottom: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+
+  cursor: pointer;
+}

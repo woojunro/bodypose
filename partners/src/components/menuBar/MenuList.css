@@ -1,0 +1,42 @@
+.MenuList {
+  margin-top: 30px;
+  color: white;
+  font-size: 15px;
+  display: flex;
+  justify-content: center;
+}
+.OpenMenuElement {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.menuArrow {
+  margin-left: 5px;
+  width: 20px;
+}
+.MenuElementContainer {
+  width: 100%;
+}
+.MenuElement {
+  margin-left: 15px;
+  font-weight: 300;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding-left: 15px;
+  cursor: pointer;
+}
+.subListContainer {
+  background-color: var(--color-submenu);
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.subListElement {
+  padding-left: 47px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  font-weight: 300;
+  cursor: pointer;
+  font-size: 14px;
+}

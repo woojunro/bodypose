@@ -1,0 +1,69 @@
+.clickableStudioStatsCard {
+  cursor: pointer;
+  background-color: white;
+  width: 28%;
+  height: 150px;
+  padding-left: 25px;
+  padding-top: 20px;
+  max-width: 300px;
+  margin-left: 20px;
+  border-radius: 10px;
+}
+
+.studioStatsCard {
+  background-color: white;
+  width: 28%;
+  height: 150px;
+  padding-left: 25px;
+  padding-top: 20px;
+
+  max-width: 300px;
+  margin-left: 20px;
+  border-radius: 10px;
+}
+
+.studioCardTitle {
+  font-size: 16px;
+}
+
+.studioCardDescription {
+  padding-right: 20px;
+  margin-top: 4px;
+  font-size: 13px;
+  color: gray;
+}
+
+.emptyStudioStatsCard {
+  width: 30%;
+}
+
+.studioCardNumberContainer {
+  margin-top: 35px;
+  display: flex;
+
+  align-items: baseline;
+}
+
+.currentDataNumber {
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.statsChangeContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.statsChange {
+  font-size: 15px;
+  color: gray;
+  margin-left: 20px;
+}
+
+.arrowUp {
+  color: red;
+}
+
+.arrowDown {
+  color: blue;
+}

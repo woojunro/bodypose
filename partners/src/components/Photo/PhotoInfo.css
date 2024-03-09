@@ -1,0 +1,43 @@
+.photoInfo {
+  margin-left: 80px;
+  width: 100%;
+}
+.photoInfoThumb {
+  margin-top: 20px;
+}
+.photoInfoThumb img {
+  object-fit: contain;
+  width: 300px;
+  height: 300px;
+}
+.photoInfoLine {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+}
+.photoInfoTitle {
+  width: 60px;
+  min-width: 60px;
+}
+.optionInfo {
+  margin-right: 15px;
+}
+
+.photoInfoData {
+  font-size: 15px;
+  line-height: 25px;
+}
+
+.deleteButton {
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.deleteTitle {
+  padding: 10px 25px 10px 25px;
+  border-radius: 5px;
+  border: red 1px solid;
+}

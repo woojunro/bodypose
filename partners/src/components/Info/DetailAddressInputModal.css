@@ -1,0 +1,25 @@
+.detailAddressInputModalContainer {
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.detailAddressInputModalMainAddress {
+  margin-bottom: 10px;
+}
+
+.detailAddressInputModalDetailAddressInput {
+  font-size: 14px;
+  padding: 5px;
+}
+
+.detailAddressInputModalConfirmButton {
+  cursor: pointer;
+  user-select: none;
+  margin-top: 20px;
+  font-size: 14px;
+  background-color: var(--color-button);
+  color: white;
+  border-radius: 5px;
+  padding: 7px 12px;
+}

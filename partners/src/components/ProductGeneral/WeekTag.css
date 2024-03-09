@@ -1,0 +1,21 @@
+.weekTagContainer {
+  display: flex;
+  align-items: baseline;
+}
+.weekTagTitle {
+  width: 100px;
+  font-size: 16px;
+}
+
+.weekTagChange {
+  margin-left: 20px;
+
+  font-size: 14px;
+  color: gray;
+  cursor: pointer;
+}
+
+.weekTagInput {
+  font-size: 17px;
+  width: 150px;
+}

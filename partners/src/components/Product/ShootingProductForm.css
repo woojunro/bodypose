@@ -1,0 +1,49 @@
+.shootingProductFormContainer {
+  padding-top: 20px;
+  margin-left: 30px;
+  font-size: 15px;
+}
+
+.shootingProductFormInputData {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.shootingProductFormInputDataTitle {
+  width: 150px;
+  font-size: 16px;
+}
+
+.shootingProductFormInputTitle {
+  font-size: inherit;
+  width: 300px;
+  padding: 5px;
+}
+
+.shootingProductFormText {
+  margin-right: 10px;
+}
+
+.shootingProductFormInputNumber {
+  font-size: inherit;
+  width: 50px;
+  padding: 3px;
+  margin-right: 10px;
+}
+
+.shootingProductFormInputPrice {
+  width: 100px;
+}
+
+.shootingProductFormInputSelect {
+  font-size: inherit;
+  height: 30px;
+  margin-right: 20px;
+}
+
+.shootingProductFormInputDescription {
+  font-size: inherit;
+  width: 600px;
+  padding: 5px;
+}

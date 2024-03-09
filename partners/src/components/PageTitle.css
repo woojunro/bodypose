@@ -1,0 +1,17 @@
+.pageNameContainer {
+  margin-top: 20px;
+  background-color: white;
+  border-radius: 5px;
+}
+.pageName {
+  display: flex;
+  padding-left: 25px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+
+  align-items: baseline;
+}
+.pageSubtitle {
+  font-size: 14px;
+  margin-left: 5px;
+}

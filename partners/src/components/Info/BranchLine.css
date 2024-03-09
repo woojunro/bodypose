@@ -1,0 +1,80 @@
+.branchLine {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 40px;
+}
+
+.branchInfo {
+  width: 500px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.branchTitle {
+  font-size: 16px;
+  width: 150px;
+}
+
+.branchName {
+  width: 200px;
+}
+
+.branchAddress {
+  width: 300px;
+  font-size: 15px;
+}
+
+.branchParkingDiv {
+  display: flex;
+  margin-top: 15px;
+}
+
+.branchParkingLabel {
+  width: 200px;
+  font-size: 15px;
+}
+
+.branchParkingInfo {
+  width: 300px;
+  font-size: 15px;
+  white-space: pre-wrap;
+}
+
+.editBranchInputDiv {
+  width: 500px;
+}
+
+.editBranchLineInputContainer {
+  margin-bottom: 10px;
+}
+
+.branchEdit {
+  margin-left: 20px;
+  font-size: 15px;
+  color: gray;
+  cursor: pointer;
+}
+
+.branchNameEdit {
+  font-size: 16px;
+}
+
+.branchAddressEdit {
+  border: 1px solid gray;
+  padding: 2px 3px;
+  background-color: var(--color-readonly);
+  width: 375px;
+  font-size: 15px;
+  margin-right: 10px;
+}
+
+.editBranchParkingLabel {
+  margin-bottom: 5px;
+  font-size: 15px;
+}
+
+.branchParkingInfoEdit {
+  font-family: inherit;
+  width: 450px;
+  resize: vertical;
+}

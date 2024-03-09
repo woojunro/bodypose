@@ -1,0 +1,60 @@
+:root {
+  --color-header: #2d3338;
+  --color-menubar: #3c495c;
+  --color-menubar-selected: #263243;
+  --color-background: #f1f2f5;
+  --color-subBlack: #5a5a5a;
+  --color-blue: #5164f7;
+  --color-red: #ff3939;
+  --color-button: #589ffc;
+  --color-submenu: #263243;
+  --color-linecolor: #b6b6b6;
+  --color-readonly: #ebebe4;
+}
+
+html {
+  margin: 0 auto;
+  min-width: 1100px;
+}
+
+body {
+  background-color: var(--color-background);
+  font-family: 'NanumBarunGothic';
+  margin: 0 0;
+  overflow: auto;
+  letter-spacing: 0.5px;
+}
+
+@font-face {
+  font-family: 'NanumBarunGothic';
+  font-weight: 400;
+  src: url('./styles/fonts/NanumBarunGothicSubset.woff2') format('woff2'),
+    url('./styles/fonts/NanumBarunGothicSubset.woff') format('woff'),
+    url('./styles/fonts/NanumBarunGothicSubset.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'NanumBarunGothic';
+  font-weight: 700;
+  src: url('./styles/fonts/NanumBarunGothicBoldSubset.woff2') format('woff2'),
+    url('./styles/fonts/NanumBarunGothicBoldSubset.woff') format('woff'),
+    url('./styles/fonts/NanumBarunGothicBoldSubset.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'NanumBarunGothic';
+  font-weight: 300;
+  src: url('./styles/fonts/NanumBarunGothicLightSubset.woff2') format('woff2'),
+    url('./styles/fonts/NanumBarunGothicLightSubset.woff') format('woff'),
+    url('./styles/fonts/NanumBarunGothicLightSubset.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'NanumBarunGothic';
+  font-weight: 200;
+  src: url('./styles/fonts/NanumBarunGothicUltraLightSubset.woff2')
+      format('woff2'),
+    url('./styles/fonts/NanumBarunGothicUltraLightSubset.woff') format('woff'),
+    url('./styles/fonts/NanumBarunGothicUltraLightSubset.ttf')
+      format('truetype');
+}

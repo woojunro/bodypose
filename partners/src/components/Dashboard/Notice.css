@@ -1,0 +1,41 @@
+.dashboardNoticeContainer {
+  width: 48%;
+  background-color: white;
+  border-radius: 5px;
+}
+
+.dashboardNoticeTitleContainer {
+  padding: 20px 25px 20px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: var(--color-linecolor) 1px solid;
+}
+.showNotice {
+  color: gray;
+  font-size: 14px;
+  cursor: pointer;
+}
+.dashboardNoticeItemContainer {
+  padding-left: 25px;
+  padding-right: 25px;
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.dashboardNoticeLine {
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.dashboardNoticeItemTitle {
+  font-size: 14px;
+}
+
+.dashboardNoticeItemDate {
+  font-size: 13px;
+  color: gray;
+}

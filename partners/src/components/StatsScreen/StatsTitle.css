@@ -1,0 +1,10 @@
+.statsTitle {
+  margin-top: 20px;
+  width: 100%;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  padding-top: 40px;
+  padding-bottom: 30px;
+  font-size: 20px;
+}

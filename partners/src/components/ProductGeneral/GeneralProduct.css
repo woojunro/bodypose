@@ -1,0 +1,41 @@
+.generalProductContainer {
+  padding: 0px 35px 25px 35px;
+}
+
+.generalProductLine {
+  display: flex;
+  border-bottom: 1px lightgray solid;
+  padding-bottom: 30px;
+}
+.weekTagLine {
+  padding-top: 30px;
+  display: flex;
+}
+.gereralProductTitle {
+  width: 270px;
+}
+.lowestPriceInfo {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-size: 15px;
+}
+
+.lowestImg {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+}
+
+.lowestImg img {
+  margin-left: 20px;
+  width: 360px;
+}
+.weekTagDescription {
+  display: flex;
+  align-items: center;
+}
+
+.weekTagDescription img {
+  width: 360px;
+  margin-left: 20px;
+}

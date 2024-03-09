@@ -1,0 +1,46 @@
+.hairMakeupListContainer {
+  padding: 30px 0px 30px 30px;
+}
+
+.hairNoContain {
+  margin-top: 10px;
+  color: red;
+  font-size: 10px;
+  margin-left: 3px;
+}
+
+.hairshopName {
+  font-size: 13px;
+}
+.goOut {
+  margin-left: 5px;
+  font-size: 11px;
+}
+.hairshopContact {
+  margin-top: 5px;
+  font-size: 11px;
+}
+.hairshopLink {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.harishopArrow {
+  margin-top: 2px;
+  margin-left: 2px;
+}
+
+.hairshopAdress {
+  margin-top: 5px;
+  font-size: 12px;
+}
+
+.itemContainer {
+  margin-top: 10px;
+}
+
+.hairArrow {
+  margin-left: 10px;
+  margin-right: 10px;
+}
