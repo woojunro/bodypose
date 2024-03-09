@@ -1,0 +1,51 @@
+.sortByButtomClose {
+  margin-top: 7px;
+  margin-right: 10px;
+  display: flex;
+  background-color: white;
+  border: 1px solid var(--color-line);
+  border-radius: 15px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-left: 10px;
+  padding-right: 8px;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px lightgray;
+}
+
+.sortByButtomOpen {
+  margin-right: 10px;
+  margin-top: 7px;
+  cursor: pointer;
+  box-shadow: 1px 2px 4px lightgray;
+
+  background-color: var(--color-chocolate);
+  display: flex;
+  border: 1px solid var(--color-line);
+  border-radius: 15px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-left: 10px;
+  padding-right: 8px;
+  align-items: center;
+}
+button:focus {
+  outline: 0;
+}
+.textOpen {
+  margin-right: 7px;
+  margin-left: 2px;
+  color: white;
+  font-size: 13px;
+}
+.textClose {
+  margin-right: 7px;
+  margin-left: 2px;
+
+  color: black;
+  font-size: 13px;
+}
+.arrowUp {
+  transform: translateY(-1px);
+}

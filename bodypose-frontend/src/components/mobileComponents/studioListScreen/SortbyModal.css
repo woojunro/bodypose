@@ -1,0 +1,68 @@
+.sortBymodal {
+  z-index: 20;
+
+  width: 100vw;
+  min-width: 320px;
+  max-width: 470px;
+  height: 100vh;
+  position: absolute;
+  top: 100px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+.sortBytrueModal {
+  min-width: 320px;
+  width: 100vw;
+  max-width: 470px;
+  height: auto;
+  margin: auto;
+
+  background-color: var(--color-bgColor);
+  position: relative;
+  box-sizing: border-box;
+  padding: 0px;
+  background: #fff;
+}
+.sortBygreyBackground {
+  height: 100vh;
+  width: 100%;
+}
+.sortBymodalContents {
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background-color: var(--color-bgColor);
+  width: 100%;
+  height: 100%;
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.selectedBox {
+  padding: 5px 0px 5px 0px;
+  font-size: 14px;
+  color: var(--color-chocolate);
+  height: 100%;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+.unselectedBox {
+  padding: 14px 0px 14px 0px;
+
+  height: 100%;
+  font-size: 14px;
+  color: black;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}

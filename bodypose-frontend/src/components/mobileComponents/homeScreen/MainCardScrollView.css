@@ -1,0 +1,27 @@
+.mainScrollView ul {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0;
+  display: flex;
+  height: 220px;
+  overflow-x: scroll;
+  width: 100%;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.mainScrollView ul li {
+  padding: 0px;
+  margin: 0;
+  white-space: nowrap;
+  flex-basis: auto;
+  position: relative;
+}
+.mainScrollView li:last-child:after {
+  content: '';
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  left: 100%;
+  top: 0px;
+  padding-right: 8px;
+}

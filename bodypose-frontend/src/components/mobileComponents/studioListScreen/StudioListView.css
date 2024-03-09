@@ -1,0 +1,17 @@
+.semiTitle {
+  margin-top: 3px;
+  font-weight: bold;
+  font-size: 15px;
+  margin-left: 15px;
+}
+
+.listScrollView {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.insideBox {
+  width: 450px;
+}

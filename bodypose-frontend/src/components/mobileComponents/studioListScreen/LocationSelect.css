@@ -1,0 +1,20 @@
+.locationSelectContainer {
+  padding: 25px 20px 0px 20px;
+}
+
+.locationSelectTitle {
+  font-weight: bold;
+  display: flex;
+}
+
+.locationBox {
+  margin-top: 10px;
+}
+
+.locationselection {
+  padding: 16px 15px 16px 15px;
+  border-bottom: 1px rgb(179, 179, 179) solid;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+}

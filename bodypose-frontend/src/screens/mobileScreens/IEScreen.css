@@ -1,0 +1,16 @@
+.IETextContainer {
+  margin-top: 50px;
+}
+.noIEimg {
+  margin-top: 10px;
+  width: 100%;
+}
+.IEText {
+  background-color: lightgray;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  white-space: pre-wrap;
+  font-size: medium;
+}

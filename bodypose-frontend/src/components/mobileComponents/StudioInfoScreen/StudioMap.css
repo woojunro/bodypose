@@ -1,0 +1,49 @@
+.studioAddressDivContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.studioAddressDiv {
+  width: 92%;
+  margin-top: 15px;
+  font-size: 13px;
+}
+
+.branchSelectContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.branchCountText {
+  margin: 0 4% 5px 0;
+  font-size: 10px;
+  text-align: end;
+}
+
+.studioAddressLabel {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.studioAddressText {
+  color: var(--color-showMore);
+}
+
+.studioParkingLabel {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.studioParkingText {
+  white-space: pre-wrap;
+  margin-top: 10px;
+  color: var(--color-showMore);
+}
+
+.MapTotalContainer {
+  margin-top: 10px;
+  margin-left: 3px;
+  margin-right: 3px;
+}

@@ -1,0 +1,40 @@
+.cardContainer {
+  position: relative;
+  overflow: hidden;
+  width: 160px;
+  height: 200px;
+  border-radius: 10px;
+  box-shadow: 1px 3px 6px gray;
+  margin-left: 9px;
+  margin-right: 1px;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+.cardContainer img {
+  width: 160px;
+  height: 200px;
+  object-fit: cover;
+}
+.studioInfoBox {
+  position: absolute;
+  left: 0;
+  height: 30px;
+  bottom: 1px;
+  width: 100%;
+  text-align: end;
+}
+.studioName {
+  color: white;
+  margin-right: 9px;
+  font-size: 12px;
+  font-weight: bold;
+  text-shadow: 1px 1px 1px black;
+}
+
+.studioPrice {
+  color: white;
+  margin-right: 8px;
+  font-size: 10px;
+  text-shadow: 1px 1px 1px black;
+}

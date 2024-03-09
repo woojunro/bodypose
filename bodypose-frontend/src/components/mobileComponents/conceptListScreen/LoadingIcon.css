@@ -1,0 +1,17 @@
+.loadingIcon {
+  animation: rotate_image 1s linear infinite;
+  transform-origin: 50% 50%;
+}
+.loadingIconContainer {
+  margin: auto;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  width: 20px;
+  font-size: 25px;
+}
+
+@keyframes rotate_image {
+  100% {
+    transform: rotate(360deg);
+  }
+}

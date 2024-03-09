@@ -1,0 +1,35 @@
+.seeAllTitle {
+  text-align: center;
+  font-weight: bold;
+  padding-bottom: 10px;
+  font-size: 15px;
+}
+.itemBox {
+  cursor: pointer;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+  border-radius: 10px;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.itemBox img {
+  height: 33px;
+  width: auto;
+}
+.itemName {
+  margin-top: 10px;
+  font-size: 12px;
+  text-align: center;
+  color: black;
+}
+
+.seeAll ul {
+  list-style-type: none;
+  justify-content: space-evenly;
+  margin: 0;
+  display: flex;
+  width: 100%;
+  padding: 0px;
+}

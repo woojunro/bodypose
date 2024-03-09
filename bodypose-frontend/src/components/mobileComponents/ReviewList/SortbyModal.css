@@ -1,0 +1,68 @@
+.reviewSortBymodalContainer {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  min-width: 320px;
+  position: relative;
+}
+
+.reviewSortBymodal {
+  z-index: 50;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  max-width: 470px;
+  min-width: 320px;
+
+  height: 100vh;
+
+  background: rgba(0, 0, 0, 0.4);
+}
+.reviewSortBytrueModal {
+  width: 100vw;
+  max-width: 470px;
+  height: 150px;
+  margin: auto;
+
+  background-color: white;
+  position: relative;
+  box-sizing: border-box;
+  padding: 0px;
+  background: #fff;
+}
+.reviewSortBygreyBackground {
+  height: 100%;
+  width: 100%;
+}
+.reviewSortBymodalContents {
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background-color: white;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.selectedBox {
+  font-size: 14px;
+  color: var(--color-chocolate);
+  height: 100%;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.unselectedBox {
+  height: 100%;
+  font-size: 14px;
+  color: black;
+  display: flex;
+  align-items: center;
+}

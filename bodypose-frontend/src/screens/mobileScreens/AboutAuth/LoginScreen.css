@@ -1,0 +1,109 @@
+.loginContainer {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.loginBackArrow {
+  cursor: pointer;
+  font-size: 25px;
+  margin-left: 18px;
+  margin-top: 25px;
+}
+.loginTitle {
+  margin-top: 13px;
+  margin-left: 8%;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.loginEmailText {
+  font-size: 12px;
+  margin-top: 20px;
+  margin-left: 11%;
+  color: var(--color-loginGray);
+  margin-bottom: 10px;
+}
+.forgotPassword {
+  font-size: 11px;
+  margin-top: 10px;
+  color: gray;
+text-decoration: underline grey;
+cursor: pointer;
+}
+.forgotPasswordContainer {
+  width: 90%;
+  display: flex;
+  justify-content: flex-end;
+
+}
+.snsLoginContainerContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.snsLoginContainer {
+  margin-top: 20px;
+  width: 90%;
+  display: flex;
+  justify-content: space-evenly;
+}
+.snsLogin {
+  width: 55px;
+  height: 55px;
+  cursor: pointer;
+}
+.naverIdLoginButtonContainer {
+  width: 55px;
+  height: 55px;
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.naverIdLoginButtonContainer img {
+  margin-top: 4px;
+  margin-left: 1px;
+}
+.noIdText {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.startWithEmailText {
+  width: 100%;
+  font-size: 14px;
+  color: gray;
+  display: flex;
+  justify-content: center;
+  text-decoration: underline grey;
+  cursor: pointer;
+
+}
+.noIdContainer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  max-width: 470px;
+  margin-bottom: 5vh;
+}
+
+.unvalidInfoText {
+  font-size: 12px;
+  padding-left: 11%;
+  color: red;
+  margin-bottom: -14px;
+}
+
+.autoAgreeContainer {
+  font-size: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  
+}

@@ -1,0 +1,36 @@
+.optionContainer {
+  margin-left: 3px;
+  margin-right: 3px;
+  padding-right: 7px;
+
+  padding-top: 15px;
+  padding-bottom: 15px;
+  border-top: lightgray 1px solid;
+}
+.optionTotalContainer {
+  margin-top: 10px;
+}
+.optionCardTop {
+  display: flex;
+  justify-content: space-between;
+}
+
+.optionTitle {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.optionPrice {
+  font-size: 12px;
+}
+.optionAdding {
+  margin-top: 3px;
+  font-size: 12px;
+  color: gray;
+  margin-bottom: -5px;
+}
+
+.optionLine {
+  border-top: lightgray 1px solid;
+  padding-bottom: 2px;
+}

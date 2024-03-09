@@ -1,0 +1,32 @@
+.searchField {
+  display: flex;
+  align-items: center;
+  margin-right: 25px;
+  margin-top: 5px;
+}
+.searchInput {
+  border-top-style: hidden;
+  border-right-style: hidden;
+  border-left-style: hidden;
+  border-bottom: grey 0.5px solid;
+  margin-right: 5px;
+  font-size: 14px;
+  width: 140px;
+  transform: translate(9px, -1px);
+}
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+}
+
+.searchIcon {
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.closeIcon {
+  font-size: 14px;
+  transform: translate(-8px, -1px);
+  color: grey;
+}

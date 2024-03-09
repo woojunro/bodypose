@@ -1,0 +1,22 @@
+.dialogContainer {
+  position: fixed;
+  z-index: 1000;
+  bottom: 20px;
+  width: 100%;
+  max-width: 470px;
+  min-width: 320px;
+  display: flex;
+  justify-content: center;
+}
+
+.dialog {
+  width: auto;
+  border-radius: 7px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  background-color: rgba(0, 0, 0, 0.5);
+  text-align: center;
+  color: white;
+}

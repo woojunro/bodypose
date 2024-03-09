@@ -1,0 +1,8 @@
+.adTap img {
+  width: 100%;
+  cursor: pointer;
+}
+.adTap {
+  cursor: pointer;
+  border-bottom: var(--color-line) 1px solid;
+}

@@ -1,0 +1,29 @@
+.myProfileScreenTitle {
+  margin-left: 15px;
+}
+
+.myProfileNicknameInput {
+  width: 100%;
+  font-size: 15px;
+  font-weight: normal;
+  margin-top: 16px;
+  margin-left: 0;
+  padding-left: 0;
+  padding-bottom: 3px;
+}
+
+.myProfileGenderSelect {
+  margin-top: 10px;
+}
+
+.editAndSaveProfile {
+  cursor: pointer;
+  margin-right: 18px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.myProfileScreenWarning {
+  margin-top: 10px;
+  margin-left: 0;
+}

@@ -1,0 +1,23 @@
+.selectedText {
+  font-size: 15px;
+  font-weight: bold;
+  padding: 0 2% 3px 2%;
+  margin: 0 -2% -3px -2%;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  border-bottom: black 1px solid;
+}
+.unselectedText {
+  display: flex;
+  justify-content: center;
+  font-size: 15px;
+  color: black;
+  cursor: pointer;
+}
+.topNavigatorContainer {
+  margin-top: 13px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-evenly;
+}

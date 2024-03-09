@@ -1,0 +1,63 @@
+.welcome {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 25px;
+  margin-left: 22px;
+  margin-bottom: 20px;
+  align-items: baseline;
+}
+.nickNamePart {
+  font-size: 20px;
+  font-weight: bold;
+}
+.welcomePart {
+  font-size: 14px;
+  margin-left: 5px;
+}
+
+.userSemiTitle {
+  padding-top: 5px;
+  margin-left: 20px;
+  color: gray;
+  font-size: 12px;
+}
+
+.userTap {
+  cursor: pointer;
+
+  margin-top: 20px;
+  margin-left: 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.userTapName {
+  font-size: 15px;
+  color: black;
+}
+.userArrow {
+  margin-right: 25px;
+  font-size: 20px;
+  color: black;
+}
+.userLineContainer {
+  display: flex;
+  justify-content: center;
+}
+.userLine {
+  width: 90vw;
+  height: 20px;
+  border-bottom: 1px solid var(--color-line);
+  margin-bottom: 20px;
+}
+.gmailImage {
+  margin-left: 15px;
+  width: 20px;
+  height: 20px;
+}
+
+.mailing {
+  display: flex;
+  align-items: center;
+}

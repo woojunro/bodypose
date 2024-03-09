@@ -1,0 +1,151 @@
+.conceptmodal {
+  z-index: 50;
+  width: 100vw;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.concepttrueModal {
+  width: 100vw;
+  max-width: 470px;
+  height: 100%;
+  background-color: white;
+  position: relative;
+  box-sizing: border-box;
+  margin: auto;
+  padding: 0px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.conceptModalContents {
+  height: 80%;
+  margin: 0 auto;
+  padding-left: 5%;
+  padding-right: 5%;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.topBarContainer {
+  height: 8%;
+  padding-right: 5px;
+  padding-left: 5px;
+  display: flex;
+  font-size: 45px;
+  justify-content: center;
+  align-items: center;
+}
+
+.studioTitle {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.mainPhotoArea {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  height: auto;
+  align-items: center;
+}
+
+.mainPhotoAreaImg {
+  width: 100%;
+  height: auto;
+  max-height: 90%;
+  max-width: 90vw;
+  object-fit: contain;
+}
+
+.toStudioInfoContainer {
+  width: 100%;
+  height: 10%;
+  max-width: 470px;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 2%;
+  align-items: center;
+}
+
+.toStudioInfo {
+  width: 75%;
+  height: 70%;
+  max-height: 40px;
+  border-radius: 5px;
+  background: var(--color-chocolate);
+  font-size: 15px;
+  font-weight: normal;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  cursor: pointer;
+  margin-top: 5px;
+}
+.nextArrowContainer {
+  margin-left: -20px;
+  cursor: pointer;
+
+  z-index: 100;
+}
+.prevArrowContainer {
+  padding-left: 4px;
+  margin-right: -20px;
+  z-index: 100;
+  cursor: pointer;
+}
+.nextButton {
+  transform: scale(1.2, 5);
+  color: rgba(225, 225, 225, 0.5);
+}
+.prevButton {
+  transform: scale(1.2, 5);
+  color: rgba(225, 225, 225, 0.5);
+}
+
+.conceptFilledHeart {
+  margin-left: 8px;
+  color: var(--color-heartColor);
+  cursor: pointer;
+
+  font-size: 36px;
+  margin-top: 7px;
+}
+.conceptRegHeart {
+  margin-left: 8px;
+  margin-top: 7px;
+  font-size: 36px;
+  cursor: pointer;
+}
+.whileLoading {
+  display: flex;
+  align-items: center;
+}
+
+.gettingHeart {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.conceptModalClose {
+  cursor: pointer;
+  position: absolute;
+  width: 35px;
+  height: 35px;
+  right: 3vw;
+  top: 1vh;
+}

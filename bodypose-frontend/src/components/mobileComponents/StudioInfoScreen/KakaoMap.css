@@ -1,0 +1,33 @@
+.kakaoMapContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.kakaoMapButtonContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.kakaoMapButton {
+  margin-top: 10px;
+  width: 92%;
+  height: 40px;
+  font-size: 15px;
+  font-weight: bold;
+  display: flex;
+  flex-direction: row;
+  background-color: #f8df00;
+  color: var(--color-chocolate);
+  border-radius: 5px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+
+.kakaoMapButton img {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}

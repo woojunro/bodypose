@@ -1,0 +1,13 @@
+.totalItemContainer {
+  padding-left: 23px;
+  padding-right: 23px;
+}
+
+.categoryTitle {
+  margin-top: 25px;
+  font-size: 15px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}

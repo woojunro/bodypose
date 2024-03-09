@@ -1,0 +1,125 @@
+.studioCardTotalContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.totalContainer {
+  position: relative;
+  flex: 0 0 auto;
+  width: 98%;
+  min-width: 320px;
+  display: block;
+  cursor: pointer;
+  padding-top: 10px;
+  padding-bottom: 0px;
+}
+.studioCardContainer {
+  box-shadow: 1px 2px 6px lightgray;
+  background-color: white;
+  border-radius: 5px;
+  padding: 15px 0 15px 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  color: black;
+}
+.studioImg {
+  margin-left: 5px;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  width: 136px;
+  height: 170px;
+  border-radius: 10px;
+  box-shadow: 1px 3px 6px gray;
+  flex: 0 0 auto;
+}
+
+.studioImg img {
+  object-fit: cover;
+  width: 136px;
+  height: 170px;
+}
+.cardInfo {
+  margin-right: 5px;
+  display: flex;
+  height: 150px;
+  width: 47%;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.cardHeart {
+  font-size: 24px;
+  position: absolute;
+  top: 12%;
+  left: 90%;
+  cursor: pointer;
+}
+.cardSelectedHeart {
+  cursor: pointer;
+
+  font-size: 23px;
+  position: absolute;
+  top: 12%;
+  left: 90%;
+  color: var(--color-heartColor);
+}
+
+.firstLine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.location {
+  font-size: 10px;
+  color: grey;
+  margin-top: 5px;
+}
+.thirdLine {
+  margin-top: 3px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+.rating {
+  padding-left: 3px;
+  font-size: 13px;
+}
+.review {
+  padding-left: 4px;
+  font-size: 11px;
+}
+.lower {
+  display: inline;
+  text-align: right;
+}
+.per {
+  color: grey;
+  font-size: 11px;
+}
+.price {
+  font-size: 15px;
+  font-weight: bold;
+  padding-left: 10px;
+}
+.percent {
+  font-size: 10px;
+  color: #ff5757;
+}
+.originalPrice {
+  color: grey;
+  font-size: 12px;
+  padding-left: 5px;
+  padding-right: 11px;
+  text-decoration: line-through;
+}
+.noReviewSpan {
+  color: gray;
+  padding-left: 3px;
+  font-size: 10px;
+  align-self: center;
+}

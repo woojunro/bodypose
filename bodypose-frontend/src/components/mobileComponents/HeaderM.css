@@ -1,0 +1,28 @@
+.header {
+  width: 100%;
+  max-width: 470px;
+  border-bottom: 1px solid var(--color-line);
+  height: 50px;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  background-color: white;
+  z-index: 30;
+  justify-content: space-between;
+}
+
+.headerLogo {
+  text-align: center;
+  margin-top: 7px;
+}
+
+.headerLogo img {
+  width: 40%;
+}
+.headerTitle {
+  text-align: left;
+  margin-top: 2px;
+  margin-left: 20px;
+  font-size: 15px;
+  font-weight: bold;
+}

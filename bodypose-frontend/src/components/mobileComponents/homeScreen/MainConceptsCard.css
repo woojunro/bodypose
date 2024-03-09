@@ -1,0 +1,33 @@
+.conceptsCardContainer-Vertical {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 10px;
+  width: 160px;
+  height: 200px;
+  border-radius: 10px;
+  box-shadow: 1px 3px 6px gray;
+  cursor: pointer;
+}
+
+.conceptsCardContainer-Vertical img {
+  object-fit: cover;
+  width: 160px;
+  height: 200px;
+}
+.conceptsCardContainer-Horizon {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 10px;
+  width: 160px;
+  height: 200px;
+  border-radius: 10px;
+  box-shadow: 1px 3px 6px grey;
+}
+
+.conceptsCardContainer-Horizon img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 100%;
+}

@@ -1,0 +1,167 @@
+.writeReview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  width: 100vw;
+  background-color: white;
+}
+.reviewContainer {
+  width: 100vw;
+  max-width: 470px;
+  height: 100vh;
+  background-color: white;
+  position: relative;
+  box-sizing: border-box;
+  margin: auto;
+  padding: 0px;
+}
+.reviewCompleteButton {
+  padding-right: 20px;
+  font-size: 15px;
+  cursor: pointer;
+}
+.reviewCompleteButtonInActive {
+  color: gray;
+}
+.reviewTopContainer {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.titleAndStars {
+  text-align: center;
+  margin-top: 15px;
+  font-weight: bold;
+  font-size: 16px;
+}
+.pleaseStar {
+  font-size: 12px;
+  font-weight: lighter;
+  margin-top: 2px;
+  color: red;
+}
+.reviewMainPart {
+  margin-top: 10px;
+  padding-left: 25px;
+  padding-right: 25px;
+  background-color: white;
+}
+.addReviewPicButton {
+  cursor: pointer;
+
+  width: 75px;
+  height: 75px;
+  border-radius: 8px;
+  border: 1px solid gray;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+}
+.addReviewPicButton img {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 4px;
+}
+.mozaikPart {
+  display: flex;
+  align-items: center;
+  color: gray;
+  margin-top: 10px;
+}
+.mozaikNotice {
+  margin-top: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 11px;
+}
+.picturesPart {
+  display: flex;
+}
+.previewPic {
+  cursor: pointer;
+
+  width: 75px;
+  height: 75px;
+  border-radius: 8px;
+  border: 1px solid gray;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.previewPic img {
+  object-fit: cover;
+  width: 75px;
+  height: 75px;
+}
+.mainPicText {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding-left: 3px;
+  padding-top: 3px;
+  padding-right: 3px;
+  padding-bottom: 3px;
+  border-radius: 5px;
+  font-size: 11px;
+  background-color: black;
+  color: white;
+}
+.reviewTextPart {
+  margin-top: 15px;
+}
+.reviewTextArea {
+  width: 95%;
+  height: 200px;
+  border: none;
+  background-color: var(--color-greyBox);
+  resize: none;
+  border-radius: 8px;
+  padding-top: 10px;
+  padding-left: 7px;
+  padding-right: 7px;
+  padding-bottom: 10px;
+  word-spacing: 0.1px;
+}
+
+.reviewTextNotice {
+  margin-right: 5px;
+  margin-left: 5px;
+  font-size: 11px;
+  line-height: 13px;
+  margin-top: 5px;
+}
+.reviewBottomNoticeContainer {
+  margin-top: 10px;
+  font-size: 10px;
+  width: 100%;
+  color: gray;
+  display: flex;
+  justify-content: center;
+}
+
+.reviewBottomNotice {
+  padding-left: 5%;
+  padding-right: 5%;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  width: 90%;
+  max-width: 370px;
+  background-color: var(--color-greyBox);
+}
+.picNumberError {
+  margin-top: 3px;
+  color: red;
+  font-size: 13px;
+}
+
+.writeReviewCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -1,0 +1,46 @@
+.noticeListTopContainer {
+  padding-top: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.noticeList {
+  margin-top: 15px;
+  margin-left: 20px;
+  margin-right: 20px;
+  border-bottom: 1px solid lightgray;
+}
+.noticeCard {
+  cursor: pointer;
+  border-top: 1px solid lightgray;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-left: 5px;
+}
+
+.noticeCardTitle {
+  color: black;
+  font-size: 14px;
+}
+.noticeDate {
+  font-size: 11px;
+  margin-top: 3px;
+  color: gray;
+}
+.showMoreNotice {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+.showMoreNoticeButton {
+  padding-top: 7px;
+  padding-bottom: 5px;
+  padding-left: 30px;
+  padding-right: 30px;
+  border: lightgray 1px solid;
+}
+.noticeListScreenNoMoreDiv {
+  font-size: smaller;
+}

@@ -1,0 +1,35 @@
+.fullReviewTopPart {
+  margin-top: 25px;
+  padding-left: 25px;
+  padding-right: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fullratingAndStudio {
+  display: flex;
+  align-items: center;
+}
+.fullReviewStudio {
+  font-size: 12px;
+  margin-left: 5px;
+}
+
+.fullReviewUserName {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.fullReviewBodyPart {
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-bottom: 25px;
+}
+
+.fullReviewBottomPart {
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-bottom: 20px;
+}

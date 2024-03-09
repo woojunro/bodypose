@@ -1,0 +1,20 @@
+.titleContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 15px;
+}
+
+.title {
+  margin-left: 15px;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.showMore {
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--color-showMore);
+  text-align: right;
+  margin-right: 30px;
+}
